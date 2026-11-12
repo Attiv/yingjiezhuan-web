@@ -1,0 +1,253 @@
+# c1_s0_b6: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 0 block 6) on the
+# original map hexz_03. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 4 slots
+# note: not converted: the original's victory and defeat scripts
+# note: named by the setup but not in the army at this battle, so allies at their slot: orig_p220, orig_p245, orig_p244
+
+id = "c1_s0_b6"
+name = "信都 전투"
+location = ""
+objective = "一、淳于瓊敗退． / 二、劉備到達城門．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 0
+outro = "c1_s0_b6_outro"
+
+[map]
+use = "hexz_03"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 4
+required = []
+forbidden = ["orig_p220", "orig_p244", "orig_p245"]
+slots = [[21, 7], [20, 6], [20, 8], [21, 5]]
+
+[[units]]
+side = "ally"
+officer = "orig_p220"
+pos = [1, 0]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "orig_p245"
+pos = [3, 0]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "orig_p244"
+pos = [0, 0]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "chunyu_qiong"
+class = "light_cavalry"
+level = 8
+pos = [1, 4]
+ai = "advance"
+ai_pos = [7, 3]
+commander = true
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 4
+stats = [40, 30, 50]
+pos = [8, 3]
+ai = "advance"
+ai_pos = [9, 4]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 4
+stats = [40, 30, 50]
+pos = [4, 6]
+ai = "advance"
+ai_pos = [9, 9]
+commander = false
+tag = "person_257"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 4
+stats = [40, 30, 50]
+pos = [7, 1]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 1
+stats = [50, 30, 40]
+pos = [7, 4]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 1
+stats = [50, 30, 40]
+pos = [5, 4]
+ai = "advance"
+ai_pos = [8, 3]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 3
+stats = [40, 50, 30]
+pos = [0, 4]
+ai = "advance"
+ai_pos = [2, 4]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 2
+stats = [50, 40, 30]
+pos = [4, 7]
+ai = "advance"
+ai_pos = [9, 9]
+commander = false
+tag = "person_310"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 2
+stats = [50, 40, 30]
+pos = [6, 3]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 3
+stats = [10, 70, 10]
+pos = [3, 3]
+ai = "advance"
+ai_pos = [8, 2]
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[victory]]
+type = "reach"
+who = "liu_bei"
+pos = [1, 3]
+radius = 0
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b6_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 3
+side = "player"
+
+[[events.actions]]
+type = "set_ai"
+target = "chunyu_qiong"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_257"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_310"
+ai = "aggressive"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 14
+side = "player"
+
+[[events.actions]]
+type = "set_ai"
+target = "chunyu_qiong"
+ai = "aggressive"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "chunyu_qiong"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b6_5"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "chunyu_qiong"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c1_s0_b6_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[treasures]]
+pos = [6, 5]
+gold = 100
+
+[[treasures]]
+pos = [9, 7]
+item = "wine"
+gold = 0

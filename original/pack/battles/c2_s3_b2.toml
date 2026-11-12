@@ -1,0 +1,890 @@
+# c2_s3_b2: a battle of the original's chapters, made from the original battle (SNR2D.R3 scene 3 block 2) on the
+# original map hexz_22. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 8 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+
+id = "c2_s3_b2"
+name = "博望坡 전투"
+location = ""
+objective = "一、夏侯惇敗退．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+treasures = []
+reward_gold = 900
+outro = "c2_s3_b2_outro"
+
+[map]
+use = "hexz_22"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 8
+required = ["zhuge_liang", "zhao_yun"]
+forbidden = ["guan_ping", "guan_yu", "jian_yong", "liu_feng", "zhang_fei", "zhou_cang"]
+slots = [[0, 13], [19, 9], [0, 14], [2, 9], [1, 10], [1, 11], [2, 11], [1, 12]]
+
+[[units]]
+side = "player"
+officer = "zhang_fei"
+pos = [11, 3]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "player"
+officer = "guan_yu"
+pos = [11, 14]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "player"
+officer = "zhou_cang"
+pos = [12, 15]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "player"
+officer = "jian_yong"
+pos = [10, 3]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "player"
+officer = "liu_feng"
+pos = [12, 5]
+ai = "aggressive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "player"
+officer = "guan_ping"
+pos = [13, 13]
+ai = "aggressive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+officer = "xiahou_dun"
+class = "heavy_cavalry"
+level = 33
+pos = [36, 13]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "韓浩"
+class = "long_infantry"
+level = 29
+stats = [62, 45, 59]
+pos = [32, 13]
+ai = "defensive"
+commander = false
+tag = "person_129"
+
+[[units]]
+side = "enemy"
+officer = "yu_jin"
+class = "long_infantry"
+level = 28
+pos = [35, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "li_dian"
+class = "long_infantry"
+level = 28
+pos = [36, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "夏侯蘭"
+class = "martial"
+level = 29
+stats = [72, 53, 70]
+pos = [37, 10]
+ai = "defensive"
+commander = false
+tag = "person_128"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 26
+stats = [40, 50, 30]
+pos = [35, 11]
+ai = "defensive"
+commander = false
+tag = "person_274"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 26
+stats = [40, 50, 30]
+pos = [39, 13]
+ai = "defensive"
+commander = false
+tag = "person_275"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 27
+stats = [40, 50, 30]
+pos = [33, 10]
+ai = "defensive"
+commander = false
+tag = "person_276"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 27
+stats = [40, 50, 30]
+pos = [33, 14]
+ai = "defensive"
+commander = false
+tag = "person_277"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 28
+stats = [40, 50, 30]
+pos = [34, 10]
+ai = "defensive"
+commander = false
+tag = "person_278"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 28
+stats = [40, 50, 30]
+pos = [36, 10]
+ai = "defensive"
+commander = false
+tag = "person_279"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 27
+stats = [50, 30, 40]
+pos = [37, 14]
+ai = "defensive"
+commander = false
+tag = "person_292"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 27
+stats = [50, 30, 40]
+pos = [34, 13]
+ai = "defensive"
+commander = false
+tag = "person_293"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 28
+stats = [50, 30, 40]
+pos = [33, 12]
+ai = "defensive"
+commander = false
+tag = "person_294"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 28
+stats = [50, 30, 40]
+pos = [37, 12]
+ai = "defensive"
+commander = false
+tag = "person_295"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 29
+stats = [50, 30, 40]
+pos = [38, 13]
+ai = "defensive"
+commander = false
+tag = "person_296"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 27
+stats = [40, 30, 50]
+pos = [32, 12]
+ai = "defensive"
+commander = false
+tag = "person_256"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 27
+stats = [40, 30, 50]
+pos = [34, 11]
+ai = "defensive"
+commander = false
+tag = "person_257"
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 27
+stats = [50, 10, 60]
+pos = [35, 12]
+ai = "defensive"
+commander = false
+tag = "person_336"
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 29
+stats = [10, 70, 10]
+pos = [38, 11]
+ai = "defensive"
+commander = false
+tag = "person_328"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_2"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "li_dian"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_3"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "li_dian"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "turn_start"
+turn = 10
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_4"
+
+[[events.actions]]
+type = "set_ai"
+target = "xiahou_dun"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_129"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "li_dian"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "yu_jin"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_128"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_295"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_296"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_275"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_276"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_277"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_278"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_279"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_256"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_257"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_336"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_328"
+ai = "aggressive"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_4_2"
+
+[[events.actions]]
+type = "spawn"
+group = "original_4"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_4_3"
+
+[[events.actions]]
+type = "set_stage"
+stage = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [26, 9]
+radius = 0
+to = [31, 12]
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_5"
+
+[[events.actions]]
+type = "set_ai"
+target = "xiahou_dun"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_129"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "yu_jin"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "li_dian"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_128"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_295"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_296"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_275"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_276"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_277"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_278"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_279"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_256"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_257"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_336"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_328"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f140"
+value = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+who = "xiahou_dun"
+pos = [17, 8]
+radius = 0
+to = [21, 10]
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f139"
+value = 1
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_6"
+
+[[events.actions]]
+type = "spawn"
+group = "original_6"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_6_2"
+
+[[events.actions]]
+type = "set_ai"
+target = "xiahou_dun"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_129"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "yu_jin"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "li_dian"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_128"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_295"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_296"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_275"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_276"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_277"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_278"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_279"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_256"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_257"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_328"
+ai = "hold"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_336"
+ai = "hold"
+
+[[events.actions]]
+type = "halve"
+side = "enemy"
+stat = "hp"
+
+[[events.actions]]
+type = "halve"
+side = "enemy"
+stat = "hp"
+
+[[events.actions]]
+type = "halve"
+side = "enemy"
+stat = "morale"
+
+[[events.actions]]
+type = "halve"
+side = "enemy"
+stat = "morale"
+
+[[events.actions]]
+type = "halve"
+side = "enemy"
+stat = "morale"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_6_3"
+
+[[events.actions]]
+type = "spawn"
+group = "original_4"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_6_4"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_6_5"
+
+[[events.actions]]
+type = "set_stage"
+stage = 1
+
+[[events]]
+once = true
+stage = 1
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "li_dian"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_8"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "li_dian"
+
+[[events]]
+once = true
+stage = 1
+
+[events.trigger]
+type = "turn_start"
+turn = 15
+side = "player"
+
+[[events.when]]
+flag = "orig_f139"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b2_9"
+
+[[events.actions]]
+type = "set_ai"
+target = "xiahou_dun"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_129"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "yu_jin"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "li_dian"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_128"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_295"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_296"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_275"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_276"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_277"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_278"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_279"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_256"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_257"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_328"
+ai = "defensive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_336"
+ai = "defensive"

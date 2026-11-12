@@ -1,0 +1,180 @@
+# c0_s0_b7: a battle of the original's chapters, made from the original battle (SNR0D.R3 scene 0 block 7) on the
+# original map hexz_01. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 3 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 40 at (13, 10) has no base-pack item
+# note: named by the setup but not in the army at this battle, so allies at their slot: gongsun_zan, tao_qian
+
+id = "c0_s0_b7"
+name = "虎牢關 전투"
+location = ""
+objective = "一、呂布敗退．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 100
+outro = "c0_s0_b7_outro"
+
+[map]
+use = "hexz_01"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 3
+required = ["guan_yu", "zhang_fei"]
+forbidden = ["gongsun_zan", "tao_qian"]
+slots = [[13, 21], [12, 20], [15, 21]]
+
+[[units]]
+side = "ally"
+officer = "gongsun_zan"
+pos = [14, 18]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "tao_qian"
+pos = [13, 18]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "lu_bu"
+class = "light_cavalry"
+level = 6
+pos = [6, 5]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+officer = "zhang_liao"
+class = "short_infantry"
+level = 3
+pos = [3, 7]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "hou_cheng"
+class = "light_cavalry"
+level = 3
+pos = [6, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "song_xian"
+class = "archer"
+level = 3
+pos = [10, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "wei_xu"
+class = "short_infantry"
+level = 2
+pos = [10, 11]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 1
+stats = [40, 50, 30]
+pos = [8, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 1
+stats = [40, 50, 30]
+pos = [5, 11]
+ai = "aggressive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c0_s0_b7_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "lu_bu"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c0_s0_b7_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c0_s0_b7_3_2"
+
+[[events.actions]]
+type = "retreat"
+target = "lu_bu"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c0_s0_b7_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 18
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c0_s0_b7_4"
+
+[[events.actions]]
+type = "set_ai"
+target = "lu_bu"
+ai = "aggressive"
+
+[[treasures]]
+pos = [14, 11]
+item = "bean"
+gold = 0

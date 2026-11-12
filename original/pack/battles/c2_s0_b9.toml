@@ -1,0 +1,201 @@
+# c2_s0_b9: a battle of the original's chapters, made from the original battle (SNR2D.R3 scene 0 block 9) on the
+# original map hexz_17. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 18 at (15, 22) has no base-pack item
+# note: treasure item 35 at (4, 19) has no base-pack item
+
+id = "c2_s0_b9"
+name = "古城 전투"
+location = ""
+objective = "一、交戰？？？．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+reward_gold = 0
+outro = "c2_s0_b9_outro"
+
+[map]
+use = "hexz_17"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = []
+forbidden = []
+slots = [[12, 11], [11, 12], [13, 12], [12, 13], [13, 13], [11, 10], [12, 10]]
+
+[[units]]
+side = "enemy"
+name = "？？？"
+class = "heavy_cavalry"
+level = 23
+stats = [99, 42, 83]
+pos = [10, 23]
+ai = "hold"
+commander = true
+tag = "person_373"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 19
+stats = [50, 40, 30]
+pos = [9, 21]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 18
+stats = [50, 40, 30]
+pos = [17, 9]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 18
+stats = [50, 40, 30]
+pos = [18, 10]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 16
+stats = [50, 40, 30]
+pos = [16, 16]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 15
+stats = [50, 40, 30]
+pos = [15, 17]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 15
+stats = [50, 40, 30]
+pos = [3, 8]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 16
+stats = [50, 40, 30]
+pos = [3, 15]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 20
+stats = [70, 10, 40]
+pos = [13, 3]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 19
+stats = [70, 10, 40]
+pos = [3, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 18
+stats = [50, 10, 60]
+pos = [9, 22]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 18
+stats = [50, 10, 60]
+pos = [14, 3]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 17
+stats = [50, 10, 60]
+pos = [4, 7]
+ai = "aggressive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b9_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+b = "person_373"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b9_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c2_s0_b9_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[treasures]]
+pos = [8, 23]
+item = "fine_wine"
+gold = 0

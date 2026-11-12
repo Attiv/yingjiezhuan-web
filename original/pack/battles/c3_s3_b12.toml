@@ -1,0 +1,400 @@
+# c3_s3_b12: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 3 block 12) on the
+# original map hexz_41. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 3: the duel of 曹彰 (211) and 吳蘭 (200) is left out (not both officers of the pack)
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: not converted: the original's victory and defeat scripts
+
+id = "c3_s3_b12"
+name = "漢水 전투"
+location = ""
+objective = "一、曹洪的敗退．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+reward_gold = 0
+outro = "c3_s3_b12_outro"
+
+[map]
+use = "hexz_41"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 12
+required = []
+forbidden = []
+slots = [[14, 22], [2, 16], [16, 19], [2, 13], [14, 20], [3, 14], [13, 21], [2, 15], [15, 21], [1, 16], [16, 21], [3, 17], [13, 23]]
+
+[[units]]
+side = "enemy"
+officer = "cao_hong"
+class = "chariot"
+level = 54
+pos = [28, 1]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 47
+stats = [40, 30, 50]
+pos = [10, 9]
+ai = "advance"
+ai_pos = [8, 8]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 43
+stats = [40, 30, 50]
+pos = [23, 13]
+ai = "advance"
+ai_pos = [21, 15]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 43
+stats = [40, 30, 50]
+pos = [21, 11]
+ai = "advance"
+ai_pos = [21, 14]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 46
+stats = [40, 30, 50]
+pos = [26, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 42
+stats = [40, 30, 50]
+pos = [28, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 50
+stats = [50, 30, 40]
+pos = [11, 9]
+ai = "advance"
+ai_pos = [9, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 47
+stats = [50, 30, 40]
+pos = [23, 12]
+ai = "advance"
+ai_pos = [22, 14]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 47
+stats = [50, 30, 40]
+pos = [25, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 50
+stats = [50, 30, 40]
+pos = [16, 1]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 47
+stats = [40, 50, 30]
+pos = [9, 8]
+ai = "advance"
+ai_pos = [8, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 43
+stats = [40, 50, 30]
+pos = [24, 14]
+ai = "advance"
+ai_pos = [20, 15]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 43
+stats = [40, 50, 30]
+pos = [21, 12]
+ai = "advance"
+ai_pos = [20, 14]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 46
+stats = [40, 50, 30]
+pos = [24, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 46
+stats = [50, 30, 40]
+pos = [15, 0]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 46
+stats = [50, 30, 40]
+pos = [23, 1]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 50
+stats = [40, 50, 30]
+pos = [12, 11]
+ai = "advance"
+ai_pos = [9, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 50
+stats = [40, 50, 30]
+pos = [17, 13]
+ai = "advance"
+ai_pos = [19, 13]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "運輸隊"
+class = "supply"
+level = 43
+stats = [10, 70, 10]
+pos = [13, 10]
+ai = "advance"
+ai_pos = [10, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "運輸隊"
+class = "supply"
+level = 42
+stats = [10, 70, 10]
+pos = [16, 14]
+ai = "advance"
+ai_pos = [19, 14]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "曹彰"
+class = "guard_cavalry"
+level = 53
+stats = [81, 42, 93]
+pos = [29, 1]
+ai = "defensive"
+commander = false
+tag = "person_211"
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 46
+stats = [40, 30, 50]
+pos = [26, 2]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 45
+stats = [40, 50, 30]
+pos = [27, 4]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 50
+stats = [50, 30, 40]
+pos = [29, 4]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 47
+stats = [50, 30, 40]
+pos = [29, 3]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 50
+stats = [50, 30, 40]
+pos = [28, 2]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 47
+stats = [50, 30, 40]
+pos = [27, 1]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 47
+stats = [50, 30, 40]
+pos = [24, 2]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b12_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "wu_lan"
+b = "person_211"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b12_3"
+
+[[events.actions]]
+type = "retreat"
+target = "wu_lan"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b12_3_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 10
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b12_6"
+
+[[events.actions]]
+type = "spawn"
+group = "original_6"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b12_6_2"
+
+[[treasures]]
+pos = [14, 0]
+item = "tea"
+gold = 0
+
+[[treasures]]
+pos = [23, 14]
+gold = 1000

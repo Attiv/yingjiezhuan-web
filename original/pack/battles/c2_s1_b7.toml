@@ -1,0 +1,398 @@
+# c2_s1_b7: a battle of the original's chapters, made from the original battle (SNR2D.R3 scene 1 block 7) on the
+# original map hexz_20. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 10 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 3: the duel of 張飛 (2) and 陳孫 (118) is left out (not both officers of the pack)
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 4: the duel of 趙雲 (53) and 張武 (117) is left out (not both officers of the pack)
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: not converted: the original's victory and defeat scripts
+# note: 2 unit(s) brought in only by records that are not converted are left out
+# note: treasure item 26 at (28, 7) has no base-pack item
+
+id = "c2_s1_b7"
+name = "江夏 전투"
+location = ""
+objective = "一、殲滅張武．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+reward_gold = 800
+outro = "c2_s1_b7_outro"
+
+[map]
+use = "hexz_20"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 10
+required = []
+forbidden = []
+slots = [[1, 3], [2, 3], [1, 4], [2, 5], [3, 5], [3, 3], [2, 2], [1, 1], [0, 2], [0, 6]]
+
+[[units]]
+side = "enemy"
+name = "張武"
+class = "brigand"
+level = 27
+stats = [64, 18, 52]
+pos = [30, 18]
+ai = "hold"
+commander = true
+tag = "person_117"
+
+[[units]]
+side = "enemy"
+name = "陳孫"
+class = "brigand"
+level = 24
+stats = [65, 14, 51]
+pos = [29, 19]
+ai = "defensive"
+commander = false
+tag = "person_118"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 22
+stats = [50, 40, 30]
+pos = [29, 17]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 21
+stats = [50, 40, 30]
+pos = [26, 10]
+ai = "advance"
+ai_pos = [11, 4]
+commander = false
+tag = "person_311"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 21
+stats = [50, 40, 30]
+pos = [27, 14]
+ai = "advance"
+ai_pos = [11, 4]
+commander = false
+tag = "person_312"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 20
+stats = [50, 40, 30]
+pos = [21, 17]
+ai = "advance"
+ai_pos = [9, 13]
+commander = false
+tag = "person_313"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 20
+stats = [50, 40, 30]
+pos = [23, 16]
+ai = "advance"
+ai_pos = [9, 13]
+commander = false
+tag = "person_314"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 23
+stats = [40, 50, 30]
+pos = [30, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 23
+stats = [40, 50, 30]
+pos = [28, 11]
+ai = "advance"
+ai_pos = [11, 4]
+commander = false
+tag = "person_275"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 21
+stats = [50, 30, 40]
+pos = [27, 12]
+ai = "advance"
+ai_pos = [11, 4]
+commander = false
+tag = "person_292"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 21
+stats = [50, 30, 40]
+pos = [23, 17]
+ai = "advance"
+ai_pos = [9, 13]
+commander = false
+tag = "person_293"
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 23
+stats = [70, 10, 40]
+pos = [22, 16]
+ai = "advance"
+ai_pos = [9, 13]
+commander = false
+tag = "person_332"
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 23
+stats = [70, 10, 40]
+pos = [27, 11]
+ai = "advance"
+ai_pos = [11, 4]
+commander = false
+tag = "person_333"
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 23
+stats = [50, 10, 60]
+pos = [27, 9]
+ai = "advance"
+ai_pos = [11, 4]
+commander = false
+tag = "person_336"
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 23
+stats = [50, 10, 60]
+pos = [20, 18]
+ai = "advance"
+ai_pos = [9, 13]
+commander = false
+tag = "person_337"
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 22
+stats = [60, 10, 50]
+pos = [24, 16]
+ai = "advance"
+ai_pos = [9, 13]
+commander = false
+tag = "person_340"
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 20
+stats = [60, 10, 50]
+pos = [25, 17]
+ai = "advance"
+ai_pos = [9, 13]
+commander = false
+tag = "person_341"
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 21
+stats = [60, 10, 50]
+pos = [26, 13]
+ai = "advance"
+ai_pos = [11, 4]
+commander = false
+tag = "person_342"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s1_b7_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "person_118"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s1_b7_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "person_118"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhao_yun"
+b = "person_117"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s1_b7_4"
+
+[[events.actions]]
+type = "give_item"
+item = "dilu"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s1_b7_4_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c2_s1_b7_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 4
+side = "player"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_311"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_312"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_313"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_314"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_275"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_332"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_333"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_336"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_337"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_340"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_341"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_342"
+ai = "aggressive"
+
+[[treasures]]
+pos = [24, 18]
+item = "war_cart"
+gold = 0
+
+[[treasures]]
+pos = [30, 15]
+gold = 400

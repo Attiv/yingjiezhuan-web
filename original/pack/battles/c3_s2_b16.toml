@@ -1,0 +1,472 @@
+# c3_s2_b16: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 2 block 16) on the
+# original map hexz_34. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 9 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 22 at (8, 4) has no base-pack item
+
+id = "c3_s2_b16"
+name = "成都 전투"
+location = ""
+objective = "一、劉璋投降．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+reward_gold = 1200
+outro = "c3_s2_b16_outro"
+
+[map]
+use = "hexz_34"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 9
+required = []
+forbidden = []
+slots = [[26, 1], [24, 1], [25, 0], [25, 2], [25, 3], [26, 3], [27, 0], [27, 2], [27, 4]]
+
+[[units]]
+side = "enemy"
+name = "劉璋"
+class = "chariot"
+level = 44
+stats = [52, 51, 47]
+pos = [1, 10]
+ai = "hold"
+commander = true
+tag = "person_188"
+
+[[units]]
+side = "enemy"
+officer = "huang_quan"
+class = "chariot"
+level = 38
+pos = [11, 5]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "chen_shi"
+class = "martial"
+level = 36
+pos = [8, 16]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "orig_p34"
+class = "tribe"
+level = 37
+pos = [16, 13]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "wu_ban"
+class = "catapult"
+level = 36
+pos = [18, 5]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "huo_jun"
+class = "beast"
+level = 37
+pos = [8, 15]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "meng_da"
+class = "chariot"
+level = 37
+pos = [11, 6]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 36
+stats = [40, 50, 30]
+pos = [2, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 36
+stats = [40, 50, 30]
+pos = [10, 4]
+ai = "advance"
+ai_pos = [11, 4]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 36
+stats = [40, 50, 30]
+pos = [16, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 37
+stats = [50, 30, 40]
+pos = [10, 6]
+ai = "advance"
+ai_pos = [10, 5]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 37
+stats = [50, 30, 40]
+pos = [15, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 37
+stats = [50, 30, 40]
+pos = [7, 14]
+ai = "advance"
+ai_pos = [8, 14]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 36
+stats = [50, 30, 40]
+pos = [9, 5]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 36
+stats = [50, 30, 40]
+pos = [7, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 34
+stats = [70, 10, 40]
+pos = [3, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 34
+stats = [70, 10, 40]
+pos = [19, 9]
+ai = "advance"
+ai_pos = [19, 7]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 35
+stats = [40, 50, 30]
+pos = [6, 13]
+ai = "advance"
+ai_pos = [7, 15]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 36
+stats = [60, 10, 50]
+pos = [3, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 35
+stats = [60, 10, 50]
+pos = [17, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 35
+stats = [60, 10, 50]
+pos = [21, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 36
+stats = [60, 10, 50]
+pos = [16, 14]
+ai = "defensive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b16_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "meng_da"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b16_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_meng_da"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "meng_da"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f44"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "liu_bei"
+amount = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "huang_quan"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b16_4"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_huang_quan"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "huang_quan"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f45"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "liu_bei"
+amount = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "huo_jun"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b16_5"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_huo_jun"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "huo_jun"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f46"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "liu_bei"
+amount = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "wu_ban"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b16_6"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_wu_ban"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "wu_ban"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f47"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "liu_bei"
+amount = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "chen_shi"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b16_7"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_chen_shi"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "chen_shi"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f48"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "liu_bei"
+amount = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "orig_p34"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b16_8"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_orig_p34"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "orig_p34"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f49"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "liu_bei"
+amount = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "person_188"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s2_b16_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[treasures]]
+pos = [6, 17]
+item = "war_cart"
+gold = 0

@@ -1,0 +1,311 @@
+# c1_s0_b13: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 0 block 13) on the
+# original map hexz_04. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: not converted: the original's victory and defeat scripts
+
+id = "c1_s0_b13"
+name = "巨鹿 전투"
+location = ""
+objective = "一﹑張郃敗退． / 二﹑劉備到達西面鹿砦．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 200
+outro = "c1_s0_b13_outro"
+
+[map]
+use = "hexz_04"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = []
+forbidden = ["geng_wu", "guan_chun"]
+slots = [[2, 2], [4, 3], [3, 1], [1, 2], [3, 3], [10, 4], [9, 5]]
+
+[[units]]
+side = "ally"
+officer = "guan_chun"
+pos = [17, 13]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "ally"
+officer = "geng_wu"
+pos = [17, 12]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+officer = "zhang_he"
+class = "light_cavalry"
+level = 10
+pos = [5, 17]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+officer = "yan_liang"
+class = "light_cavalry"
+level = 7
+pos = [6, 15]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "gao_lan"
+class = "archer"
+level = 7
+pos = [4, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "shen_pei"
+class = "short_infantry"
+level = 6
+pos = [12, 6]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "feng_ji"
+class = "short_infantry"
+level = 7
+pos = [11, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 5
+stats = [40, 30, 50]
+pos = [10, 6]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 5
+stats = [40, 30, 50]
+pos = [7, 16]
+ai = "defensive"
+commander = false
+tag = "person_257"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 4
+stats = [40, 50, 30]
+pos = [9, 17]
+ai = "defensive"
+commander = false
+tag = "person_274"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 3
+stats = [50, 30, 40]
+pos = [10, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 4
+stats = [50, 10, 60]
+pos = [13, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "運輸隊"
+class = "supply"
+level = 4
+stats = [10, 70, 10]
+pos = [4, 16]
+ai = "defensive"
+commander = false
+tag = "person_348"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 3
+stats = [50, 40, 30]
+pos = [2, 0]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 3
+stats = [50, 40, 30]
+pos = [1, 1]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 3
+stats = [50, 40, 30]
+pos = [0, 2]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[victory]]
+type = "defeat_commander"
+
+[[victory]]
+type = "reach"
+who = "liu_bei"
+pos = [0, 10]
+radius = 0
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b13_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "yan_liang"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b13_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "yan_liang"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 3
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b13_4"
+
+[[events.actions]]
+type = "spawn"
+group = "original_4"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b13_4_2"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b13_4_3"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+who = "liu_bei"
+pos = [4, 8]
+radius = 0
+to = [10, 13]
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b13_6"
+
+[[events.actions]]
+type = "set_ai"
+target = "zhang_he"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "yan_liang"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "gao_lan"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_257"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_348"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f162"
+value = 1
+
+[[treasures]]
+pos = [5, 8]
+item = "wheat"
+gold = 0

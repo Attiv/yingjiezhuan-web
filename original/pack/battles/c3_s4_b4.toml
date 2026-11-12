@@ -1,0 +1,329 @@
+# c3_s4_b4: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 4 block 4) on the
+# original map hexz_43. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 9 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 3: the duel of 張苞 (43) and 謝旌 (109) is left out (not both officers of the pack)
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 4: the duel of 關興 (29) and 李異 (108) is left out (not both officers of the pack)
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: not converted: the original's victory and defeat scripts
+
+id = "c3_s4_b4"
+name = "西陵 전투"
+location = ""
+objective = "一、孫桓敗退．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+treasures = []
+reward_gold = 1400
+outro = "c3_s4_b4_outro"
+
+[map]
+use = "hexz_43"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 9
+required = []
+forbidden = ["guan_xing", "liu_shan", "zhang_bao"]
+slots = [[11, 4], [12, 3], [10, 5], [11, 5], [12, 5], [9, 4], [13, 4], [14, 4], [9, 6]]
+
+[[units]]
+side = "ally"
+officer = "liu_shan"
+pos = [5, 4]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "guan_xing"
+pos = [6, 3]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "zhang_bao"
+pos = [7, 2]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "孫桓"
+class = "chariot"
+level = 54
+stats = [65, 72, 70]
+pos = [18, 19]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "朱然"
+class = "chariot"
+level = 50
+stats = [70, 62, 70]
+pos = [14, 11]
+ai = "advance"
+ai_pos = [21, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "李異"
+class = "catapult"
+level = 49
+stats = [79, 63, 57]
+pos = [22, 7]
+ai = "advance"
+ai_pos = [22, 4]
+commander = false
+tag = "person_108"
+
+[[units]]
+side = "enemy"
+name = "謝旌"
+class = "catapult"
+level = 49
+stats = [69, 63, 74]
+pos = [18, 17]
+ai = "defensive"
+commander = false
+tag = "person_109"
+
+[[units]]
+side = "enemy"
+name = "陸績"
+class = "catapult"
+level = 49
+stats = [32, 68, 27]
+pos = [17, 19]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "嚴畯"
+class = "chariot"
+level = 50
+stats = [25, 71, 24]
+pos = [14, 17]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "潘璋"
+class = "chariot"
+level = 49
+stats = [75, 39, 72]
+pos = [12, 16]
+ai = "advance"
+ai_pos = [14, 11]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 45
+stats = [40, 30, 50]
+pos = [18, 10]
+ai = "advance"
+ai_pos = [22, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 45
+stats = [40, 50, 30]
+pos = [21, 9]
+ai = "advance"
+ai_pos = [23, 2]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 48
+stats = [50, 30, 40]
+pos = [20, 10]
+ai = "advance"
+ai_pos = [24, 4]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 48
+stats = [50, 30, 40]
+pos = [19, 9]
+ai = "advance"
+ai_pos = [24, 3]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 48
+stats = [50, 30, 40]
+pos = [15, 12]
+ai = "advance"
+ai_pos = [21, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 47
+stats = [50, 30, 40]
+pos = [13, 17]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 47
+stats = [50, 30, 40]
+pos = [16, 18]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "outlaw"
+level = 45
+stats = [50, 40, 30]
+pos = [13, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "outlaw"
+level = 44
+stats = [50, 40, 30]
+pos = [12, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 45
+stats = [50, 10, 60]
+pos = [22, 10]
+ai = "advance"
+ai_pos = [23, 4]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 46
+stats = [70, 10, 40]
+pos = [19, 18]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 47
+stats = [50, 30, 40]
+pos = [14, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "運輸隊"
+class = "supply"
+level = 43
+stats = [10, 70, 10]
+pos = [14, 18]
+ai = "defensive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s4_b4_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_bao"
+b = "person_109"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s4_b4_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_bao"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "person_109"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "guan_xing"
+b = "person_108"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s4_b4_4"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_xing"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "person_108"

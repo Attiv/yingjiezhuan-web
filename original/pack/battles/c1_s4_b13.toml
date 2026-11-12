@@ -1,0 +1,183 @@
+# c1_s4_b13: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 4 block 13) on the
+# original map hexz_15. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 11 at (18, 7) has no base-pack item
+
+id = "c1_s4_b13"
+name = "廣陵 전투"
+location = ""
+objective = "一、袁術的潰敗．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 600
+outro = "c1_s4_b13_outro"
+
+[map]
+use = "hexz_15"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = []
+forbidden = []
+slots = [[4, 2], [6, 2], [5, 3], [5, 5], [4, 4], [3, 1], [3, 3]]
+
+[[units]]
+side = "enemy"
+officer = "yuan_shu"
+class = "long_infantry"
+level = 20
+pos = [17, 15]
+ai = "aggressive"
+commander = true
+
+[[units]]
+side = "enemy"
+officer = "yuan_yin"
+class = "crossbow"
+level = 16
+pos = [16, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "ji_ling"
+class = "heavy_cavalry"
+level = 17
+pos = [17, 11]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "yue_jiu"
+class = "long_infantry"
+level = 17
+pos = [18, 12]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "chen_ji"
+class = "long_infantry"
+level = 16
+pos = [18, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "li_feng"
+class = "crossbow"
+level = 16
+pos = [15, 15]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 14
+stats = [40, 30, 50]
+pos = [18, 13]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 13
+stats = [40, 30, 50]
+pos = [18, 10]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 14
+stats = [40, 50, 30]
+pos = [16, 12]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 13
+stats = [40, 50, 30]
+pos = [15, 12]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 13
+stats = [10, 70, 10]
+pos = [17, 13]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 13
+stats = [10, 70, 10]
+pos = [19, 12]
+ai = "aggressive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s4_b13_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "ji_ling"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s4_b13_3"
+
+[[events.actions]]
+type = "give_item"
+item = "three_point_blade"
+
+[[events.actions]]
+type = "retreat"
+target = "ji_ling"
+
+[[treasures]]
+pos = [13, 3]
+gold = 400

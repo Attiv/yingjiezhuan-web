@@ -1,0 +1,571 @@
+# c2_s3_b3: a battle of the original's chapters, made from the original battle (SNR2D.R3 scene 3 block 3) on the
+# original map hexz_23. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 8 slots
+# note: 6 unit(s) the original keeps off the map and brings in only from other events are left out
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: 2 deploy slot(s) on terrain foot units cannot enter or under a unit left out
+
+id = "c2_s3_b3"
+name = "新野 전투"
+location = ""
+objective = "一、夏侯惇敗退． / 二、諸葛亮奪取糧倉．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+treasures = []
+reward_gold = 900
+outro = "c2_s3_b3_outro"
+
+[map]
+use = "hexz_23"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 6
+required = ["zhuge_liang", "zhao_yun"]
+forbidden = []
+slots = [[19, 9], [2, 9], [1, 10], [1, 11], [2, 11], [1, 12]]
+
+[[units]]
+side = "enemy"
+officer = "xiahou_dun"
+class = "guard_cavalry"
+level = 32
+pos = [27, 5]
+ai = "advance"
+ai_pos = [7, 10]
+commander = true
+
+[[units]]
+side = "enemy"
+name = "韓浩"
+class = "long_infantry"
+level = 29
+stats = [62, 45, 59]
+pos = [24, 6]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_129"
+
+[[units]]
+side = "enemy"
+officer = "yu_jin"
+class = "long_infantry"
+level = 28
+pos = [24, 9]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "li_dian"
+class = "long_infantry"
+level = 28
+pos = [25, 1]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "夏侯蘭"
+class = "martial"
+level = 29
+stats = [72, 53, 70]
+pos = [23, 9]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_128"
+
+[[units]]
+side = "enemy"
+officer = "zhang_liao"
+class = "long_infantry"
+level = 29
+pos = [25, 8]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "zhang_he"
+class = "heavy_cavalry"
+level = 29
+pos = [28, 5]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "運輸隊"
+class = "supply"
+level = 25
+stats = [10, 70, 10]
+pos = [28, 4]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_348"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 24
+stats = [40, 30, 50]
+pos = [23, 3]
+ai = "hold"
+commander = false
+tag = "person_256"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 25
+stats = [40, 30, 50]
+pos = [26, 6]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_257"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 24
+stats = [50, 30, 40]
+pos = [27, 9]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_292"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 25
+stats = [50, 30, 40]
+pos = [25, 5]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_293"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 25
+stats = [50, 30, 40]
+pos = [28, 7]
+ai = "hold"
+commander = false
+tag = "person_294"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 24
+stats = [40, 50, 30]
+pos = [25, 3]
+ai = "hold"
+commander = false
+tag = "person_274"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 25
+stats = [40, 50, 30]
+pos = [26, 10]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_275"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 25
+stats = [40, 50, 30]
+pos = [28, 8]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_276"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 25
+stats = [40, 50, 30]
+pos = [27, 7]
+ai = "hold"
+commander = false
+tag = "person_277"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 24
+stats = [40, 50, 30]
+pos = [23, 4]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_278"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 25
+stats = [40, 50, 30]
+pos = [24, 10]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_279"
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 25
+stats = [10, 70, 10]
+pos = [29, 6]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_328"
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 24
+stats = [10, 70, 10]
+pos = [25, 9]
+ai = "advance"
+ai_pos = [7, 10]
+commander = false
+tag = "person_329"
+
+[[units]]
+side = "enemy"
+name = "徐晃"
+class = "heavy_cavalry"
+level = 29
+stats = [91, 49, 83]
+pos = [1, 5]
+ai = "aggressive"
+commander = false
+group = "original_5"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 25
+stats = [40, 50, 30]
+pos = [0, 4]
+ai = "aggressive"
+commander = false
+group = "original_5"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 25
+stats = [40, 50, 30]
+pos = [0, 5]
+ai = "aggressive"
+commander = false
+group = "original_5"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 25
+stats = [40, 50, 30]
+pos = [0, 6]
+ai = "aggressive"
+commander = false
+group = "original_5"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b3_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "yu_jin"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b3_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "yu_jin"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 5
+side = "player"
+
+[[events.actions]]
+type = "set_ai"
+target = "xiahou_dun"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_129"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "yu_jin"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_128"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "zhang_liao"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "zhang_he"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_257"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_275"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_276"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_278"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_279"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_348"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_328"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_329"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 8
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b3_5"
+
+[[events.actions]]
+type = "spawn"
+group = "original_5"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b3_5_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 30
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b3_6"
+
+[[events.actions]]
+type = "retreat"
+target = "xiahou_dun"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c2_s3_b3_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+who = "zhuge_liang"
+pos = [22, 0]
+radius = 0
+to = [31, 6]
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b3_7"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_277"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_256"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "li_dian"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f75"
+value = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+who = "zhuge_liang"
+pos = [29, 0]
+radius = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b3_8"
+
+[[events.actions]]
+type = "retreat"
+target = "xiahou_dun"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f65"
+value = 1
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c2_s3_b3_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"

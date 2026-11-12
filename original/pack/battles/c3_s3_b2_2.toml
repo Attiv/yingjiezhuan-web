@@ -1,0 +1,227 @@
+# c3_s3_b2_2: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 3 block 2) on the
+# original map hexz_36. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 55 at (15, 11) has no base-pack item
+# note: treasure item 42 at (3, 6) has no base-pack item
+
+id = "c3_s3_b2_2"
+name = "瓦口關Ⅱ 전투 2"
+location = ""
+objective = "一、張郃的撤退"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+treasures = []
+reward_gold = 1300
+outro = "c3_s3_b2_2_outro"
+
+[map]
+use = "hexz_36"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 12
+required = []
+forbidden = []
+slots = [[23, 17], [23, 16], [21, 16], [21, 18], [24, 17], [24, 18], [20, 17], [20, 19], [22, 17], [25, 15], [25, 17], [26, 16]]
+
+[[units]]
+side = "enemy"
+officer = "zhang_he"
+class = "guard_cavalry"
+level = 48
+pos = [10, 2]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "韓浩"
+class = "chariot"
+level = 42
+stats = [62, 45, 59]
+pos = [8, 4]
+ai = "advance"
+ai_pos = [5, 8]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "夏侯尚"
+class = "catapult"
+level = 42
+stats = [70, 60, 68]
+pos = [12, 4]
+ai = "advance"
+ai_pos = [12, 11]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 41
+stats = [40, 30, 50]
+pos = [9, 2]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 41
+stats = [40, 30, 50]
+pos = [11, 2]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 40
+stats = [40, 30, 50]
+pos = [8, 5]
+ai = "advance"
+ai_pos = [4, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 38
+stats = [40, 30, 50]
+pos = [8, 3]
+ai = "advance"
+ai_pos = [3, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 40
+stats = [40, 30, 50]
+pos = [9, 4]
+ai = "advance"
+ai_pos = [2, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 38
+stats = [40, 30, 50]
+pos = [12, 5]
+ai = "advance"
+ai_pos = [11, 12]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 39
+stats = [40, 30, 50]
+pos = [11, 4]
+ai = "advance"
+ai_pos = [12, 12]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 39
+stats = [40, 30, 50]
+pos = [12, 3]
+ai = "advance"
+ai_pos = [13, 12]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 41
+stats = [50, 10, 60]
+pos = [10, 3]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 40
+stats = [50, 10, 60]
+pos = [7, 4]
+ai = "advance"
+ai_pos = [5, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 41
+stats = [50, 10, 60]
+pos = [13, 4]
+ai = "advance"
+ai_pos = [12, 13]
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b2_2_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "lei_tong"
+b = "zhang_he"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b2_2_3"
+
+[[events.actions]]
+type = "retreat"
+target = "lei_tong"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b2_2_3_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 7
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b2_2_4"

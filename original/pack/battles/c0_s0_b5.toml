@@ -1,0 +1,167 @@
+# c0_s0_b5: a battle of the original's chapters, made from the original battle (SNR0D.R3 scene 0 block 5) on the
+# original map hexz_00. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 3 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: named by the setup but not in the army at this battle, so allies at their slot: gongsun_zan, tao_qian
+
+id = "c0_s0_b5"
+name = "汜水關 전투"
+location = ""
+objective = "一、殲滅華雄．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 0
+outro = "c0_s0_b5_outro"
+
+[map]
+use = "hexz_00"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 3
+required = ["guan_yu", "zhang_fei"]
+forbidden = ["gongsun_zan", "tao_qian"]
+slots = [[20, 10], [20, 9], [22, 9]]
+
+[[units]]
+side = "ally"
+officer = "gongsun_zan"
+pos = [16, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "tao_qian"
+pos = [16, 6]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "hua_xiong"
+class = "light_cavalry"
+level = 5
+pos = [3, 9]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+officer = "li_su"
+class = "archer"
+level = 2
+pos = [5, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "hu_zhen"
+class = "short_infantry"
+level = 2
+pos = [4, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "zhao_cen"
+class = "short_infantry"
+level = 2
+pos = [6, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 1
+stats = [40, 30, 50]
+pos = [11, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 1
+stats = [40, 30, 50]
+pos = [11, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 1
+stats = [40, 30, 50]
+pos = [11, 12]
+ai = "defensive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c0_s0_b5_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "hua_xiong"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c0_s0_b5_5"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "hua_xiong"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c0_s0_b5_5_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c0_s0_b5_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[treasures]]
+pos = [6, 7]
+gold = 100
+
+[[treasures]]
+pos = [12, 6]
+item = "bean"
+gold = 0

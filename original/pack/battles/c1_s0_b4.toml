@@ -1,0 +1,133 @@
+# c1_s0_b4: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 0 block 4) on the
+# original map hexz_02. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 4 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+
+id = "c1_s0_b4"
+name = "廣川 전투"
+location = ""
+objective = "一、逢紀的潰敗．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+treasures = []
+reward_gold = 0
+
+[map]
+use = "hexz_02"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 4
+required = []
+forbidden = []
+slots = [[18, 0], [17, 0], [19, 0], [19, 1]]
+
+[[units]]
+side = "enemy"
+officer = "feng_ji"
+class = "short_infantry"
+level = 6
+pos = [0, 2]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 4
+stats = [40, 30, 50]
+pos = [4, 6]
+ai = "advance"
+ai_pos = [7, 6]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 4
+stats = [40, 30, 50]
+pos = [7, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 3
+stats = [40, 50, 30]
+pos = [1, 3]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 1
+stats = [50, 30, 40]
+pos = [9, 8]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 1
+stats = [50, 30, 40]
+pos = [10, 8]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 3
+stats = [50, 40, 30]
+pos = [1, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 2
+stats = [50, 40, 30]
+pos = [6, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 2
+stats = [50, 40, 30]
+pos = [4, 4]
+ai = "aggressive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b4_2"

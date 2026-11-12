@@ -1,0 +1,227 @@
+# c1_s0_b11: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 0 block 11) on the
+# original map hexz_05. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 5 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: named by the setup but not in the army at this battle, so allies at their slot: yan_gang
+
+id = "c1_s0_b11"
+name = "清河 전투"
+location = ""
+objective = "一、殲滅麴義．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 200
+outro = "c1_s0_b11_outro"
+
+[map]
+use = "hexz_05"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 5
+required = []
+forbidden = ["yan_gang"]
+slots = [[24, 11], [23, 11], [22, 10], [22, 12], [23, 12]]
+
+[[units]]
+side = "ally"
+officer = "yan_gang"
+pos = [3, 10]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "qu_yi"
+class = "light_cavalry"
+level = 9
+pos = [2, 10]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 5
+stats = [40, 30, 50]
+pos = [4, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 5
+stats = [40, 30, 50]
+pos = [10, 7]
+ai = "advance"
+ai_pos = [12, 7]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 4
+stats = [40, 30, 50]
+pos = [9, 9]
+ai = "advance"
+ai_pos = [12, 8]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 4
+stats = [10, 70, 10]
+pos = [8, 8]
+ai = "advance"
+ai_pos = [11, 8]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 2
+stats = [50, 30, 40]
+pos = [3, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 4
+stats = [40, 50, 30]
+pos = [2, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 4
+stats = [40, 50, 30]
+pos = [10, 10]
+ai = "advance"
+ai_pos = [11, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 3
+stats = [50, 40, 30]
+pos = [14, 0]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 3
+stats = [50, 40, 30]
+pos = [13, 1]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b11_2"
+
+[[events.actions]]
+type = "retreat"
+target = "yan_gang"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b11_2_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "qu_yi"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b11_3"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "qu_yi"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b11_3_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c1_s0_b11_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 7
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b11_4"
+
+[[events.actions]]
+type = "spawn"
+group = "original_4"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b11_4_2"
+
+[[treasures]]
+pos = [1, 9]
+item = "wine"
+gold = 0
+
+[[treasures]]
+pos = [12, 12]
+gold = 100

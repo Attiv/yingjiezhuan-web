@@ -1,0 +1,126 @@
+/* 原版 DOS/V 画面：640×480 舞台，金龙纹边框、深蓝斜纹面板、16 色像素图。
+   所有图像都取自自己持有的原版文件，详见 docs/assets.md。 */
+@font-face {
+  font-family: 'Pixel';
+  src: url('/assets/font/fusion-pixel-12px-zh_hans.woff2') format('woff2');
+  font-display: block;
+}
+:root {
+  --ink: #000000;
+  --blue: #2045aa;
+  --blue-hi: #8acfff;
+  --navy: #0c1430;
+  --gold: #ffcf55;
+  --white: #ffffff;
+  --orange: #ef6500;
+  --green: #00ba75;
+  --dim: #9a9a8a;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: #05070f; overflow: hidden; }
+body { font: 12px/16px 'Pixel', monospace; color: var(--white); }
+button { font: inherit; color: inherit; }
+img { image-rendering: pixelated; }
+
+#stage { position: absolute; width: 640px; height: 480px; transform-origin: 0 0; background: var(--navy); user-select: none; }
+/* 从原版战斗画面框裁出来的金龙纹，盖在整屏四周 */
+#stage::after {
+  content: ''; position: absolute; inset: 0; z-index: 40; pointer-events: none;
+  border: 8px solid transparent; border-image: url('/assets/ui/gold.png') 16 repeat;
+}
+#map { position: absolute; left: 0; top: 0; width: 416px; height: 384px; }
+#map canvas { display: block; image-rendering: pixelated; }
+
+/* 面板：原版深蓝斜纹 + 金龙纹边 */
+#side, #log, #menu, #talk, #clash, .card {
+  background: var(--navy) url('/assets/ui/blue.png') repeat;
+  border: 6px solid transparent;
+  border-image: url('/assets/ui/gold.png') 16 repeat;
+}
+#side { position: absolute; left: 416px; top: 0; width: 224px; height: 480px; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+#log { position: absolute; left: 0; top: 384px; width: 416px; height: 96px; padding: 5px 10px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+#log p { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--dim); }
+#log p:last-child { color: var(--white); }
+
+#turn { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 6px; border-bottom: 1px solid var(--blue); }
+#turn b { font-size: 20px; line-height: 22px; font-weight: normal; color: var(--gold); }
+#turn .phase-player { color: var(--blue-hi); }
+#turn .phase-ally { color: var(--gold); }
+#turn .phase-enemy { color: var(--orange); }
+
+#unit { flex: 1; min-height: 0; }
+#unit .head { display: flex; gap: 8px; }
+/* 原版头像正好 64×80 */
+.face { width: 64px; height: 80px; flex: none; background: #000 center / contain no-repeat; border: 1px solid var(--gold); image-rendering: pixelated; }
+#unit h2 { margin: 0 0 2px; font-size: 20px; line-height: 24px; font-weight: normal; }
+#unit dl { margin: 8px 0 0; display: grid; grid-template-columns: 44px 1fr; row-gap: 4px; align-items: center; }
+#unit dt { color: var(--dim); }
+#unit dd { margin: 0; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.bar { flex: 1; height: 8px; background: var(--ink); border: 1px solid var(--blue-hi); }
+.bar i { display: block; height: 100%; background: var(--gold); }
+.bar.hp i { background: var(--orange); }
+.bar.mp i { background: var(--blue-hi); }
+#unit .stats { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 0; }
+#unit .stats span { color: var(--dim); margin-right: 4px; }
+#unit .note { margin: 8px 0 0; color: var(--blue-hi); }
+#unit .empty { color: var(--blue-hi); margin: 0; }
+#tile { padding: 6px 0; border-top: 1px solid var(--blue); border-bottom: 1px solid var(--blue); display: flex; justify-content: space-between; }
+#tile span { color: var(--blue-hi); }
+
+/* 按钮：原版蓝底白字，选中反白 */
+.btn { display: block; width: 100%; padding: 3px 8px; text-align: left; background: var(--blue); border: 1px solid var(--blue-hi); cursor: pointer; }
+.btn:hover:not(:disabled), .btn:focus-visible { background: var(--gold); color: var(--ink); outline: none; }
+.btn:disabled { color: #5a5a6a; border-color: #333a55; cursor: default; }
+#sys { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+#sys .wide { grid-column: 1 / -1; }
+
+#menu { position: absolute; width: 76px; padding: 4px; display: grid; gap: 2px; z-index: 5; }
+#menu[hidden], #talk[hidden], #screen[hidden], #clash[hidden], #duel[hidden] { display: none; }
+#menu.list { width: 132px; }
+
+#talk { position: absolute; left: 24px; top: 268px; width: 368px; min-height: 100px; padding: 8px; display: flex; gap: 10px; z-index: 6; cursor: pointer; }
+#talk h3 { margin: 0 0 4px; font-weight: normal; color: var(--gold); }
+#talk p { margin: 0; }
+#talk .ask { display: flex; gap: 6px; margin-top: 8px; }
+#talk .ask .btn { width: auto; }
+
+/* 对阵条：贴在战场顶部，左攻右守 */
+#clash { position: absolute; left: 8px; top: 8px; width: 400px; padding: 6px 8px; display: flex; align-items: center; gap: 8px; z-index: 6; }
+#clash .l, #clash .r { flex: 1; display: flex; gap: 8px; align-items: center; min-width: 0; }
+#clash .r { flex-direction: row-reverse; text-align: right; }
+#clash .face { width: 48px; height: 60px; }
+#clash .who { flex: 1; display: grid; gap: 3px; min-width: 0; }
+#clash b { font-weight: normal; }
+#clash .bar i { transition: width 0.35s ease-out; }
+#clash .r .bar i { margin-left: auto; }
+#clash em { font-style: normal; color: var(--gold); }
+.side-player { color: var(--blue-hi); }
+.side-ally { color: var(--gold); }
+.side-enemy { color: var(--orange); }
+
+/* 攻击时盖在战场上的原版战斗特写：天空/地面条带 + 双方 64×64 兵种大图 */
+#duel { position: absolute; left: 0; top: 88px; width: 416px; height: 160px; z-index: 4; overflow: hidden;
+  background: #000; border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); pointer-events: none; }
+#duel .scene { position: absolute; inset: 0; width: 416px; height: 160px; }
+#duel .fighter { position: absolute; bottom: 2px; width: 128px; height: 128px; object-fit: contain; }
+#duel .l { left: 34px; }
+#duel .r { right: 34px; transform: scaleX(-1); }
+
+/* 整屏：标题、战前说明、胜败 */
+#screen { position: absolute; inset: 0; z-index: 10; background: var(--navy); display: grid; place-items: center; }
+#screen.scroll { background: url('/assets/title.png') center / cover no-repeat; }
+#screen.scroll .card { background: rgba(12, 20, 48, 0.94); }
+#screen.veil { background: rgba(5, 7, 15, 0.86); }
+.card { width: 400px; padding: 20px 24px; }
+.card h1 { margin: 0; font-size: 36px; line-height: 44px; font-weight: normal; color: var(--gold); letter-spacing: 2px; }
+.card h1.lost { color: var(--orange); }
+.card .sub { margin: 6px 0 14px; color: var(--blue-hi); }
+.card p { margin: 0 0 8px; }
+.card ul { margin: 0 0 12px; padding-left: 16px; }
+.card .row { display: flex; gap: 8px; margin-top: 14px; }
+.card .row .btn { width: auto; padding: 4px 14px; }
+.card .credit { margin: 12px 0 0; color: var(--dim); }
+.card .seal { float: right; width: 44px; height: 44px; margin: 4px 0 0 12px; background: var(--orange); color: var(--white);
+  border: 1px solid var(--gold); display: grid; place-items: center; font-size: 11px; line-height: 14px; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

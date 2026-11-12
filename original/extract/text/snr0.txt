@@ -1,0 +1,871 @@
+# SNR0D.R3 + SNR0M.R3 (Big5)
+
+## scene 0 (message section at 0x2)
+
+### block 0 @0x0016
+
+record 0 run(0) group 0 args 000000000000 -> code 0x002a
+  002a  17 input_control value=1
+  002c  38 play_music song=2
+  002e  0e chapter_title key=0x0000
+             key │ 序章　群雄起兵討伐董卓
+        title_index │ 181
+  0031  0d title text=0x0017
+            text │ 序章　群雄起兵討伐董卓
+  0034  07 show_picture picture=3 variant=0
+  0037  08 narration text=0x002e
+            text │ 　時值東漢末年．
+                 │ 　東漢末年，反叛和暴亂接連不斷，漢室衰微已顯而易見．
+                 │ 　造成社會動亂的人是董卓．
+  003a  08 narration text=0x0093
+            text │ 　董卓控制朝廷，漠視皇帝，為所欲為，原來反對董卓的人，也因懼怕他手中的兵權而對他阿諛奉承．皇帝的權威已不復存在．
+  003d  30 set_objective text=0x0106
+            text │ 在汜水關與董卓的華雄軍交戰
+  0040  ff end
+
+### block 1 @0x0041
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0055
+  0055  2e reset_player_position target=1 x=0 y=0 dir=255
+  005b  09 load_map map=0x2000
+  005e  0a place_person person=382 x=25 y=6 dir=2
+          person │ 獻帝
+  0064  0a place_person person=3 x=16 y=11 dir=0
+          person │ 董卓
+  006a  0a place_person person=371 x=14 y=11 dir=0
+          person │ 少女  
+  0070  0a place_person person=370 x=16 y=12 dir=0
+          person │ 夫人
+  0076  0a place_person person=383 x=15 y=8 dir=1
+          person │ 董承
+  007c  0a place_person person=6 x=21 y=11 dir=3
+          person │ 李儒
+  0082  0a place_person person=21 x=12 y=10 dir=1
+          person │ 胡軫
+  0088  0a place_person person=20 x=18 y=13 dir=3
+          person │ 李肅
+  008e  0a place_person person=46 x=9 y=11 dir=1
+          person │ 李傕
+  0094  0a place_person person=47 x=15 y=14 dir=3
+          person │ 郭汜
+  009a  05 show_screen
+  009b  0b caption text=0x0123
+            text │ 陳留宮殿
+  009e  00 dialogue text=0x012c
+            text │ 董卓: 陛下，不要擔心，把所有朝政都交給臣．
+                 │ 獻帝: ……
+                 │ 董卓: 那麼，臣告辭了．
+  00a1  01 move_person person=3 x=5 y=16 dir=2
+          person │ 董卓
+  00a7  01 move_person person=371 x=5 y=15 dir=2
+          person │ 少女  
+  00ad  01 move_person person=370 x=7 y=16 dir=2
+          person │ 夫人
+  00b3  00 dialogue text=0x016f
+            text │ 董卓: 哼！皇帝現在只是個裝飾品，我才是一國之主，哈哈！
+  00b6  18 remove_person person=3
+          person │ 董卓
+  00b9  18 remove_person person=371
+          person │ 少女  
+  00bc  18 remove_person person=370
+          person │ 夫人
+  00bf  01 move_person person=6 x=20 y=9 dir=0
+          person │ 李儒
+  00c5  00 dialogue text=0x01a4
+            text │ 李儒: 陛下，為了您著想，請不要頂撞董卓．
+  00c8  01 move_person person=6 x=3 y=17 dir=2
+          person │ 李儒
+  00ce  18 remove_person person=6
+          person │ 李儒
+  00d1  01 move_person person=21 x=3 y=17 dir=2
+          person │ 胡軫
+  00d7  01 move_person person=20 x=3 y=17 dir=2
+          person │ 李肅
+  00dd  01 move_person person=46 x=3 y=17 dir=2
+          person │ 李傕
+  00e3  01 move_person person=47 x=3 y=17 dir=2
+          person │ 郭汜
+  00e9  18 remove_person person=21
+          person │ 胡軫
+  00ec  18 remove_person person=20
+          person │ 李肅
+  00ef  18 remove_person person=46
+          person │ 李傕
+  00f2  18 remove_person person=47
+          person │ 郭汜
+  00f5  2c redraw
+  00f6  00 dialogue text=0x01cb
+            text │ 獻帝: ……嗯，朕絕不饒恕董卓．可是他大軍在握，朕無力抗拒他，難道國家就沒人能討伐董卓，重振漢室聲威？
+  00f9  01 move_person person=383 x=22 y=6 dir=1
+          person │ 董承
+  00ff  00 dialogue text=0x022e
+            text │ 董承: 陛下，臣體諒陛下的心情，只是臣等力量不夠．
+  0102  ff end
+
+### block 2 @0x0103
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0117
+  0117  2e reset_player_position target=2 x=0 y=0 dir=255
+  011d  09 load_map map=0x200e
+  0120  0a place_person person=8 x=23 y=7 dir=2
+          person │ 曹操
+  0126  38 play_music song=12
+  0128  05 show_screen
+  0129  0b caption text=0x025d
+            text │ 陳留營帳
+  012c  08 narration text=0x0266
+            text │ 　宣誓忠於漢室的諸侯們對董卓的為所欲為深為不滿．
+                 │ 　因年輕有為而知名的曹操也不例外．
+                 │ 　曹操策劃謀殺董卓，但失敗了．他又向各地傳發討伐董卓的檄文，得到了熱烈的響應，不久，諸侯率兵從各地向陳留集結．
+  012f  0a place_person person=9 x=4 y=17 dir=0
+          person │ 袁紹
+  0135  0a place_person person=11 x=3 y=17 dir=0
+          person │ 袁術
+  013b  01 move_person person=9 x=17 y=9 dir=0
+          person │ 袁紹
+  0141  01 move_person person=11 x=19 y=10 dir=0
+          person │ 袁術
+  0147  00 dialogue text=0x032d
+            text │ 曹操: 袁紹，袁術，謝謝二位將軍響應檄文．
+                 │ 袁紹: 我早看不慣董卓的專橫，這次一定要討伐反賊董卓，重振漢室聲威．
+                 │ 袁術: 對，既然我們袁氏一家來了，就不會讓董卓好受，豈能容忍那老傢伙的專橫，讓他看看我們的厲害．
+  014a  01 move_person person=9 x=15 y=8 dir=1
+          person │ 袁紹
+  0150  01 move_person person=11 x=11 y=10 dir=1
+          person │ 袁術
+  0156  0a place_person person=15 x=4 y=17 dir=0
+          person │ 陶謙
+  015c  0a place_person person=7 x=3 y=17 dir=0
+          person │ 孔融
+  0162  01 move_person person=15 x=17 y=9 dir=0
+          person │ 陶謙
+  0168  01 move_person person=7 x=19 y=10 dir=0
+          person │ 孔融
+  016e  00 dialogue text=0x03ee
+            text │ 曹操: 噢，陶謙，孔融，歡迎你們．
+                 │ 陶謙: 身為漢臣，豈能容忍董卓，我從徐州急速趕來，請讓我加入聯軍．
+                 │ 孔融: 我從北海率軍趕來，也加入聯軍．
+  0171  01 move_person person=15 x=21 y=11 dir=3
+          person │ 陶謙
+  0177  01 move_person person=7 x=17 y=13 dir=3
+          person │ 孔融
+  017d  0a place_person person=12 x=3 y=17 dir=0
+          person │ 公孫瓚
+  0183  01 move_person person=12 x=18 y=10 dir=0
+          person │ 公孫瓚
+  0189  00 dialogue text=0x046b
+            text │ 曹操: 公孫瓚也來了，遠道而來，辛苦了．
+                 │ 公孫瓚: 哪裡哪裡，我要給你介紹一個人．
+                 │ 曹操: 噢，是誰呀？
+                 │ 公孫瓚: 是劉備，請進來．
+  018c  0a place_person person=0 x=3 y=17 dir=0
+          person │ 劉備
+  0192  01 move_person person=12 x=17 y=9 dir=0
+          person │ 公孫瓚
+  0198  01 move_person person=0 x=19 y=10 dir=0
+          person │ 劉備
+  019e  00 dialogue text=0x04d3
+            text │ 劉備: 我是劉備，字玄德，聽說要討伐董卓，便和公孫瓚一起趕到這裡．
+  01a1  08 narration text=0x0512
+            text │ 　現在出現的這個人物，是這個故事的主角，姓劉名備字玄德，他編賣過草蓆，是個在窮苦環境中長大的年輕人，可是，自從母親告訴他祖先是皇帝後，劉備的人生發生了變化．
+  01a4  08 narration text=0x05b1
+            text │ 　發生黃巾之亂時，劉備欲拯救亂世，率義勇軍討伐黃巾賊．
+                 │ 　劉備有兩個兄弟，一個是關羽字雲長，一個是張飛字翼德，兩人都是出類拔萃的豪傑．
+  01a7  08 narration text=0x063a
+            text │ 　劉備，關羽，張飛，此三人雖是偶然相遇，但相互被對方的志向所感動，結拜為兄弟，雖然彼此不是親兄弟．但關羽，張飛都稱劉備為大哥．
+  01aa  00 dialogue text=0x06bb
+            text │ 曹操: 噢，是劉備嗎？我們以前見過．
+                 │ 劉備: 那是討黃巾賊時．
+  01ad  00 dialogue text=0x06ef
+            text │ 曹操: 那時我被你的勇敢作戰所震驚，有你在，就更有把握了，拜託了．
+                 │ 劉備: 請多關照．
+                 │ 袁術: （劉備？我沒聽說過此人．）
+  01b0  08 narration text=0x0758
+            text │ 　從匯集的諸侯中，袁紹被推為盟主，組成了討伐董卓的聯軍．
+  01b3  ff end
+
+### block 3 @0x01b4
+
+record 0 run(0) group 0 args 000000000000 -> code 0x01d2
+  01d2  2e reset_player_position target=1 x=0 y=0 dir=255
+  01d8  09 load_map map=0x2005
+  01db  0a place_person person=3 x=23 y=7 dir=2
+          person │ 董卓
+  01e1  0a place_person person=4 x=20 y=7 dir=2
+          person │ 呂布
+  01e7  0a place_person person=5 x=16 y=11 dir=0
+          person │ 華雄
+  01ed  0a place_person person=6 x=13 y=8 dir=1
+          person │ 李儒
+  01f3  0a place_person person=46 x=9 y=10 dir=1
+          person │ 李傕
+  01f9  0a place_person person=47 x=5 y=12 dir=1
+          person │ 郭汜
+  01ff  0a place_person person=20 x=20 y=13 dir=3
+          person │ 李肅
+  0205  0a place_person person=21 x=16 y=15 dir=3
+          person │ 胡軫
+  020b  0a place_person person=27 x=12 y=17 dir=3
+          person │ 趙岑
+  0211  38 play_music song=11
+  0213  05 show_screen
+  0214  0b caption text=0x0793
+            text │ 洛陽宮殿
+  0217  08 narration text=0x079c
+            text │ 　董卓對曹操等的行動馬上採取了對策，命令部下華雄和義子呂布準備迎戰．
+  021a  00 dialogue text=0x07e3
+            text │ 董卓: 華雄，把守汜水關的任務交給你了．
+                 │ 華雄: 是．
+  021d  01 move_person person=5 x=3 y=17 dir=2
+          person │ 華雄
+  0223  18 remove_person person=5
+          person │ 華雄
+  0226  01 move_person person=4 x=22 y=7 dir=1
+          person │ 呂布
+  022c  00 dialogue text=0x080f
+            text │ 呂布: 父親，為何只命令華雄出征，難道忘了呂布？
+  022f  01 move_person person=3 x=23 y=7 dir=3
+          person │ 董卓
+  0235  00 dialogue text=0x083c
+            text │ 董卓: 哪裡？呂布，我最信任的人就是你，你去守虎牢關．
+                 │ 呂布: 是，謝謝父親，我去了．
+  0238  01 move_person person=3 x=23 y=7 dir=2
+          person │ 董卓
+  023e  01 move_person person=4 x=3 y=17 dir=2
+          person │ 呂布
+  0244  18 remove_person person=4
+          person │ 呂布
+  0247  2c redraw
+  0248  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0249
+  0249  09 load_map map=0x1000
+  024c  0a place_person person=5 x=1 y=26 dir=2
+          person │ 華雄
+  0252  0a place_person person=4 x=1 y=26 dir=2
+          person │ 呂布
+  0258  05 show_screen
+  0259  00 dialogue text=0x0888
+            text │ 華雄: 哼！誰說我就比不過呂布？最厲害的是我！
+  025c  01 move_person person=5 x=15 y=33 dir=2
+          person │ 華雄
+  0262  3b op_3b x=1 y=26
+  0265  3c op_3c person=4
+          person │ 呂布
+  0268  00 dialogue text=0x08b3
+            text │ 呂布: 他們能打敗華雄來到這裡嗎？打不過來吧．哈哈哈！！
+  026b  01 move_person person=4 x=6 y=30 dir=2
+          person │ 呂布
+  0271  ff end
+
+### block 4 @0x0272
+
+record 0 run(0) group 0 args 000000000000 -> code 0x02ea
+  02ea  2e reset_player_position target=2 x=0 y=0 dir=255
+  02f0  09 load_map map=0x200e
+  02f3  0a place_person person=8 x=20 y=7 dir=2
+          person │ 曹操
+  02f9  0a place_person person=9 x=23 y=7 dir=2
+          person │ 袁紹
+  02ff  0a place_person person=11 x=15 y=8 dir=1
+          person │ 袁術
+  0305  0a place_person person=12 x=11 y=10 dir=1
+          person │ 公孫瓚
+  030b  0a place_person person=15 x=21 y=11 dir=3
+          person │ 陶謙
+  0311  0a place_person person=7 x=17 y=13 dir=3
+          person │ 孔融
+  0317  0a place_person person=0 x=7 y=12 dir=1
+          person │ 劉備
+  031d  0a place_person person=1 x=7 y=11 dir=1
+          person │ 關羽
+  0323  0a place_person person=2 x=5 y=12 dir=1
+          person │ 張飛
+  0329  05 show_screen
+  032a  0b caption text=0x08e8
+            text │ 陳留營帳
+  032d  08 narration text=0x08f1
+            text │ 　討伐董卓的聯軍先鋒被華雄率領的董卓軍打敗了．
+                 │ 　討伐董卓的聯軍陷入了困境．
+  0330  0a place_person person=368 x=3 y=17 dir=0
+          person │ 武官
+  0336  01 move_person person=368 x=14 y=12 dir=0
+          person │ 武官
+  033c  00 dialogue text=0x0940
+            text │ 武官: 稟告主帥，華雄率領的董卓軍攻過來了．
+                 │ 袁紹: 知道了，我馬上派援軍．退下．
+                 │ 武官: 是．
+  033f  01 move_person person=368 x=3 y=17 dir=2
+          person │ 武官
+  0345  18 remove_person person=368
+          person │ 武官
+  0348  00 dialogue text=0x098f
+            text │ 袁紹: 話是這麼說，可是派誰去好呢？
+                 │ 曹操: 諸侯中有誰敢去迎戰華雄？
+                 │ 孔融: 慚愧，我軍力量難以迎戰華雄．
+                 │ 袁術: 本來我可引兵前往，怎奈現在身體欠佳．
+                 │ 曹操: 難道沒有人了？
+  034b  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x034c
+  034c  01 move_person person=0 x=16 y=11 dir=0
+          person │ 劉備
+  0352  01 move_person person=1 x=12 y=12 dir=0
+          person │ 關羽
+  0358  01 move_person person=2 x=14 y=13 dir=0
+          person │ 張飛
+  035e  00 dialogue text=0x0a22
+            text │ 劉備: 我們兄弟願往．
+                 │ 袁紹: 劉備，你身後的人是誰？
+  0361  01 move_person person=12 x=15 y=10 dir=0
+          person │ 公孫瓚
+  0367  00 dialogue text=0x0a4e
+            text │ 公孫瓚: 他們是劉備的結義兄弟，關羽和張飛．
+                 │ 袁術: 哦？劉備的官職是…劉備這個名字，我沒聽說過．當大將的話，還是要有適當身份才行．
+                 │ 公孫瓚: 現在還只是平原縣令．
+  036a  01 move_person person=11 x=18 y=10 dir=2
+          person │ 袁術
+  0370  00 dialogue text=0x0add
+            text │ 袁術: 什麼？只是個小官吏，怎能當此大任？退下．
+  0373  01 move_person person=8 x=17 y=9 dir=1
+          person │ 曹操
+  0379  00 dialogue text=0x0b0a
+            text │ 曹操: 袁術，稍等，雖是小吏，但敢如此說，或許有一定把握．
+                 │ 袁術: 哼，隨你便．
+  037c  01 move_person person=11 x=15 y=8 dir=1
+          person │ 袁術
+  0382  01 move_person person=8 x=17 y=10 dir=2
+          person │ 曹操
+  0388  00 dialogue text=0x0b50
+            text │ 曹操: 好，就讓你們去，快去準備，你們可以充份調用軍需．喂，叫道具屋老闆來．
+  038b  2b data kind=2 value=500
+  038f  0a place_person person=374 x=3 y=17 dir=0
+          person │ 道具屋
+  0395  01 move_person person=374 x=9 y=14 dir=0
+          person │ 道具屋
+  039b  01 move_person person=12 x=15 y=10 dir=1
+          person │ 公孫瓚
+  03a1  00 dialogue text=0x0b99
+            text │ 公孫瓚: 劉備，他是道具屋老闆，可提供軍需．
+                 │ 公孫瓚: 還有，出征前最好和別人打聲招呼，也可能得到點消息．
+  03a4  17 input_control value=0
+  03a6  ff end
+
+record 2 talk(3) group 2* args 090000000000 [袁紹] -> code 0x03a7
+  03a7  00 dialogue text=0x0bf5
+            text │ 袁紹: 華雄乃勇猛之人，要小心．
+  03aa  ff end
+
+record 3 talk(3) group 2 args 080000000000 [曹操] -> code 0x03ab
+  03ab  00 dialogue text=0x0c12
+            text │ 曹操: 希望你們勇猛作戰．
+  03ae  ff end
+
+record 4 talk(3) group 2 args 0b0000000000 [袁術] -> code 0x03af
+  03af  00 dialogue text=0x0c29
+            text │ 袁術: 哼，小兵如何拼命也註定要失敗，想不去還來得及．
+  03b2  ff end
+
+record 5 talk(3) group 2 args 070000000000 [孔融] -> code 0x03b3
+  03b3  00 dialogue text=0x0c5c
+            text │ 孔融: 你們是步兵，華雄是騎兵，彼此的兵種不同，所以交戰時要注意這個區別，否則你們要吃虧．
+  03b6  ff end
+
+record 6 talk(3) group 2 args 0c0000000000 [公孫瓚] -> code 0x03b7
+  03b7  00 dialogue text=0x0cb3
+            text │ 公孫瓚: 我也參加這次作戰，也許能幫上忙．
+  03ba  14 set_flag flag=0 clear=0
+  03bd  ff end
+
+record 7 talk(3) group 2 args 0f0000000000 [陶謙] -> code 0x03be
+  03be  00 dialogue text=0x0cd8
+            text │ 陶謙: 我的部隊也參加，一起討伐敵軍．
+  03c1  14 set_flag flag=1 clear=0
+  03c4  ff end
+
+record 8 talk(3) group 2 args 020000000000 [張飛] -> code 0x03c5
+  03c5  00 dialogue text=0x0cfb
+            text │ 張飛: 大哥，快出征吧，準備好的話，跟關羽說一聲．
+  03c8  ff end
+
+record 9 talk(3) group 2 args 760100000000 [道具屋] -> code 0x03c9
+  03c9  32 set_shop_items 1b1c1d1e1f20343536
+  03d4  31 nop
+  03d5  ff end
+
+record 10 talk(3) group 2 args 010000000000 [關羽] -> code 0x03d6
+  03d6  00 dialogue text=0x0d2a
+            text │ 關羽: 準備好了嗎？
+  03d9  15 if_answer answer=0 skip=6
+  03dc  3d op_3d value=0
+  03de  17 input_control value=1
+  03e0  38 play_music song=12
+  03e2  03 battle_setup turns=30 win=Some(5) lose=Some(0) other=00000000 units=5
+           units │ 劉備 (22, 9), 關羽 (20, 10), 張飛 (20, 9), 公孫瓚 (16, 7), 陶謙 (16, 6)
+  04fc  00 dialogue text=0x0d3b
+            text │ 關羽: 出征！
+  04ff  13 leave_parallel
+  0500  ff end
+
+### block 5 @0x0501
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0551
+  0551  09 load_map map=0x1000
+  0554  2f set_graphic person=0 graphic=3
+          person │ 劉備
+  0558  0a place_person person=0 x=19 y=27 dir=2
+          person │ 劉備
+  055e  0a place_person person=5 x=15 y=33 dir=2
+          person │ 華雄
+  0564  38 play_music song=3
+  0566  05 show_screen
+  0567  00 dialogue text=0x0d46
+            text │ 關羽: 敵人在汜水關，火速進軍．
+  056a  01 move_person person=0 x=15 y=33 dir=3
+          person │ 劉備
+  0570  2e reset_player_position target=3 x=0 y=0 dir=255
+  0576  22 battle_roster friendly=false units=7
+          unit 5 at (3, 9) class 6 lv 5 ai 2/0
+          unit 20 at (5, 10) class 3 lv 2 ai 0/0
+          unit 21 at (4, 9) class 0 lv 2 ai 0/0
+          unit 27 at (6, 9) class 0 lv 2 ai 0/0
+          unit 256 at (11, 8) class 0 lv 1 ai 0/0
+          unit 257 at (11, 10) class 0 lv 1 ai 0/0
+          unit 258 at (11, 12) class 0 lv 1 ai 0/0
+           units │ 華雄 (3, 9), 李肅 (5, 10), 胡軫 (4, 9), 趙岑 (6, 9), 步兵隊 (11, 8), 步兵隊 (11, 10), 步兵隊 (11, 12)
+  06fe  09 load_map map=0x3000
+  0701  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0702
+  0702  36 begin_battle
+  0703  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x0704
+  0704  38 play_music song=11
+  0706  30 set_objective text=0x0d63
+            text │ 一、殲滅華雄．
+  0709  00 dialogue text=0x0d74
+            text │ 華雄: 吃一次虧也不長一智，聯軍還來自找麻煩，是誰的部隊？
+                 │ 李肅: 主將好像是個叫劉備的人．
+                 │ 華雄: 劉備？這個名字沒聽說過，為何叫這種無名鼠輩來．看不起我嗎？
+                 │ 李肅: 大概是聯軍沒人了．
+                 │ 華雄: 管他是誰，殺了他祭旗，眾將士，出征迎敵．
+                 │ 張飛: 大哥，我先活動一下身體吧．
+                 │ 關羽: 大哥，這個交給我吧，我一定取華雄首級來見你．
+  070c  38 play_music song=19
+  070e  ff end
+
+record 3 unit_at_cell(6) group 3* args 000407060000 [(any unit)] -> code 0x070f
+  070f  21 if_flags unless set[] and clear[177] skip 3
+  0714  2b data kind=2 value=100
+  0718  0b caption text=0x0e8f
+            text │ 繳獲了黃金１００！
+  071b  14 set_flag flag=177 clear=0
+  071e  ff end
+
+record 4 unit_at_cell(6) group 3 args 0004060c0000 [(any unit)] -> code 0x071f
+  071f  21 if_flags unless set[] and clear[178] skip 2
+  0724  1b add_item item=30
+            item │ 豆
+  0726  14 set_flag flag=178 clear=0
+  0729  ff end
+
+record 5 unit_contact(4) group 3 args 010005000000 [關羽] -> code 0x072a
+  072a  00 dialogue text=0x0ea2
+            text │ 關羽: 對面的可是華雄，我要與你單挑！
+                 │ 華雄: 向我挑戰？好大的膽，通名受死．
+                 │ 關羽: 我乃關羽關雲長，華雄，我關羽決不容你們這些董卓軍胡作非為．
+                 │ 華雄: 哼，還逞威風，不過一看就是無名小卒．還能勝我嗎？
+                 │ 關羽: 敢把我看成無名小卒，送你上西天．
+  072d  10 duel first=1 second=5
+           first │ 關羽
+          second │ 華雄
+  0732  34 duel_begin
+  0733  00 dialogue text=0x0f79
+            text │ 關羽: 接我一刀！
+  0736  35 duel_action person=1 action=0
+          person │ 關羽
+  073a  35 duel_action person=1 action=1
+          person │ 關羽
+  073e  35 duel_action person=1 action=0
+          person │ 關羽
+  0742  00 dialogue text=0x0f88
+            text │ 華雄: 好厲害！
+                 │ 關羽: 華雄！要你的命！
+  0745  35 duel_action person=1 action=10
+          person │ 關羽
+  0749  00 dialogue text=0x0fa8
+            text │ 華雄: 呀！失手了！
+  074c  35 duel_action person=5 action=3
+          person │ 華雄
+  0750  35 duel_action person=1 action=9
+          person │ 關羽
+  0754  35 duel_action person=1 action=2
+          person │ 關羽
+  0758  00 dialogue text=0x0fb9
+            text │ 關羽: 先割下華雄首級．
+  075b  33 duel_end
+  075c  39 add_levels person=1 levels=1
+          person │ 關羽
+  0760  0b caption text=0x0fce
+            text │ 關羽的等級上昇了！
+  0763  18 remove_person person=5
+          person │ 華雄
+  0766  00 dialogue text=0x0fe1
+            text │ 張飛: 大哥，關羽好像斬了華雄．
+                 │ 劉備: 嗯，我軍勝利了．
+  0769  38 play_music song=7
+  076b  08 narration text=0x1011
+            text │ 　劉備軍打敗華雄軍，占領汜水關．
+  076e  13 leave_parallel
+  076f  ff end
+
+record 6 battle_won(7) group 3 args 000000000000 -> code 0x0770
+  0770  00 dialogue text=0x1034
+            text │ 劉備: 我軍勝利了．
+  0773  38 play_music song=7
+  0775  08 narration text=0x1045
+            text │ 　劉備軍打敗華雄軍，占領汜水關．
+  0778  13 leave_parallel
+  0779  ff end
+
+### block 6 @0x077a
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0798
+  0798  2b data kind=2 value=100
+  079c  0b caption text=0x1068
+            text │ 繳獲了黃金１００！
+  079f  11 battle_end next_map=0x1000
+  07a2  09 load_map map=0x1000
+  07a5  0a place_person person=0 x=15 y=33 dir=2
+          person │ 劉備
+  07ab  2f set_graphic person=2 graphic=4
+          person │ 張飛
+  07af  0a place_person person=2 x=15 y=33 dir=2
+          person │ 張飛
+  07b5  0a place_person person=20 x=15 y=33 dir=2
+          person │ 李肅
+  07bb  0a place_person person=4 x=6 y=30 dir=2
+          person │ 呂布
+  07c1  38 play_music song=3
+  07c3  05 show_screen
+  07c4  01 move_person person=20 x=6 y=30 dir=2
+          person │ 李肅
+  07ca  00 dialogue text=0x107b
+            text │ 關羽: 敵人好像逃到了前面的虎牢關．大哥，該怎麼辦？
+                 │ 劉備: 暫且收兵吧．
+                 │ 張飛: 說什麼呀？現在當然是乘勝追擊了，我去！
+                 │ 關羽: 喂！張飛！不要輕舉妄動！
+                 │ 張飛: 追擊！繼續追擊！
+  07cd  01 move_person person=2 x=6 y=30 dir=2
+          person │ 張飛
+  07d3  00 dialogue text=0x1112
+            text │ 關羽: 唉！追上去了，還是那麼魯莽．
+  07d6  21 if_flags unless set[0] and clear[] skip 1
+  07db  00 dialogue text=0x1133
+            text │ 公孫瓚: 話不要這麼說，我軍士氣也鼓舞起來了嘛．
+  07de  21 if_flags unless set[1] and clear[] skip 1
+  07e3  00 dialogue text=0x115e
+            text │ 陶謙: 現在應該乘勢攻下虎牢關．
+  07e6  00 dialogue text=0x117b
+            text │ 劉備: 沒辦法，好！跟上張飛！進軍虎牢關！
+  07e9  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x07ea
+  07ea  3d op_3d value=1
+  07ec  01 move_person person=0 x=6 y=30 dir=2
+          person │ 劉備
+  07f2  2e reset_player_position target=4 x=0 y=0 dir=255
+  07f8  ff end
+
+### block 7 @0x07f9
+
+record 0 run(0) group 0 args 000000000000 -> code 0x085d
+  085d  03 battle_setup turns=30 win=Some(4) lose=Some(0) other=00000000 units=5
+           units │ 劉備 (15, 21), 關羽 (13, 21), 張飛 (12, 20), 公孫瓚 (14, 18), 陶謙 (13, 18)
+  0977  22 battle_roster friendly=false units=7
+          unit 4 at (6, 5) class 6 lv 6 ai 2/0
+          unit 79 at (3, 7) class 0 lv 3 ai 0/0
+          unit 80 at (6, 8) class 6 lv 3 ai 0/0
+          unit 74 at (10, 8) class 3 lv 3 ai 0/0
+          unit 73 at (10, 11) class 0 lv 2 ai 1/0
+          unit 274 at (8, 8) class 3 lv 1 ai 0/0
+          unit 275 at (5, 11) class 3 lv 1 ai 1/0
+           units │ 呂布 (6, 5), 張遼 (3, 7), 侯成 (6, 8), 宋憲 (10, 8), 魏續 (10, 11), 弓兵隊 (8, 8), 弓兵隊 (5, 11)
+  0aff  09 load_map map=0x3001
+  0b02  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0b03
+  0b03  36 begin_battle
+  0b04  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x0b05
+  0b05  38 play_music song=11
+  0b07  30 set_objective text=0x11a2
+            text │ 一、呂布敗退．
+  0b0a  00 dialogue text=0x11b3
+            text │ 呂布: 什麼？聯軍攻來了，還殺了華雄？好厲害，不過，他們的好運也就到此為止了．
+                 │ 侯成: 呂布將軍，現在讓他們知道一下我軍的厲害．
+                 │ 呂布: 好，全軍出擊！聯軍，好好看看我的厲害．
+                 │ 張飛: 主將何在？不能只讓關羽逞雄風，我也要出風頭．
+                 │ 關羽: 這裡好像是呂布把守．
+                 │ 劉備: 是呂布，恐怕沒有比他更可怕的敵人了．
+                 │ 關羽: 呂布座下赤兔馬，據說日行千里．
+                 │ 張飛: 呂布算什麼？讓他看看我的厲害．
+  0b0d  38 play_music song=16
+  0b0f  ff end
+
+record 3 unit_contact(4) group 3* args 020004000000 [張飛] -> code 0x0b10
+  0b10  00 dialogue text=0x1301
+            text │ 張飛: 對面可是呂布，來與我一決勝負！
+                 │ 呂布: 還有人敢向我挑戰！報上名來！
+                 │ 張飛: 我乃劉備義弟，張飛張翼德是也！呂布！我要取你項上人頭！
+                 │ 呂布: 哈哈！無名小卒，好大膽，我呂布來戰一戰你．來吧！
+                 │ 張飛: 別小看我，你會後悔的．
+  0b13  10 duel first=2 second=4
+           first │ 張飛
+          second │ 呂布
+  0b18  34 duel_begin
+  0b19  00 dialogue text=0x13c8
+            text │ 呂布: 還真有兩下子．
+                 │ 張飛: 不愧勇夫，不過，躲得過我這一槍嗎？
+  0b1c  35 duel_action person=2 action=1
+          person │ 張飛
+  0b20  35 duel_action person=4 action=2
+          person │ 呂布
+  0b24  00 dialogue text=0x1400
+            text │ 呂布: 休得猖狂！
+                 │ 劉備: 張飛，我們來幫你．
+                 │ 關羽: 呂布，你的剋星來了．
+                 │ 呂布: 幫手來了，沒辦法，撤退．赤兔，全靠你了．
+  0b27  35 duel_action person=4 action=4
+          person │ 呂布
+  0b2b  00 dialogue text=0x1466
+            text │ 張飛: 別跑！呂布！站住！
+                 │ 關羽: 不愧是赤兔馬，我們根本追不上．
+  0b2e  33 duel_end
+  0b2f  39 add_levels person=2 levels=1
+          person │ 張飛
+  0b33  0b caption text=0x149e
+            text │ 張飛的等級上升了．
+  0b36  00 dialogue text=0x14b1
+            text │ 呂布: 全軍撤退．
+  0b39  01 move_person person=4 x=6 y=0 dir=3
+          person │ 呂布
+  0b3f  18 remove_person person=4
+          person │ 呂布
+  0b42  13 leave_parallel
+  0b43  ff end
+
+record 4 turn(9) group 3 args 120000000000 -> code 0x0b44
+  0b44  00 dialogue text=0x14c0
+            text │ 呂布: 哼！七拼八湊的部隊還挺厲害，不過我可不會敗給這些鼠輩，要讓他們知道我的厲害．
+  0b47  1c set_ai person=4 mode=1 unused=0
+          person │ 呂布
+  0b4d  ff end
+
+record 5 battle_won(7) group 3 args 000000000000 -> code 0x0b4e
+  0b4e  00 dialogue text=0x1511
+            text │ 呂布: 可惡！沒辦法，全軍撤退．
+                 │ 劉備: 太好了！我們打敗了呂布．
+  0b51  13 leave_parallel
+  0b52  ff end
+
+record 6 unit_at_cell(6) group 3 args 00040a0d0000 [(any unit)] -> code 0x0b53
+  0b53  21 if_flags unless set[] and clear[59] skip 2
+  0b58  1b add_item item=40
+            item │ 焦熱書  
+  0b5a  14 set_flag flag=59 clear=0
+  0b5d  ff end
+
+record 7 unit_at_cell(6) group 3 args 00040b0e0000 [(any unit)] -> code 0x0b5e
+  0b5e  21 if_flags unless set[] and clear[179] skip 2
+  0b63  1b add_item item=30
+            item │ 豆
+  0b65  14 set_flag flag=179 clear=0
+  0b68  ff end
+
+record 8 run(0) group 4 args 000000000000 -> code 0x0b69
+  0b69  38 play_music song=7
+  0b6b  08 narration text=0x1549
+            text │ 　呂布軍敗退，劉備軍占領了虎牢關．
+  0b6e  2b data kind=2 value=100
+  0b72  0b caption text=0x156e
+            text │ 繳獲了黃金１００！
+  0b75  11 battle_end next_map=0x1000
+  0b78  ff end
+
+### block 8 @0x0b79
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0b8d
+  0b8d  2e reset_player_position target=1 x=0 y=0 dir=255
+  0b93  09 load_map map=0x2000
+  0b96  0a place_person person=382 x=25 y=6 dir=2
+          person │ 獻帝
+  0b9c  0a place_person person=3 x=17 y=10 dir=0
+          person │ 董卓
+  0ba2  0a place_person person=6 x=15 y=11 dir=0
+          person │ 李儒
+  0ba8  0a place_person person=383 x=15 y=8 dir=1
+          person │ 董承
+  0bae  0a place_person person=46 x=12 y=10 dir=1
+          person │ 李傕
+  0bb4  0a place_person person=47 x=9 y=11 dir=1
+          person │ 郭汜
+  0bba  0a place_person person=20 x=21 y=11 dir=3
+          person │ 李肅
+  0bc0  0a place_person person=21 x=18 y=13 dir=3
+          person │ 胡軫
+  0bc6  0a place_person person=27 x=15 y=14 dir=3
+          person │ 趙岑
+  0bcc  38 play_music song=11
+  0bce  05 show_screen
+  0bcf  0b caption text=0x1581
+            text │ 洛陽宮殿
+  0bd2  08 narration text=0x158a
+            text │ 　對董卓來說，汜水關和虎牢關的陷落事關重大．
+                 │ 　董卓決定挾持獻帝逃離洛陽．
+  0bd5  00 dialogue text=0x15d7
+            text │ 董卓: 要殺陛下的人已逼近洛陽，事已至此，離開洛陽吧．
+                 │ 獻帝: 什麼？洛陽是以前就作為帝都才得以繁榮的．你是說要捨棄它？
+                 │ 董卓: 你好像沒聽懂我剛才說的話吧，我還要重複一遍嗎？
+                 │ 獻帝: 這，朕知道了，就照你說的辦吧！
+                 │ 董卓: 謝謝皇帝採納臣的建議，那麼就請快些走吧！
+  0bd8  01 move_person person=3 x=3 y=17 dir=2
+          person │ 董卓
+  0bde  01 move_person person=6 x=4 y=17 dir=2
+          person │ 李儒
+  0be4  00 dialogue text=0x16c2
+            text │ 董卓: 對啦，李儒，不能輕易把洛陽留給賊軍，火燒洛陽，沒收城裡全部金銀財寶．
+                 │ 李儒: 是！
+  0be7  18 remove_person person=3
+          person │ 董卓
+  0bea  18 remove_person person=6
+          person │ 李儒
+  0bed  01 move_person person=46 x=3 y=17 dir=2
+          person │ 李傕
+  0bf3  01 move_person person=47 x=3 y=17 dir=2
+          person │ 郭汜
+  0bf9  01 move_person person=20 x=3 y=17 dir=2
+          person │ 李肅
+  0bff  01 move_person person=21 x=3 y=17 dir=2
+          person │ 胡軫
+  0c05  01 move_person person=27 x=3 y=17 dir=2
+          person │ 趙岑
+  0c0b  18 remove_person person=46
+          person │ 李傕
+  0c0e  18 remove_person person=47
+          person │ 郭汜
+  0c11  18 remove_person person=20
+          person │ 李肅
+  0c14  18 remove_person person=21
+          person │ 胡軫
+  0c17  18 remove_person person=27
+          person │ 趙岑
+  0c1a  2c redraw
+  0c1b  38 play_music song=2
+  0c1d  00 dialogue text=0x1712
+            text │ 獻帝: 先帝呀！寬恕我的無能吧！我沒能守住先祖傳下來的這塊土地，難道漢室基業要毀在我手裡？
+                 │ 董承: 陛下…
+  0c20  07 show_picture picture=28 variant=1
+  0c23  08 narration text=0x1772
+            text │ 　就這樣，董卓把漢都從洛陽遷到長安，漢王朝就要因董卓的專橫而告終了．
+  0c26  ff end
+
+### block 9 @0x0c27
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0c4f
+  0c4f  2e reset_player_position target=4 x=0 y=0 dir=255
+  0c55  09 load_map map=0x200f
+  0c58  0a place_person person=8 x=18 y=8 dir=2
+          person │ 曹操
+  0c5e  0a place_person person=9 x=21 y=8 dir=2
+          person │ 袁紹
+  0c64  0a place_person person=11 x=15 y=8 dir=1
+          person │ 袁術
+  0c6a  0a place_person person=12 x=11 y=10 dir=1
+          person │ 公孫瓚
+  0c70  0a place_person person=15 x=21 y=11 dir=3
+          person │ 陶謙
+  0c76  0a place_person person=7 x=17 y=13 dir=3
+          person │ 孔融
+  0c7c  0a place_person person=0 x=16 y=11 dir=0
+          person │ 劉備
+  0c82  0a place_person person=1 x=12 y=12 dir=0
+          person │ 關羽
+  0c88  0a place_person person=2 x=14 y=13 dir=0
+          person │ 張飛
+  0c8e  05 show_screen
+  0c8f  0b caption text=0x17b9
+            text │ 虎牢關營帳
+  0c92  08 narration text=0x17c4
+            text │ 　攻克了汜水關和虎牢關，曹操等討伐董卓的聯軍正陶醉在勝利中，這時得到了董卓挾持獻帝逃走的消息．
+  0c95  00 dialogue text=0x1825
+            text │ 曹操: 據說董卓逃往洛陽西面的長安，現在就應追擊．
+                 │ 袁紹: 不，接連作戰，士兵太累了，現在應該在這裡休息．
+                 │ 曹操: 可是要抓住戰機，錯失此良機，我們就沒有勝利機會．
+  0c98  01 move_person person=11 x=15 y=8 dir=0
+          person │ 袁術
+  0c9e  00 dialogue text=0x18b8
+            text │ 袁術: 既然想要追擊，隨你去好了．
+                 │ 公孫瓚: 士兵也的確太累了．
+                 │ 曹操: 我等為討伐國賊才起兵的，可是，現在連追擊董卓都不肯，要讓天下百姓失望的．
+                 │ 曹操: 這裡已沒有與我同心之人，我要回領地去，告辭了．
+  0ca1  01 move_person person=8 x=3 y=17 dir=2
+          person │ 曹操
+  0ca7  18 remove_person person=8
+          person │ 曹操
+  0caa  01 move_person person=11 x=15 y=8 dir=2
+          person │ 袁術
+  0cb0  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0cb1
+  0cb1  00 dialogue text=0x1968
+            text │ 袁術: 說什麼與你同心，他又不是名門望族，太囂張了．
+                 │ 袁紹: 可是沒有曹操這個中心人物，這個聯軍就沒有意義了．
+  0cb4  01 move_person person=11 x=15 y=8 dir=1
+          person │ 袁術
+  0cba  01 move_person person=7 x=17 y=10 dir=2
+          person │ 孔融
+  0cc0  00 dialogue text=0x19cc
+            text │ 孔融: 劉備，有機會我們還會再見的．
+  0cc3  01 move_person person=7 x=3 y=17 dir=2
+          person │ 孔融
+  0cc9  18 remove_person person=7
+          person │ 孔融
+  0ccc  01 move_person person=15 x=17 y=10 dir=2
+          person │ 陶謙
+  0cd2  00 dialogue text=0x19ed
+            text │ 陶謙: 劉備將來會成就大事的，哈哈哈！我這老頭開玩笑，請別介意．那我告辭了．
+  0cd5  01 move_person person=15 x=3 y=17 dir=2
+          person │ 陶謙
+  0cdb  18 remove_person person=15
+          person │ 陶謙
+  0cde  01 move_person person=12 x=17 y=10 dir=2
+          person │ 公孫瓚
+  0ce4  00 dialogue text=0x1a36
+            text │ 公孫瓚: 那麼我們也撤吧．
+                 │ 關羽: 是啊．
+  0ce7  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x0ce8
+  0ce8  09 load_map map=0x1000
+  0ceb  2f set_graphic person=0 graphic=3
+          person │ 劉備
+  0cef  0a place_person person=0 x=6 y=30 dir=2
+          person │ 劉備
+  0cf5  05 show_screen
+  0cf6  00 dialogue text=0x1a54
+            text │ 公孫瓚: 那麼，劉備，再見了，如果有什麼事情，隨時可以跟我講．
+                 │ 劉備: 那我也告辭了．
+                 │ 公孫瓚: 是啊．
+  0cf9  01 move_person person=0 x=38 y=9 dir=2
+          person │ 劉備
+  0cff  2e reset_player_position target=0 x=0 y=0 dir=255
+  0d05  08 narration text=0x1aa7
+            text │ 　就這樣，討伐董卓的聯軍解散了．龐大的漢王朝由於董卓的出現，開始走向滅亡．
+                 │ 　在這個亂世上，圖謀天下的還不止董卓一個，有曹操，還有袁紹……
+  0d08  08 narration text=0x1b34
+            text │ 　處在這個亂世上，劉備等人該如何面對呢？還有，劉備兄弟們重振漢室的夢想能實現嗎？
+  0d0b  12 end_event
+  0d0c  ff end

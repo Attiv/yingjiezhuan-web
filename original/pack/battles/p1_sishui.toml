@@ -1,0 +1,149 @@
+# p1_sishui: the base pack's battle re-staged as the original battle (SNR0D.R3 scene 0 block 5) on the
+# original map hexz_00. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: 2 player slot(s) that need a campaign flag (officers who join for this battle only) are left out
+# note: record 5: the base battle's event on Adjacent { a: Some("guan_yu"), b: "hua_xiong" } is kept instead
+# note: not converted: the original's victory and defeat scripts
+
+id = "p1_sishui"
+name = "사수관 전투"
+location = "190년, 낙양 동쪽 사수관"
+objective = "적장 화웅을 물리쳐라"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 100
+intro = "sishui_intro"
+outro = "sishui_outro"
+
+[map]
+use = "hexz_00"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 3
+required = ["guan_yu", "zhang_fei"]
+forbidden = []
+slots = [[20, 10], [20, 9], [22, 9]]
+
+[[units]]
+side = "enemy"
+officer = "hua_xiong"
+class = "light_cavalry"
+level = 5
+pos = [3, 9]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+officer = "li_su"
+class = "archer"
+level = 2
+pos = [5, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "hu_zhen"
+class = "short_infantry"
+level = 2
+pos = [4, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "zhao_cen"
+class = "short_infantry"
+level = 2
+pos = [6, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 1
+stats = [40, 30, 50]
+pos = [11, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 1
+stats = [40, 30, 50]
+pos = [11, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 1
+stats = [40, 30, 50]
+pos = [11, 12]
+ai = "defensive"
+commander = false
+
+[[victory]]
+type = "defeat_unit"
+target = "hua_xiong"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "hua_xiong"
+
+[[events.actions]]
+type = "drama"
+scene = "sishui_duel"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "set_flag"
+flag = "sishui_duel"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "hua_xiong"
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "unit_defeated"
+target = "hu_zhen"
+
+[[events.actions]]
+type = "drama"
+scene = "sishui_hu_zhen_falls"
+
+[[treasures]]
+pos = [6, 7]
+gold = 100
+
+[[treasures]]
+pos = [12, 6]
+item = "bean"
+gold = 0

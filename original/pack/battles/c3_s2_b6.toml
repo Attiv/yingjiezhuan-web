@@ -1,0 +1,305 @@
+# c3_s2_b6: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 2 block 6) on the
+# original map hexz_33. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 11 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+
+id = "c3_s2_b6"
+name = "雒 전투"
+location = ""
+objective = "一、劉貴的退卻"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+treasures = []
+reward_gold = 0
+outro = "c3_s2_b6_outro"
+
+[map]
+use = "hexz_33"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 11
+required = ["pang_tong"]
+forbidden = []
+slots = [[23, 17], [5, 17], [22, 16], [7, 17], [6, 16], [22, 18], [23, 18], [6, 18], [5, 16], [4, 18], [4, 19]]
+
+[[units]]
+side = "enemy"
+name = "劉貴"
+class = "guard_cavalry"
+level = 40
+stats = [51, 60, 47]
+pos = [23, 3]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "冷苞"
+class = "chariot"
+level = 36
+stats = [66, 23, 64]
+pos = [22, 5]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "鄧賢"
+class = "chariot"
+level = 36
+stats = [69, 65, 66]
+pos = [20, 19]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "劉循"
+class = "chariot"
+level = 37
+stats = [58, 44, 52]
+pos = [26, 17]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "wu_yi"
+class = "catapult"
+level = 37
+pos = [14, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "wu_lan"
+class = "guard_cavalry"
+level = 37
+pos = [7, 6]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "lei_tong"
+class = "guard_cavalry"
+level = 37
+pos = [8, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 33
+stats = [40, 30, 50]
+pos = [5, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 33
+stats = [40, 30, 50]
+pos = [16, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 35
+stats = [50, 30, 40]
+pos = [19, 17]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 35
+stats = [50, 30, 40]
+pos = [20, 17]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 32
+stats = [40, 50, 30]
+pos = [19, 18]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 33
+stats = [40, 50, 30]
+pos = [26, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 34
+stats = [50, 30, 40]
+pos = [6, 8]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 33
+stats = [40, 50, 30]
+pos = [24, 5]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "outlaw"
+level = 33
+stats = [50, 40, 30]
+pos = [22, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 33
+stats = [70, 10, 40]
+pos = [21, 15]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 32
+stats = [70, 10, 40]
+pos = [15, 5]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 34
+stats = [50, 30, 40]
+pos = [15, 3]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 33
+stats = [60, 10, 50]
+pos = [25, 3]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "張任"
+class = "crossbow"
+level = 37
+stats = [87, 69, 84]
+pos = [24, 14]
+ai = "aggressive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b6_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "unit_defeated"
+target = "pang_tong"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b6_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f38"
+value = 1
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b6_3_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_away_pang_tong"
+value = 1
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s2_b6_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 8
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b6_4"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s2_b6_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"

@@ -1,0 +1,2502 @@
+# The original's campaign from the prologue to its endings, converted from the player's
+# own copy by `hero-tools original pack` (do not edit): the story and battles of the
+# scenario files, with the pack chain's starting army (DECISIONS D21).
+
+title = "유비전"
+start = "c0_s0_story0"
+starting_officers = ["liu_bei", "guan_yu", "zhang_fei"]
+starting_gold = 0
+
+[starting_items]
+
+[[node]]
+type = "drama"
+id = "c0_s0_story0"
+scene = "c0_s0_story0"
+next = "c0_s0_story1"
+
+[[node]]
+type = "drama"
+id = "c0_s0_story1"
+scene = "c0_s0_story1"
+next = "c0_s0_story2"
+
+[[node]]
+type = "drama"
+id = "c0_s0_story2"
+scene = "c0_s0_story2"
+next = "c0_s0_story3"
+
+[[node]]
+type = "drama"
+id = "c0_s0_story3"
+scene = "c0_s0_story3"
+next = "c0_s0_story4"
+
+[[node]]
+type = "drama"
+id = "c0_s0_story4"
+scene = "c0_s0_story4"
+next = "c0_s0_b5_before"
+
+[[node]]
+type = "drama"
+id = "c0_s0_b5_before"
+scene = "c0_s0_b5_before"
+next = "c0_s0_b5_camp"
+
+[[node]]
+type = "camp"
+id = "c0_s0_b5_camp"
+title = "汜水關 — 출진 준비"
+shop = ["wine", "fine_wine", "bean", "wheat", "rice", "salve", "tea"]
+battle = "c0_s0_b5"
+next = "c0_s0_b5_battle"
+
+[[node]]
+type = "battle"
+id = "c0_s0_b5_battle"
+battle = "c0_s0_b5"
+next = "c0_s0_story6"
+
+[[node]]
+type = "drama"
+id = "c0_s0_story6"
+scene = "c0_s0_story6"
+next = "c0_s0_b7_camp"
+
+[[node]]
+type = "camp"
+id = "c0_s0_b7_camp"
+title = "虎牢關 — 출진 준비"
+shop = ["wine", "fine_wine", "bean", "wheat", "rice", "salve", "tea"]
+battle = "c0_s0_b7"
+next = "c0_s0_b7_battle"
+
+[[node]]
+type = "battle"
+id = "c0_s0_b7_battle"
+battle = "c0_s0_b7"
+next = "c0_s0_story8"
+
+[[node]]
+type = "drama"
+id = "c0_s0_story8"
+scene = "c0_s0_story8"
+next = "c0_s0_story9"
+
+[[node]]
+type = "drama"
+id = "c0_s0_story9"
+scene = "c0_s0_story9"
+next = "c1_s0_story0"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story0"
+scene = "c1_s0_story0"
+next = "c1_s0_story1"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story1"
+scene = "c1_s0_story1"
+next = "c1_s0_story2"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story2"
+scene = "c1_s0_story2"
+next = "c1_s0_story3"
+
+[[node]]
+type = "branch"
+id = "c1_s0_story3_route1"
+flag = "orig_route_c1_s0_b3"
+cmp = "Eq"
+value = 1
+then = "c1_s0_b4_camp"
+else = "c1_s0_b6_camp"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story3"
+scene = "c1_s0_story3"
+next = "c1_s0_story3_route1"
+
+[[node]]
+type = "camp"
+id = "c1_s0_b4_camp"
+title = "廣川 — 출진 준비"
+shop = ["wine", "fine_wine", "bean", "wheat", "rice", "salve", "tea"]
+battle = "c1_s0_b4"
+next = "c1_s0_b4_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s0_b4_battle"
+battle = "c1_s0_b4"
+next = "c1_s0_story5"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story5"
+scene = "c1_s0_story5"
+next = "c1_s0_story10"
+
+[[node]]
+type = "camp"
+id = "c1_s0_b6_camp"
+title = "信都 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s0_b6"
+next = "c1_s0_b6_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s0_b6_battle"
+battle = "c1_s0_b6"
+next = "c1_s0_story7"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story7"
+scene = "c1_s0_story7"
+next = "c1_s0_story8"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story8"
+scene = "c1_s0_story8"
+next = "c1_s0_story9"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story9"
+scene = "c1_s0_story9"
+next = "c1_s0_story10"
+
+[[node]]
+type = "branch"
+id = "c1_s0_story10_route1"
+flag = "orig_route_c1_s0_b10"
+cmp = "Eq"
+value = 1
+then = "c1_s0_b13_camp"
+else = "c1_s0_b11_camp"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story10"
+scene = "c1_s0_story10"
+next = "c1_s0_story10_route1"
+
+[[node]]
+type = "camp"
+id = "c1_s0_b11_camp"
+title = "清河 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s0_b11"
+next = "c1_s0_b11_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s0_b11_battle"
+battle = "c1_s0_b11"
+next = "c1_s0_story12"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story12"
+scene = "c1_s0_story12"
+next = "c1_s0_b15_which"
+
+[[node]]
+type = "camp"
+id = "c1_s0_b13_camp"
+title = "巨鹿 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s0_b13"
+next = "c1_s0_b13_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s0_b13_battle"
+battle = "c1_s0_b13"
+next = "c1_s0_story14"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story14"
+scene = "c1_s0_story14"
+next = "c1_s0_b15_which"
+
+[[node]]
+type = "camp"
+id = "c1_s0_b15_f133_camp"
+title = "界橋 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s0_b15_f133"
+next = "c1_s0_b15_f133_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s0_b15_f133_battle"
+battle = "c1_s0_b15_f133"
+next = "c1_s0_story16"
+
+[[node]]
+type = "camp"
+id = "c1_s0_b15_camp"
+title = "界橋 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s0_b15"
+next = "c1_s0_b15_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s0_b15_battle"
+battle = "c1_s0_b15"
+next = "c1_s0_story16"
+
+[[node]]
+type = "branch"
+id = "c1_s0_b15_which"
+flag = "orig_f133"
+cmp = "Ne"
+value = 0
+then = "c1_s0_b15_f133_camp"
+else = "c1_s0_b15_camp"
+
+[[node]]
+type = "drama"
+id = "c1_s0_story16"
+scene = "c1_s0_story16"
+next = "c1_s1_story0"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story0"
+scene = "c1_s1_story0"
+next = "c1_s1_story1"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story1"
+scene = "c1_s1_story1"
+next = "c1_s1_story2"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story2"
+scene = "c1_s1_story2"
+next = "c1_s1_b3_camp"
+
+[[node]]
+type = "camp"
+id = "c1_s1_b3_camp"
+title = "北海 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s1_b3"
+next = "c1_s1_b3_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s1_b3_battle"
+battle = "c1_s1_b3"
+next = "c1_s1_story4"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story4"
+scene = "c1_s1_story4"
+next = "c1_s1_b5_camp"
+
+[[node]]
+type = "camp"
+id = "c1_s1_b5_camp"
+title = "徐州 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s1_b5"
+next = "c1_s1_b5_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s1_b5_battle"
+battle = "c1_s1_b5"
+next = "c1_s1_story6"
+
+[[node]]
+type = "branch"
+id = "c1_s1_story6_route1"
+flag = "orig_route_c1_s1_b6"
+cmp = "Eq"
+value = 1
+then = "c1_s1_story8"
+else = "c1_s1_b7_before"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story6"
+scene = "c1_s1_story6"
+next = "c1_s1_story6_route1"
+
+[[node]]
+type = "drama"
+id = "c1_s1_b7_before"
+scene = "c1_s1_b7_before"
+next = "c1_s1_b7_camp"
+
+[[node]]
+type = "camp"
+id = "c1_s1_b7_camp"
+title = "小沛 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s1_b7"
+next = "c1_s1_b7_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s1_b7_battle"
+battle = "c1_s1_b7"
+next = "c1_s1_story10"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story8"
+scene = "c1_s1_story8"
+next = "c1_s1_story9"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story9"
+scene = "c1_s1_story9"
+next = "c1_s1_story10"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story10"
+scene = "c1_s1_story10"
+next = "c1_s1_story11"
+
+[[node]]
+type = "drama"
+id = "c1_s1_story11"
+scene = "c1_s1_story11"
+next = "c1_s2_story0"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story0"
+scene = "c1_s2_story0"
+next = "c1_s2_story1"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story1"
+scene = "c1_s2_story1"
+next = "c1_s2_story2"
+
+[[node]]
+type = "branch"
+id = "c1_s2_story2_route1"
+flag = "orig_route_c1_s2_b2"
+cmp = "Eq"
+value = 1
+then = "c1_s2_b3_camp"
+else = "c1_s2_story2_route2"
+
+[[node]]
+type = "branch"
+id = "c1_s2_story2_route2"
+flag = "orig_route_c1_s2_b2"
+cmp = "Eq"
+value = 2
+then = "c1_s2_b5_camp"
+else = "c1_s2_story2_route3"
+
+[[node]]
+type = "branch"
+id = "c1_s2_story2_route3"
+flag = "orig_route_c1_s2_b2"
+cmp = "Eq"
+value = 3
+then = "c1_s2_b4_camp"
+else = "c1_s2_story6"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story2"
+scene = "c1_s2_story2"
+next = "c1_s2_story2_route1"
+
+[[node]]
+type = "branch"
+id = "c1_s2_b3_camp_route1"
+flag = "orig_route_c1_s2_b3"
+cmp = "Eq"
+value = 1
+then = "c1_s2_story6"
+else = "c1_s2_story2"
+
+[[node]]
+type = "camp"
+id = "c1_s2_b3_camp"
+title = "泰山 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s2_b3"
+next = "c1_s2_b3_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s2_b3_battle"
+battle = "c1_s2_b3"
+next = "c1_s2_b3_camp_route1"
+
+[[node]]
+type = "branch"
+id = "c1_s2_b4_camp_route1"
+flag = "orig_route_c1_s2_b4"
+cmp = "Eq"
+value = 1
+then = "c1_s2_story6"
+else = "c1_s2_story2"
+
+[[node]]
+type = "camp"
+id = "c1_s2_b4_camp"
+title = "彭城 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s2_b4"
+next = "c1_s2_b4_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s2_b4_battle"
+battle = "c1_s2_b4"
+next = "c1_s2_b4_camp_route1"
+
+[[node]]
+type = "branch"
+id = "c1_s2_b5_camp_route1"
+flag = "orig_route_c1_s2_b5"
+cmp = "Eq"
+value = 1
+then = "c1_s2_story6"
+else = "c1_s2_story2"
+
+[[node]]
+type = "camp"
+id = "c1_s2_b5_camp"
+title = "夏丘 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s2_b5"
+next = "c1_s2_b5_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s2_b5_battle"
+battle = "c1_s2_b5"
+next = "c1_s2_b5_camp_route1"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story6"
+scene = "c1_s2_story6"
+next = "c1_s2_story7"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story7"
+scene = "c1_s2_story7"
+next = "c1_s2_story8"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story8"
+scene = "c1_s2_story8"
+next = "c1_s2_story9"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story9"
+scene = "c1_s2_story9"
+next = "c1_s2_story10"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story10"
+scene = "c1_s2_story10"
+next = "c1_s2_story11"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story11"
+scene = "c1_s2_story11"
+next = "c1_s2_b12_camp"
+
+[[node]]
+type = "camp"
+id = "c1_s2_b12_camp"
+title = "淮南 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s2_b12"
+next = "c1_s2_b12_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s2_b12_battle"
+battle = "c1_s2_b12"
+next = "c1_s2_story13"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story13"
+scene = "c1_s2_story13"
+next = "c1_s2_story14"
+
+[[node]]
+type = "drama"
+id = "c1_s2_story14"
+scene = "c1_s2_story14"
+next = "c1_s3_story0"
+
+[[node]]
+type = "branch"
+id = "c1_s3_story0_route1"
+flag = "orig_route_c1_s3_b0"
+cmp = "Eq"
+value = 1
+then = "c1_s3_b1_camp"
+else = "c1_s3_story0_route2"
+
+[[node]]
+type = "branch"
+id = "c1_s3_story0_route2"
+flag = "orig_route_c1_s3_b0"
+cmp = "Eq"
+value = 2
+then = "c1_s3_b2_camp"
+else = "c1_s3_b1_camp"
+
+[[node]]
+type = "drama"
+id = "c1_s3_story0"
+scene = "c1_s3_story0"
+next = "c1_s3_story0_route1"
+
+[[node]]
+type = "camp"
+id = "c1_s3_b1_camp"
+title = "夏丘 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s3_b1"
+next = "c1_s3_b1_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s3_b1_battle"
+battle = "c1_s3_b1"
+next = "c1_s3_story3"
+
+[[node]]
+type = "camp"
+id = "c1_s3_b2_camp"
+title = "彭城 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s3_b2"
+next = "c1_s3_b2_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s3_b2_battle"
+battle = "c1_s3_b2"
+next = "c1_s3_story3"
+
+[[node]]
+type = "drama"
+id = "c1_s3_story3"
+scene = "c1_s3_story3"
+next = "c1_s3_b4_camp"
+
+[[node]]
+type = "camp"
+id = "c1_s3_b4_camp"
+title = "下邳 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s3_b4"
+next = "c1_s3_b4_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s3_b4_battle"
+battle = "c1_s3_b4"
+next = "c1_s3_story5"
+
+[[node]]
+type = "drama"
+id = "c1_s3_story5"
+scene = "c1_s3_story5"
+next = "c1_s4_story0"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story0"
+scene = "c1_s4_story0"
+next = "c1_s4_story1"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story1"
+scene = "c1_s4_story1"
+next = "c1_s4_story2"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story2"
+scene = "c1_s4_story2"
+next = "c1_s4_story3"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story3"
+scene = "c1_s4_story3"
+next = "c1_s4_story4"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story4"
+scene = "c1_s4_story4"
+next = "c1_s4_story5"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story5"
+scene = "c1_s4_story5"
+next = "c1_s4_story6"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story6"
+scene = "c1_s4_story6"
+next = "c1_s4_story7"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story7"
+scene = "c1_s4_story7"
+next = "c1_s4_story8"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story8"
+scene = "c1_s4_story8"
+next = "c1_s4_story9"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story9"
+scene = "c1_s4_story9"
+next = "c1_s4_story10"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story10"
+scene = "c1_s4_story10"
+next = "c1_s4_story11"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story11"
+scene = "c1_s4_story11"
+next = "c1_s4_story12"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story12"
+scene = "c1_s4_story12"
+next = "c1_s4_b13_camp"
+
+[[node]]
+type = "camp"
+id = "c1_s4_b13_camp"
+title = "廣陵 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s4_b13"
+next = "c1_s4_b13_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s4_b13_battle"
+battle = "c1_s4_b13"
+next = "c1_s4_story14"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story14"
+scene = "c1_s4_story14"
+next = "c1_s4_b15_camp"
+
+[[node]]
+type = "camp"
+id = "c1_s4_b15_camp"
+title = "徐州 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c1_s4_b15"
+next = "c1_s4_b15_battle"
+
+[[node]]
+type = "battle"
+id = "c1_s4_b15_battle"
+battle = "c1_s4_b15"
+next = "c1_s4_story16"
+
+[[node]]
+type = "drama"
+id = "c1_s4_story16"
+scene = "c1_s4_story16"
+next = "c2_s0_story0"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story0"
+scene = "c2_s0_story0"
+next = "c2_s0_story1"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story1"
+scene = "c2_s0_story1"
+next = "c2_s0_story2"
+
+[[node]]
+type = "branch"
+id = "c2_s0_story2_check"
+flag = "orig_game_over"
+cmp = "Eq"
+value = 1
+then = "orig_game_over"
+else = "c2_s0_story3"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story2"
+scene = "c2_s0_story2"
+next = "c2_s0_story2_check"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story3"
+scene = "c2_s0_story3"
+next = "c2_s0_story4"
+
+[[node]]
+type = "branch"
+id = "c2_s0_story4_check"
+flag = "orig_game_over"
+cmp = "Eq"
+value = 1
+then = "orig_game_over"
+else = "c2_s0_story5"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story4"
+scene = "c2_s0_story4"
+next = "c2_s0_story4_check"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story5"
+scene = "c2_s0_story5"
+next = "c2_s0_story6"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story6"
+scene = "c2_s0_story6"
+next = "c2_s0_story7"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story7"
+scene = "c2_s0_story7"
+next = "c2_s0_b8_camp"
+
+[[node]]
+type = "camp"
+id = "c2_s0_b8_camp"
+title = "兗州 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s0_b8"
+next = "c2_s0_b8_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s0_b8_battle"
+battle = "c2_s0_b8"
+next = "c2_s0_b9_camp"
+
+[[node]]
+type = "camp"
+id = "c2_s0_b9_camp"
+title = "古城 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s0_b9"
+next = "c2_s0_b9_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s0_b9_battle"
+battle = "c2_s0_b9"
+next = "c2_s0_story10"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story10"
+scene = "c2_s0_story10"
+next = "c2_s0_b11_camp"
+
+[[node]]
+type = "camp"
+id = "c2_s0_b11_camp"
+title = "穎川 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s0_b11"
+next = "c2_s0_b11_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s0_b11_battle"
+battle = "c2_s0_b11"
+next = "c2_s0_story12"
+
+[[node]]
+type = "branch"
+id = "c2_s0_story12_route1"
+flag = "orig_route_c2_s0_b12"
+cmp = "Eq"
+value = 1
+then = "c2_s0_story17"
+else = "c2_s0_story13"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story12"
+scene = "c2_s0_story12"
+next = "c2_s0_story12_route1"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story13"
+scene = "c2_s0_story13"
+next = "c2_s0_story14"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story14"
+scene = "c2_s0_story14"
+next = "c2_s0_story15"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story15"
+scene = "c2_s0_story15"
+next = "c2_s0_b16_camp"
+
+[[node]]
+type = "camp"
+id = "c2_s0_b16_camp"
+title = "汝南 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s0_b16"
+next = "c2_s0_b16_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s0_b16_battle"
+battle = "c2_s0_b16"
+next = "c2_s0_story17"
+
+[[node]]
+type = "drama"
+id = "c2_s0_story17"
+scene = "c2_s0_story17"
+next = "c2_s1_story0"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story0"
+scene = "c2_s1_story0"
+next = "c2_s1_story1"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story1"
+scene = "c2_s1_story1"
+next = "c2_s1_story2"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story2"
+scene = "c2_s1_story2"
+next = "c2_s1_story3"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story3"
+scene = "c2_s1_story3"
+next = "c2_s1_story4"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story4"
+scene = "c2_s1_story4"
+next = "c2_s1_story5"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story5"
+scene = "c2_s1_story5"
+next = "c2_s1_story6"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story6"
+scene = "c2_s1_story6"
+next = "c2_s1_b7_camp"
+
+[[node]]
+type = "camp"
+id = "c2_s1_b7_camp"
+title = "江夏 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s1_b7"
+next = "c2_s1_b7_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s1_b7_battle"
+battle = "c2_s1_b7"
+next = "c2_s1_story8"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story8"
+scene = "c2_s1_story8"
+next = "c2_s1_story9"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story9"
+scene = "c2_s1_story9"
+next = "c2_s1_story10"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story10"
+scene = "c2_s1_story10"
+next = "c2_s1_story11"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story11"
+scene = "c2_s1_story11"
+next = "c2_s1_story12"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story12"
+scene = "c2_s1_story12"
+next = "c2_s1_story13"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story13"
+scene = "c2_s1_story13"
+next = "c2_s1_story14"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story14"
+scene = "c2_s1_story14"
+next = "c2_s1_story15"
+
+[[node]]
+type = "drama"
+id = "c2_s1_story15"
+scene = "c2_s1_story15"
+next = "c2_s1_b16_camp"
+
+[[node]]
+type = "camp"
+id = "c2_s1_b16_camp"
+title = "南陽 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s1_b16"
+next = "c2_s1_b16_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s1_b16_battle"
+battle = "c2_s1_b16"
+next = "c2_s2_story0"
+
+[[node]]
+type = "drama"
+id = "c2_s2_story0"
+scene = "c2_s2_story0"
+next = "c2_s2_story1"
+
+[[node]]
+type = "drama"
+id = "c2_s2_story1"
+scene = "c2_s2_story1"
+next = "c2_s2_story2"
+
+[[node]]
+type = "drama"
+id = "c2_s2_story2"
+scene = "c2_s2_story2"
+next = "c2_s2_story3"
+
+[[node]]
+type = "drama"
+id = "c2_s2_story3"
+scene = "c2_s2_story3"
+next = "c2_s3_story0"
+
+[[node]]
+type = "drama"
+id = "c2_s3_story0"
+scene = "c2_s3_story0"
+next = "c2_s3_story1"
+
+[[node]]
+type = "branch"
+id = "c2_s3_story1_route1"
+flag = "orig_route_c2_s3_b1"
+cmp = "Eq"
+value = 1
+then = "c2_s3_b3_camp"
+else = "c2_s3_b2_camp"
+
+[[node]]
+type = "drama"
+id = "c2_s3_story1"
+scene = "c2_s3_story1"
+next = "c2_s3_story1_route1"
+
+[[node]]
+type = "camp"
+id = "c2_s3_b2_camp"
+title = "博望坡 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s3_b2"
+next = "c2_s3_b2_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s3_b2_battle"
+battle = "c2_s3_b2"
+next = "c2_s3_story4"
+
+[[node]]
+type = "camp"
+id = "c2_s3_b3_camp"
+title = "新野 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s3_b3"
+next = "c2_s3_b3_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s3_b3_battle"
+battle = "c2_s3_b3"
+next = "c2_s3_story4"
+
+[[node]]
+type = "drama"
+id = "c2_s3_story4"
+scene = "c2_s3_story4"
+next = "c2_s3_story5"
+
+[[node]]
+type = "branch"
+id = "c2_s3_story5_route1"
+flag = "orig_route_c2_s3_b5"
+cmp = "Eq"
+value = 1
+then = "c2_s3_b7_camp"
+else = "c2_s3_b6_camp"
+
+[[node]]
+type = "drama"
+id = "c2_s3_story5"
+scene = "c2_s3_story5"
+next = "c2_s3_story5_route1"
+
+[[node]]
+type = "camp"
+id = "c2_s3_b6_camp"
+title = "襄陽 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s3_b6"
+next = "c2_s3_b6_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s3_b6_battle"
+battle = "c2_s3_b6"
+next = "c2_s3_b7_camp"
+
+[[node]]
+type = "camp"
+id = "c2_s3_b7_camp"
+title = "長阪坡Ⅰ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s3_b7"
+next = "c2_s3_b7_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s3_b7_battle"
+battle = "c2_s3_b7"
+next = "c2_s3_b7_2_camp"
+
+[[node]]
+type = "camp"
+id = "c2_s3_b7_2_camp"
+title = "長阪坡Ⅱ 2 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c2_s3_b7_2"
+next = "c2_s3_b7_2_battle"
+
+[[node]]
+type = "battle"
+id = "c2_s3_b7_2_battle"
+battle = "c2_s3_b7_2"
+next = "c2_s3_story8"
+
+[[node]]
+type = "drama"
+id = "c2_s3_story8"
+scene = "c2_s3_story8"
+next = "c2_s3_story9"
+
+[[node]]
+type = "drama"
+id = "c2_s3_story9"
+scene = "c2_s3_story9"
+next = "c3_s0_story0"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story0"
+scene = "c3_s0_story0"
+next = "c3_s0_story1"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story1"
+scene = "c3_s0_story1"
+next = "c3_s0_b2_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s0_b2_camp"
+title = "江陵 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s0_b2"
+next = "c3_s0_b2_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s0_b2_battle"
+battle = "c3_s0_b2"
+next = "c3_s0_story4"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story4"
+scene = "c3_s0_story4"
+next = "c3_s0_story6"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story6"
+scene = "c3_s0_story6"
+next = "c3_s0_story7"
+
+[[node]]
+type = "branch"
+id = "c3_s0_story7_route1"
+flag = "orig_route_c3_s0_b7"
+cmp = "Eq"
+value = 1
+then = "c3_s0_b9_camp"
+else = "c3_s0_story7_route2"
+
+[[node]]
+type = "branch"
+id = "c3_s0_story7_route2"
+flag = "orig_route_c3_s0_b7"
+cmp = "Eq"
+value = 2
+then = "c3_s0_b8_camp"
+else = "c3_s0_story7_route3"
+
+[[node]]
+type = "branch"
+id = "c3_s0_story7_route3"
+flag = "orig_route_c3_s0_b7"
+cmp = "Eq"
+value = 3
+then = "c3_s0_b10_camp"
+else = "c3_s0_b8_camp"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story7"
+scene = "c3_s0_story7"
+next = "c3_s0_story7_route1"
+
+[[node]]
+type = "camp"
+id = "c3_s0_b8_camp"
+title = "零陵 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s0_b8"
+next = "c3_s0_b8_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s0_b8_battle"
+battle = "c3_s0_b8"
+next = "c3_s0_story12"
+
+[[node]]
+type = "camp"
+id = "c3_s0_b9_camp"
+title = "武陵 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s0_b9"
+next = "c3_s0_b9_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s0_b9_battle"
+battle = "c3_s0_b9"
+next = "c3_s0_story12"
+
+[[node]]
+type = "camp"
+id = "c3_s0_b10_camp"
+title = "桂陽 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s0_b10"
+next = "c3_s0_b10_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s0_b10_battle"
+battle = "c3_s0_b10"
+next = "c3_s0_story11"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story11"
+scene = "c3_s0_story11"
+next = "c3_s0_story12"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story12"
+scene = "c3_s0_story12"
+next = "c3_s0_b13_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s0_b13_camp"
+title = "長沙 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s0_b13"
+next = "c3_s0_b13_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s0_b13_battle"
+battle = "c3_s0_b13"
+next = "c3_s0_story14"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story14"
+scene = "c3_s0_story14"
+next = "c3_s0_story15"
+
+[[node]]
+type = "drama"
+id = "c3_s0_story15"
+scene = "c3_s0_story15"
+next = "c3_s1_story0"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story0"
+scene = "c3_s1_story0"
+next = "c3_s1_story1"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story1"
+scene = "c3_s1_story1"
+next = "c3_s1_story2"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story2"
+scene = "c3_s1_story2"
+next = "c3_s1_story3"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story3"
+scene = "c3_s1_story3"
+next = "c3_s1_story4"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story4"
+scene = "c3_s1_story4"
+next = "c3_s1_b5_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s1_b5_camp"
+title = "公安 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s1_b5"
+next = "c3_s1_b5_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s1_b5_battle"
+battle = "c3_s1_b5"
+next = "c3_s1_story6"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story6"
+scene = "c3_s1_story6"
+next = "c3_s1_story7"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story7"
+scene = "c3_s1_story7"
+next = "c3_s1_story8"
+
+[[node]]
+type = "branch"
+id = "c3_s1_story8_route1"
+flag = "orig_route_c3_s1_b8"
+cmp = "Eq"
+value = 1
+then = "c3_s1_story9"
+else = "c3_s1_story8_route2"
+
+[[node]]
+type = "branch"
+id = "c3_s1_story8_route2"
+flag = "orig_route_c3_s1_b8"
+cmp = "Eq"
+value = 2
+then = "c3_s1_story10"
+else = "c3_s1_story8_route3"
+
+[[node]]
+type = "branch"
+id = "c3_s1_story8_route3"
+flag = "orig_route_c3_s1_b8"
+cmp = "Eq"
+value = 3
+then = "c3_s1_story11"
+else = "c3_s1_story9"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story8"
+scene = "c3_s1_story8"
+next = "c3_s1_story8_route1"
+
+[[node]]
+type = "branch"
+id = "c3_s1_story9_route1"
+flag = "orig_route_c3_s1_b9"
+cmp = "Eq"
+value = 1
+then = "c3_s1_story10"
+else = "c3_s1_story9_route2"
+
+[[node]]
+type = "branch"
+id = "c3_s1_story9_route2"
+flag = "orig_route_c3_s1_b9"
+cmp = "Eq"
+value = 2
+then = "c3_s1_story11"
+else = "c3_s1_story10"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story9"
+scene = "c3_s1_story9"
+next = "c3_s1_story9_route1"
+
+[[node]]
+type = "branch"
+id = "c3_s1_story10_route1"
+flag = "orig_route_c3_s1_b10"
+cmp = "Eq"
+value = 1
+then = "c3_s1_story9"
+else = "c3_s1_story10_route2"
+
+[[node]]
+type = "branch"
+id = "c3_s1_story10_route2"
+flag = "orig_route_c3_s1_b10"
+cmp = "Eq"
+value = 2
+then = "c3_s1_story11"
+else = "c3_s1_story11"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story10"
+scene = "c3_s1_story10"
+next = "c3_s1_story10_route1"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story11"
+scene = "c3_s1_story11"
+next = "c3_s1_story12"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story12"
+scene = "c3_s1_story12"
+next = "c3_s1_story13"
+
+[[node]]
+type = "drama"
+id = "c3_s1_story13"
+scene = "c3_s1_story13"
+next = "c3_s2_story0"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story0"
+scene = "c3_s2_story0"
+next = "c3_s2_story1"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story1"
+scene = "c3_s2_story1"
+next = "c3_s2_story2"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story2"
+scene = "c3_s2_story2"
+next = "c3_s2_story3"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story3"
+scene = "c3_s2_story3"
+next = "c3_s2_story4"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story4"
+scene = "c3_s2_story4"
+next = "c3_s2_story5"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story5"
+scene = "c3_s2_story5"
+next = "c3_s2_b6_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s2_b6_camp"
+title = "雒 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s2_b6"
+next = "c3_s2_b6_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s2_b6_battle"
+battle = "c3_s2_b6"
+next = "c3_s2_story7"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story7"
+scene = "c3_s2_story7"
+next = "c3_s2_story8"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story8"
+scene = "c3_s2_story8"
+next = "c3_s2_story9"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story9"
+scene = "c3_s2_story9"
+next = "c3_s2_b10_before"
+
+[[node]]
+type = "drama"
+id = "c3_s2_b10_before"
+scene = "c3_s2_b10_before"
+next = "c3_s2_b10_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s2_b10_camp"
+title = "雒 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s2_b10"
+next = "c3_s2_b10_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s2_b10_battle"
+battle = "c3_s2_b10"
+next = "c3_s2_story11"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story11"
+scene = "c3_s2_story11"
+next = "c3_s2_story12"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story12"
+scene = "c3_s2_story12"
+next = "c3_s2_story13"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story13"
+scene = "c3_s2_story13"
+next = "c3_s2_b14_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s2_b14_camp"
+title = "葭萌關Ⅰ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s2_b14"
+next = "c3_s2_b14_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s2_b14_battle"
+battle = "c3_s2_b14"
+next = "c3_s2_story15"
+
+[[node]]
+type = "branch"
+id = "c3_s2_story15_route1"
+flag = "orig_route_c3_s2_b15"
+cmp = "Eq"
+value = 1
+then = "c3_s2_story17"
+else = "c3_s2_b16_camp"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story15"
+scene = "c3_s2_story15"
+next = "c3_s2_story15_route1"
+
+[[node]]
+type = "camp"
+id = "c3_s2_b16_camp"
+title = "成都 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s2_b16"
+next = "c3_s2_b16_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s2_b16_battle"
+battle = "c3_s2_b16"
+next = "c3_s2_story17"
+
+[[node]]
+type = "drama"
+id = "c3_s2_story17"
+scene = "c3_s2_story17"
+next = "c3_s3_story0"
+
+[[node]]
+type = "drama"
+id = "c3_s3_story0"
+scene = "c3_s3_story0"
+next = "c3_s3_story1"
+
+[[node]]
+type = "drama"
+id = "c3_s3_story1"
+scene = "c3_s3_story1"
+next = "c3_s3_b2_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s3_b2_camp"
+title = "瓦口關Ⅰ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s3_b2"
+next = "c3_s3_b2_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s3_b2_battle"
+battle = "c3_s3_b2"
+next = "c3_s3_b2_2_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s3_b2_2_camp"
+title = "瓦口關Ⅱ 2 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s3_b2_2"
+next = "c3_s3_b2_2_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s3_b2_2_battle"
+battle = "c3_s3_b2_2"
+next = "c3_s3_story3"
+
+[[node]]
+type = "branch"
+id = "c3_s3_story3_route1"
+flag = "orig_route_c3_s3_b3"
+cmp = "Eq"
+value = 1
+then = "c3_s3_b4_camp"
+else = "c3_s3_story3_route2"
+
+[[node]]
+type = "branch"
+id = "c3_s3_story3_route2"
+flag = "orig_route_c3_s3_b3"
+cmp = "Eq"
+value = 2
+then = "c3_s3_b6_camp"
+else = "c3_s3_b4_camp"
+
+[[node]]
+type = "drama"
+id = "c3_s3_story3"
+scene = "c3_s3_story3"
+next = "c3_s3_story3_route1"
+
+[[node]]
+type = "camp"
+id = "c3_s3_b4_camp"
+title = "葭萌關Ⅱ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s3_b4"
+next = "c3_s3_b4_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s3_b4_battle"
+battle = "c3_s3_b4"
+next = "c3_s3_story5"
+
+[[node]]
+type = "branch"
+id = "c3_s3_story5_route1"
+flag = "orig_route_c3_s3_b5"
+cmp = "Eq"
+value = 1
+then = "c3_s3_b6_camp"
+else = "c3_s3_story5_route2"
+
+[[node]]
+type = "branch"
+id = "c3_s3_story5_route2"
+flag = "orig_route_c3_s3_b5"
+cmp = "Eq"
+value = 2
+then = "c3_s3_b10_camp"
+else = "c3_s3_b6_camp"
+
+[[node]]
+type = "drama"
+id = "c3_s3_story5"
+scene = "c3_s3_story5"
+next = "c3_s3_story5_route1"
+
+[[node]]
+type = "camp"
+id = "c3_s3_b6_camp"
+title = "定軍山 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s3_b6"
+next = "c3_s3_b6_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s3_b6_battle"
+battle = "c3_s3_b6"
+next = "c3_s3_story7"
+
+[[node]]
+type = "branch"
+id = "c3_s3_story7_route1"
+flag = "orig_route_c3_s3_b7"
+cmp = "Eq"
+value = 1
+then = "c3_s3_b12_camp"
+else = "c3_s3_story7_route2"
+
+[[node]]
+type = "branch"
+id = "c3_s3_story7_route2"
+flag = "orig_route_c3_s3_b7"
+cmp = "Eq"
+value = 2
+then = "c3_s3_b8_camp"
+else = "c3_s3_story7_route3"
+
+[[node]]
+type = "branch"
+id = "c3_s3_story7_route3"
+flag = "orig_route_c3_s3_b7"
+cmp = "Eq"
+value = 3
+then = "c3_s3_b12_camp"
+else = "c3_s3_b8_camp"
+
+[[node]]
+type = "drama"
+id = "c3_s3_story7"
+scene = "c3_s3_story7"
+next = "c3_s3_story7_route1"
+
+[[node]]
+type = "camp"
+id = "c3_s3_b8_camp"
+title = "天蕩山 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s3_b8"
+next = "c3_s3_b8_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s3_b8_battle"
+battle = "c3_s3_b8"
+next = "c3_s3_story9"
+
+[[node]]
+type = "drama"
+id = "c3_s3_story9"
+scene = "c3_s3_story9"
+next = "c3_s3_b12_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s3_b10_camp"
+title = "天蕩山 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s3_b10"
+next = "c3_s3_b10_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s3_b10_battle"
+battle = "c3_s3_b10"
+next = "c3_s3_story11"
+
+[[node]]
+type = "drama"
+id = "c3_s3_story11"
+scene = "c3_s3_story11"
+next = "c3_s3_b12_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s3_b12_camp"
+title = "漢水 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s3_b12"
+next = "c3_s3_b12_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s3_b12_battle"
+battle = "c3_s3_b12"
+next = "c3_s3_story13"
+
+[[node]]
+type = "drama"
+id = "c3_s3_story13"
+scene = "c3_s3_story13"
+next = "c3_s3_b14_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s3_b14_camp"
+title = "陽平關 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s3_b14"
+next = "c3_s3_b14_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s3_b14_battle"
+battle = "c3_s3_b14"
+next = "c3_s4_b0_before"
+
+[[node]]
+type = "drama"
+id = "c3_s4_b0_before"
+scene = "c3_s4_b0_before"
+next = "c3_s4_b0_camp"
+
+[[node]]
+type = "drama"
+id = "c3_s4_b0_defeat"
+scene = "c3_s4_b0_defeat"
+next = "c3_s4_story2"
+
+[[node]]
+type = "camp"
+id = "c3_s4_b0_camp"
+title = "麥 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s4_b0"
+next = "c3_s4_b0_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s4_b0_battle"
+battle = "c3_s4_b0"
+next = "c3_s4_story2"
+on_defeat = "c3_s4_b0_defeat"
+
+[[node]]
+type = "drama"
+id = "c3_s4_story2"
+scene = "c3_s4_story2"
+next = "c3_s4_story3"
+
+[[node]]
+type = "drama"
+id = "c3_s4_story3"
+scene = "c3_s4_story3"
+next = "c3_s4_b4_before"
+
+[[node]]
+type = "drama"
+id = "c3_s4_b4_before"
+scene = "c3_s4_b4_before"
+next = "c3_s4_b4_camp"
+
+[[node]]
+type = "camp"
+id = "c3_s4_b4_camp"
+title = "西陵 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s4_b4"
+next = "c3_s4_b4_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s4_b4_battle"
+battle = "c3_s4_b4"
+next = "c3_s4_story5"
+
+[[node]]
+type = "drama"
+id = "c3_s4_story5"
+scene = "c3_s4_story5"
+next = "c3_s4_b6_camp"
+
+[[node]]
+type = "drama"
+id = "c3_s4_b6_defeat"
+scene = "c3_s4_b6_defeat"
+next = "c3_s4_story7"
+
+[[node]]
+type = "camp"
+id = "c3_s4_b6_camp"
+title = "彝陵 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c3_s4_b6"
+next = "c3_s4_b6_battle"
+
+[[node]]
+type = "battle"
+id = "c3_s4_b6_battle"
+battle = "c3_s4_b6"
+next = "c3_s4_story8"
+on_defeat = "c3_s4_b6_defeat"
+
+[[node]]
+type = "branch"
+id = "c3_s4_story7_ending3"
+flag = "orig_ending"
+cmp = "Eq"
+value = 4
+then = "orig_ending_3"
+else = "c3_s4_story8"
+
+[[node]]
+type = "drama"
+id = "c3_s4_story7"
+scene = "c3_s4_story7"
+next = "c3_s4_story7_ending3"
+
+[[node]]
+type = "drama"
+id = "c3_s4_story8"
+scene = "c3_s4_story8"
+next = "c4_s0_story0"
+
+[[node]]
+type = "drama"
+id = "c4_s0_story0"
+scene = "c4_s0_story0"
+next = "c4_s0_story1"
+
+[[node]]
+type = "drama"
+id = "c4_s0_story1"
+scene = "c4_s0_story1"
+next = "c4_s0_story2"
+
+[[node]]
+type = "drama"
+id = "c4_s0_story2"
+scene = "c4_s0_story2"
+next = "c4_s0_story3"
+
+[[node]]
+type = "drama"
+id = "c4_s0_story3"
+scene = "c4_s0_story3"
+next = "c4_s0_story4"
+
+[[node]]
+type = "drama"
+id = "c4_s0_story4"
+scene = "c4_s0_story4"
+next = "c4_s0_b5_camp"
+
+[[node]]
+type = "camp"
+id = "c4_s0_b5_camp"
+title = "襄陽 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s0_b5"
+next = "c4_s0_b5_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s0_b5_battle"
+battle = "c4_s0_b5"
+next = "c4_s0_story6"
+
+[[node]]
+type = "branch"
+id = "c4_s0_story6_route1"
+flag = "orig_route_c4_s0_b6"
+cmp = "Eq"
+value = 1
+then = "c4_s0_b8_camp"
+else = "c4_s0_b7_camp"
+
+[[node]]
+type = "drama"
+id = "c4_s0_story6"
+scene = "c4_s0_story6"
+next = "c4_s0_story6_route1"
+
+[[node]]
+type = "camp"
+id = "c4_s0_b7_camp"
+title = "新野 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s0_b7"
+next = "c4_s0_b7_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s0_b7_battle"
+battle = "c4_s0_b7"
+next = "c4_s0_story9"
+
+[[node]]
+type = "camp"
+id = "c4_s0_b8_camp"
+title = "南郡 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s0_b8"
+next = "c4_s0_b8_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s0_b8_battle"
+battle = "c4_s0_b8"
+next = "c4_s0_story9"
+
+[[node]]
+type = "branch"
+id = "c4_s0_story9_route1"
+flag = "orig_route_c4_s0_b9"
+cmp = "Eq"
+value = 1
+then = "c4_s0_b11_camp"
+else = "c4_s0_b10_camp"
+
+[[node]]
+type = "drama"
+id = "c4_s0_story9"
+scene = "c4_s0_story9"
+next = "c4_s0_story9_route1"
+
+[[node]]
+type = "camp"
+id = "c4_s0_b10_camp"
+title = "宛Ⅰ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s0_b10"
+next = "c4_s0_b10_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s0_b10_battle"
+battle = "c4_s0_b10"
+next = "c4_s0_b11_camp"
+
+[[node]]
+type = "camp"
+id = "c4_s0_b11_camp"
+title = "宛Ⅱ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s0_b11"
+next = "c4_s0_b11_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s0_b11_battle"
+battle = "c4_s0_b11"
+next = "c4_s1_story0"
+
+[[node]]
+type = "branch"
+id = "c4_s1_story0_route1"
+flag = "orig_route_c4_s1_b0"
+cmp = "Eq"
+value = 1
+then = "c4_s1_story4"
+else = "c4_s1_story1"
+
+[[node]]
+type = "drama"
+id = "c4_s1_story0"
+scene = "c4_s1_story0"
+next = "c4_s1_story0_route1"
+
+[[node]]
+type = "drama"
+id = "c4_s1_story1"
+scene = "c4_s1_story1"
+next = "c4_s1_b2_which"
+
+[[node]]
+type = "drama"
+id = "c4_s1_b2_defeat"
+scene = "c4_s1_b2_defeat"
+next = "c4_s1_story4"
+
+[[node]]
+type = "camp"
+id = "c4_s1_b2_f38_camp"
+title = "陳倉 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s1_b2_f38"
+next = "c4_s1_b2_f38_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s1_b2_f38_battle"
+battle = "c4_s1_b2_f38"
+next = "c4_s1_b3_which"
+on_defeat = "c4_s1_b2_defeat"
+
+[[node]]
+type = "camp"
+id = "c4_s1_b2_camp"
+title = "陳倉 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s1_b2"
+next = "c4_s1_b2_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s1_b2_battle"
+battle = "c4_s1_b2"
+next = "c4_s1_b3_which"
+on_defeat = "c4_s1_b2_defeat"
+
+[[node]]
+type = "branch"
+id = "c4_s1_b2_which"
+flag = "orig_f38"
+cmp = "Ne"
+value = 0
+then = "c4_s1_b2_f38_camp"
+else = "c4_s1_b2_camp"
+
+[[node]]
+type = "drama"
+id = "c4_s1_b3_defeat"
+scene = "c4_s1_b3_defeat"
+next = "c4_s1_story4"
+
+[[node]]
+type = "camp"
+id = "c4_s1_b3_f38_camp"
+title = "長安 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s1_b3_f38"
+next = "c4_s1_b3_f38_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s1_b3_f38_battle"
+battle = "c4_s1_b3_f38"
+next = "c4_s1_story4"
+on_defeat = "c4_s1_b3_defeat"
+
+[[node]]
+type = "camp"
+id = "c4_s1_b3_camp"
+title = "長安 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s1_b3"
+next = "c4_s1_b3_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s1_b3_battle"
+battle = "c4_s1_b3"
+next = "c4_s1_story4"
+on_defeat = "c4_s1_b3_defeat"
+
+[[node]]
+type = "branch"
+id = "c4_s1_b3_which"
+flag = "orig_f38"
+cmp = "Ne"
+value = 0
+then = "c4_s1_b3_f38_camp"
+else = "c4_s1_b3_camp"
+
+[[node]]
+type = "branch"
+id = "c4_s1_story4_route1"
+flag = "orig_route_c4_s1_b4"
+cmp = "Eq"
+value = 1
+then = "c4_s1_b7_before"
+else = "c4_s1_story4_route2"
+
+[[node]]
+type = "branch"
+id = "c4_s1_story4_route2"
+flag = "orig_route_c4_s1_b4"
+cmp = "Eq"
+value = 2
+then = "c4_s1_b6_before"
+else = "c4_s1_story4_route3"
+
+[[node]]
+type = "branch"
+id = "c4_s1_story4_route3"
+flag = "orig_route_c4_s1_b4"
+cmp = "Eq"
+value = 3
+then = "c4_s1_b5_camp"
+else = "c4_s1_b5_camp"
+
+[[node]]
+type = "drama"
+id = "c4_s1_story4"
+scene = "c4_s1_story4"
+next = "c4_s1_story4_route1"
+
+[[node]]
+type = "camp"
+id = "c4_s1_b5_camp"
+title = "洛陽 — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s1_b5"
+next = "c4_s1_b5_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s1_b5_battle"
+battle = "c4_s1_b5"
+next = "c4_s1_b6_before"
+
+[[node]]
+type = "drama"
+id = "c4_s1_b6_before"
+scene = "c4_s1_b6_before"
+next = "c4_s1_b6_camp"
+
+[[node]]
+type = "camp"
+id = "c4_s1_b6_camp"
+title = "許昌Ⅰ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s1_b6"
+next = "c4_s1_b6_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s1_b6_battle"
+battle = "c4_s1_b6"
+next = "c4_s1_b7_before"
+
+[[node]]
+type = "drama"
+id = "c4_s1_b7_before"
+scene = "c4_s1_b7_before"
+next = "c4_s1_b7_camp"
+
+[[node]]
+type = "camp"
+id = "c4_s1_b7_camp"
+title = "許昌Ⅱ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s1_b7"
+next = "c4_s1_b7_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s1_b7_battle"
+battle = "c4_s1_b7"
+next = "c4_s1_story8"
+
+[[node]]
+type = "drama"
+id = "c4_s1_story8"
+scene = "c4_s1_story8"
+next = "c4_s2_story0"
+
+[[node]]
+type = "drama"
+id = "c4_s2_story0"
+scene = "c4_s2_story0"
+next = "c4_s2_story1"
+
+[[node]]
+type = "drama"
+id = "c4_s2_story1"
+scene = "c4_s2_story1"
+next = "c4_s2_b2_which"
+
+[[node]]
+type = "camp"
+id = "c4_s2_b2_f218_camp"
+title = "鄴Ⅰ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s2_b2_f218"
+next = "c4_s2_b2_f218_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s2_b2_f218_battle"
+battle = "c4_s2_b2_f218"
+next = "c4_s2_b3_which"
+
+[[node]]
+type = "camp"
+id = "c4_s2_b2_camp"
+title = "鄴Ⅰ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s2_b2"
+next = "c4_s2_b2_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s2_b2_battle"
+battle = "c4_s2_b2"
+next = "c4_s2_b3_which"
+
+[[node]]
+type = "branch"
+id = "c4_s2_b2_which"
+flag = "orig_f218"
+cmp = "Ne"
+value = 0
+then = "c4_s2_b2_f218_camp"
+else = "c4_s2_b2_camp"
+
+[[node]]
+type = "camp"
+id = "c4_s2_b3_f218_camp"
+title = "鄴Ⅱ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s2_b3_f218"
+next = "c4_s2_b3_f218_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s2_b3_f218_battle"
+battle = "c4_s2_b3_f218"
+next = "c4_s2_b4_which"
+
+[[node]]
+type = "camp"
+id = "c4_s2_b3_camp"
+title = "鄴Ⅱ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s2_b3"
+next = "c4_s2_b3_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s2_b3_battle"
+battle = "c4_s2_b3"
+next = "c4_s2_b4_which"
+
+[[node]]
+type = "branch"
+id = "c4_s2_b3_which"
+flag = "orig_f218"
+cmp = "Ne"
+value = 0
+then = "c4_s2_b3_f218_camp"
+else = "c4_s2_b3_camp"
+
+[[node]]
+type = "camp"
+id = "c4_s2_b4_f218_camp"
+title = "鄴Ⅲ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s2_b4_f218"
+next = "c4_s2_b4_f218_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s2_b4_f218_battle"
+battle = "c4_s2_b4_f218"
+next = "c4_s2_story5"
+
+[[node]]
+type = "camp"
+id = "c4_s2_b4_camp"
+title = "鄴Ⅲ — 출진 준비"
+shop = ["wine", "bean", "salve"]
+battle = "c4_s2_b4"
+next = "c4_s2_b4_battle"
+
+[[node]]
+type = "battle"
+id = "c4_s2_b4_battle"
+battle = "c4_s2_b4"
+next = "c4_s2_story5"
+
+[[node]]
+type = "branch"
+id = "c4_s2_b4_which"
+flag = "orig_f218"
+cmp = "Ne"
+value = 0
+then = "c4_s2_b4_f218_camp"
+else = "c4_s2_b4_camp"
+
+[[node]]
+type = "branch"
+id = "c4_s2_story5_ending2"
+flag = "orig_ending"
+cmp = "Eq"
+value = 3
+then = "orig_ending_2"
+else = "orig_c4_end"
+
+[[node]]
+type = "branch"
+id = "c4_s2_story5_ending1"
+flag = "orig_ending"
+cmp = "Eq"
+value = 2
+then = "orig_ending_1"
+else = "c4_s2_story5_ending2"
+
+[[node]]
+type = "branch"
+id = "c4_s2_story5_ending0"
+flag = "orig_ending"
+cmp = "Eq"
+value = 1
+then = "orig_ending_0"
+else = "c4_s2_story5_ending1"
+
+[[node]]
+type = "drama"
+id = "c4_s2_story5"
+scene = "c4_s2_story5"
+next = "c4_s2_story5_ending0"
+
+[[node]]
+type = "ending"
+id = "orig_c4_end"
+title = "제4장 완료"
+
+[[node]]
+type = "ending"
+id = "orig_ending_0"
+title = "엔딩 1"
+
+[[node]]
+type = "ending"
+id = "orig_ending_1"
+title = "엔딩 2"
+
+[[node]]
+type = "ending"
+id = "orig_ending_2"
+title = "엔딩 3"
+
+[[node]]
+type = "ending"
+id = "orig_ending_3"
+title = "엔딩 4"
+
+[[node]]
+type = "ending"
+id = "orig_game_over"
+title = "게임 오버"

@@ -1,0 +1,335 @@
+# c1_s3_b2: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 3 block 2) on the
+# original map hexz_12. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: named by the setup but not in the army at this battle, so allies at their slot: guo_jia, xiahou_dun, xiahou_yuan
+
+id = "c1_s3_b2"
+name = "彭城 전투"
+location = ""
+objective = "一、高順撤退．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 500
+outro = "c1_s3_b2_outro"
+
+[map]
+use = "hexz_12"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = []
+forbidden = ["guo_jia", "xiahou_dun", "xiahou_yuan"]
+slots = [[1, 3], [1, 1], [2, 0], [2, 2], [0, 2], [0, 3], [0, 4]]
+
+[[units]]
+side = "ally"
+officer = "guo_jia"
+pos = [6, 15]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "xiahou_dun"
+pos = [6, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "xiahou_yuan"
+pos = [7, 15]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "gao_shun"
+class = "beast"
+level = 17
+pos = [17, 15]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 14
+stats = [40, 30, 50]
+pos = [13, 12]
+ai = "advance"
+ai_pos = [8, 11]
+commander = false
+tag = "person_256"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 13
+stats = [40, 30, 50]
+pos = [16, 13]
+ai = "advance"
+ai_pos = [15, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 12
+stats = [40, 30, 50]
+pos = [17, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 14
+stats = [40, 50, 30]
+pos = [16, 8]
+ai = "advance"
+ai_pos = [14, 4]
+commander = false
+tag = "person_274"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 12
+stats = [40, 50, 30]
+pos = [15, 14]
+ai = "advance"
+ai_pos = [16, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 10
+stats = [50, 30, 40]
+pos = [15, 9]
+ai = "advance"
+ai_pos = [14, 4]
+commander = false
+tag = "person_292"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 10
+stats = [50, 30, 40]
+pos = [15, 10]
+ai = "advance"
+ai_pos = [14, 4]
+commander = false
+tag = "person_293"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 9
+stats = [50, 30, 40]
+pos = [14, 13]
+ai = "advance"
+ai_pos = [8, 11]
+commander = false
+tag = "person_294"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 10
+stats = [50, 30, 40]
+pos = [14, 14]
+ai = "advance"
+ai_pos = [12, 12]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 9
+stats = [50, 30, 40]
+pos = [16, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 14
+stats = [50, 40, 30]
+pos = [15, 8]
+ai = "advance"
+ai_pos = [14, 4]
+commander = false
+tag = "person_310"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 12
+stats = [50, 40, 30]
+pos = [13, 13]
+ai = "advance"
+ai_pos = [8, 11]
+commander = false
+tag = "person_311"
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 12
+stats = [10, 70, 10]
+pos = [15, 15]
+ai = "defensive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s3_b2_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "gao_shun"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s3_b2_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s3_b2_3_2"
+
+[[events.actions]]
+type = "retreat"
+target = "gao_shun"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c1_s3_b2_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 2
+side = "player"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_256"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_311"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "advance"
+ai_pos = [8, 4]
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "advance"
+ai_pos = [8, 4]
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "advance"
+ai_pos = [8, 4]
+
+[[events.actions]]
+type = "set_ai"
+target = "person_310"
+ai = "advance"
+ai_pos = [8, 4]
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 3
+side = "player"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_310"
+ai = "aggressive"
+
+[[treasures]]
+pos = [16, 12]
+item = "horse_armor"
+gold = 0

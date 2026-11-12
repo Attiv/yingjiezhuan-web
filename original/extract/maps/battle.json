@@ -1,0 +1,4821 @@
+{
+  "note": "Battle maps of HEXZMAP.R3. `chips` are rows of 16-px chip indices into a bank of HEXZCHP entry 0 (80 cells, indices 0–79) followed by entry `chip_set` (indices 80–255); the chip sheets gfx/original/maps/battle/chips-<set>.png show a bank in index order, 16 per row. `terrain` are rows of terrain codes, one per 2×2-chip cell (the 32-px grid units move on); `terrain_table` names the codes. `chip_terrain` counts, for every chip, the terrain codes of the cells it is drawn in over all maps (a guide for mapping chips to terrain; the map's own terrain grid is authoritative).",
+  "palette_slot": 1,
+  "second_set_maps": [
+    0,
+    1,
+    4,
+    8,
+    10,
+    16,
+    20,
+    28,
+    29,
+    30,
+    35,
+    36,
+    39,
+    40,
+    42,
+    43,
+    44,
+    50,
+    52
+  ],
+  "terrain_table": [
+    {
+      "code": 0,
+      "id": "plain",
+      "name": "平原",
+      "scene_backdrop": 4,
+      "scene_ground": 7
+    },
+    {
+      "code": 1,
+      "id": "forest",
+      "name": "森林",
+      "scene_backdrop": 3,
+      "scene_ground": 7
+    },
+    {
+      "code": 2,
+      "id": "hill",
+      "name": "山地",
+      "scene_backdrop": 0,
+      "scene_ground": 7
+    },
+    {
+      "code": 3,
+      "id": "stream",
+      "name": "河流",
+      "scene_backdrop": 0,
+      "scene_ground": 5
+    },
+    {
+      "code": 4,
+      "id": "bridge",
+      "name": "橋樑",
+      "scene_backdrop": 1,
+      "scene_ground": 6
+    },
+    {
+      "code": 5,
+      "id": "wall",
+      "name": "城牆",
+      "scene_backdrop": 0,
+      "scene_ground": 5
+    },
+    {
+      "code": 6,
+      "id": "castle",
+      "name": "城池",
+      "scene_backdrop": 2,
+      "scene_ground": 5
+    },
+    {
+      "code": 7,
+      "id": "grassland",
+      "name": "草原",
+      "scene_backdrop": 4,
+      "scene_ground": 7
+    },
+    {
+      "code": 8,
+      "id": "village",
+      "name": "村莊",
+      "scene_backdrop": 4,
+      "scene_ground": 7
+    },
+    {
+      "code": 9,
+      "id": "cliff",
+      "name": "懸崖",
+      "scene_backdrop": 0,
+      "scene_ground": 5
+    },
+    {
+      "code": 10,
+      "id": "gate",
+      "name": "城門",
+      "scene_backdrop": 0,
+      "scene_ground": 5
+    },
+    {
+      "code": 11,
+      "id": "wasteland",
+      "name": "荒地",
+      "scene_backdrop": 0,
+      "scene_ground": 8
+    },
+    {
+      "code": 12,
+      "id": "fence",
+      "name": "柵欄",
+      "scene_backdrop": 0,
+      "scene_ground": 5
+    },
+    {
+      "code": 13,
+      "id": "fortress",
+      "name": "鹿砦",
+      "scene_backdrop": 2,
+      "scene_ground": 5
+    },
+    {
+      "code": 14,
+      "id": "barracks",
+      "name": "兵營",
+      "scene_backdrop": 4,
+      "scene_ground": 7
+    },
+    {
+      "code": 15,
+      "id": "granary",
+      "name": "糧倉",
+      "scene_backdrop": 2,
+      "scene_ground": 5
+    },
+    {
+      "code": 16,
+      "id": "treasury",
+      "name": "寶物庫",
+      "scene_backdrop": 2,
+      "scene_ground": 5
+    },
+    {
+      "code": 17,
+      "id": "house",
+      "name": "房舍",
+      "scene_backdrop": 0,
+      "scene_ground": 5
+    },
+    {
+      "code": 18,
+      "id": "fire",
+      "name": "火燄",
+      "scene_backdrop": 0,
+      "scene_ground": 5
+    },
+    {
+      "code": 19,
+      "id": "flood",
+      "name": "濁流",
+      "scene_backdrop": 0,
+      "scene_ground": 5
+    }
+  ],
+  "maps": [
+    {
+      "index": 0,
+      "name": "汜水關",
+      "size_chips": [
+        56,
+        32
+      ],
+      "size_cells": [
+        28,
+        16
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/000.json",
+      "image": "gfx/original/maps/battle/000.png"
+    },
+    {
+      "index": 1,
+      "name": "虎牢關",
+      "size_chips": [
+        32,
+        48
+      ],
+      "size_cells": [
+        16,
+        24
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/001.json",
+      "image": "gfx/original/maps/battle/001.png"
+    },
+    {
+      "index": 2,
+      "name": "廣川",
+      "size_chips": [
+        40,
+        22
+      ],
+      "size_cells": [
+        20,
+        11
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/002.json",
+      "image": "gfx/original/maps/battle/002.png"
+    },
+    {
+      "index": 3,
+      "name": "信都",
+      "size_chips": [
+        44,
+        22
+      ],
+      "size_cells": [
+        22,
+        11
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/003.json",
+      "image": "gfx/original/maps/battle/003.png"
+    },
+    {
+      "index": 4,
+      "name": "巨鹿",
+      "size_chips": [
+        36,
+        36
+      ],
+      "size_cells": [
+        18,
+        18
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/004.json",
+      "image": "gfx/original/maps/battle/004.png"
+    },
+    {
+      "index": 5,
+      "name": "清河",
+      "size_chips": [
+        56,
+        32
+      ],
+      "size_cells": [
+        28,
+        16
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/005.json",
+      "image": "gfx/original/maps/battle/005.png"
+    },
+    {
+      "index": 6,
+      "name": "界橋",
+      "size_chips": [
+        64,
+        48
+      ],
+      "size_cells": [
+        32,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/006.json",
+      "image": "gfx/original/maps/battle/006.png"
+    },
+    {
+      "index": 7,
+      "name": "北海",
+      "size_chips": [
+        48,
+        40
+      ],
+      "size_cells": [
+        24,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/007.json",
+      "image": "gfx/original/maps/battle/007.png"
+    },
+    {
+      "index": 8,
+      "name": "徐州",
+      "size_chips": [
+        60,
+        36
+      ],
+      "size_cells": [
+        30,
+        18
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/008.json",
+      "image": "gfx/original/maps/battle/008.png"
+    },
+    {
+      "index": 9,
+      "name": "小沛",
+      "size_chips": [
+        48,
+        32
+      ],
+      "size_cells": [
+        24,
+        16
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/009.json",
+      "image": "gfx/original/maps/battle/009.png"
+    },
+    {
+      "index": 10,
+      "name": "泰山",
+      "size_chips": [
+        64,
+        32
+      ],
+      "size_cells": [
+        32,
+        16
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/010.json",
+      "image": "gfx/original/maps/battle/010.png"
+    },
+    {
+      "index": 11,
+      "name": "夏丘",
+      "size_chips": [
+        56,
+        40
+      ],
+      "size_cells": [
+        28,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/011.json",
+      "image": "gfx/original/maps/battle/011.png"
+    },
+    {
+      "index": 12,
+      "name": "彭城",
+      "size_chips": [
+        40,
+        32
+      ],
+      "size_cells": [
+        20,
+        16
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/012.json",
+      "image": "gfx/original/maps/battle/012.png"
+    },
+    {
+      "index": 13,
+      "name": "淮南",
+      "size_chips": [
+        48,
+        48
+      ],
+      "size_cells": [
+        24,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/013.json",
+      "image": "gfx/original/maps/battle/013.png"
+    },
+    {
+      "index": 14,
+      "name": "下邳",
+      "size_chips": [
+        64,
+        48
+      ],
+      "size_cells": [
+        32,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/014.json",
+      "image": "gfx/original/maps/battle/014.png"
+    },
+    {
+      "index": 15,
+      "name": "廣陵",
+      "size_chips": [
+        48,
+        32
+      ],
+      "size_cells": [
+        24,
+        16
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/015.json",
+      "image": "gfx/original/maps/battle/015.png"
+    },
+    {
+      "index": 16,
+      "name": "兗州",
+      "size_chips": [
+        60,
+        40
+      ],
+      "size_cells": [
+        30,
+        20
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/016.json",
+      "image": "gfx/original/maps/battle/016.png"
+    },
+    {
+      "index": 17,
+      "name": "古城",
+      "size_chips": [
+        40,
+        48
+      ],
+      "size_cells": [
+        20,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/017.json",
+      "image": "gfx/original/maps/battle/017.png"
+    },
+    {
+      "index": 18,
+      "name": "穎川",
+      "size_chips": [
+        64,
+        32
+      ],
+      "size_cells": [
+        32,
+        16
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/018.json",
+      "image": "gfx/original/maps/battle/018.png"
+    },
+    {
+      "index": 19,
+      "name": "汝南",
+      "size_chips": [
+        72,
+        40
+      ],
+      "size_cells": [
+        36,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/019.json",
+      "image": "gfx/original/maps/battle/019.png"
+    },
+    {
+      "index": 20,
+      "name": "江夏",
+      "size_chips": [
+        64,
+        40
+      ],
+      "size_cells": [
+        32,
+        20
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/020.json",
+      "image": "gfx/original/maps/battle/020.png"
+    },
+    {
+      "index": 21,
+      "name": "南陽",
+      "size_chips": [
+        44,
+        36
+      ],
+      "size_cells": [
+        22,
+        18
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/021.json",
+      "image": "gfx/original/maps/battle/021.png"
+    },
+    {
+      "index": 22,
+      "name": "博望坡",
+      "size_chips": [
+        80,
+        32
+      ],
+      "size_cells": [
+        40,
+        16
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/022.json",
+      "image": "gfx/original/maps/battle/022.png"
+    },
+    {
+      "index": 23,
+      "name": "新野",
+      "size_chips": [
+        64,
+        32
+      ],
+      "size_cells": [
+        32,
+        16
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/023.json",
+      "image": "gfx/original/maps/battle/023.png"
+    },
+    {
+      "index": 24,
+      "name": "襄陽",
+      "size_chips": [
+        48,
+        48
+      ],
+      "size_cells": [
+        24,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/024.json",
+      "image": "gfx/original/maps/battle/024.png"
+    },
+    {
+      "index": 25,
+      "name": "長阪坡Ⅰ",
+      "size_chips": [
+        72,
+        48
+      ],
+      "size_cells": [
+        36,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/025.json",
+      "image": "gfx/original/maps/battle/025.png"
+    },
+    {
+      "index": 26,
+      "name": "長阪坡Ⅱ",
+      "size_chips": [
+        72,
+        48
+      ],
+      "size_cells": [
+        36,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/026.json",
+      "image": "gfx/original/maps/battle/026.png"
+    },
+    {
+      "index": 27,
+      "name": "江陵",
+      "size_chips": [
+        72,
+        40
+      ],
+      "size_cells": [
+        36,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/027.json",
+      "image": "gfx/original/maps/battle/027.png"
+    },
+    {
+      "index": 28,
+      "name": "公安",
+      "size_chips": [
+        80,
+        48
+      ],
+      "size_cells": [
+        40,
+        24
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/028.json",
+      "image": "gfx/original/maps/battle/028.png"
+    },
+    {
+      "index": 29,
+      "name": "桂陽",
+      "size_chips": [
+        48,
+        48
+      ],
+      "size_cells": [
+        24,
+        24
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/029.json",
+      "image": "gfx/original/maps/battle/029.png"
+    },
+    {
+      "index": 30,
+      "name": "武陵",
+      "size_chips": [
+        60,
+        40
+      ],
+      "size_cells": [
+        30,
+        20
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/030.json",
+      "image": "gfx/original/maps/battle/030.png"
+    },
+    {
+      "index": 31,
+      "name": "零陵",
+      "size_chips": [
+        32,
+        40
+      ],
+      "size_cells": [
+        16,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/031.json",
+      "image": "gfx/original/maps/battle/031.png"
+    },
+    {
+      "index": 32,
+      "name": "長沙",
+      "size_chips": [
+        72,
+        40
+      ],
+      "size_cells": [
+        36,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/032.json",
+      "image": "gfx/original/maps/battle/032.png"
+    },
+    {
+      "index": 33,
+      "name": "雒",
+      "size_chips": [
+        64,
+        48
+      ],
+      "size_cells": [
+        32,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/033.json",
+      "image": "gfx/original/maps/battle/033.png"
+    },
+    {
+      "index": 34,
+      "name": "成都",
+      "size_chips": [
+        56,
+        40
+      ],
+      "size_cells": [
+        28,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/034.json",
+      "image": "gfx/original/maps/battle/034.png"
+    },
+    {
+      "index": 35,
+      "name": "瓦口關Ⅰ",
+      "size_chips": [
+        56,
+        40
+      ],
+      "size_cells": [
+        28,
+        20
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/035.json",
+      "image": "gfx/original/maps/battle/035.png"
+    },
+    {
+      "index": 36,
+      "name": "瓦口關Ⅱ",
+      "size_chips": [
+        56,
+        40
+      ],
+      "size_cells": [
+        28,
+        20
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/036.json",
+      "image": "gfx/original/maps/battle/036.png"
+    },
+    {
+      "index": 37,
+      "name": "葭萌關Ⅰ",
+      "size_chips": [
+        40,
+        40
+      ],
+      "size_cells": [
+        20,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/037.json",
+      "image": "gfx/original/maps/battle/037.png"
+    },
+    {
+      "index": 38,
+      "name": "葭萌關Ⅱ",
+      "size_chips": [
+        80,
+        40
+      ],
+      "size_cells": [
+        40,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/038.json",
+      "image": "gfx/original/maps/battle/038.png"
+    },
+    {
+      "index": 39,
+      "name": "定軍山",
+      "size_chips": [
+        76,
+        36
+      ],
+      "size_cells": [
+        38,
+        18
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/039.json",
+      "image": "gfx/original/maps/battle/039.png"
+    },
+    {
+      "index": 40,
+      "name": "天蕩山",
+      "size_chips": [
+        68,
+        40
+      ],
+      "size_cells": [
+        34,
+        20
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/040.json",
+      "image": "gfx/original/maps/battle/040.png"
+    },
+    {
+      "index": 41,
+      "name": "漢水",
+      "size_chips": [
+        64,
+        48
+      ],
+      "size_cells": [
+        32,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/041.json",
+      "image": "gfx/original/maps/battle/041.png"
+    },
+    {
+      "index": 42,
+      "name": "陽平關",
+      "size_chips": [
+        72,
+        32
+      ],
+      "size_cells": [
+        36,
+        16
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/042.json",
+      "image": "gfx/original/maps/battle/042.png"
+    },
+    {
+      "index": 43,
+      "name": "西陵",
+      "size_chips": [
+        64,
+        40
+      ],
+      "size_cells": [
+        32,
+        20
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/043.json",
+      "image": "gfx/original/maps/battle/043.png"
+    },
+    {
+      "index": 44,
+      "name": "彝陵",
+      "size_chips": [
+        72,
+        48
+      ],
+      "size_cells": [
+        36,
+        24
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/044.json",
+      "image": "gfx/original/maps/battle/044.png"
+    },
+    {
+      "index": 45,
+      "name": "麥",
+      "size_chips": [
+        64,
+        40
+      ],
+      "size_cells": [
+        32,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/045.json",
+      "image": "gfx/original/maps/battle/045.png"
+    },
+    {
+      "index": 46,
+      "name": "南郡",
+      "size_chips": [
+        48,
+        40
+      ],
+      "size_cells": [
+        24,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/046.json",
+      "image": "gfx/original/maps/battle/046.png"
+    },
+    {
+      "index": 47,
+      "name": "新野",
+      "size_chips": [
+        56,
+        40
+      ],
+      "size_cells": [
+        28,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/047.json",
+      "image": "gfx/original/maps/battle/047.png"
+    },
+    {
+      "index": 48,
+      "name": "宛Ⅰ",
+      "size_chips": [
+        56,
+        48
+      ],
+      "size_cells": [
+        28,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/048.json",
+      "image": "gfx/original/maps/battle/048.png"
+    },
+    {
+      "index": 49,
+      "name": "宛Ⅱ",
+      "size_chips": [
+        48,
+        48
+      ],
+      "size_cells": [
+        24,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/049.json",
+      "image": "gfx/original/maps/battle/049.png"
+    },
+    {
+      "index": 50,
+      "name": "許昌Ⅰ",
+      "size_chips": [
+        56,
+        48
+      ],
+      "size_cells": [
+        28,
+        24
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/050.json",
+      "image": "gfx/original/maps/battle/050.png"
+    },
+    {
+      "index": 51,
+      "name": "許昌Ⅱ",
+      "size_chips": [
+        56,
+        40
+      ],
+      "size_cells": [
+        28,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/051.json",
+      "image": "gfx/original/maps/battle/051.png"
+    },
+    {
+      "index": 52,
+      "name": "陳倉",
+      "size_chips": [
+        64,
+        32
+      ],
+      "size_cells": [
+        32,
+        16
+      ],
+      "chip_set": 2,
+      "data": "maps/battle/052.json",
+      "image": "gfx/original/maps/battle/052.png"
+    },
+    {
+      "index": 53,
+      "name": "長安",
+      "size_chips": [
+        64,
+        32
+      ],
+      "size_cells": [
+        32,
+        16
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/053.json",
+      "image": "gfx/original/maps/battle/053.png"
+    },
+    {
+      "index": 54,
+      "name": "洛陽",
+      "size_chips": [
+        64,
+        40
+      ],
+      "size_cells": [
+        32,
+        20
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/054.json",
+      "image": "gfx/original/maps/battle/054.png"
+    },
+    {
+      "index": 55,
+      "name": "鄴Ⅰ",
+      "size_chips": [
+        72,
+        48
+      ],
+      "size_cells": [
+        36,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/055.json",
+      "image": "gfx/original/maps/battle/055.png"
+    },
+    {
+      "index": 56,
+      "name": "鄴Ⅱ",
+      "size_chips": [
+        56,
+        48
+      ],
+      "size_cells": [
+        28,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/056.json",
+      "image": "gfx/original/maps/battle/056.png"
+    },
+    {
+      "index": 57,
+      "name": "鄴Ⅲ",
+      "size_chips": [
+        80,
+        48
+      ],
+      "size_cells": [
+        40,
+        24
+      ],
+      "chip_set": 1,
+      "data": "maps/battle/057.json",
+      "image": "gfx/original/maps/battle/057.png"
+    }
+  ],
+  "chip_terrain": [
+    {
+      "set": 0,
+      "index": 0,
+      "chip": 0,
+      "uses": 34514,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.972
+    },
+    {
+      "set": 0,
+      "index": 1,
+      "chip": 1,
+      "uses": 57,
+      "terrain": "fortress",
+      "code": 13,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 2,
+      "chip": 2,
+      "uses": 57,
+      "terrain": "fortress",
+      "code": 13,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 3,
+      "chip": 3,
+      "uses": 57,
+      "terrain": "fortress",
+      "code": 13,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 4,
+      "chip": 4,
+      "uses": 57,
+      "terrain": "fortress",
+      "code": 13,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 5,
+      "chip": 5,
+      "uses": 94,
+      "terrain": "village",
+      "code": 8,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 6,
+      "chip": 6,
+      "uses": 928,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.751
+    },
+    {
+      "set": 0,
+      "index": 7,
+      "chip": 7,
+      "uses": 962,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.745
+    },
+    {
+      "set": 0,
+      "index": 8,
+      "chip": 8,
+      "uses": 9191,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.936
+    },
+    {
+      "set": 0,
+      "index": 9,
+      "chip": 9,
+      "uses": 898,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.697
+    },
+    {
+      "set": 0,
+      "index": 10,
+      "chip": 10,
+      "uses": 783,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.708
+    },
+    {
+      "set": 0,
+      "index": 11,
+      "chip": 11,
+      "uses": 117,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.726
+    },
+    {
+      "set": 0,
+      "index": 12,
+      "chip": 12,
+      "uses": 347,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.997
+    },
+    {
+      "set": 0,
+      "index": 13,
+      "chip": 13,
+      "uses": 157,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.713
+    },
+    {
+      "set": 0,
+      "index": 14,
+      "chip": 14,
+      "uses": 202,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.525
+    },
+    {
+      "set": 0,
+      "index": 15,
+      "chip": 15,
+      "uses": 6715,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.992
+    },
+    {
+      "set": 0,
+      "index": 16,
+      "chip": 16,
+      "uses": 210,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.614
+    },
+    {
+      "set": 0,
+      "index": 17,
+      "chip": 17,
+      "uses": 126,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.69
+    },
+    {
+      "set": 0,
+      "index": 18,
+      "chip": 18,
+      "uses": 340,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.547
+    },
+    {
+      "set": 0,
+      "index": 19,
+      "chip": 19,
+      "uses": 109,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.752
+    },
+    {
+      "set": 0,
+      "index": 20,
+      "chip": 20,
+      "uses": 295,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.617
+    },
+    {
+      "set": 0,
+      "index": 21,
+      "chip": 21,
+      "uses": 320,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 22,
+      "chip": 22,
+      "uses": 300,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.64
+    },
+    {
+      "set": 0,
+      "index": 23,
+      "chip": 23,
+      "uses": 176,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.506
+    },
+    {
+      "set": 0,
+      "index": 24,
+      "chip": 24,
+      "uses": 193,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.601
+    },
+    {
+      "set": 0,
+      "index": 25,
+      "chip": 25,
+      "uses": 282,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.702
+    },
+    {
+      "set": 0,
+      "index": 26,
+      "chip": 26,
+      "uses": 318,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.553
+    },
+    {
+      "set": 0,
+      "index": 27,
+      "chip": 27,
+      "uses": 281,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.712
+    },
+    {
+      "set": 0,
+      "index": 28,
+      "chip": 28,
+      "uses": 35,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.857
+    },
+    {
+      "set": 0,
+      "index": 29,
+      "chip": 29,
+      "uses": 65,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.754
+    },
+    {
+      "set": 0,
+      "index": 30,
+      "chip": 30,
+      "uses": 88,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 31,
+      "chip": 31,
+      "uses": 67,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 32,
+      "chip": 32,
+      "uses": 359,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.769
+    },
+    {
+      "set": 0,
+      "index": 33,
+      "chip": 33,
+      "uses": 345,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.78
+    },
+    {
+      "set": 0,
+      "index": 34,
+      "chip": 34,
+      "uses": 369,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 35,
+      "chip": 35,
+      "uses": 350,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 36,
+      "chip": 36,
+      "uses": 29,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.448
+    },
+    {
+      "set": 0,
+      "index": 37,
+      "chip": 37,
+      "uses": 14,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.571
+    },
+    {
+      "set": 0,
+      "index": 38,
+      "chip": 38,
+      "uses": 29,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.448
+    },
+    {
+      "set": 0,
+      "index": 39,
+      "chip": 39,
+      "uses": 58,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.828
+    },
+    {
+      "set": 0,
+      "index": 40,
+      "chip": 40,
+      "uses": 32,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 41,
+      "chip": 41,
+      "uses": 58,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.828
+    },
+    {
+      "set": 0,
+      "index": 42,
+      "chip": 42,
+      "uses": 29,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.69
+    },
+    {
+      "set": 0,
+      "index": 43,
+      "chip": 43,
+      "uses": 14,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.857
+    },
+    {
+      "set": 0,
+      "index": 44,
+      "chip": 44,
+      "uses": 29,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.69
+    },
+    {
+      "set": 0,
+      "index": 45,
+      "chip": 45,
+      "uses": 27,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.556
+    },
+    {
+      "set": 0,
+      "index": 46,
+      "chip": 46,
+      "uses": 66,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 47,
+      "chip": 47,
+      "uses": 28,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.571
+    },
+    {
+      "set": 0,
+      "index": 48,
+      "chip": 48,
+      "uses": 36,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.528
+    },
+    {
+      "set": 0,
+      "index": 49,
+      "chip": 49,
+      "uses": 92,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.989
+    },
+    {
+      "set": 0,
+      "index": 50,
+      "chip": 50,
+      "uses": 37,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 0.649
+    },
+    {
+      "set": 0,
+      "index": 51,
+      "chip": 51,
+      "uses": 27,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.519
+    },
+    {
+      "set": 0,
+      "index": 52,
+      "chip": 52,
+      "uses": 66,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.939
+    },
+    {
+      "set": 0,
+      "index": 53,
+      "chip": 53,
+      "uses": 28,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.643
+    },
+    {
+      "set": 0,
+      "index": 54,
+      "chip": 54,
+      "uses": 3816,
+      "terrain": "forest",
+      "code": 1,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 55,
+      "chip": 55,
+      "uses": 4218,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.976
+    },
+    {
+      "set": 0,
+      "index": 56,
+      "chip": 56,
+      "uses": 3755,
+      "terrain": "forest",
+      "code": 1,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 57,
+      "chip": 57,
+      "uses": 3799,
+      "terrain": "forest",
+      "code": 1,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 58,
+      "chip": 58,
+      "uses": 149,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.544
+    },
+    {
+      "set": 0,
+      "index": 59,
+      "chip": 59,
+      "uses": 144,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.563
+    },
+    {
+      "set": 0,
+      "index": 60,
+      "chip": 60,
+      "uses": 174,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.575
+    },
+    {
+      "set": 0,
+      "index": 61,
+      "chip": 61,
+      "uses": 169,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.544
+    },
+    {
+      "set": 0,
+      "index": 62,
+      "chip": 62,
+      "uses": 368,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.492
+    },
+    {
+      "set": 0,
+      "index": 63,
+      "chip": 63,
+      "uses": 361,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.496
+    },
+    {
+      "set": 0,
+      "index": 64,
+      "chip": 64,
+      "uses": 302,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.51
+    },
+    {
+      "set": 0,
+      "index": 65,
+      "chip": 65,
+      "uses": 299,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.502
+    },
+    {
+      "set": 0,
+      "index": 66,
+      "chip": 66,
+      "uses": 487,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.721
+    },
+    {
+      "set": 0,
+      "index": 67,
+      "chip": 67,
+      "uses": 1221,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.508
+    },
+    {
+      "set": 0,
+      "index": 68,
+      "chip": 68,
+      "uses": 666,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.527
+    },
+    {
+      "set": 0,
+      "index": 69,
+      "chip": 69,
+      "uses": 611,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.502
+    },
+    {
+      "set": 0,
+      "index": 70,
+      "chip": 70,
+      "uses": 486,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.646
+    },
+    {
+      "set": 0,
+      "index": 71,
+      "chip": 71,
+      "uses": 412,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.646
+    },
+    {
+      "set": 0,
+      "index": 72,
+      "chip": 72,
+      "uses": 575,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.63
+    },
+    {
+      "set": 0,
+      "index": 73,
+      "chip": 73,
+      "uses": 512,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.713
+    },
+    {
+      "set": 0,
+      "index": 74,
+      "chip": 74,
+      "uses": 1201,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.514
+    },
+    {
+      "set": 0,
+      "index": 75,
+      "chip": 75,
+      "uses": 94,
+      "terrain": "village",
+      "code": 8,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 76,
+      "chip": 76,
+      "uses": 349,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.748
+    },
+    {
+      "set": 0,
+      "index": 77,
+      "chip": 77,
+      "uses": 503,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.755
+    },
+    {
+      "set": 0,
+      "index": 78,
+      "chip": 78,
+      "uses": 94,
+      "terrain": "village",
+      "code": 8,
+      "share": 1.0
+    },
+    {
+      "set": 0,
+      "index": 79,
+      "chip": 79,
+      "uses": 94,
+      "terrain": "village",
+      "code": 8,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 0,
+      "chip": 80,
+      "uses": 10,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 1,
+      "chip": 81,
+      "uses": 10,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 2,
+      "chip": 82,
+      "uses": 191,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 3,
+      "chip": 83,
+      "uses": 14,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 4,
+      "chip": 84,
+      "uses": 14,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 5,
+      "chip": 85,
+      "uses": 27,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.519
+    },
+    {
+      "set": 1,
+      "index": 6,
+      "chip": 86,
+      "uses": 27,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.519
+    },
+    {
+      "set": 1,
+      "index": 7,
+      "chip": 87,
+      "uses": 25,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.72
+    },
+    {
+      "set": 1,
+      "index": 8,
+      "chip": 88,
+      "uses": 25,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.72
+    },
+    {
+      "set": 1,
+      "index": 9,
+      "chip": 89,
+      "uses": 9,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 10,
+      "chip": 90,
+      "uses": 9,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 11,
+      "chip": 91,
+      "uses": 11,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 12,
+      "chip": 92,
+      "uses": 11,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 13,
+      "chip": 93,
+      "uses": 10,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 14,
+      "chip": 94,
+      "uses": 83,
+      "terrain": "barracks",
+      "code": 14,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 15,
+      "chip": 95,
+      "uses": 83,
+      "terrain": "barracks",
+      "code": 14,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 16,
+      "chip": 96,
+      "uses": 83,
+      "terrain": "barracks",
+      "code": 14,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 17,
+      "chip": 97,
+      "uses": 83,
+      "terrain": "barracks",
+      "code": 14,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 18,
+      "chip": 98,
+      "uses": 45,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.578
+    },
+    {
+      "set": 1,
+      "index": 19,
+      "chip": 99,
+      "uses": 40,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.675
+    },
+    {
+      "set": 1,
+      "index": 20,
+      "chip": 100,
+      "uses": 43,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.558
+    },
+    {
+      "set": 1,
+      "index": 21,
+      "chip": 101,
+      "uses": 37,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.541
+    },
+    {
+      "set": 1,
+      "index": 22,
+      "chip": 102,
+      "uses": 48,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.5
+    },
+    {
+      "set": 1,
+      "index": 23,
+      "chip": 103,
+      "uses": 49,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.49
+    },
+    {
+      "set": 1,
+      "index": 24,
+      "chip": 104,
+      "uses": 31,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.581
+    },
+    {
+      "set": 1,
+      "index": 25,
+      "chip": 105,
+      "uses": 23,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.522
+    },
+    {
+      "set": 1,
+      "index": 26,
+      "chip": 106,
+      "uses": 7,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 27,
+      "chip": 107,
+      "uses": 7,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 28,
+      "chip": 108,
+      "uses": 7,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 29,
+      "chip": 109,
+      "uses": 203,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.744
+    },
+    {
+      "set": 1,
+      "index": 30,
+      "chip": 110,
+      "uses": 83,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.711
+    },
+    {
+      "set": 1,
+      "index": 31,
+      "chip": 111,
+      "uses": 81,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.728
+    },
+    {
+      "set": 1,
+      "index": 32,
+      "chip": 112,
+      "uses": 74,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.824
+    },
+    {
+      "set": 1,
+      "index": 33,
+      "chip": 113,
+      "uses": 79,
+      "terrain": "forest",
+      "code": 1,
+      "share": 0.671
+    },
+    {
+      "set": 1,
+      "index": 34,
+      "chip": 114,
+      "uses": 160,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 35,
+      "chip": 115,
+      "uses": 169,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 36,
+      "chip": 116,
+      "uses": 884,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 37,
+      "chip": 117,
+      "uses": 1287,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 38,
+      "chip": 118,
+      "uses": 196,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 39,
+      "chip": 119,
+      "uses": 605,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 40,
+      "chip": 120,
+      "uses": 648,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 41,
+      "chip": 121,
+      "uses": 948,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 42,
+      "chip": 122,
+      "uses": 1032,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.999
+    },
+    {
+      "set": 1,
+      "index": 43,
+      "chip": 123,
+      "uses": 1354,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 44,
+      "chip": 124,
+      "uses": 191,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 45,
+      "chip": 125,
+      "uses": 874,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 46,
+      "chip": 126,
+      "uses": 7,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 47,
+      "chip": 127,
+      "uses": 42,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 48,
+      "chip": 128,
+      "uses": 42,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 49,
+      "chip": 129,
+      "uses": 42,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 50,
+      "chip": 130,
+      "uses": 42,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 51,
+      "chip": 131,
+      "uses": 187,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 52,
+      "chip": 132,
+      "uses": 187,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 53,
+      "chip": 133,
+      "uses": 187,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 54,
+      "chip": 134,
+      "uses": 187,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 55,
+      "chip": 135,
+      "uses": 126,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.516
+    },
+    {
+      "set": 1,
+      "index": 56,
+      "chip": 136,
+      "uses": 138,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.514
+    },
+    {
+      "set": 1,
+      "index": 57,
+      "chip": 137,
+      "uses": 63,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.492
+    },
+    {
+      "set": 1,
+      "index": 58,
+      "chip": 138,
+      "uses": 49,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.51
+    },
+    {
+      "set": 1,
+      "index": 59,
+      "chip": 139,
+      "uses": 150,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.547
+    },
+    {
+      "set": 1,
+      "index": 60,
+      "chip": 140,
+      "uses": 121,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.587
+    },
+    {
+      "set": 1,
+      "index": 61,
+      "chip": 141,
+      "uses": 87,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.506
+    },
+    {
+      "set": 1,
+      "index": 62,
+      "chip": 142,
+      "uses": 79,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.544
+    },
+    {
+      "set": 1,
+      "index": 63,
+      "chip": 143,
+      "uses": 216,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.722
+    },
+    {
+      "set": 1,
+      "index": 64,
+      "chip": 144,
+      "uses": 204,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.725
+    },
+    {
+      "set": 1,
+      "index": 65,
+      "chip": 145,
+      "uses": 265,
+      "terrain": "hill",
+      "code": 2,
+      "share": 0.758
+    },
+    {
+      "set": 1,
+      "index": 66,
+      "chip": 146,
+      "uses": 120,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 67,
+      "chip": 147,
+      "uses": 162,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.698
+    },
+    {
+      "set": 1,
+      "index": 68,
+      "chip": 148,
+      "uses": 153,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.712
+    },
+    {
+      "set": 1,
+      "index": 69,
+      "chip": 149,
+      "uses": 220,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.682
+    },
+    {
+      "set": 1,
+      "index": 70,
+      "chip": 150,
+      "uses": 155,
+      "terrain": "grassland",
+      "code": 7,
+      "share": 0.735
+    },
+    {
+      "set": 1,
+      "index": 71,
+      "chip": 151,
+      "uses": 120,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 72,
+      "chip": 152,
+      "uses": 120,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 73,
+      "chip": 153,
+      "uses": 120,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 74,
+      "chip": 154,
+      "uses": 404,
+      "terrain": "castle",
+      "code": 6,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 75,
+      "chip": 155,
+      "uses": 7560,
+      "terrain": "castle",
+      "code": 6,
+      "share": 0.999
+    },
+    {
+      "set": 1,
+      "index": 76,
+      "chip": 156,
+      "uses": 231,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.831
+    },
+    {
+      "set": 1,
+      "index": 77,
+      "chip": 157,
+      "uses": 155,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 78,
+      "chip": 158,
+      "uses": 0
+    },
+    {
+      "set": 1,
+      "index": 79,
+      "chip": 159,
+      "uses": 632,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.91
+    },
+    {
+      "set": 1,
+      "index": 80,
+      "chip": 160,
+      "uses": 136,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 81,
+      "chip": 161,
+      "uses": 42,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 82,
+      "chip": 162,
+      "uses": 82,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 83,
+      "chip": 163,
+      "uses": 48,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 84,
+      "chip": 164,
+      "uses": 79,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 85,
+      "chip": 165,
+      "uses": 76,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 86,
+      "chip": 166,
+      "uses": 3,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 87,
+      "chip": 167,
+      "uses": 21,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 88,
+      "chip": 168,
+      "uses": 1023,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 89,
+      "chip": 169,
+      "uses": 550,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 90,
+      "chip": 170,
+      "uses": 554,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 91,
+      "chip": 171,
+      "uses": 805,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 92,
+      "chip": 172,
+      "uses": 845,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 93,
+      "chip": 173,
+      "uses": 899,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 94,
+      "chip": 174,
+      "uses": 325,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.969
+    },
+    {
+      "set": 1,
+      "index": 95,
+      "chip": 175,
+      "uses": 64,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 96,
+      "chip": 176,
+      "uses": 69,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 97,
+      "chip": 177,
+      "uses": 67,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 98,
+      "chip": 178,
+      "uses": 68,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 99,
+      "chip": 179,
+      "uses": 32,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 100,
+      "chip": 180,
+      "uses": 36,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 101,
+      "chip": 181,
+      "uses": 22,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 102,
+      "chip": 182,
+      "uses": 21,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 103,
+      "chip": 183,
+      "uses": 0
+    },
+    {
+      "set": 1,
+      "index": 104,
+      "chip": 184,
+      "uses": 8,
+      "terrain": "castle",
+      "code": 6,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 105,
+      "chip": 185,
+      "uses": 6,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 106,
+      "chip": 186,
+      "uses": 6,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 107,
+      "chip": 187,
+      "uses": 5,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 108,
+      "chip": 188,
+      "uses": 5,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 109,
+      "chip": 189,
+      "uses": 10,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 110,
+      "chip": 190,
+      "uses": 10,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 111,
+      "chip": 191,
+      "uses": 10,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 112,
+      "chip": 192,
+      "uses": 10,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 113,
+      "chip": 193,
+      "uses": 1,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 114,
+      "chip": 194,
+      "uses": 1,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 115,
+      "chip": 195,
+      "uses": 1,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 116,
+      "chip": 196,
+      "uses": 1,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 117,
+      "chip": 197,
+      "uses": 1,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 118,
+      "chip": 198,
+      "uses": 1,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 119,
+      "chip": 199,
+      "uses": 0
+    },
+    {
+      "set": 1,
+      "index": 120,
+      "chip": 200,
+      "uses": 18,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 121,
+      "chip": 201,
+      "uses": 18,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.944
+    },
+    {
+      "set": 1,
+      "index": 122,
+      "chip": 202,
+      "uses": 17,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 123,
+      "chip": 203,
+      "uses": 19,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.895
+    },
+    {
+      "set": 1,
+      "index": 124,
+      "chip": 204,
+      "uses": 2,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.5
+    },
+    {
+      "set": 1,
+      "index": 125,
+      "chip": 205,
+      "uses": 2,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.5
+    },
+    {
+      "set": 1,
+      "index": 126,
+      "chip": 206,
+      "uses": 2,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.5
+    },
+    {
+      "set": 1,
+      "index": 127,
+      "chip": 207,
+      "uses": 2,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.5
+    },
+    {
+      "set": 1,
+      "index": 128,
+      "chip": 208,
+      "uses": 2,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 129,
+      "chip": 209,
+      "uses": 2,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 130,
+      "chip": 210,
+      "uses": 2,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 131,
+      "chip": 211,
+      "uses": 2,
+      "terrain": "bridge",
+      "code": 4,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 132,
+      "chip": 212,
+      "uses": 2,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 133,
+      "chip": 213,
+      "uses": 2,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 134,
+      "chip": 214,
+      "uses": 2,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 135,
+      "chip": 215,
+      "uses": 2,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 136,
+      "chip": 216,
+      "uses": 2,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 137,
+      "chip": 217,
+      "uses": 4,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 138,
+      "chip": 218,
+      "uses": 4,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 139,
+      "chip": 219,
+      "uses": 115,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.8
+    },
+    {
+      "set": 1,
+      "index": 140,
+      "chip": 220,
+      "uses": 113,
+      "terrain": "stream",
+      "code": 3,
+      "share": 0.796
+    },
+    {
+      "set": 1,
+      "index": 141,
+      "chip": 221,
+      "uses": 105,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 142,
+      "chip": 222,
+      "uses": 143,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 143,
+      "chip": 223,
+      "uses": 9,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 144,
+      "chip": 224,
+      "uses": 9,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 145,
+      "chip": 225,
+      "uses": 200,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 146,
+      "chip": 226,
+      "uses": 200,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 147,
+      "chip": 227,
+      "uses": 1430,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 148,
+      "chip": 228,
+      "uses": 108,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 149,
+      "chip": 229,
+      "uses": 26,
+      "terrain": "hill",
+      "code": 2,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 150,
+      "chip": 230,
+      "uses": 0
+    },
+    {
+      "set": 1,
+      "index": 151,
+      "chip": 231,
+      "uses": 2,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 152,
+      "chip": 232,
+      "uses": 4,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 153,
+      "chip": 233,
+      "uses": 2,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 154,
+      "chip": 234,
+      "uses": 18,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.778
+    },
+    {
+      "set": 1,
+      "index": 155,
+      "chip": 235,
+      "uses": 12,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.833
+    },
+    {
+      "set": 1,
+      "index": 156,
+      "chip": 236,
+      "uses": 6,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 157,
+      "chip": 237,
+      "uses": 20,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.5
+    },
+    {
+      "set": 1,
+      "index": 158,
+      "chip": 238,
+      "uses": 0
+    },
+    {
+      "set": 1,
+      "index": 159,
+      "chip": 239,
+      "uses": 2,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 160,
+      "chip": 240,
+      "uses": 2,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 161,
+      "chip": 241,
+      "uses": 2,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 162,
+      "chip": 242,
+      "uses": 2,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 163,
+      "chip": 243,
+      "uses": 15,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 164,
+      "chip": 244,
+      "uses": 15,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 165,
+      "chip": 245,
+      "uses": 15,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 166,
+      "chip": 246,
+      "uses": 15,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 167,
+      "chip": 247,
+      "uses": 155,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 168,
+      "chip": 248,
+      "uses": 155,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 169,
+      "chip": 249,
+      "uses": 155,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 170,
+      "chip": 250,
+      "uses": 103,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 171,
+      "chip": 251,
+      "uses": 103,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 172,
+      "chip": 252,
+      "uses": 103,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 1,
+      "index": 173,
+      "chip": 253,
+      "uses": 103,
+      "terrain": "house",
+      "code": 17,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 0,
+      "chip": 80,
+      "uses": 4,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 1,
+      "chip": 81,
+      "uses": 4,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 2,
+      "chip": 82,
+      "uses": 44,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 3,
+      "chip": 83,
+      "uses": 44,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 4,
+      "chip": 84,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 5,
+      "chip": 85,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 6,
+      "chip": 86,
+      "uses": 22,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 7,
+      "chip": 87,
+      "uses": 2,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 8,
+      "chip": 88,
+      "uses": 2,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 9,
+      "chip": 89,
+      "uses": 2,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.5
+    },
+    {
+      "set": 2,
+      "index": 10,
+      "chip": 90,
+      "uses": 2,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.5
+    },
+    {
+      "set": 2,
+      "index": 11,
+      "chip": 91,
+      "uses": 2,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.5
+    },
+    {
+      "set": 2,
+      "index": 12,
+      "chip": 92,
+      "uses": 2,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.5
+    },
+    {
+      "set": 2,
+      "index": 13,
+      "chip": 93,
+      "uses": 1,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 14,
+      "chip": 94,
+      "uses": 13,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 15,
+      "chip": 95,
+      "uses": 19,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 16,
+      "chip": 96,
+      "uses": 67,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.925
+    },
+    {
+      "set": 2,
+      "index": 17,
+      "chip": 97,
+      "uses": 65,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.969
+    },
+    {
+      "set": 2,
+      "index": 18,
+      "chip": 98,
+      "uses": 247,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 19,
+      "chip": 99,
+      "uses": 256,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 20,
+      "chip": 100,
+      "uses": 339,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 21,
+      "chip": 101,
+      "uses": 365,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 22,
+      "chip": 102,
+      "uses": 266,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 23,
+      "chip": 103,
+      "uses": 290,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 24,
+      "chip": 104,
+      "uses": 183,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 25,
+      "chip": 105,
+      "uses": 68,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 26,
+      "chip": 106,
+      "uses": 158,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 27,
+      "chip": 107,
+      "uses": 262,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 28,
+      "chip": 108,
+      "uses": 160,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.6
+    },
+    {
+      "set": 2,
+      "index": 29,
+      "chip": 109,
+      "uses": 230,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.613
+    },
+    {
+      "set": 2,
+      "index": 30,
+      "chip": 110,
+      "uses": 205,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.629
+    },
+    {
+      "set": 2,
+      "index": 31,
+      "chip": 111,
+      "uses": 149,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 32,
+      "chip": 112,
+      "uses": 118,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.61
+    },
+    {
+      "set": 2,
+      "index": 33,
+      "chip": 113,
+      "uses": 103,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 34,
+      "chip": 114,
+      "uses": 60,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 35,
+      "chip": 115,
+      "uses": 160,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.638
+    },
+    {
+      "set": 2,
+      "index": 36,
+      "chip": 116,
+      "uses": 166,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 37,
+      "chip": 117,
+      "uses": 255,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 38,
+      "chip": 118,
+      "uses": 131,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 39,
+      "chip": 119,
+      "uses": 9,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 40,
+      "chip": 120,
+      "uses": 76,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 41,
+      "chip": 121,
+      "uses": 99,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.899
+    },
+    {
+      "set": 2,
+      "index": 42,
+      "chip": 122,
+      "uses": 52,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 43,
+      "chip": 123,
+      "uses": 8,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 44,
+      "chip": 124,
+      "uses": 29,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.552
+    },
+    {
+      "set": 2,
+      "index": 45,
+      "chip": 125,
+      "uses": 7,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 46,
+      "chip": 126,
+      "uses": 138,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.87
+    },
+    {
+      "set": 2,
+      "index": 47,
+      "chip": 127,
+      "uses": 6,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 48,
+      "chip": 128,
+      "uses": 4,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 49,
+      "chip": 129,
+      "uses": 4,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 50,
+      "chip": 130,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 51,
+      "chip": 131,
+      "uses": 6,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 52,
+      "chip": 132,
+      "uses": 2,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 53,
+      "chip": 133,
+      "uses": 11,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 54,
+      "chip": 134,
+      "uses": 16,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 55,
+      "chip": 135,
+      "uses": 163,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 56,
+      "chip": 136,
+      "uses": 53,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 57,
+      "chip": 137,
+      "uses": 145,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 58,
+      "chip": 138,
+      "uses": 233,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 59,
+      "chip": 139,
+      "uses": 150,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 60,
+      "chip": 140,
+      "uses": 138,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.623
+    },
+    {
+      "set": 2,
+      "index": 61,
+      "chip": 141,
+      "uses": 97,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 62,
+      "chip": 142,
+      "uses": 73,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 63,
+      "chip": 143,
+      "uses": 138,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.572
+    },
+    {
+      "set": 2,
+      "index": 64,
+      "chip": 144,
+      "uses": 16,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.563
+    },
+    {
+      "set": 2,
+      "index": 65,
+      "chip": 145,
+      "uses": 90,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 66,
+      "chip": 146,
+      "uses": 102,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.745
+    },
+    {
+      "set": 2,
+      "index": 67,
+      "chip": 147,
+      "uses": 65,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 68,
+      "chip": 148,
+      "uses": 69,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.681
+    },
+    {
+      "set": 2,
+      "index": 69,
+      "chip": 149,
+      "uses": 78,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.718
+    },
+    {
+      "set": 2,
+      "index": 70,
+      "chip": 150,
+      "uses": 14,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 71,
+      "chip": 151,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 72,
+      "chip": 152,
+      "uses": 139,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.885
+    },
+    {
+      "set": 2,
+      "index": 73,
+      "chip": 153,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 74,
+      "chip": 154,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 0.667
+    },
+    {
+      "set": 2,
+      "index": 75,
+      "chip": 155,
+      "uses": 1,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 76,
+      "chip": 156,
+      "uses": 7,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 77,
+      "chip": 157,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 78,
+      "chip": 158,
+      "uses": 17,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 79,
+      "chip": 159,
+      "uses": 18,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 80,
+      "chip": 160,
+      "uses": 21,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 81,
+      "chip": 161,
+      "uses": 73,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 82,
+      "chip": 162,
+      "uses": 16,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 83,
+      "chip": 163,
+      "uses": 1,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 84,
+      "chip": 164,
+      "uses": 50,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 85,
+      "chip": 165,
+      "uses": 91,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 86,
+      "chip": 166,
+      "uses": 58,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 87,
+      "chip": 167,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 88,
+      "chip": 168,
+      "uses": 174,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.483
+    },
+    {
+      "set": 2,
+      "index": 89,
+      "chip": 169,
+      "uses": 121,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.463
+    },
+    {
+      "set": 2,
+      "index": 90,
+      "chip": 170,
+      "uses": 85,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.482
+    },
+    {
+      "set": 2,
+      "index": 91,
+      "chip": 171,
+      "uses": 474,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.508
+    },
+    {
+      "set": 2,
+      "index": 92,
+      "chip": 172,
+      "uses": 10214,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.588
+    },
+    {
+      "set": 2,
+      "index": 93,
+      "chip": 173,
+      "uses": 101,
+      "terrain": "wasteland",
+      "code": 11,
+      "share": 0.495
+    },
+    {
+      "set": 2,
+      "index": 94,
+      "chip": 174,
+      "uses": 91,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.462
+    },
+    {
+      "set": 2,
+      "index": 95,
+      "chip": 175,
+      "uses": 218,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.748
+    },
+    {
+      "set": 2,
+      "index": 96,
+      "chip": 176,
+      "uses": 224,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.728
+    },
+    {
+      "set": 2,
+      "index": 97,
+      "chip": 177,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 98,
+      "chip": 178,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 99,
+      "chip": 179,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 100,
+      "chip": 180,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 101,
+      "chip": 181,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 102,
+      "chip": 182,
+      "uses": 3,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 103,
+      "chip": 183,
+      "uses": 4,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 104,
+      "chip": 184,
+      "uses": 2,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 105,
+      "chip": 185,
+      "uses": 6,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 106,
+      "chip": 186,
+      "uses": 4,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 107,
+      "chip": 187,
+      "uses": 4,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 108,
+      "chip": 188,
+      "uses": 4,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 109,
+      "chip": 189,
+      "uses": 2,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.5
+    },
+    {
+      "set": 2,
+      "index": 110,
+      "chip": 190,
+      "uses": 1,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 111,
+      "chip": 191,
+      "uses": 1,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 112,
+      "chip": 192,
+      "uses": 2,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.5
+    },
+    {
+      "set": 2,
+      "index": 113,
+      "chip": 193,
+      "uses": 2,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 114,
+      "chip": 194,
+      "uses": 1,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 115,
+      "chip": 195,
+      "uses": 1,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 116,
+      "chip": 196,
+      "uses": 2,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 117,
+      "chip": 197,
+      "uses": 92,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.935
+    },
+    {
+      "set": 2,
+      "index": 118,
+      "chip": 198,
+      "uses": 33,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.97
+    },
+    {
+      "set": 2,
+      "index": 119,
+      "chip": 199,
+      "uses": 31,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.968
+    },
+    {
+      "set": 2,
+      "index": 120,
+      "chip": 200,
+      "uses": 78,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.962
+    },
+    {
+      "set": 2,
+      "index": 121,
+      "chip": 201,
+      "uses": 80,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.963
+    },
+    {
+      "set": 2,
+      "index": 122,
+      "chip": 202,
+      "uses": 91,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.967
+    },
+    {
+      "set": 2,
+      "index": 123,
+      "chip": 203,
+      "uses": 89,
+      "terrain": "wall",
+      "code": 5,
+      "share": 0.966
+    },
+    {
+      "set": 2,
+      "index": 124,
+      "chip": 204,
+      "uses": 2,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 125,
+      "chip": 205,
+      "uses": 2,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 126,
+      "chip": 206,
+      "uses": 2,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 127,
+      "chip": 207,
+      "uses": 2,
+      "terrain": "gate",
+      "code": 10,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 128,
+      "chip": 208,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 129,
+      "chip": 209,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 130,
+      "chip": 210,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 131,
+      "chip": 211,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 132,
+      "chip": 212,
+      "uses": 26,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.962
+    },
+    {
+      "set": 2,
+      "index": 133,
+      "chip": 213,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 134,
+      "chip": 214,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 135,
+      "chip": 215,
+      "uses": 14,
+      "terrain": "plain",
+      "code": 0,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 136,
+      "chip": 216,
+      "uses": 14,
+      "terrain": "stream",
+      "code": 3,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 137,
+      "chip": 217,
+      "uses": 4,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 138,
+      "chip": 218,
+      "uses": 3,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 139,
+      "chip": 219,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 140,
+      "chip": 220,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 141,
+      "chip": 221,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 142,
+      "chip": 222,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 143,
+      "chip": 223,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 144,
+      "chip": 224,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 145,
+      "chip": 225,
+      "uses": 6,
+      "terrain": "castle",
+      "code": 6,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 146,
+      "chip": 226,
+      "uses": 14,
+      "terrain": "castle",
+      "code": 6,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 147,
+      "chip": 227,
+      "uses": 8,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 148,
+      "chip": 228,
+      "uses": 7,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 149,
+      "chip": 229,
+      "uses": 16,
+      "terrain": "barracks",
+      "code": 14,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 150,
+      "chip": 230,
+      "uses": 16,
+      "terrain": "barracks",
+      "code": 14,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 151,
+      "chip": 231,
+      "uses": 16,
+      "terrain": "barracks",
+      "code": 14,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 152,
+      "chip": 232,
+      "uses": 16,
+      "terrain": "barracks",
+      "code": 14,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 153,
+      "chip": 233,
+      "uses": 3,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 154,
+      "chip": 234,
+      "uses": 2,
+      "terrain": "wall",
+      "code": 5,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 155,
+      "chip": 235,
+      "uses": 1,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 156,
+      "chip": 236,
+      "uses": 2,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 157,
+      "chip": 237,
+      "uses": 2,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 158,
+      "chip": 238,
+      "uses": 2,
+      "terrain": "fence",
+      "code": 12,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 159,
+      "chip": 239,
+      "uses": 5,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 160,
+      "chip": 240,
+      "uses": 5,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 161,
+      "chip": 241,
+      "uses": 5,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 162,
+      "chip": 242,
+      "uses": 5,
+      "terrain": "granary",
+      "code": 15,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 163,
+      "chip": 243,
+      "uses": 24,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 164,
+      "chip": 244,
+      "uses": 24,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 165,
+      "chip": 245,
+      "uses": 24,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 166,
+      "chip": 246,
+      "uses": 24,
+      "terrain": "treasury",
+      "code": 16,
+      "share": 1.0
+    },
+    {
+      "set": 2,
+      "index": 167,
+      "chip": 247,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 168,
+      "chip": 248,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 169,
+      "chip": 249,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 170,
+      "chip": 250,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 171,
+      "chip": 251,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 172,
+      "chip": 252,
+      "uses": 0
+    },
+    {
+      "set": 2,
+      "index": 173,
+      "chip": 253,
+      "uses": 2,
+      "terrain": "plain",
+      "code": 0,
+      "share": 0.5
+    },
+    {
+      "set": 2,
+      "index": 174,
+      "chip": 254,
+      "uses": 2,
+      "terrain": "cliff",
+      "code": 9,
+      "share": 1.0
+    }
+  ]
+}

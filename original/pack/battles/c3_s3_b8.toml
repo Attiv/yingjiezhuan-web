@@ -1,0 +1,246 @@
+# c3_s3_b8: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 3 block 8) on the
+# original map hexz_40. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 10 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 4: the duel of 嚴顏 (202) and 夏侯德 (210) is left out (not both officers of the pack)
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: record 4: a duel move without a duel it belongs to is left out
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 53 at (31, 8) has no base-pack item
+
+id = "c3_s3_b8"
+name = "天蕩山 전투"
+location = ""
+objective = "一、殲滅夏侯德"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+treasures = []
+reward_gold = 0
+outro = "c3_s3_b8_outro"
+
+[map]
+use = "hexz_40"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 10
+required = []
+forbidden = []
+slots = [[4, 5], [5, 4], [5, 6], [5, 8], [3, 4], [3, 5], [3, 6], [3, 8], [6, 5], [6, 7]]
+
+[[units]]
+side = "enemy"
+name = "夏侯德"
+class = "chariot"
+level = 52
+stats = [69, 59, 67]
+pos = [33, 7]
+ai = "aggressive"
+commander = true
+tag = "person_210"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 48
+stats = [40, 30, 50]
+pos = [33, 6]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 44
+stats = [40, 30, 50]
+pos = [20, 13]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 48
+stats = [40, 50, 30]
+pos = [31, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 45
+stats = [40, 50, 30]
+pos = [23, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 48
+stats = [50, 30, 40]
+pos = [21, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 46
+stats = [50, 30, 40]
+pos = [19, 12]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 46
+stats = [50, 30, 40]
+pos = [20, 11]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 45
+stats = [50, 30, 40]
+pos = [21, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 45
+stats = [50, 30, 40]
+pos = [21, 12]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 45
+stats = [50, 30, 40]
+pos = [22, 6]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 48
+stats = [50, 30, 40]
+pos = [30, 6]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 45
+stats = [50, 30, 40]
+pos = [32, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "outlaw"
+level = 45
+stats = [50, 40, 30]
+pos = [31, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "outlaw"
+level = 43
+stats = [50, 40, 30]
+pos = [23, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 45
+stats = [50, 30, 40]
+pos = [22, 13]
+ai = "aggressive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b8_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "yan_yan"
+b = "person_210"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b8_4"
+
+[[events.actions]]
+type = "level_up"
+target = "yan_yan"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "person_210"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s3_b8_4_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s3_b8_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"

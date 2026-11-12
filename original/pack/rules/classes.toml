@@ -1,0 +1,897 @@
+# Class rules of the original mode: the pack chain's with the values read from the player's
+# MAIN.EXE (docs/reverse-engineering/FORMATS.md §10), written by `hero-tools original pack`
+# (do not edit; run the importer again).
+
+[[class]]
+id = "archer"
+name = "궁병"
+hanja = "弓兵"
+family = "archer"
+tier = 1
+move = 4
+move_type = "foot"
+range = "archer"
+atk = 6
+def = 8
+hp = 500
+hp_growth = 40
+generic = [40, 50, 30]
+sprite = "archer"
+can_counter = false
+provokes_counter = false
+strategy_guard = false
+mp_aura = false
+desc = "활을 쏘는 부대. 기병에 강하고 보병에 약하다. 바로 옆 칸은 쏠 수 없다."
+
+[[class.strategies]]
+level = 6
+id = "whirlpool"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[class.promote]
+to = "crossbow"
+level = 15
+item = "repeater"
+
+[[class]]
+id = "band"
+name = "군악대"
+hanja = "軍樂隊"
+family = "band"
+tier = 1
+move = 4
+move_type = "slow"
+range = "adjacent4"
+atk = 4
+def = 4
+hp = 300
+hp_growth = 40
+generic = [10, 70, 10]
+sprite = "band"
+can_counter = false
+provokes_counter = false
+strategy_guard = true
+mp_aura = true
+support_exp = 12
+desc = "북과 나팔로 군사를 북돋는 부대. 곁에 선 부대의 책략치를 매 턴 회복시킨다(적군도 마찬가지)."
+
+[[class.strategies]]
+level = 1
+id = "encourage"
+
+[[class.strategies]]
+level = 8
+id = "cheer"
+
+[[class.strategies]]
+level = 16
+id = "inspire"
+
+[[class.strategies]]
+level = 24
+id = "great_encourage"
+
+[[class.strategies]]
+level = 32
+id = "great_cheer"
+
+[[class.strategies]]
+level = 40
+id = "great_inspire"
+
+[[class]]
+id = "bandit"
+name = "산적"
+hanja = "山賊"
+family = "bandit"
+tier = 1
+move = 4
+move_type = "mountain"
+range = "adjacent4"
+atk = 10
+def = 8
+hp = 800
+hp_growth = 40
+generic = [50, 40, 30]
+sprite = "bandit"
+can_counter = true
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "산을 타는 도적 떼. 병력이 많고 지계 책략을 쓰며, 붙어 온 적에게 반격하기도 한다."
+
+[[class.strategies]]
+level = 1
+id = "rockfall"
+
+[[class.strategies]]
+level = 8
+id = "landslide"
+
+[[class.strategies]]
+level = 8
+id = "harass"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[[class.strategies]]
+level = 16
+id = "encourage"
+
+[[class.strategies]]
+level = 20
+id = "aid"
+
+[class.promote]
+to = "brigand"
+level = 15
+item = "martial_manual"
+
+[[class]]
+id = "beast"
+name = "맹수사"
+hanja = "猛獸使"
+family = "beast"
+tier = 1
+move = 4
+move_type = "mountain"
+range = "adjacent8"
+atk = 16
+def = 6
+hp = 400
+hp_growth = 50
+generic = [70, 10, 40]
+sprite = "beast"
+can_counter = false
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "맹수를 부리는 부대. 공격력은 최강이지만 방어가 약하다. 혼란과 사기 저하 책략을 쓴다."
+
+[[class.strategies]]
+level = 1
+id = "false_report"
+
+[[class.strategies]]
+level = 1
+id = "harass"
+
+[[class.strategies]]
+level = 8
+id = "false_troops"
+
+[[class.strategies]]
+level = 16
+id = "provoke"
+
+[[class.strategies]]
+level = 24
+id = "disguise"
+
+[[class.strategies]]
+level = 32
+id = "intimidate"
+
+[[class]]
+id = "brigand"
+name = "흉적"
+hanja = "凶賊"
+family = "bandit"
+tier = 2
+move = 4
+move_type = "mountain"
+range = "adjacent8"
+atk = 12
+def = 10
+hp = 800
+hp_growth = 40
+generic = [50, 40, 30]
+sprite = "brigand"
+can_counter = true
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "사나운 무리를 이끄는 도적. 주위 여덟 칸을 공격할 수 있다."
+
+[[class.strategies]]
+level = 1
+id = "rockfall"
+
+[[class.strategies]]
+level = 8
+id = "landslide"
+
+[[class.strategies]]
+level = 8
+id = "harass"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[[class.strategies]]
+level = 16
+id = "mudflow"
+
+[[class.strategies]]
+level = 16
+id = "encourage"
+
+[[class.strategies]]
+level = 20
+id = "aid"
+
+[[class.strategies]]
+level = 24
+id = "great_rockfall"
+
+[class.promote]
+to = "outlaw"
+level = 30
+item = "chivalry_manual"
+
+[[class]]
+id = "catapult"
+name = "발석차"
+hanja = "發石車"
+family = "archer"
+tier = 3
+move = 3
+move_type = "foot"
+range = "catapult"
+atk = 16
+def = 10
+hp = 500
+hp_growth = 40
+generic = [40, 50, 30]
+sprite = "catapult"
+can_counter = false
+provokes_counter = false
+strategy_guard = false
+mp_aura = false
+desc = "돌을 날리는 공성 병기. 느리지만 먼 곳까지 강력한 일격을 날린다."
+
+[[class.strategies]]
+level = 6
+id = "whirlpool"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[[class.strategies]]
+level = 18
+id = "torrent"
+
+[[class.strategies]]
+level = 24
+id = "encourage"
+
+[[class.strategies]]
+level = 28
+id = "aid"
+
+[[class]]
+id = "chariot"
+name = "전차"
+hanja = "戰車"
+family = "infantry"
+tier = 3
+move = 5
+move_type = "foot"
+range = "adjacent8"
+atk = 12
+def = 16
+hp = 500
+hp_growth = 50
+generic = [40, 30, 50]
+sprite = "chariot"
+can_counter = false
+provokes_counter = false
+strategy_guard = false
+mp_aura = false
+desc = "말이 끄는 전차 부대. 보병계 최상위 병과로 방어가 매우 단단하다."
+
+[[class.strategies]]
+level = 6
+id = "scorch"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[[class.strategies]]
+level = 18
+id = "fire_dragon"
+
+[[class.strategies]]
+level = 24
+id = "encourage"
+
+[[class.strategies]]
+level = 28
+id = "aid"
+
+[[class]]
+id = "civilian"
+name = "백성"
+hanja = "百姓"
+family = "civilian"
+tier = 1
+move = 3
+move_type = "foot"
+range = []
+atk = 4
+def = 4
+hp = 500
+hp_growth = 50
+generic = [0, 0, 0]
+strategies = []
+sprite = "civilian"
+can_counter = false
+provokes_counter = false
+strategy_guard = false
+mp_aura = false
+desc = "전란을 피해 달아나는 백성들. 싸울 힘이 없다."
+
+[[class]]
+id = "crossbow"
+name = "연노병"
+hanja = "連弩兵"
+family = "archer"
+tier = 2
+move = 4
+move_type = "foot"
+range = "crossbow"
+atk = 12
+def = 8
+hp = 500
+hp_growth = 40
+generic = [40, 50, 30]
+sprite = "crossbow"
+can_counter = false
+provokes_counter = false
+strategy_guard = false
+mp_aura = false
+desc = "연발 쇠뇌로 무장한 부대. 사거리가 넓고 공격력이 크게 오른다."
+
+[[class.strategies]]
+level = 6
+id = "whirlpool"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[[class.strategies]]
+level = 18
+id = "torrent"
+
+[[class.strategies]]
+level = 24
+id = "encourage"
+
+[[class.strategies]]
+level = 28
+id = "aid"
+
+[class.promote]
+to = "catapult"
+level = 30
+item = "stone_thrower"
+
+[[class]]
+id = "guard_cavalry"
+name = "친위대"
+hanja = "親衛隊"
+family = "cavalry"
+tier = 3
+move = 6
+move_type = "horse"
+range = "adjacent4"
+atk = 16
+def = 12
+hp = 500
+hp_growth = 60
+generic = [50, 30, 40]
+sprite = "guard_cavalry"
+can_counter = false
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "군주를 지키는 정예 기마대. 공격력이 모든 병과 가운데 손꼽힌다."
+
+[[class.strategies]]
+level = 8
+id = "harass"
+
+[[class.strategies]]
+level = 12
+id = "encourage"
+
+[[class.strategies]]
+level = 20
+id = "provoke"
+
+[[class]]
+id = "heavy_cavalry"
+name = "중기병"
+hanja = "重騎兵"
+family = "cavalry"
+tier = 2
+move = 5
+move_type = "horse"
+range = "adjacent4"
+atk = 14
+def = 10
+hp = 500
+hp_growth = 60
+generic = [50, 30, 40]
+sprite = "heavy_cavalry"
+can_counter = false
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "말에게도 갑옷을 입힌 기마 부대. 경기병보다 느리지만 훨씬 튼튼하다."
+
+[[class.strategies]]
+level = 8
+id = "harass"
+
+[[class.strategies]]
+level = 12
+id = "encourage"
+
+[[class.strategies]]
+level = 20
+id = "provoke"
+
+[class.promote]
+to = "guard_cavalry"
+level = 30
+item = "guard_armor"
+
+[[class]]
+id = "light_cavalry"
+name = "경기병"
+hanja = "輕騎兵"
+family = "cavalry"
+tier = 1
+move = 6
+move_type = "horse"
+range = "adjacent4"
+atk = 12
+def = 6
+hp = 500
+hp_growth = 60
+generic = [50, 30, 40]
+sprite = "light_cavalry"
+can_counter = false
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "발 빠른 기마 부대. 보병에 강하고 궁병에 약하다. 숲과 산에는 들어갈 수 없다."
+
+[[class.strategies]]
+level = 8
+id = "harass"
+
+[[class.strategies]]
+level = 12
+id = "encourage"
+
+[class.promote]
+to = "heavy_cavalry"
+level = 15
+item = "horse_armor"
+
+[[class]]
+id = "long_infantry"
+name = "장병"
+hanja = "長兵"
+family = "infantry"
+tier = 2
+move = 4
+move_type = "foot"
+range = "adjacent8"
+atk = 12
+def = 12
+hp = 500
+hp_growth = 50
+generic = [40, 30, 50]
+sprite = "long_infantry"
+can_counter = false
+provokes_counter = false
+strategy_guard = false
+mp_aura = false
+desc = "긴 창을 든 보병. 주위 여덟 칸을 모두 공격할 수 있다."
+
+[[class.strategies]]
+level = 6
+id = "scorch"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[[class.strategies]]
+level = 18
+id = "fire_dragon"
+
+[[class.strategies]]
+level = 24
+id = "encourage"
+
+[[class.strategies]]
+level = 28
+id = "aid"
+
+[class.promote]
+to = "chariot"
+level = 30
+item = "war_cart"
+
+[[class]]
+id = "martial"
+name = "무도가"
+hanja = "武道家"
+family = "martial"
+tier = 1
+move = 5
+move_type = "mountain"
+range = "adjacent8"
+atk = 14
+def = 12
+hp = 600
+hp_growth = 50
+generic = [50, 10, 60]
+sprite = "martial"
+can_counter = true
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "맨손 무예를 닦은 무인 집단. 산을 넘나들며 화계를 쓰고 반격에도 능하다."
+
+[[class.strategies]]
+level = 1
+id = "scorch"
+
+[[class.strategies]]
+level = 8
+id = "fire_dragon"
+
+[[class.strategies]]
+level = 16
+id = "hellfire"
+
+[[class.strategies]]
+level = 24
+id = "great_scorch"
+
+[[class.strategies]]
+level = 32
+id = "great_fire_dragon"
+
+[[class]]
+id = "outlaw"
+name = "의적"
+hanja = "義賊"
+family = "bandit"
+tier = 3
+move = 4
+move_type = "mountain"
+range = "adjacent8"
+atk = 14
+def = 12
+hp = 800
+hp_growth = 40
+generic = [50, 40, 30]
+sprite = "outlaw"
+can_counter = true
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "의리를 아는 협객 무리. 적병계의 최상위 병과다."
+
+[[class.strategies]]
+level = 1
+id = "rockfall"
+
+[[class.strategies]]
+level = 8
+id = "landslide"
+
+[[class.strategies]]
+level = 8
+id = "harass"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[[class.strategies]]
+level = 16
+id = "mudflow"
+
+[[class.strategies]]
+level = 16
+id = "encourage"
+
+[[class.strategies]]
+level = 20
+id = "aid"
+
+[[class.strategies]]
+level = 24
+id = "great_rockfall"
+
+[[class.strategies]]
+level = 32
+id = "great_landslide"
+
+[[class]]
+id = "short_infantry"
+name = "단병"
+hanja = "短兵"
+family = "infantry"
+tier = 1
+move = 4
+move_type = "foot"
+range = "adjacent4"
+atk = 8
+def = 8
+hp = 500
+hp_growth = 50
+generic = [40, 30, 50]
+sprite = "short_infantry"
+can_counter = false
+provokes_counter = false
+strategy_guard = false
+mp_aura = false
+desc = "칼과 방패를 든 보병. 궁병에 강하고 기병에 약하다. 대각선은 공격할 수 없다."
+
+[[class.strategies]]
+level = 6
+id = "scorch"
+
+[[class.strategies]]
+level = 12
+id = "false_report"
+
+[class.promote]
+to = "long_infantry"
+level = 15
+item = "long_spear"
+
+[[class]]
+id = "sorcerer"
+name = "주술사"
+hanja = "呪術師"
+family = "sorcerer"
+tier = 1
+move = 4
+move_type = "foot"
+range = "adjacent4"
+atk = 4
+def = 4
+hp = 300
+hp_growth = 50
+generic = [5, 80, 50]
+sprite = "sorcerer"
+can_counter = false
+provokes_counter = false
+strategy_guard = true
+mp_aura = false
+desc = "천문과 도술에 통달한 책사의 부대. 거의 모든 책략을 다루지만 직접 싸우는 힘은 약하다."
+
+[[class.strategies]]
+level = 1
+id = "scorch"
+
+[[class.strategies]]
+level = 1
+id = "whirlpool"
+
+[[class.strategies]]
+level = 1
+id = "rockfall"
+
+[[class.strategies]]
+level = 1
+id = "false_report"
+
+[[class.strategies]]
+level = 1
+id = "harass"
+
+[[class.strategies]]
+level = 1
+id = "nurse"
+
+[[class.strategies]]
+level = 4
+id = "fire_dragon"
+
+[[class.strategies]]
+level = 4
+id = "torrent"
+
+[[class.strategies]]
+level = 6
+id = "landslide"
+
+[[class.strategies]]
+level = 6
+id = "false_troops"
+
+[[class.strategies]]
+level = 8
+id = "provoke"
+
+[[class.strategies]]
+level = 8
+id = "cure"
+
+[[class.strategies]]
+level = 12
+id = "hellfire"
+
+[[class.strategies]]
+level = 12
+id = "tsunami"
+
+[[class.strategies]]
+level = 14
+id = "mudflow"
+
+[[class.strategies]]
+level = 14
+id = "disguise"
+
+[[class.strategies]]
+level = 16
+id = "intimidate"
+
+[[class.strategies]]
+level = 16
+id = "revive"
+
+[[class.strategies]]
+level = 18
+id = "great_encourage"
+
+[[class.strategies]]
+level = 20
+id = "great_aid"
+
+[[class.strategies]]
+level = 22
+id = "great_scorch"
+
+[[class.strategies]]
+level = 24
+id = "great_whirlpool"
+
+[[class.strategies]]
+level = 26
+id = "great_rockfall"
+
+[[class.strategies]]
+level = 28
+id = "great_cheer"
+
+[[class.strategies]]
+level = 30
+id = "great_resupply"
+
+[[class.strategies]]
+level = 32
+id = "great_fire_dragon"
+
+[[class.strategies]]
+level = 34
+id = "great_torrent"
+
+[[class.strategies]]
+level = 36
+id = "great_landslide"
+
+[[class.strategies]]
+level = 38
+id = "great_inspire"
+
+[[class.strategies]]
+level = 40
+id = "great_relief"
+
+[[class]]
+id = "supply"
+name = "수송대"
+hanja = "輸送隊"
+family = "supply"
+tier = 1
+move = 3
+move_type = "slow"
+range = "adjacent8"
+atk = 4
+def = 4
+hp = 300
+hp_growth = 40
+generic = [10, 70, 10]
+sprite = "supply"
+can_counter = false
+provokes_counter = false
+strategy_guard = true
+mp_aura = false
+support_exp = 12
+desc = "군량을 나르는 부대. 병력 회복 책략을 모두 익히며 책략에 강하다."
+
+[[class.strategies]]
+level = 1
+id = "aid"
+
+[[class.strategies]]
+level = 8
+id = "resupply"
+
+[[class.strategies]]
+level = 16
+id = "relief"
+
+[[class.strategies]]
+level = 24
+id = "great_aid"
+
+[[class.strategies]]
+level = 32
+id = "great_resupply"
+
+[[class.strategies]]
+level = 40
+id = "great_relief"
+
+[[class]]
+id = "tribe"
+name = "이민족"
+hanja = "異民族"
+family = "tribe"
+tier = 1
+move = 5
+move_type = "mountain"
+range = "adjacent8"
+atk = 14
+def = 16
+hp = 700
+hp_growth = 60
+generic = [60, 10, 50]
+sprite = "tribe"
+can_counter = false
+provokes_counter = true
+strategy_guard = false
+mp_aura = false
+desc = "변방의 용맹한 부족 전사. 병력 성장이 가장 크고 방어도 단단하며 수계를 쓴다."
+
+[[class.strategies]]
+level = 1
+id = "whirlpool"
+
+[[class.strategies]]
+level = 8
+id = "torrent"
+
+[[class.strategies]]
+level = 16
+id = "tsunami"
+
+[[class.strategies]]
+level = 24
+id = "great_whirlpool"
+
+[[class.strategies]]
+level = 32
+id = "great_torrent"

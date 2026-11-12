@@ -1,0 +1,514 @@
+[
+  {
+    "index": 0,
+    "name": "遁甲天書",
+    "price": 255,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 1,
+    "name": "青囊書",
+    "price": 255,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 2,
+    "name": "鼓吹具",
+    "price": 255,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 3,
+    "name": "孫子兵法    ",
+    "price": 255,
+    "power": 22,
+    "item_type": 5,
+    "type_name": "book"
+  },
+  {
+    "index": 4,
+    "name": "孟德新書",
+    "price": 255,
+    "power": 15,
+    "item_type": 5,
+    "type_name": "book"
+  },
+  {
+    "index": 5,
+    "name": "黃爪飛龍",
+    "price": 255,
+    "power": 1,
+    "item_type": 4,
+    "type_name": "horse"
+  },
+  {
+    "index": 6,
+    "name": "的盧",
+    "price": 255,
+    "power": 2,
+    "item_type": 4,
+    "type_name": "horse"
+  },
+  {
+    "index": 7,
+    "name": "赤兔馬",
+    "price": 255,
+    "power": 3,
+    "item_type": 4,
+    "type_name": "horse"
+  },
+  {
+    "index": 8,
+    "name": "玉璽",
+    "price": 255,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 9,
+    "name": "倚天劍  ",
+    "price": 255,
+    "power": 14,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 10,
+    "name": "青釭劍  ",
+    "price": 255,
+    "power": 20,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 11,
+    "name": "七星劍  ",
+    "price": 255,
+    "power": 10,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 12,
+    "name": "青龍偃月刀",
+    "price": 255,
+    "power": 12,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 13,
+    "name": "三尖刀",
+    "price": 255,
+    "power": 10,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 14,
+    "name": "方天畫戟",
+    "price": 255,
+    "power": 18,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 15,
+    "name": "蛇矛",
+    "price": 255,
+    "power": 10,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 16,
+    "name": "弓術指南書",
+    "price": 255,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 17,
+    "name": "馬術指南書",
+    "price": 255,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 18,
+    "name": "劍術指南書",
+    "price": 255,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 19,
+    "name": "長槍",
+    "price": 30,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 20,
+    "name": "步兵車",
+    "price": 60,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 21,
+    "name": "連弩",
+    "price": 35,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 22,
+    "name": "發石車",
+    "price": 70,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 23,
+    "name": "馬鎧",
+    "price": 40,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 24,
+    "name": "近衛鎧",
+    "price": 80,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 25,
+    "name": "無賴精神  ",
+    "price": 20,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 26,
+    "name": "俠義精神  ",
+    "price": 40,
+    "power": 0,
+    "item_type": 1,
+    "type_name": "class-change"
+  },
+  {
+    "index": 27,
+    "name": "酒",
+    "price": 5,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 28,
+    "name": "特級酒",
+    "price": 10,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 29,
+    "name": "老酒",
+    "price": 20,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 30,
+    "name": "豆",
+    "price": 10,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 31,
+    "name": "麥",
+    "price": 20,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 32,
+    "name": "米",
+    "price": 40,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 33,
+    "name": "炸彈",
+    "price": 50,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 34,
+    "name": "落石書  ",
+    "price": 10,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 35,
+    "name": "山崩書  ",
+    "price": 20,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 36,
+    "name": "山洪書    ",
+    "price": 40,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 37,
+    "name": "漩渦書  ",
+    "price": 8,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 38,
+    "name": "濁流書  ",
+    "price": 16,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 39,
+    "name": "海嘯書  ",
+    "price": 32,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 40,
+    "name": "焦熱書  ",
+    "price": 5,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 41,
+    "name": "火龍書  ",
+    "price": 10,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 42,
+    "name": "猛火書  ",
+    "price": 20,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 43,
+    "name": "濃霧書  ",
+    "price": 5,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 44,
+    "name": "雷陣雨書",
+    "price": 10,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 45,
+    "name": "豪雨書  ",
+    "price": 20,
+    "power": 0,
+    "item_type": 2,
+    "type_name": "attack-scroll"
+  },
+  {
+    "index": 46,
+    "name": "援隊書  ",
+    "price": 50,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 47,
+    "name": "援部書  ",
+    "price": 100,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 48,
+    "name": "援軍書  ",
+    "price": 200,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 49,
+    "name": "平氣書  ",
+    "price": 25,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 50,
+    "name": "活氣書  ",
+    "price": 50,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 51,
+    "name": "勇氣書  ",
+    "price": 100,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 52,
+    "name": "傷藥",
+    "price": 30,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 53,
+    "name": "中藥  ",
+    "price": 60,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 54,
+    "name": "茶",
+    "price": 120,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 55,
+    "name": "赦命書",
+    "price": 255,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 56,
+    "name": "援軍報告",
+    "price": 255,
+    "power": 0,
+    "item_type": 3,
+    "type_name": "consumable-or-special"
+  },
+  {
+    "index": 57,
+    "name": "雌雄雙劍    ",
+    "price": 255,
+    "power": 16,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 58,
+    "name": "英雄之劍",
+    "price": 255,
+    "power": 22,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 59,
+    "name": "霸王之劍",
+    "price": 255,
+    "power": 24,
+    "item_type": 0,
+    "type_name": "weapon"
+  },
+  {
+    "index": 60,
+    "name": "六韜",
+    "price": 255,
+    "power": 15,
+    "item_type": 5,
+    "type_name": "book"
+  },
+  {
+    "index": 61,
+    "name": "三略",
+    "price": 255,
+    "power": 15,
+    "item_type": 5,
+    "type_name": "book"
+  },
+  {
+    "index": 62,
+    "name": "吳子兵法    ",
+    "price": 255,
+    "power": 20,
+    "item_type": 5,
+    "type_name": "book"
+  },
+  {
+    "index": 63,
+    "name": "渡者也",
+    "price": 0,
+    "power": 0,
+    "item_type": 0,
+    "type_name": "weapon"
+  }
+]

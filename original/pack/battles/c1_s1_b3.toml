@@ -1,0 +1,274 @@
+# c1_s1_b3: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 1 block 3) on the
+# original map hexz_07. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 5: AI change: 孟肅 (233) is not on the map
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 49 at (13, 17) has no base-pack item
+# note: named by the setup but not in the army at this battle, so allies at their slot: kong_rong, taishi_ci
+
+id = "c1_s1_b3"
+name = "北海 전투"
+location = ""
+objective = "一、管亥的潰敗．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 300
+outro = "c1_s1_b3_outro"
+
+[map]
+use = "hexz_07"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = ["zhao_yun"]
+forbidden = ["kong_rong", "taishi_ci"]
+slots = [[21, 2], [22, 3], [21, 4], [20, 5], [22, 5], [21, 3], [1, 0]]
+
+[[units]]
+side = "ally"
+officer = "kong_rong"
+pos = [3, 0]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "taishi_ci"
+pos = [2, 0]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "guan_hai"
+class = "bandit"
+level = 10
+pos = [6, 7]
+ai = "march"
+ai_pos = [7, 10]
+commander = true
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 6
+stats = [50, 40, 30]
+pos = [2, 9]
+ai = "march"
+ai_pos = [9, 15]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 6
+stats = [50, 40, 30]
+pos = [3, 8]
+ai = "march"
+ai_pos = [9, 16]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 5
+stats = [50, 40, 30]
+pos = [7, 6]
+ai = "march"
+ai_pos = [8, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 5
+stats = [50, 40, 30]
+pos = [10, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 6
+stats = [50, 40, 30]
+pos = [10, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 6
+stats = [50, 40, 30]
+pos = [8, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 5
+stats = [50, 40, 30]
+pos = [18, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 5
+stats = [50, 40, 30]
+pos = [18, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 6
+stats = [40, 50, 30]
+pos = [1, 7]
+ai = "march"
+ai_pos = [5, 11]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 6
+stats = [40, 50, 30]
+pos = [9, 7]
+ai = "march"
+ai_pos = [14, 11]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 4
+stats = [70, 10, 40]
+pos = [13, 8]
+ai = "march"
+ai_pos = [17, 11]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 4
+stats = [70, 10, 40]
+pos = [6, 12]
+ai = "march"
+ai_pos = [7, 13]
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b3_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhao_yun"
+b = "guan_hai"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b3_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhao_yun"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "guan_hai"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b3_3_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c1_s1_b3_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+pos = [9, 7]
+radius = 0
+to = [14, 19]
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b3_5"
+
+[[events.actions]]
+type = "set_terrain"
+pos = [2, 2]
+terrain = "plain"
+image = "hexz_07_2_2_0"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b3_5_2"
+
+[[events.actions]]
+type = "set_ai"
+target = "kong_rong"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "taishi_ci"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f163"
+value = 1
+
+[[treasures]]
+pos = [11, 5]
+item = "fine_wine"
+gold = 0

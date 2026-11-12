@@ -1,0 +1,389 @@
+# c3_s2_b14: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 2 block 14) on the
+# original map hexz_37. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 10 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+
+id = "c3_s2_b14"
+name = "葭萌關Ⅰ 전투"
+location = ""
+objective = "一、張魯撤退"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+reward_gold = 0
+outro = "c3_s2_b14_outro"
+
+[map]
+use = "hexz_37"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 10
+required = ["zhang_fei"]
+forbidden = []
+slots = [[1, 9], [1, 8], [2, 7], [2, 9], [2, 10], [4, 7], [4, 8], [3, 8], [3, 9], [0, 7]]
+
+[[units]]
+side = "enemy"
+name = "張魯"
+class = "outlaw"
+level = 45
+stats = [72, 80, 73]
+pos = [18, 9]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "張衛"
+class = "catapult"
+level = 40
+stats = [72, 35, 62]
+pos = [18, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "楊松"
+class = "catapult"
+level = 40
+stats = [45, 57, 26]
+pos = [17, 9]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "閻圃"
+class = "outlaw"
+level = 39
+stats = [36, 80, 27]
+pos = [17, 6]
+ai = "advance"
+ai_pos = [11, 3]
+commander = false
+tag = "person_24"
+
+[[units]]
+side = "enemy"
+name = "楊昂"
+class = "catapult"
+level = 39
+stats = [72, 46, 60]
+pos = [16, 12]
+ai = "advance"
+ai_pos = [11, 15]
+commander = false
+tag = "person_22"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 34
+stats = [40, 30, 50]
+pos = [17, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 34
+stats = [40, 30, 50]
+pos = [15, 7]
+ai = "advance"
+ai_pos = [11, 3]
+commander = false
+tag = "person_257"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 35
+stats = [40, 30, 50]
+pos = [15, 11]
+ai = "advance"
+ai_pos = [11, 15]
+commander = false
+tag = "person_258"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 35
+stats = [40, 30, 50]
+pos = [16, 7]
+ai = "advance"
+ai_pos = [11, 3]
+commander = false
+tag = "person_259"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 36
+stats = [40, 50, 30]
+pos = [17, 8]
+ai = "advance"
+ai_pos = [11, 3]
+commander = false
+tag = "person_274"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 35
+stats = [40, 50, 30]
+pos = [16, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 36
+stats = [40, 50, 30]
+pos = [16, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 38
+stats = [50, 30, 40]
+pos = [16, 10]
+ai = "advance"
+ai_pos = [11, 15]
+commander = false
+tag = "person_292"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 39
+stats = [50, 30, 40]
+pos = [15, 9]
+ai = "advance"
+ai_pos = [11, 15]
+commander = false
+tag = "person_293"
+
+[[units]]
+side = "enemy"
+officer = "ma_chao"
+class = "guard_cavalry"
+level = 41
+pos = [8, 16]
+ai = "target"
+ai_target = "zhang_fei"
+commander = false
+group = "original_5"
+
+[[units]]
+side = "enemy"
+officer = "ma_dai"
+class = "guard_cavalry"
+level = 40
+pos = [8, 18]
+ai = "aggressive"
+commander = false
+group = "original_5"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 39
+stats = [50, 30, 40]
+pos = [8, 15]
+ai = "aggressive"
+commander = false
+tag = "person_294"
+group = "original_5"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 39
+stats = [50, 30, 40]
+pos = [7, 16]
+ai = "aggressive"
+commander = false
+tag = "person_295"
+group = "original_5"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 39
+stats = [50, 30, 40]
+pos = [9, 17]
+ai = "aggressive"
+commander = false
+tag = "person_296"
+group = "original_5"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 39
+stats = [50, 30, 40]
+pos = [8, 19]
+ai = "aggressive"
+commander = false
+tag = "person_297"
+group = "original_5"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b14_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 3
+side = "player"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_22"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_24"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_257"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_258"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_259"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "aggressive"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+pos = [14, 1]
+radius = 0
+to = [17, 17]
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b14_5"
+
+[[events.actions]]
+type = "spawn"
+group = "original_5"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b14_5_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f170"
+value = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "ma_chao"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s2_b14_6"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "ma_chao"
+
+[[events.actions]]
+type = "retreat"
+target = "ma_dai"
+
+[[events.actions]]
+type = "retreat"
+target = "person_294"
+
+[[events.actions]]
+type = "retreat"
+target = "person_295"
+
+[[events.actions]]
+type = "retreat"
+target = "person_296"
+
+[[events.actions]]
+type = "retreat"
+target = "person_297"
+
+[[treasures]]
+pos = [14, 0]
+item = "relief_report"
+gold = 0

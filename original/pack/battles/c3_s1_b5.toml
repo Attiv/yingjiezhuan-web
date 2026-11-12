@@ -1,0 +1,924 @@
+# c3_s1_b5: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 1 block 5) on the
+# original map hexz_28. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 3: the duel of 關羽 (1) and 呂蒙 (148) is left out (not both officers of the pack)
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 13: AI change: 軍樂隊 (328) is not on the map
+# note: record 13: AI change: 運輸隊 (348) is not on the map
+# note: record 16: the duel of 關羽 (1) and 呂蒙 (148) is left out (not both officers of the pack)
+# note: record 16: a duel move without a duel it belongs to is left out
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 39 at (14, 1) has no base-pack item
+# note: a second treasure at (21, 7) left out: the first one stays
+# note: treasure item 39 at (14, 1) has no base-pack item
+
+id = "c3_s1_b5"
+name = "公安 전투"
+location = ""
+objective = "一、周瑜撤退． / 二、佔領四個鹿砦．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+reward_gold = 0
+outro = "c3_s1_b5_outro"
+
+[map]
+use = "hexz_28"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 12
+required = ["zhuge_liang"]
+forbidden = []
+slots = [[12, 20], [10, 21], [12, 21], [11, 19], [11, 22], [10, 18], [10, 20], [9, 19], [9, 21], [8, 20], [10, 23], [8, 22]]
+
+[[units]]
+side = "enemy"
+name = "周瑜"
+class = "sorcerer"
+level = 44
+stats = [75, 95, 88]
+pos = [36, 10]
+ai = "hold"
+commander = true
+tag = "person_142"
+
+[[units]]
+side = "enemy"
+name = "蔣欽"
+class = "chariot"
+level = 38
+stats = [67, 64, 62]
+pos = [24, 12]
+ai = "hold"
+commander = false
+tag = "person_161"
+
+[[units]]
+side = "enemy"
+officer = "xu_sheng"
+class = "chariot"
+level = 39
+pos = [26, 14]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "ding_feng"
+class = "chariot"
+level = 38
+pos = [34, 12]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "gan_ning"
+class = "beast"
+level = 40
+pos = [32, 13]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "周泰"
+class = "guard_cavalry"
+level = 40
+stats = [87, 53, 78]
+pos = [30, 11]
+ai = "hold"
+commander = false
+tag = "person_162"
+
+[[units]]
+side = "enemy"
+name = "呂蒙"
+class = "chariot"
+level = 41
+stats = [84, 91, 80]
+pos = [25, 13]
+ai = "hold"
+commander = false
+tag = "person_148"
+
+[[units]]
+side = "enemy"
+name = "潘璋"
+class = "chariot"
+level = 40
+stats = [75, 39, 72]
+pos = [26, 12]
+ai = "hold"
+commander = false
+tag = "person_173"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 34
+stats = [50, 30, 40]
+pos = [28, 11]
+ai = "hold"
+commander = false
+tag = "person_292"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 35
+stats = [50, 30, 40]
+pos = [28, 12]
+ai = "hold"
+commander = false
+tag = "person_293"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 35
+stats = [50, 30, 40]
+pos = [33, 12]
+ai = "hold"
+commander = false
+tag = "person_294"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 34
+stats = [40, 50, 30]
+pos = [31, 12]
+ai = "hold"
+commander = false
+tag = "person_274"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 33
+stats = [40, 50, 30]
+pos = [25, 11]
+ai = "hold"
+commander = false
+tag = "person_275"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 33
+stats = [40, 50, 30]
+pos = [27, 13]
+ai = "hold"
+commander = false
+tag = "person_276"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 34
+stats = [40, 50, 30]
+pos = [33, 10]
+ai = "hold"
+commander = false
+tag = "person_277"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 35
+stats = [50, 30, 40]
+pos = [35, 11]
+ai = "hold"
+commander = false
+tag = "person_297"
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 33
+stats = [70, 10, 40]
+pos = [32, 11]
+ai = "hold"
+commander = false
+tag = "person_332"
+
+[[units]]
+side = "enemy"
+name = "孫瑜"
+class = "catapult"
+level = 40
+stats = [64, 52, 60]
+pos = [38, 11]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[units]]
+side = "enemy"
+officer = "orig_p166"
+class = "guard_cavalry"
+level = 40
+pos = [37, 11]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[units]]
+side = "enemy"
+name = "陸遜"
+class = "sorcerer"
+level = 41
+stats = [80, 95, 85]
+pos = [38, 12]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 36
+stats = [50, 30, 40]
+pos = [37, 9]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 36
+stats = [50, 30, 40]
+pos = [37, 13]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 34
+stats = [40, 50, 30]
+pos = [36, 12]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 34
+stats = [50, 10, 60]
+pos = [35, 9]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 36
+stats = [60, 10, 50]
+pos = [39, 11]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[units]]
+side = "enemy"
+name = "異民族"
+class = "tribe"
+level = 36
+stats = [60, 10, 50]
+pos = [38, 10]
+ai = "aggressive"
+commander = false
+group = "original_9"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_2"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "person_148"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_3"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "person_148"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [25, 1]
+radius = 0
+
+[[events.when]]
+flag = "orig_f34"
+cmp = "=="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_4"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f34"
+value = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [25, 1]
+radius = 0
+
+[[events.when]]
+flag = "orig_f35"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f36"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f37"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_4_2"
+
+[[events.actions]]
+type = "retreat"
+target = "person_142"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_4_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s1_b5_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [37, 2]
+radius = 0
+
+[[events.when]]
+flag = "orig_f35"
+cmp = "=="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_5"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f35"
+value = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [37, 2]
+radius = 0
+
+[[events.when]]
+flag = "orig_f34"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f36"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f37"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_5_2"
+
+[[events.actions]]
+type = "retreat"
+target = "person_142"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_5_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s1_b5_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [17, 21]
+radius = 0
+
+[[events.when]]
+flag = "orig_f36"
+cmp = "=="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_6"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f36"
+value = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [17, 21]
+radius = 0
+
+[[events.when]]
+flag = "orig_f34"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f35"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f37"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_6_2"
+
+[[events.actions]]
+type = "retreat"
+target = "person_142"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_6_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s1_b5_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [37, 21]
+radius = 0
+
+[[events.when]]
+flag = "orig_f37"
+cmp = "=="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_7"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f37"
+value = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [37, 21]
+radius = 0
+
+[[events.when]]
+flag = "orig_f34"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f35"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f36"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_7_2"
+
+[[events.actions]]
+type = "retreat"
+target = "person_142"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_7_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s1_b5_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [21, 8]
+radius = 0
+to = [39, 17]
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_9"
+
+[[events.actions]]
+type = "spawn"
+group = "original_9"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_9_2"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_142"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_161"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "xu_sheng"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "ding_feng"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "gan_ning"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_162"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_148"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_173"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_297"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_275"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_276"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_277"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_332"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_objective"
+text = "一、周瑜撤退．"
+
+[[events.actions]]
+type = "set_stage"
+stage = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "turn_start"
+turn = 3
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_10"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "turn_start"
+turn = 8
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_11"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "turn_start"
+turn = 12
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_12"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "turn_start"
+turn = 15
+side = "player"
+
+[[events.actions]]
+type = "spawn"
+group = "original_9"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_13"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_142"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_161"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "xu_sheng"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "ding_feng"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "gan_ning"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_162"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_148"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_173"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_274"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_275"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_276"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_277"
+ai = "target"
+ai_target = "zhuge_liang"
+
+[[events.actions]]
+type = "set_objective"
+text = "一、周瑜撤退．"
+
+[[events.actions]]
+type = "set_stage"
+stage = 1
+
+[[events]]
+once = true
+stage = 1
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "person_148"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s1_b5_16"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "person_148"
+
+[[treasures]]
+pos = [21, 7]
+item = "drum_kit"
+gold = 0

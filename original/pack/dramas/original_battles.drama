@@ -1,0 +1,2907 @@
+# Dialogue of the original battles' mid-battle events, converted from the scenario of the
+# player's own copy by `hero-tools original pack` (do not edit; run the importer again).
+# Scene `orig_<battle>_<record>` belongs to trigger record <record> of the battle's block.
+
+# ----- c0_s0_b5 (SNR0D.R3 scene 0 block 5)
+
+== orig_c0_s0_b5_2
+hua_xiong: 吃一次虧也不長一智，聯軍還來自找麻煩，是誰的部隊？
+li_su: 主將好像是個叫劉備的人．
+hua_xiong: 劉備？這個名字沒聽說過，為何叫這種無名鼠輩來．看不起我嗎？
+li_su: 大概是聯軍沒人了．
+hua_xiong: 管他是誰，殺了他祭旗，眾將士，出征迎敵．
+zhang_fei: 大哥，我先活動一下身體吧．
+guan_yu: 大哥，這個交給我吧，我一定取華雄首級來見你．
+@hide all
+
+== orig_c0_s0_b5_5
+guan_yu: 對面的可是華雄，我要與你單挑！
+hua_xiong: 向我挑戰？好大的膽，通名受死．
+guan_yu: 我乃關羽關雲長，華雄，我關羽決不容你們這些董卓軍胡作非為．
+hua_xiong: 哼，還逞威風，不過一看就是無名小卒．還能勝我嗎？
+guan_yu: 敢把我看成無名小卒，送你上西天．
+@duel guan_yu hua_xiong terrain
+guan_yu: 接我一刀！
+@duel_act left charge
+@duel_act left strike 4
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 4
+hua_xiong: 好厲害！
+guan_yu: 華雄！要你的命！
+@duel_act left charge
+hua_xiong: 呀！失手了！
+@duel_act right fall
+@duel_act left back
+@duel_act left strike 8
+guan_yu: 先割下華雄首級．
+@duel_end
+@hide all
+
+== orig_c0_s0_b5_5_2
+zhang_fei: 大哥，關羽好像斬了華雄．
+liu_bei: 嗯，我軍勝利了．
+@narr 劉備軍打敗華雄軍，占領汜水關．
+@hide all
+
+# ----- c0_s0_b7 (SNR0D.R3 scene 0 block 7)
+
+== orig_c0_s0_b7_2
+lu_bu: 什麼？聯軍攻來了，還殺了華雄？好厲害，不過，他們的好運也就到此為止了．
+hou_cheng: 呂布將軍，現在讓他們知道一下我軍的厲害．
+lu_bu: 好，全軍出擊！聯軍，好好看看我的厲害．
+zhang_fei: 主將何在？不能只讓關羽逞雄風，我也要出風頭．
+guan_yu: 這裡好像是呂布把守．
+liu_bei: 是呂布，恐怕沒有比他更可怕的敵人了．
+guan_yu: 呂布座下赤兔馬，據說日行千里．
+zhang_fei: 呂布算什麼？讓他看看我的厲害．
+@hide all
+
+== orig_c0_s0_b7_3
+zhang_fei: 對面可是呂布，來與我一決勝負！
+lu_bu: 還有人敢向我挑戰！報上名來！
+zhang_fei: 我乃劉備義弟，張飛張翼德是也！呂布！我要取你項上人頭！
+lu_bu: 哈哈！無名小卒，好大膽，我呂布來戰一戰你．來吧！
+zhang_fei: 別小看我，你會後悔的．
+@duel zhang_fei lu_bu terrain
+lu_bu: 還真有兩下子．
+zhang_fei: 不愧勇夫，不過，躲得過我這一槍嗎？
+@duel_act left charge
+@duel_act left strike 6
+@duel_act right strike 8
+lu_bu: 休得猖狂！
+liu_bei: 張飛，我們來幫你．
+guan_yu: 呂布，你的剋星來了．
+lu_bu: 幫手來了，沒辦法，撤退．赤兔，全靠你了．
+@duel_act right flee
+zhang_fei: 別跑！呂布！站住！
+guan_yu: 不愧是赤兔馬，我們根本追不上．
+@duel_end
+@hide all
+
+== orig_c0_s0_b7_3_2
+lu_bu: 全軍撤退．
+@hide all
+
+== orig_c0_s0_b7_4
+lu_bu: 哼！七拼八湊的部隊還挺厲害，不過我可不會敗給這些鼠輩，要讓他們知道我的厲害．
+@hide all
+
+# ----- c1_s0_b4 (SNR1D.R3 scene 0 block 4)
+
+== orig_c1_s0_b4_2
+@narr 廣川戰場
+guan_yu: 那是？兄長，像是袁紹軍．
+jian_yong: 什麼，袁紹軍！袁紹軍正與公孫瓚軍打仗呢，為什麼出現在這裡？
+zhang_fei: 既然袁紹軍到達這裡，恐怕公孫瓚軍已被打敗了．
+feng_ji: 什麼，有軍隊？誰的軍隊？噢，原來是平原的劉備軍，是去支援公孫瓚的．本來是在這裡布陣，打公孫瓚的背後．也好就打劉備．將士們，迎擊劉備軍．
+zhang_fei: 大哥，袁紹軍打過來了．
+guan_yu: 既然打過來了，就教訓教訓他．
+@hide all
+
+# ----- c1_s0_b6 (SNR1D.R3 scene 0 block 6)
+
+== orig_c1_s0_b6_2
+@narr 信都城
+orig_p220: 就要守不住了……袁紹軍怎麼會在這兒出現．
+chunyu_qiong: 好．信都城快攻下來了，大家再加把勁．
+guan_yu: 兄長，好像是袁紹軍．信都城遭到袁紹軍的襲擊．
+jian_yong: 袁紹軍怎麼會打到這裡來呢？公孫瓚怎麼樣了呢？
+chunyu_qiong: 唉，那是哪兒的部隊？像是平原劉備的部隊，劉備部隊怎麼來到這裡？不管他，在此殺掉劉備！全軍！向劉備軍出擊．
+zhang_fei: 大哥，袁紹軍殺過來了．
+guan_yu: 兄長，救信都城吧．只要能守住信都城，袁紹軍就得撤退．向城門打吧！
+@hide all
+
+== orig_c1_s0_b6_5
+zhang_fei: 哪個是主將？喂，我是張飛，哪個與我單挑較量！
+chunyu_qiong: 好，正中下懷．
+@duel zhang_fei chunyu_qiong terrain
+chunyu_qiong: 張飛！殺！
+chunyu_qiong: 這……！這麼厲害……
+zhang_fei: 就這點兒能耐，贏不了我！
+@duel_act left charge
+@duel_act left strike 6
+chunyu_qiong: 打不過他．媽的，沒辦法，走為上．
+@duel_act right flee
+@duel_end
+@hide all
+
+# ----- c1_s0_b11 (SNR1D.R3 scene 0 block 11)
+
+== orig_c1_s0_b11_2
+yan_gang: 麴義！我嚴綱要和你單挑較量！
+qu_yi: 有膽量，但你要倒霉啦！你還覺得能打贏我麴義？殺啊！
+@duel qu_yi yan_gang terrain
+qu_yi: 嚴綱，看刀！
+@duel_act left charge
+@duel_act left strike 4
+yan_gang: 哎呀！
+@duel_act right fall
+@duel_end
+@hide all
+
+== orig_c1_s0_b11_2_2
+qu_yi: 公孫瓚的大將嚴綱被斬了！
+guan_yu: 大哥，好像晚了一步嚴綱被斬，清河北平軍潰敗了．
+liu_bei: 晚了一步啊，好！血債要用血來還！
+qu_yi: 嗯？那不是劉備軍嗎？噢，想去支援公孫瓚．我麴義不讓你們去！
+@hide all
+
+== orig_c1_s0_b11_3
+guan_yu: 這裡的大將聽著！我要和你單挑較量！
+qu_yi: 什麼？竟還有人敢向我挑戰！好吧，就與你鬥一鬥！
+@duel guan_yu qu_yi terrain
+qu_yi: 讓你也和剛才的嚴綱落個同樣下場！
+qu_yi: 好傢伙！好厲害……
+guan_yu: 強中自有強中手，算你倒霉，砍下你的首級．
+@duel_act left charge
+@duel_act left strike 4
+qu_yi: 哎……！
+@duel_act right fall
+guan_yu: 我的武藝也不夠嫻熟，這麼個小對手竟感到有點難對付……
+@duel_end
+@hide all
+
+== orig_c1_s0_b11_3_2
+@narr 關羽殺了麴義，
+    劉備軍突破了清河．
+@hide all
+
+== orig_c1_s0_b11_4
+liu_bei: 嗯！那是！？
+@hide all
+
+== orig_c1_s0_b11_4_2
+@narr 出現了敵人援軍！
+@hide all
+
+# ----- c1_s0_b13 (SNR1D.R3 scene 0 block 13)
+
+== orig_c1_s0_b13_2
+yan_liang: 張郃，快些收拾掉北平軍，趕快和界橋的主力會合吧．
+zhang_he: 唉，可是我聽說公孫瓚的盟友劉備軍打敗了我軍的一支勁旅，正向巨鹿趕來，一定得設法不讓公孫瓚和劉備匯合．
+liu_bei: 公孫越，平原劉備前來助戰．
+公孫越: 哦，是劉備，我們有救了．諸位，援軍來了．
+zhang_he: 來了，啊．劉備！我張郃在此擋路，你去不了界橋．
+yan_liang: 關羽！張飛！你們敢與我顏良交戰嗎？
+guan_yu: 大哥，敵人好像比想像的要厲害．現在我們不應該在這裡與敵人廝殺，而要衝開敵人陣地突出去．慶幸的是山下西面有一個鹿砦，如果我們摸到那裡，敵人也就束手無策了．
+@hide all
+
+== orig_c1_s0_b13_3
+zhang_fei: 噢，看樣子是個很厲害的對手嘛．我去對付他．
+yan_liang: 你是何人？朝這邊來是要和我交戰嗎？好哇，殺！
+@duel zhang_fei yan_liang terrain
+zhang_fei: 好像還有兩下子，碰上我算你倒霉．
+yan_liang: 讓你嚐嚐這一刀．
+@duel_act right charge
+@duel_act right strike 4
+@duel_act right charge
+@duel_act right strike 6
+@duel_act right charge
+@duel_act right strike 4
+zhang_fei: 你玩的什麼武藝？這樣還能贏我？
+yan_liang: 唉，連我這一刀也躲過去了，好厲害的傢伙．
+zhang_fei: 你就這點本事啊．
+@duel_act left charge
+@duel_act left strike 6
+@duel_act right strike 8
+yan_liang: 噢噢！打不過他，逃吧！
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c1_s0_b13_4
+liu_bei: 唉！那是！？
+@hide all
+
+== orig_c1_s0_b13_4_2
+@narr 敵人的援軍來了！
+liu_bei: 什麼？從前面也來了嗎！？
+@hide all
+
+== orig_c1_s0_b13_4_3
+guan_chun: 我是關純，原是韓馥的部下．此番前來加入劉備軍．
+geng_wu: 我們的主公韓馥被袁紹詐佔了冀州，此仇難忘，我耿武也前來加入劉備軍．
+liu_bei: 那是哪兒的軍隊？
+jian_yong: 那的確是關純和耿武，他們是被袁紹詐佔了冀州的韓馥的部下．
+liu_bei: 噢，是要報仇吧．
+jian_yong: 大概是吧．
+zhang_fei: 總之不是敵人吧？那麼就是我們的援軍了．
+@narr 耿武、關純來支援！
+@hide all
+
+== orig_c1_s0_b13_6
+zhang_he: 不能讓劉備突破巨鹿，全軍阻擋劉備！
+guan_yu: 大哥，鹿砦就在眼前，想辦法衝過去吧．
+@hide all
+
+# ----- c1_s0_b15 (SNR1D.R3 scene 0 block 15)
+
+== orig_c1_s0_b15_2
+yuan_shao: 敵軍已經不堪一擊．文醜！去取公孫瓚的首級！
+wen_chou: 我乃文醜，公孫瓚，明年的今天就是你的忌日．
+gongsun_zan: 怎麼搞的！援軍還沒有到啊．
+陳蔣: 主公，這交給我吧．文醜來受死吧！
+wen_chou: 噓，無名小卒，快滾回去吧．
+wen_chou: 殺……
+陳蔣: 啊……
+陳蔣: 太、太厲害了．
+wen_chou: 哈哈哈，怎麼樣！憑你這點兒本事想贏我！
+@hide all
+
+== orig_c1_s0_b15_2_2
+wen_chou: 公孫瓚，哪裡走！納命來！
+gongsun_zan: 看來我命到此休矣！
+zhao_yun: 等一下，這次我來戰你．
+wen_chou: 你是何人？
+@duel zhao_yun wen_chou terrain
+wen_chou: 不知死活的傢伙，和公孫瓚一起作我槍下之鬼吧．
+zhao_yun: 呸！！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act right strike 8
+wen_chou: 哦！殺啊！媽的，好厲害，先撤吧．
+@duel_act right flee
+@duel_end
+gongsun_zan: 哦，剛才差一點沒了命，真是太感謝你了，讓我說聲謝謝吧，請問大名．
+zhao_yun: 我叫趙雲．
+zhao_yun: 以前跟隨袁紹，我看透了他既不忠君也不愛惜百姓，就要離開他，返回故鄉．
+gongsun_zan: 袁紹幹了件蠢事啊，怎麼樣，你能不能幫助我．
+zhao_yun: 好！
+zhao_yun: 嗯？公孫瓚，那支軍隊是？
+gongsun_zan: 噢，那是平原劉備的軍隊啊！諸位，劉備的援軍到了！
+zhang_fei: 大哥，好像趕上了．
+liu_bei: 聽說公孫瓚正在打仗，我特地從平原趕來助戰．
+guan_yu: 大哥，敵軍強大，我們去襲擊敵人的糧倉吧．
+ju_shou: 主公，劉備軍來了．
+yuan_shao: 哎呀，是那個劉備軍嗎？
+tian_feng: 主公，怕什麼，不能放過這次機會．
+yuan_shao: ……對了，好，一起殺死他們祭旗！
+@hide all
+
+== orig_c1_s0_b15_3
+wen_chou: 剛才因大意受挫，這次不會了，要讓你們看看我的厲害．
+zhang_fei: 喂，還有沒有稍微有點骨氣的？唉，我跟你玩玩吧．
+@duel zhang_fei wen_chou terrain
+zhang_fei: 怎麼如此不中用啊．沒意思．
+wen_chou: 不，不應該這麼不爭氣．
+zhang_fei: 你回去好啦，懶得和你交手．
+wen_chou: 你這個傢伙！不要侮辱人！
+@duel_act right charge
+@duel_act right strike 4
+@duel_act right charge
+@duel_act right strike 6
+wen_chou: 哈哈，怎、怎麼樣……
+zhang_fei: ……你惹惱了我，別走！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act right strike 8
+wen_chou: 噢噢！剛才敗了，這次也敗了．
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c1_s0_b15_5
+tian_feng: 主公，敵人那點兒兵力還真頑強啊，好像接近了我們．
+yuan_shao: 哎，他們也不是膿包．好，全軍開始進攻！！
+@hide all
+
+== orig_c1_s0_b15_5_2
+tian_feng: 主公，敵人就那點兒兵力還真頑強啊，好像接近了我們．
+yuan_shao: 哎，他們也不是膿包．好，全軍開始進攻！！
+@hide all
+
+== orig_c1_s0_b15_6
+guo_tu: 主公，劉備想要奪取糧倉向我們營地出發了．
+yuan_shao: 什麼！！劉備，你這招真狠啊！急速返回營地！
+@hide all
+
+== orig_c1_s0_b15_6_2
+guo_tu: 主公，劉備想要奪取糧倉向我們營地出發了．
+yuan_shao: 什麼！！劉備，你這招真狠啊！急速返回營地！
+@hide all
+
+# ----- c1_s1_b3 (SNR1D.R3 scene 1 block 3)
+
+== orig_c1_s1_b3_2
+guan_hai: 哈哈哈．這個城就等於到手了．混蛋們，把城裡的金銀財寶統統給我拿來．
+kong_rong: 難道我就這樣完了．
+taishi_ci: 只因我們軍力不足．嗯，我們有救了．
+guan_yu: 大哥，再不快點，這個城就落到山賊手裡啦．
+zhang_fei: 山賊竟敢襲擊城鎮，膽子好大啊，碰上我們算他運氣不好．
+liu_bei: 好，刻不容緩，消滅山賊．
+guan_hai: 嗯？你們是幹什麼的？想和我們作對嗎？哈哈哈，有意思．笨蛋們，調過頭來打，給他們點苦頭．
+@hide all
+
+== orig_c1_s1_b3_3
+zhao_yun: 那是山賊的大將，在劉備面前也顯示一下我的本領．
+guan_hai: 哎呀，哈哈哈，真是蠢貨，好像他還覺得能打贏我，沒辦法，我就陪你玩玩吧．
+@duel zhao_yun guan_hai terrain
+@duel_act right strike 8
+guan_hai: 我是管亥，讓你去陰曹地府……
+zhao_yun: 有破綻．
+@duel_act left charge
+@duel_act left strike 6
+guan_hai: 啊！
+@duel_act right fall
+zhao_yun: 豈能寬容你這坑害百姓的草寇．
+@duel_end
+@hide all
+
+== orig_c1_s1_b3_3_2
+@narr 趙雲殺了管亥，劉備軍打敗了草寇．
+@hide all
+
+== orig_c1_s1_b3_5
+taishi_ci: 主公，不知道來的是什麼人，但我們現在應該殺出去配合他們．
+kong_rong: 唉，好．打開城門！我們也殺出去．
+孟肅: 是．
+@hide all
+
+== orig_c1_s1_b3_5_2
+@narr 城門打開，孔融軍殺了出去！
+@hide all
+
+# ----- c1_s1_b5 (SNR1D.R3 scene 1 block 5)
+
+== orig_c1_s1_b5_2
+yu_jin: 說什麼？劉備攻過來了？有多少兵？……不好．一定設法等夏侯淵的到來．
+xiahou_yuan: 大家快走，去支援于禁！
+zhao_yun: 敵人的援軍已來到附近．我們不要戀戰，快進徐州城吧．
+@hide all
+
+== orig_c1_s1_b5_3
+taishi_ci: 劉備，遵孔融之命，太史慈前來助你．
+@narr 太史慈前來支援！
+@hide all
+
+== orig_c1_s1_b5_6
+guan_yu: 我就是關羽關雲長，有武將的話就出來．
+yu_jin: 無名小卒休得猖狂，我來了．
+@duel guan_yu yu_jin terrain
+guan_yu: 不愧是曹操的手下大將．只是憑你的武藝勝不了我．
+yu_jin: 情況不妙！關羽，我記住你了．
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c1_s1_b5_7
+taishi_ci: 劉備，遵孔融之命，太史慈前來助你．
+@narr 太史慈前來支援！
+@hide all
+
+== orig_c1_s1_b5_8
+liu_bei: 好，放他進徐州城．大家不要打硬仗，退進城去．
+@narr 劉備軍退進了徐州城內．
+@hide all
+
+# ----- c1_s1_b7 (SNR1D.R3 scene 1 block 7)
+
+== orig_c1_s1_b7_2
+cao_cao: 劉備小兒，與我仇敵為友，我絕不寬恕你．殺盡劉備軍．
+guan_yu: 曹操軍確實是大軍啊．但是以我們的士氣也不會輸給他們．大哥，現在拼死應戰吧．
+@hide all
+
+== orig_c1_s1_b7_3
+zhang_fei: 出來一戰吧！廢話少說！有膽子的出來．
+xiahou_yuan: 相當威風啊，我去戰他吧．
+zhang_fei: 走！
+@duel zhang_fei xiahou_yuan terrain
+zhang_fei: 看槍！
+xiahou_yuan: 你也吃我一刀．
+zhang_fei: 再來一刺，接著．
+@duel_act left charge
+@duel_act left strike 4
+@duel_act left charge
+@duel_act left strike 6
+xiahou_yuan: 噯，好厲害．勝不了他．
+@duel_act right flee
+zhang_fei: 要逃嗎，太狡猾了．乾脆認輸吧．
+@duel_end
+@hide all
+
+== orig_c1_s1_b7_4
+cao_cao: 哼，這種戰鬥力還能打仗嗎？再狠狠地給我殺．
+@hide all
+
+== orig_c1_s1_b7_5
+cao_cao: 不陪你們玩了，眾將士，全面出擊！
+liu_bei: 噯，不愧是曹操軍……
+@hide all
+
+== orig_c1_s1_b7_6
+cao_cao: 什麼！陳留遭呂布偷襲！壞了，忘了呂布的事．噯，沒辦法．全軍撤退！陶謙、劉備暫且留著你們的命！
+@hide all
+
+== orig_c1_s1_b7_6_2
+@narr 曹操軍撤退了．
+@hide all
+
+# ----- c1_s2_b3 (SNR1D.R3 scene 2 block 3)
+
+== orig_c1_s2_b3_2
+orig_p375: 怎麼要和劉備打仗？這將釀成我的終身錯事，還是投降吧．
+zhang_fei: 賊將們，快出來讓我消遣一下，最近我身體都有些不靈活了．
+@hide all
+
+== orig_c1_s2_b3_3
+sun_qian: 主公，據說此地賊兵是由一女將率領．
+zhang_fei: 什麼？是女人？
+liu_bei: 你是說女賊首？真勇敢．
+zhang_fei: 大哥你去勸降，設法交個朋友，嘿嘿！
+liu_bei: 你在想什麼？
+orig_p375: 即使來人是鼎鼎大名的劉備，我也要擺出首領的架子，給我打．
+@hide all
+
+== orig_c1_s2_b3_4
+orig_p375: 哦，不行，我還是不能向劉備動手，我想歸順你們，劉備，剛才我錯了．
+@narr 李明加入劉備軍！
+@hide all
+
+# ----- c1_s2_b4 (SNR1D.R3 scene 2 block 4)
+
+== orig_c1_s2_b4_2
+orig_p223: 劉備是從平定黃巾之亂時開始強大的，現在還是乖乖地投降他好．
+guan_yu: 大哥，賊也是人，如果對他們曉之以理或許會改邪歸正．
+liu_bei: 知道了，試試看吧．
+@hide all
+
+== orig_c1_s2_b4_3
+orig_p223: 劉備，以兵刃相見，對不起了，今後我想改過自新，追隨您．
+@narr 趙何加入劉備軍！
+@hide all
+
+# ----- c1_s2_b5 (SNR1D.R3 scene 2 block 5)
+
+== orig_c1_s2_b5_2
+orig_p228: 不妙，如果是陶謙的軍隊還可以打贏．可是劉備的軍隊不好對付，別打了，還是投降吧．
+jian_yong: 主公，討賊吧，只有這樣才能消滅這些害人精．
+@hide all
+
+== orig_c1_s2_b5_3
+orig_p228: 壞了，怎麼會是令人聞風喪膽的劉備？我實在是打不了，劉備，我投降．
+@narr 董梁加入劉備軍！
+@hide all
+
+# ----- c1_s2_b12 (SNR1D.R3 scene 2 block 12)
+
+== orig_c1_s2_b12_2
+ji_ling: 哼，我家主公豈能被劉備這販履小兒輕視，讓他看看我的厲害．
+guan_yu: 袁術好像沒有親征，小心他耍什麼花招．
+@hide all
+
+== orig_c1_s2_b12_3
+mi_zhu: 主公，剛才徐州來人急報，說徐州已被呂布占領．
+zhang_fei: 什麼？畜生，呂布你這個混蛋，竟然恩將仇報，我決不饒你．大哥，讓我去戰呂布，我一定殺了這個混蛋．
+guan_yu: 兄長，呂布軍來了．
+@hide all
+
+== orig_c1_s2_b12_3_2
+@narr 出現了呂布軍．
+chen_gong: 這場戰爭，將影響到主公的一生，眾將，向劉備發動總攻．
+zhang_liao: ……
+ji_ling: 好，此戰必勝．
+guan_yu: 大哥，寡不敵眾，沒法打，現在只好撤退．
+sun_qian: 先去許昌投靠曹操吧．
+jian_yong: 如果逃往許昌的路上，敵人就不會追過來了，去西北的鹿砦吧．
+@hide all
+
+== orig_c1_s2_b12_5
+liu_bei: 簡雍說的鹿砦就是這個吧，馬上就到了，總算逃出去了．
+@hide all
+
+== orig_c1_s2_b12_8
+guan_yu: 張遼，呂布作出如此下流之事，難道你還想追隨他？
+zhang_liao: 不必多言，關羽，來吧！
+guan_yu: 沒辦法，此人雖然殺之可惜……
+@duel guan_yu zhang_liao terrain
+guan_yu: 我來了，張遼．
+zhang_liao: 啊！
+guan_yu: 不愧是張遼，但此招躲得過嗎？
+@duel_act left charge
+@duel_act left strike 4
+zhang_liao: 噢，不愧是關羽，今天我算敗給你了．
+guan_yu: 張遼，想逃跑嗎？站住！
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c1_s2_b12_8_2
+zhang_liao: 撤退，我不想和關羽交戰．
+@hide all
+
+# ----- c1_s3_b1 (SNR1D.R3 scene 3 block 1)
+
+== orig_c1_s3_b1_2
+xun_yu: 好，兩面夾擊敵人．
+liu_bei: 只等著開打了．
+guan_yu: 敵軍大將好像是張遼，張遼是有忠義之心的一員武將．
+zhang_liao: 追隨呂布看來是錯了．
+@hide all
+
+== orig_c1_s3_b1_4
+guan_yu: 大哥，注意後面．
+@hide all
+
+== orig_c1_s3_b1_4_2
+@narr 敵人的奇襲隊出現了．
+liu_bei: 張遼派奇襲隊抄我後路．
+guan_yu: 真知用兵之妙．
+zhang_liao: 好，全軍總攻．
+@hide all
+
+== orig_c1_s3_b1_5
+guan_yu: 對面的可是張遼，你追隨呂布，難道不後悔嗎？
+zhang_liao: 唉！
+guan_yu: 呂布是個視背叛如同兒戲的惡棍，決不是什麼英雄，這點你不會不知吧．
+zhang_liao: 唉！
+zhang_liao: 全軍撤退！
+@hide all
+
+# ----- c1_s3_b2 (SNR1D.R3 scene 3 block 2)
+
+== orig_c1_s3_b2_2
+gao_shun: 可惡，這樣打下去贏不了，呂布將軍還沒有回話嗎？呂布是叫我去送死．
+guan_yu: 據說彭城由高順把守，我們不能落在曹操軍的後面．
+@hide all
+
+== orig_c1_s3_b2_3
+zhang_fei: 城中大將，出來，我要一雪徐州之恥．
+gao_shun: 張飛，我來與你單挑較量．
+@duel zhang_fei gao_shun terrain
+gao_shun: 下馬受死．
+zhang_fei: 與呂布狼狽為奸，不管是誰，我都要一槍刺死他．
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 6
+@duel_act right strike 8
+gao_shun: 不行，實在打不過他．
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c1_s3_b2_3_2
+gao_shun: 媽的！撤退！
+@hide all
+
+# ----- c1_s3_b4 (SNR1D.R3 scene 3 block 4)
+
+== orig_c1_s3_b4_2
+lu_bu: 哼，不管曹操和劉備如何進攻，這座城依然固若金湯．
+guan_yu: 大哥，你看這樣行嗎？如陳登所說，說服侯成﹑魏續﹑宋憲背叛呂布，讓他們放下吊橋．
+hou_cheng: 原來呂布讓我們在城外廝殺，自己待在城裡，這樣，士兵也不聽話了，怎麼辦呢？
+wei_xu: 在這裡打敗仗的話，我們會被呂布砍頭的，這也好，可……
+song_xian: 呂布將軍對自己的女人和孩子挺好，卻不把我們當人看，他不值得我們追隨．
+@hide all
+
+== orig_c1_s3_b4_3
+@narr 吊橋放下來了．
+liu_bei: 怎麼啦？是吊橋降下來了嗎？
+@hide all
+
+== orig_c1_s3_b4_3_2
+@narr 曹操軍援兵出現．
+xun_yu: 主公，吊橋好像放下來了．
+cao_cao: 唉，可能劉備也成不了氣候，這點離間計也不會用，預先讓陳登潛入城內是正確的，好，必能活擒呂布．
+@hide all
+
+== orig_c1_s3_b4_4
+hou_cheng: 是劉備嗎？好哇，我跟你打．
+liu_bei: 侯成，聽我說．
+@duel liu_bei hou_cheng terrain
+liu_bei: 侯成，現在呂布已經孤立，軍心離散，就像你一樣．
+hou_cheng: 胡說，我不會有二心的．
+liu_bei: 不要對自己撒謊，難道你甘心白白送死．
+hou_cheng: 唉……
+liu_bei: 如果你看不透這點的話，就在這裡葬送自己好了．
+hou_cheng: 我還沒在這個世上留名，還不能死．
+liu_bei: 那麼，能否幫我們放下下邳的吊橋？
+hou_cheng: 明白了，那麼，你到吊橋前時我們就放下去，現在我回去著手準備．
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c1_s3_b4_5
+@duel liu_bei wei_xu terrain
+liu_bei: 魏續，呂布氣數已盡，不要再打無謂的仗了．
+wei_xu: 我等自以前就追隨呂布將軍，可是呂布只想著自己的家眷，對我等下屬毫無恩賜，現在我投靠你，這就去放吊橋．
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c1_s3_b4_6
+@duel liu_bei song_xian terrain
+song_xian: ……劉備，我們以前怎麼一直跟著，這樣一個人啊．
+liu_bei: 宋憲，現在覺醒也不遲．
+song_xian: 唉，好吧，我現在就投靠你們，劉備，我現在馬上回城去放吊橋．
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c1_s3_b4_7
+lu_bu: 城外士兵為何慢吞吞的，讓他們加強進攻．
+hou_cheng: 哪裡慢了？
+wei_xu: 是啊，讓前線部隊進攻敵人．
+song_xian: 敵人很強，曹操軍還整裝待發，這些呂布將軍是應該知道的呀，他怎麼這麼說，讓我們去送命呀．
+@hide all
+
+== orig_c1_s3_b4_8
+@narr 吊橋放下來了．
+hou_cheng: 劉備，快請入城．
+liu_bei: 這是侯成的聲音，是他幫我們放吊橋．
+lu_bu: 什麼？侯成﹑魏續﹑宋憲三人背叛了我，放了吊橋，這幾個無義之徒，我決不饒恕他們．
+@hide all
+
+== orig_c1_s3_b4_8_2
+@narr 出現了曹操軍援軍．
+xun_yu: 主公，吊橋好像放下來了．
+cao_cao: 看來劉備的離間計奏效了，好，全軍突擊，一定要活捉呂布．
+@hide all
+
+== orig_c1_s3_b4_8_3
+liu_bei: 是嗎？真的不放吊橋就沒辦法進城嗎？要想辦法放下吊橋．
+@hide all
+
+== orig_c1_s3_b4_10
+guan_yu: 張遼，快投降，呂布氣數已盡，你已為他盡力了．
+zhang_liao: ……現在不必多言，舉起刀來．
+@duel guan_yu zhang_liao terrain
+guan_yu: 殺呀！
+zhang_liao: 殺呀！
+@duel_act left strike 10
+zhang_liao: 呼哧，不愧是關羽，好厲害，啊！
+@duel_act right fall
+@duel_act left back
+@wait 300
+guan_yu: 還不是致死命的傷，殺死這個漢子有點可惜．
+@duel_end
+@hide all
+
+# ----- c1_s4_b13 (SNR1D.R3 scene 4 block 13)
+
+== orig_c1_s4_b13_2
+yuan_shu: 說什麼？劉備來了，嗯，可惡的賣蓆小兒，可惡，全軍攻擊劉備．
+liu_bei: 好哇，要殺死那個壞蛋，進攻袁術．
+@hide all
+
+== orig_c1_s4_b13_3
+zhang_fei: 你們這些國賊，膽敢隨意自封皇帝，為所欲為，我來殺你！
+ji_ling: 誰聽你的胡言亂語！張飛！看我殺你！
+@duel zhang_fei ji_ling terrain
+ji_ling: 看我一刀！
+@duel_act right charge
+@duel_act right strike 4
+@duel_act right charge
+@duel_act right strike 6
+zhang_fei: 啊呀呀，好險呀！這次輪到我給你一槍！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 4
+@duel_act left charge
+@duel_act left strike 6
+ji_ling: 媽呀！
+zhang_fei: 中槍了！
+@duel_act left charge
+@duel_act left strike 6
+ji_ling: 啊！
+@duel_act right fall
+@wait 300
+zhang_fei: 這還痛快些，噢，紀靈這傢伙的武器還不錯，作為戰利品拿回去．
+@duel_end
+@hide all
+
+# ----- c1_s4_b15 (SNR1D.R3 scene 4 block 15)
+
+== orig_c1_s4_b15_2
+che_zhou: 各位，我們雖然人少，但曹操一定會派援兵的，援兵來之前，我們要守住．
+sun_qian: 主公，我們在這裡一磨蹭，曹操就會到的，我們盡快消滅車冑吧．
+@hide all
+
+== orig_c1_s4_b15_3
+che_zhou: 喂，劉備，你忘了主公的恩情了．全軍撤退．
+@hide all
+
+== orig_c1_s4_b15_3_2
+@narr 車冑軍全軍撤退．
+mi_fang: 好像已經沒有敵人了，主公，我們進城吧．
+@hide all
+
+== orig_c1_s4_b15_4
+liu_bei: 嗯？怎麼回事？這些馬蹄聲？怎麼會呢？
+@hide all
+
+== orig_c1_s4_b15_4_2
+@narr 曹操出現．
+cao_cao: 哼！劉備！你想跑也跑不掉了！你最好知道想殺我的人有什麼下場！
+sun_qian: 主公，我們完全被包圍了．
+jian_yong: 主公，小沛被攻克了．
+mi_zhu: 主公，下邳被曹操進攻，我們被包圍了．
+liu_bei: 嗯，曹操果然厲害，真是兵貴神速．
+sun_qian: 主公，現在無計可施了，去鄴城投袁紹吧，在那裡謀求東山再起，先逃到西南的村落再想辦法．總之，現在要離開這裡．
+@hide all
+
+== orig_c1_s4_b15_5
+liu_bei: 別人怎麼樣了？
+@narr 劉備逃離了戰場．
+@hide all
+
+# ----- c2_s0_b8 (SNR2D.R3 scene 0 block 8)
+
+== orig_c2_s0_b8_2
+guo_tu: 哼，我已看透了劉備是怎麼想的了．劉備，你休想逃掉．
+sun_qian: 主公，那是郭圖的部隊，好像我們被發現了．
+mi_zhu: 跑到這裡，不能被他們抓住．主公先逃到西南的那個鹿砦去吧．到了那裡，郭圖就沒有辦法了．
+zhao_yun: 那不是劉皇叔嗎？真是蒼天有眼，沒想到會在這種地方相見……好像是被人追趕，好，我馬上去幫助劉皇叔．
+@hide all
+
+== orig_c2_s0_b8_3
+zhao_yun: 這不是張郃嗎？
+zhang_he: 你是趙雲．公孫瓚已經死了，你也最好投降袁紹．
+zhao_yun: 誰還會去跟一個被我拋棄的人呢？袁紹是什麼樣的人，你到時候就會知道的……
+zhang_he: 什麼？你這個喪家之犬，聽你胡說，我送你去見公孫瓚吧！
+@duel zhao_yun zhang_he terrain
+zhang_he: 不愧確有其名呀！
+zhao_yun: 你也不簡單呀．
+zhang_he: ……這次我就讓你了，以後還會相遇的，趙雲！
+@duel_act right flee
+zhao_yun: 這樣的人跟著袁紹，真是可惜！
+@duel_end
+@hide all
+
+== orig_c2_s0_b8_4
+liu_bei: 啊？那是敵人的援軍！？又來了．
+@hide all
+
+== orig_c2_s0_b8_4_2
+@narr 敵人援軍出現．
+zhang_he: 郭圖，讓你等急了吧．
+guo_tu: 噢，張郃，你來得太好了，我們無論如何也要捉住劉備．
+@hide all
+
+# ----- c2_s0_b9 (SNR2D.R3 scene 0 block 9)
+
+== orig_c2_s0_b9_2
+jian_yong: 主公，我們好像被包圍了．
+liu_bei: 嗯？！
+？？？: 這一帶，曹操軍又出現了．把曹操軍給我殺個片甲不留！
+sun_qian: 那是……！可是為什麼這樣歡迎我們呢？
+liu_bei: 可能弄錯，一定把我們當成敵人了．見了面也就知道了．
+jian_yong: 還沒見到，就會被殺死的．
+liu_bei: ……也有可能．但不管怎麼樣一定要見到張飛．
+@hide all
+
+== orig_c2_s0_b9_3
+？？？: 怎麼看那些人很眼熟呢？……啊！
+zhang_fei: 喂，嘍囉們，這支部隊是我們自己人．
+@hide all
+
+# ----- c2_s0_b11 (SNR2D.R3 scene 0 block 11)
+
+== orig_c2_s0_b11_2
+蔡陽: 那是劉備軍呀．我蔡陽要讓他們知道，與曹丞相為敵有多愚蠢．
+zhang_fei: 大哥，曹操好像沒來．
+liu_bei: 可是，張飛，不可大意呀．
+zhang_fei: 是，我知道了．
+@hide all
+
+== orig_c2_s0_b11_3
+蔡陽: 是關羽呀．關羽，你忘記了曹丞相的恩情，又跑回到劉備的身邊，你是什麼重義之人．
+guan_yu: 我與曹操有約在先，只要知道我兄長活著，隨時都可以離開曹操．你難道是說曹操不講信用？
+蔡陽: 什麼！你敢侮辱曹丞相？殺！關羽我定要取你首級．
+蔡陽: 招！
+guan_yu: 納命來！
+蔡陽: 啊！
+guan_yu: ……雖說有約在先，但我卻殺了他的部下．這次是我欠了曹操的．
+@hide all
+
+== orig_c2_s0_b11_3_2
+@narr 關羽殺了蔡陽，劉備軍勝利了．
+@hide all
+
+== orig_c2_s0_b11_5
+蔡陽: 你們是什麼人？
+@hide all
+
+== orig_c2_s0_b11_5_2
+guan_ping: 父親，那裡好像在進行一場交戰．
+zhou_cang: 是哪裡的部隊？
+guan_yu: 嗯？那是……啊，那是兄長！還有張飛．嗚……現在不是感情用事的時候，關羽來參戰了．關平周倉跟我來．
+guan_ping: 遵命！
+zhou_cang: 是！
+@narr 關羽出現．
+@hide all
+
+# ----- c2_s0_b16 (SNR2D.R3 scene 0 block 16)
+
+== orig_c2_s0_b16_2
+cao_ren: 劉備，還想逃嗎？我豈能讓你逃掉？我曹仁定要殺你．
+liu_bei: 左右都是敵人嗎？
+liu_pi: 皇叔，敵人是曹操的精銳，現在戰況已很危急，請你馬上逃走吧．
+liu_bei: 你說什麼，我也要戰鬥到最後．
+liu_pi: 不要了，劉皇叔，你不能在這時死，我要留到最後，請你快離開這裡．
+@hide all
+
+== orig_c2_s0_b16_3
+zhao_yun: 那人不是汎汎之輩．那員大將，我趙雲要與你單挑較量．
+xu_chu: 趙雲？噢，聽過他的大名．正中我的下懷．殺呀！
+@duel zhao_yun xu_chu terrain
+zhao_yun: 真能打！
+xu_chu: 趙雲，今天難分勝負，我不跟你打了，我們改天再決勝負．
+@wait 300
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c2_s0_b16_4
+@narr 孫乾出現！
+sun_qian: 主公，我來晚了，對不起．我跟劉表談了，他說我們危難時可以去，現在請逃到西南的那個鹿砦．那個鹿砦是曹操和劉表的邊界，逃到那裡，敵軍就不會再追來了．
+@hide all
+
+# ----- c2_s1_b7 (SNR2D.R3 scene 1 block 7)
+
+== orig_c2_s1_b7_2
+張武: 劉表軍又來了？這些混蛋．嘍囉們！殺死他們．
+@hide all
+
+== orig_c2_s1_b7_3
+zhang_fei: 毛賊，休得猖狂，拿命來！
+陳孫: 啊？那傢伙要和我決一死戰？有意思，雖然不知來人是誰，就陪他打打吧．
+陳孫: 啊……！
+zhang_fei: 嗤，什麼對手！怎麼一槍就死了？筋骨都還沒鬆開．
+@hide all
+
+== orig_c2_s1_b7_4
+張武: 嗤，你們這些烏合之眾，看看我的厲害吧！待我把那員大將斬落馬下！
+zhao_yun: 嗯，朝這邊來的那個是……，好像是毛賊首領，好！我來殺他！
+張武: 太厲害了……啊！
+zhao_yun: 這匹馬挺好的呀，牽回去吧．
+@hide all
+
+== orig_c2_s1_b7_4_2
+@narr 劉備軍殲滅了江夏毛賊．
+@hide all
+
+# ----- c2_s1_b16 (SNR2D.R3 scene 1 block 16)
+
+== orig_c2_s1_b16_2
+cao_ren: 嚄，來了啊．我們恭候多時了．呂曠，先去試試敵人的實力．
+呂曠: 遵命！
+cao_ren: 其餘部隊不要動！耐心引誘敵人，等敵人一匯集到面前，就狠狠地打！明白了嗎！
+liu_bei: 好，全面出擊！！
+xu_shu: 主公，請等一下．看敵人的陣形，曹仁好像是在引誘我們，這樣突擊的話很危險．因此，從最裡邊的柵欄處進行攻擊，可以打亂敵人的陣形．
+liu_bei: 從最裡邊？
+xu_shu: 是的，這種陣形從正面進攻的話很堅實，如若從側面進攻就比較脆弱易攻．
+liu_bei: 噢，這種陣形你看一眼就能了解到破陣法……
+xu_shu: 總之，要打亂敵人的陣形，就必須從裡邊攻擊．打吧！
+@hide all
+
+== orig_c2_s1_b16_3
+zhang_fei: 曹操軍狗賊！我這次可不讓你們好過！我來殺你！
+呂翔: 那是張飛啊，傳說他很厲害，我去試試看！
+呂翔: ……！不好，這樣下去會輸的！沒想到會這樣厲害．
+zhang_fei: 現在知道已經晚了！送你上西天！
+呂翔: 啊……！
+@hide all
+
+== orig_c2_s1_b16_4
+zhao_yun: 那位大將！我來戰你！
+呂曠: 那不是趙雲嗎？……在這裡如能一展雄風，我的大名豈不遠揚啦．好！趙雲，我呂曠戰你．
+zhao_yun: 看槍！！
+呂曠: 啊……！
+@hide all
+
+== orig_c2_s1_b16_14
+cao_ren: 嚄，來吧！劉備！好，全軍總攻擊！消滅劉備軍！
+@hide all
+
+== orig_c2_s1_b16_14_2
+@narr 敵人開始攻擊！
+@hide all
+
+== orig_c2_s1_b16_14_3
+cao_ren: 什麼！劉備軍怎麼會知道破陣法！？不好！如果他們突破了那裡，我們就不能進行有力反擊！！
+xu_shu: 主公，這樣一來敵人首尾不能相顧．一鼓作氣消滅敵人吧．
+@hide all
+
+== orig_c2_s1_b16_14_4
+@narr 敵人指揮失靈！
+@hide all
+
+== orig_c2_s1_b16_15
+zhang_fei: 曹操軍狗賊！我這次可不讓你們好過！我來殺你！
+呂翔: 那是張飛啊，傳說他很厲害，我去試試看！
+呂翔: ……！不好，這樣下去會輸的！沒想到會這樣厲害．
+zhang_fei: 現在知道已經晚了！送你上西天！
+呂翔: 啊……！
+@hide all
+
+== orig_c2_s1_b16_16
+zhao_yun: 對面的那個大將！我來戰你！
+呂曠: 那不是趙雲嗎？……在這裡如能一展雄風，我的大名豈不遠揚啦．好！趙雲，我呂曠戰你．
+zhao_yun: 看槍！！
+呂曠: 啊……！
+@hide all
+
+# ----- c2_s3_b2 (SNR2D.R3 scene 3 block 2)
+
+== orig_c2_s3_b2_2
+zhuge_liang: 那麼，趙雲把夏侯惇引到這裡．據說夏侯惇雖然勇猛，但有些輕視敵人．所以他會衝過來的，你利用這點把他引到中心來．不可暴露我們的意圖．
+zhao_yun: 明白了．
+zhuge_liang: 主公，在夏侯惇完全中計之前，請不要出征，把其他士兵埋伏好．關羽和周倉埋伏在村南的山裡，張飛和簡雍埋伏在村北的山裡．
+liu_bei: 明白了．
+zhuge_liang: 現在如果趙雲能順利行事的話，就成功了．
+@hide all
+
+== orig_c2_s3_b2_3
+guan_yu: 那位大將不像是等閒之輩，敢與我關羽單挑較量！
+li_dian: 啊，關羽！好，來吧．
+@duel guan_yu li_dian terrain
+@duel_act left charge
+@duel_act left strike 4
+@duel_act right strike 8
+li_dian: 啊！
+@wait 300
+guan_yu: 你不是我的對手，給我滾開！
+li_dian: 我滾，我滾．
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c2_s3_b2_4
+韓浩: 夏侯惇將軍，剛才先頭部隊稟報，敵人準備用火攻．
+xiahou_dun: 什麼？
+韓浩: 但是我先鋒部隊進行突擊，驅散敵人的放火部隊，我們應馬上進攻．
+xiahou_dun: 幹得好，好，馬上進攻！
+@hide all
+
+== orig_c2_s3_b2_4_2
+zhuge_liang: 什麼，火計被識破了！？唉，再早一點誘敵過來就好了……．
+liu_bei: 怎麼回事．
+zhuge_liang: 這樣就沒辦法了．戰局雖然不利也只好從正面擊退敵軍了．
+@hide all
+
+== orig_c2_s3_b2_4_3
+guan_yu: 這場戰爭可能很艱難……．
+zhang_fei: 我早就說不能相信孔明，你還不讓我說．
+@hide all
+
+== orig_c2_s3_b2_5
+xiahou_dun: 唉，看見敵人了！就逗一逗你們，好，全軍出擊！
+韓浩: 夏侯惇將軍，敵人可能有什麼計謀，莽撞衝過去會有危險！
+xiahou_dun: 胡說什麼！如此畏縮不前，能贏的仗也打不贏，不要怕！前進！
+@hide all
+
+== orig_c2_s3_b2_6
+zhuge_liang: 好！劉封、關平，放火！
+@hide all
+
+== orig_c2_s3_b2_6_2
+xiahou_dun: 噢噢！怎麼回事，敵人要用火攻！不好！
+@hide all
+
+== orig_c2_s3_b2_6_3
+@narr 敵人開始混亂！
+@hide all
+
+== orig_c2_s3_b2_6_4
+guan_yu: 好！一鼓作氣消滅敵人！
+@hide all
+
+== orig_c2_s3_b2_6_5
+zhang_fei: 孔明，成功了！好！全軍，殺向曹操軍！
+liu_bei: 噢，孔明果然名不虛傳啊！
+zhuge_liang: 哪裡，雕虫小技而已．現在趁敵人混亂之際，徹底打垮它．
+@hide all
+
+== orig_c2_s3_b2_8
+guan_yu: 那位大將不像是等閒之輩，敢與我關羽單挑較量！
+li_dian: 啊，關羽！好吧，來吧！
+@duel guan_yu li_dian terrain
+@duel_act left charge
+@duel_act left strike 4
+@duel_act right strike 8
+li_dian: 啊！
+@wait 300
+guan_yu: ……你不是我的對手，滾開．
+li_dian: 我滾！我滾！
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c2_s3_b2_9
+xiahou_dun: 媽的，這樣下去豈不是一直被動挨打．大家馬上行動！各部隊分別就近向敵人進攻！
+@hide all
+
+# ----- c2_s3_b3 (SNR2D.R3 scene 3 block 3)
+
+== orig_c2_s3_b3_2
+xiahou_dun: 哼，即使固若金湯也沒有什麼！進軍新野！
+li_dian: 夏侯惇將軍，我軍現在糧草供給困難，還是留些兵馬好．
+xiahou_dun: 哈哈哈！李典，你是害怕啦．不要怕，這種城瞬間就能攻下．你在這裡等著吧！
+zhang_fei: 孔明呀，我怎麼也不會信服你，你能拿出些真本事嗎？如果能奪得曹操軍的糧草，我就服你．
+@hide all
+
+== orig_c2_s3_b3_3
+zhang_fei: 好，我要給大哥看看這時侯沒有孔明一樣打勝仗．那位大將！我和你決一死戰！
+yu_jin: 哎，你是何人？好，就殺你立功！
+@duel zhang_fei yu_jin terrain
+zhang_fei: 哇啊！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 6
+yu_jin: 這、這是……！
+zhang_fei: 知道我張飛長矛的厲害了吧！
+yu_jin: 什麼！你是張飛啊！我打不過你！逃吧！
+@duel_act right flee
+zhang_fei: 啊，被他逃掉了．
+@duel_end
+@hide all
+
+== orig_c2_s3_b3_5
+xiahou_dun: 唉，敵人出現了．
+@hide all
+
+== orig_c2_s3_b3_5_2
+@narr 敵人援軍來了！
+徐晃: 哦，夏侯惇將軍，敵人不好對付呀！
+xiahou_dun: 哼，怎麼會呢！你過來幹什麼？
+@hide all
+
+== orig_c2_s3_b3_6
+xiahou_dun: 什麼！糧草已盡？唉，仗拖得太長了……．唉，沒辦法，撤退！
+@hide all
+
+== orig_c2_s3_b3_7
+xiahou_dun: 什麼？一部分敵人去奪我們的糧草了！唉，現在豈能撤兵！全軍進行總攻擊，在敵人奪我糧草前拿下新野城！
+@hide all
+
+== orig_c2_s3_b3_8
+zhuge_liang: 稟報主公，敵人糧草已被我們全部奪得．
+xiahou_dun: 糧草被奪了？媽的，到底被誰奪的？讓孔明奪走的？唉，沒辦法，撤退！
+@hide all
+
+# ----- c2_s3_b6 (SNR2D.R3 scene 3 block 6)
+
+== orig_c2_s3_b6_2
+蔡瑁: 好吧，不要出城，贏得時間．反正劉備不能在這兒長待的．
+zhuge_liang: 主公，此戰必須盡快結束，如果來不及，就迅速退往江夏吧．
+@hide all
+
+== orig_c2_s3_b6_3
+zhao_yun: 你們為什麼投降曹操？
+張允: 與你們無關．與曹操對抗就不能活，所以我們投降．
+zhao_yun: 這話不對．
+張允: 少羅嗦！你們這些混蛋！想奪荊州，找死！
+張允: 厲、厲害……．
+zhao_yun: 拿命來！
+張允: 唉呦……！
+@hide all
+
+== orig_c2_s3_b6_4
+zhuge_liang: 主公，剛才探子來急報，說曹操軍已到新野．我們在這裡再打下去的話，有受到前後夾擊的危險．現在應馬上撤往江夏．
+liu_bei: 好吧，去江夏！
+@hide all
+
+# ----- c2_s3_b7 (SNR2D.R3 scene 3 block 7)
+
+== orig_c2_s3_b7_2
+cao_cao: 哼，劉備，你已經走投無路了．全軍向劉備軍發動全面攻擊．
+zhuge_liang: 唉，百姓的腳力終究不如曹操軍的精銳部隊啊．
+liu_bei: 可是這些百姓慕我而來，決不能棄而不顧．
+zhuge_liang: 那麼，讓百姓逃生吧．橋對面有一村莊，讓百姓去那裡吧．
+@hide all
+
+== orig_c2_s3_b7_3
+夏侯恩: 可是，帶老百姓一起走，劉備在想什麼呢？
+cao_cao: 正因為如此，這個傢伙很受百姓的仰慕，不愧是雄才大略的人．但是，帶百姓一起逃跑……，太愚蠢了．好！我們前進．
+@hide all
+
+== orig_c2_s3_b7_4
+liu_bei: 哦，先把百姓帶到村裡去，曹操不會追來了吧？
+zhuge_liang: 馬上就要追來了，這只是我們擺脫曹操的一計，我們快去江夏吧．
+@hide all
+
+== orig_c2_s3_b7_5
+liu_bei: 哦，先把百姓帶到村裡去，曹操不會追來吧！
+zhuge_liang: 馬上就要追來了，這只是我們擺脫曹操的一計，我們快去江夏吧．
+@hide all
+
+== orig_c2_s3_b7_6
+liu_bei: 哦，先把百姓帶到村裡去，曹操不會追來吧！
+zhuge_liang: 馬上就要追來了，這只是我們擺脫曹操的一計，我們快去江夏吧．
+@hide all
+
+# ----- c2_s3_b7_2 (SNR2D.R3 scene 3 block 7)
+
+== orig_c2_s3_b7_2_2
+liu_bei: 再向前走一會就看到長江了，無論如何要把百姓帶到渡口，到了那裡就會有船的．
+@hide all
+
+== orig_c2_s3_b7_2_3
+zhao_yun: 那可是有名的武將，我趙雲與你較量！
+夏侯恩: 媽的……！
+zhao_yun: 殺！
+夏侯恩: 啊！
+zhao_yun: 唉，敵人拿的劍是……？寒光四射呀，我借用一下吧．
+@hide all
+
+== orig_c2_s3_b7_2_4
+li_dian: 聽說是百姓和他們攪合在一起……．真不愧是劉備軍啊，相當能打啊．
+cao_cao: 現在不是從容不迫品論人物的時候，只有一條路，追，快追．
+@hide all
+
+== orig_c2_s3_b7_2_5
+liu_bei: 好啦！終於逃出來了，到了這裡曹操軍沒船就沒辦法追了．我們快乘船去江夏吧．
+@narr 劉備軍擺脫了曹操軍的追擊．
+@hide all
+
+== orig_c2_s3_b7_2_6
+liu_bei: 好啦！終於逃出來了，到了這裡曹操軍沒船就沒法子追了．我們快乘船去江夏吧．
+@narr 劉備軍擺脫了曹操軍的追擊．
+@hide all
+
+== orig_c2_s3_b7_2_7
+liu_bei: 好啦！終於逃出來了，到了這裡曹操軍沒船就沒法子追了．我們快乘船去江夏吧．
+@narr 劉備軍擺脫了曹操軍的追擊．
+@hide all
+
+# ----- c3_s0_b2 (SNR3D.R3 scene 0 block 2)
+
+== orig_c3_s0_b2_2
+陳矯: 什麼？劉備軍來了，可是曹仁正和周瑜交戰，要堅守等到曹仁回來．
+zhuge_liang: 主公，曹仁正與周瑜交戰，江陵就是一個空城．他們之間的戰鬥結束後，曹仁或周瑜，無論誰取勝都會來江陵．那樣的話，就麻煩了．早點攻下城吧．
+@hide all
+
+== orig_c3_s0_b2_3
+zhuge_liang: 主公，周瑜打敗曹仁，正趕往這裡，在周瑜到達這裡之前，趕快攻下江陵．
+@hide all
+
+== orig_c3_s0_b2_4
+zhuge_liang: 主公，也許周瑜馬上就會到達這裡．
+    如果在我軍攻下江陵之前來到，就不好辦了，趕快！
+@hide all
+
+== orig_c3_s0_b2_5
+@narr 周瑜軍出現！
+@hide all
+
+== orig_c3_s0_b2_8
+liu_bei: 來不及了吧……
+周瑜: 何事？
+gan_ning: 周瑜都督，劉備軍正在攻打江陵．
+周瑜: 什麼！想乘我們大戰曹仁之機竊取空城，辦不到！馬上全軍攻打劉備，不能把江陵交給劉備！！
+@hide all
+
+== orig_c3_s0_b2_7
+陳矯: 哇！
+@narr 打敗陳矯，劉備軍佔領江陵．
+@hide all
+
+== orig_c3_s0_b2_7_2
+@narr 周瑜出現！
+周瑜: 何事？
+gan_ning: 周瑜都督，江陵已被劉備軍佔領了．
+周瑜: 什麼！我們與曹仁交戰時，他乘機竊取空城，太卑鄙了！我絕不放過他．
+呂蒙: 都督，我軍與曹仁交戰，消耗甚大，不該再戰了．我們回去再想對策吧．
+周瑜: 啊，真是後悔莫及．就照你所說，撤退！但是，劉備、孔明，你們等著瞧！
+@hide all
+
+== orig_c3_s0_b2_7_3
+@narr 得到黃金１０００！
+@hide all
+
+== orig_c3_s0_b2_9
+zhao_yun: 這裡已經歸我們所有了，你們現在最好趕快回東吳．
+gan_ning: 吵什麼！忘記赤壁之恩了嗎，看我宰了你！
+@duel zhao_yun gan_ning terrain
+gan_ning: 大膽！來吧！
+zhao_yun: 你不是對手！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 6
+gan_ning: 嘿嘿！
+zhao_yun: 有兩下子！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 6
+gan_ning: 沒辦法，打不過！
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c3_s0_b2_10
+陳矯: 可惡！撤退……
+@narr 陳矯撤退了！
+@hide all
+
+== orig_c3_s0_b2_11
+周瑜: 劉備、孔明！嘗嘗我的厲害！前進！
+@hide all
+
+== orig_c3_s0_b2_13
+周瑜: 什麼事？現在正忙著！說什麼……兵糧……哦，只準備了和曹仁作戰所需兵糧，嗯，知道了．撤退！但劉備、孔明，此事還沒完！！
+@hide all
+
+== orig_c3_s0_b2_13_2
+liu_bei: 怎麼了？周瑜撤退了．
+zhuge_liang: 兵糧沒有了吧？也許是與曹仁作戰，兵糧已耗盡了吧．
+liu_bei: 肯定是……那我們勝利了．
+zhuge_liang: 正是，主公，恭喜您．
+@hide all
+
+# ----- c3_s0_b8 (SNR3D.R3 scene 0 block 8)
+
+== orig_c3_s0_b8_2
+劉度: 好像敵不過劉備．還是乘這個機會，乾脆投降劉備軍算了……
+劉賢: 父親，說什麼呀！劉備之流，我去殺死他們給你看．
+劉度: 嗯，但是……
+zhuge_liang: 主公，敵人看見我軍或許就喪失了戰鬥意志．也可以巧妙地去說服．
+@hide all
+
+== orig_c3_s0_b8_3
+guan_ping: 曹操從荊州走了．如果立即投降，可留條性命．
+邢道榮: 哈哈哈！想要零陵，就用你的實力奪取．還是害怕吧？！
+guan_ping: 說什麼！說的話別忘了！
+邢道榮: 什、什麼！這麼樣可……
+guan_ping: 看我最後一刀！
+邢道榮: 哎呀，我不行了．
+guan_ping: 哼，口出狂言的傢伙．
+@hide all
+
+== orig_c3_s0_b8_6
+劉賢: 邢道榮，該出征了．
+liu_bei: 嗯？
+@hide all
+
+== orig_c3_s0_b8_6_2
+@narr 敵人的另一路軍出現了！
+邢道榮: 好漢們！打死劉備這傢伙．
+劉賢: 父親！怎麼樣？我的戰術如何？
+劉度: 嗯……好極了……
+@hide all
+
+== orig_c3_s0_b8_7
+liu_bei: 劉度，再打下去也不會有勝利的希望．怎麼樣，投降吧！
+劉度: 是，知道了．這塊領土奉送給你．
+@narr 劉度投降了．劉備軍佔領了零陵．
+@hide all
+
+# ----- c3_s0_b9 (SNR3D.R3 scene 0 block 9)
+
+== orig_c3_s0_b9_2
+gong_zhi: 主公，聽說劉備很得民心，為謀求領土安泰，我想應該投降了．
+金旋: 你說什麼！你這傢伙和劉備勾結啊！
+gong_zhi: 不是．絕不是這樣的．
+金旋: 夠了！我要戰鬥到底！！
+zhuge_liang: 主公，敵人中有看見我軍就喪失鬥志的人．也可以巧妙地進行說服．
+@hide all
+
+== orig_c3_s0_b9_3
+zhou_cang: 那是敵人的頭目嗎？好，我要殺死他立功．
+金旋: 那是什麼？像是土匪．你以為像土匪那樣的人能勝得了我嗎？好，看看我的厲害！
+金旋: 哎呀！
+zhou_cang: 打到了！殺死敵人的頭目了！
+@hide all
+
+== orig_c3_s0_b9_3_2
+@narr 周倉殺死了金旋．
+    劉備軍佔領了武陵．
+@hide all
+
+== orig_c3_s0_b9_4
+楊彥: 嗯……這是劉備軍的實力……真厲害．吳祖！求你幫我！
+吳祖: 真沒本事．好！全體，衝鋒！！
+@hide all
+
+== orig_c3_s0_b9_5
+吳祖: 像你們這樣的還想打我嗎？哼！讓你們後悔莫及！！
+楊彥: 必須援助吳祖．好！全體，衝鋒！！
+@hide all
+
+== orig_c3_s0_b9_6
+@narr 楊彥撤退了！
+@hide all
+
+== orig_c3_s0_b9_6_2
+楊彥: 嗯……這是劉備軍的實力嗎？吳祖，以後的事靠你了！！
+吳祖: 簡直是個無能的傢伙．溜走了．全體，衝鋒！！
+@hide all
+
+== orig_c3_s0_b9_7
+@narr 吳祖撤退了！
+@hide all
+
+== orig_c3_s0_b9_7_2
+吳祖: 我，我也打不過……走為上策，哎呀，不好！！
+楊彥: 吳祖被打死了！？他媽的！全體，衝鋒！！
+@hide all
+
+== orig_c3_s0_b9_10
+gong_zhi: 劉備，我以前是遵照金旋的命令行事的……這好像是我做錯事．這個武陵應歸劉備所有．請暫時等待一下．我去除掉這個害虫．
+@hide all
+
+== orig_c3_s0_b9_10_2
+金旋: 這、這個鞏志！要幹什麼！喔！！
+@hide all
+
+== orig_c3_s0_b9_10_3
+gong_zhi: 我殺死了金旋！我投降劉備！！
+@narr 金旋被殺．劉備軍佔領了武陵．
+@hide all
+
+# ----- c3_s0_b10 (SNR3D.R3 scene 0 block 10)
+
+== orig_c3_s0_b10_2
+趙範: 無論如何也敵不過劉備軍，乾脆投降算了……
+陳應: 主公，說什麼！
+鮑龍: 是的！劉備之流，我殺給你看！
+趙範: 嗯……但是……
+zhuge_liang: 主公，或許敵人看見了我軍就喪失了鬥志．也許經說服，可不戰而勝．
+@hide all
+
+== orig_c3_s0_b10_3
+liu_feng: 敵將在哪！劉封來挑戰！
+鮑龍: 混蛋．劉備軍別自鳴得意！我來對付！
+鮑龍: 有空檔！
+鮑龍: 完了，完了……我完了……
+liu_feng: 好，殺死了敵將！
+@hide all
+
+== orig_c3_s0_b10_4
+liu_bei: 趙範，再打下去，你也沒有獲勝的希望．怎麼樣，投降吧！
+趙範: 是，明白了．這片領土奉送給你．
+@narr 趙范投降了．劉備軍佔領了桂陽．
+@hide all
+
+== orig_c3_s0_b10_7
+趙範: 嗯？那是？
+@hide all
+
+== orig_c3_s0_b10_7_2
+@narr 異民族出現了！
+陳應: 那是？主公！請求的援軍來了．和他們通力合作，擊退劉備！
+趙範: 嗯．是啊……
+@hide all
+
+# ----- c3_s0_b13 (SNR3D.R3 scene 0 block 13)
+
+== orig_c3_s0_b13_2
+韓玄: 黃忠，劉備軍究竟怎麼樣，你去打一仗看看．我在這裡觀察戰況．
+huang_zhong: 是，交給我吧．我一定不辜負主公的期望．
+wei_yan: 因為受過韓玄的照顧，所以不得不出征．可是……我不想與劉備戰鬥．黃忠為什麼那麼忠誠於韓玄呢？韓玄是個昏君，卻……
+@hide all
+
+== orig_c3_s0_b13_5
+liu_bei: 嗯？那個聲音是什麼？
+楊齡: 什麼？河水溢出了……是水計？該死！為什麼不對我說？
+@narr 中了敵人的水計！
+@hide all
+
+== orig_c3_s0_b13_5_2
+楊齡: 我，我……韓玄，你這個……
+@hide all
+
+== orig_c3_s0_b13_5_3
+liu_bei: 連自己部隊的生死都不顧就……
+韓玄: 哈哈哈……劉備，你嘗到苦頭了吧！
+wei_yan: 韓玄，這是怎麼回事！連自己人都不管了嗎？
+韓玄: 什麼？我達到目的就行了，死幾個人有什麼？哈哈哈！
+@hide all
+
+== orig_c3_s0_b13_6
+wei_yan: 到底還是劉備軍，真厲害……
+韓玄: 哎呀！敵軍已經兵臨城下了．我軍在幹什麼？給我進攻！
+@hide all
+
+== orig_c3_s0_b13_7
+wei_yan: 嗯？那是……太好了，劉備大人？
+liu_bei: 呀？是誰？
+wei_yan: 劉備大人，我原是劉表的部下，名叫魏延．我的事情以後再談，現在我要去除掉藏在長沙的害人虫．再見！
+韓玄: 什，什麼？魏延，你這個叛徒！
+wei_yan: 這不是背叛．這是憤怒的民眾對你的所作所為的回報．去死吧！
+韓玄: 啊！！
+@hide all
+
+== orig_c3_s0_b13_7_2
+zhuge_liang: 主公，敵人好像投降了．
+@narr 韓玄被殺．劉備軍佔領了長沙．
+@hide all
+
+== orig_c3_s0_b13_9
+@duel guan_yu huang_zhong terrain
+guan_yu: 嗯，這個老頭……不像等閒之輩．老頭，報上名來！
+huang_zhong: 匹夫！你休得無禮！我乃黃忠是也！
+guan_yu: 你就是黃忠？我關羽要與你單挑．
+huang_zhong: 嗯，你大概以為我老了就好欺負．年輕人，你打錯算盤了．去死吧！
+guan_yu: 打！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act right fall
+huang_zhong: 哎呀！
+guan_yu: 怎麼？……戰馬失蹄了……
+huang_zhong: 真倒楣．這也是命嗎？快殺了我吧！
+guan_yu: ……我且饒你性命．快去換馬繼續廝殺．
+huang_zhong: 什麼？太感謝你了，那我去換馬了．
+@duel_end
+@hide all
+
+== orig_c3_s0_b13_9_2
+韓玄: 黃忠！你竟敢通敵！
+huang_zhong: 不要錯怪我．我絕不是那種人．
+韓玄: 住口！我看見你與關羽單挑，關羽不殺你反而把你放了回來，這不是通敵的證據是什麼？
+huang_zhong: 不．這……
+韓玄: 不聽你辯解！快把這傢伙的頭砍下來！
+wei_yan: 韓玄！全然不記以前的功績，要殺黃忠，這不是君子所為．我要替天行道懲罰你！
+韓玄: 啊，魏延！把魏延殺了！快來人呀！啊……
+@hide all
+
+== orig_c3_s0_b13_9_3
+zhuge_liang: 主公，敵人好像投降了．
+@narr 韓玄被殺．劉備軍佔領了長沙．
+@hide all
+
+# ----- c3_s1_b5 (SNR3D.R3 scene 1 block 5)
+
+== orig_c3_s1_b5_2
+周瑜: 哼．你們看，劉備這個傻瓜來歡迎了．好不容易才騙過孔明．在劉備靠近之前，不許輕舉妄動．但是一旦靠近就發動總攻擊．明白了嗎？
+zhuge_liang: 主公，周瑜不會從正面進攻的．趁此機會，占領四周的鹿砦．正好前面有森林，以此為屏障，悄悄轉移到鹿砦裡．
+liu_bei: 這麼辦好是好，可是為什麼呢？
+zhuge_liang: 周瑜自以為計謀得逞，以為咱們沒有戒備．當他知道他的計謀早已被咱們識破時，他受到的震撼足以使他喪失鬥志．
+liu_bei: 我明白了，要占領四周的鹿砦．
+zhuge_liang: 是的．但是我軍的行動必須要做到不被發覺，否則如果被吳軍發覺，行動就無意義了．所以到森林深處就不要前進了．
+@hide all
+
+== orig_c3_s1_b5_3
+guan_yu: 我是關羽關雲長！誰能與我做對手？
+呂蒙: 關羽！我呂蒙來也！
+guan_yu: 你的膽子倒不小！看刀！
+guan_yu: 這傢伙不容易對付……
+呂蒙: ……看你以後還敢……
+guan_yu: 看這刀！別發呆．
+呂蒙: ……打不過，不愧是關羽．關羽，以後再見分曉．
+guan_yu: 只有些小破綻，這傢伙不太好對付．以後再見吧．
+@hide all
+
+== orig_c3_s1_b5_4
+@narr 劉備軍占領了西北鹿砦！
+@hide all
+
+== orig_c3_s1_b5_4_2
+zhuge_liang: 嗯．佔領了全部鹿砦．那麼，向各砦武將下命令，讓他們大聲叫喊．
+周瑜: 嗯？這是什麼聲音？
+gan_ning: 周瑜都督，我們好像被包圍了，四面都是喊聲．怎麼辦？
+周瑜: 什麼？！又是孔明識破了我的計策！哇……
+gan_ning: 都督，你怎麼啦？怎麼，流血了……
+    都督，上次的傷口因激動而綻開了．
+周瑜: 不要管它，就這麼點……
+gan_ning: 都督，你這身體可不能再指揮了．撤退吧，君子報仇十年不晚．
+周瑜: 嗯……那麼，甘寧，撤退的事就交給你了．哇……
+gan_ning: 全軍撤退！
+@hide all
+
+== orig_c3_s1_b5_4_3
+@narr 周瑜軍撤退了．
+@hide all
+
+== orig_c3_s1_b5_5
+@narr 劉備占領了東北鹿砦！
+@hide all
+
+== orig_c3_s1_b5_5_2
+zhuge_liang: 嗯．佔領了全部鹿砦．那麼，向各砦武將下命令，讓他們大聲叫喊．
+周瑜: 嗯？這是什麼聲音？
+gan_ning: 周瑜都督，我們好像被包圍了，四面都是喊聲．怎麼辦？
+周瑜: 什麼？！又是孔明識破了我的計策！哇……
+gan_ning: 都督，你怎麼啦？怎麼，流血了……
+    都督，上次的傷口因激動而綻開了．
+周瑜: 不要管它，就這麼點……
+gan_ning: 都督，你這身體可不能再指揮了．撤退吧，君子報仇十年不晚．
+周瑜: 嗯……那麼，甘寧，撤退的事就交給你了．哇……
+gan_ning: 全軍撤退！
+@hide all
+
+== orig_c3_s1_b5_5_3
+@narr 周瑜軍撤退了．
+@hide all
+
+== orig_c3_s1_b5_6
+@narr 劉備占領了西南鹿砦！
+@hide all
+
+== orig_c3_s1_b5_6_2
+zhuge_liang: 嗯．佔領了全部鹿砦．那麼，向各砦武將下命令，讓他們大聲叫喊．
+周瑜: 嗯？這是什麼聲音？
+gan_ning: 周瑜都督，我們好像被包圍了，四面都是喊聲．怎麼辦？
+周瑜: 什麼？！又是孔明識破了我的計策！哇……
+gan_ning: 都督，你怎麼啦？怎麼，流血了……
+    都督，上次的傷口因激動而綻開了．
+周瑜: 不要管它，就這麼點……
+gan_ning: 都督，你這身體可不能再指揮了．撤退吧，君子報仇十年不晚．
+周瑜: 嗯……那麼，甘寧，撤退的事就交給你了．哇……
+gan_ning: 全軍撤退！
+@hide all
+
+== orig_c3_s1_b5_6_3
+@narr 周瑜軍撤退了．
+@hide all
+
+== orig_c3_s1_b5_7
+@narr 劉備占領了東南鹿砦！
+@hide all
+
+== orig_c3_s1_b5_7_2
+zhuge_liang: 嗯．佔領了全部鹿砦．那麼，向各砦武將下命令，讓他們大聲叫喊．
+周瑜: 嗯？這是什麼聲音？
+gan_ning: 周瑜都督，我們好像被包圍了，四面都是喊聲．怎麼辦？
+周瑜: 什麼？！又是孔明識破了我的計策！哇……
+gan_ning: 都督，你怎麼啦？怎麼，流血了……
+    都督，上次的傷口因激動而綻開了．
+周瑜: 不要管它，就這麼點……
+gan_ning: 都督，你這身體可不能再指揮了．撤退吧，君子報仇十年不晚．
+周瑜: 嗯……那麼，甘寧，撤退的事就交給你了．哇……
+gan_ning: 全軍撤退！
+@hide all
+
+== orig_c3_s1_b5_7_3
+@narr 周瑜軍撤退了．
+@hide all
+
+== orig_c3_s1_b5_9
+周瑜: 哼！劉備軍發動進攻了嗎？孔明，到底讓你識破了，咱們戰場上見輸贏！全軍，向劉備軍進攻！
+@hide all
+
+== orig_c3_s1_b5_9_2
+@narr 敵人援軍出現了！
+孫瑜: 周瑜都督，我們來遲了．
+周瑜: 這不是孫瑜嗎？來增援我嗎？謝謝．
+孫瑜: 我帶援軍趕來了，一同來打垮劉備，奪回荊州！
+@narr 周瑜軍轉入攻勢！
+@hide all
+
+== orig_c3_s1_b5_10
+zhuge_liang: 主公，據說以孫瑜為大將的敵方援軍正向這裡推進．這支援軍一到，周瑜就準備進攻．形勢對我軍很不利，趕緊占領鹿砦！
+@hide all
+
+== orig_c3_s1_b5_11
+zhuge_liang: 敵人的行動相當的快．孫瑜很快就要趕到了，要趕緊行動！
+@hide all
+
+== orig_c3_s1_b5_12
+zhuge_liang: 孫瑜馬上就要到了，主公，行動要快！
+@hide all
+
+== orig_c3_s1_b5_13
+@narr 敵方援軍出現了！
+孫瑜: 周瑜都督，我們來遲了．
+周瑜: 這不是孫瑜嗎？來增援我嗎？謝謝．
+孫瑜: 我帶援軍趕來了，一同來打垮劉備，奪回荊州！
+@narr 周瑜軍轉入攻勢！
+@hide all
+
+== orig_c3_s1_b5_16
+guan_yu: 我是關羽關雲長！誰能做我對手？
+呂蒙: 關羽！我呂蒙來也！
+guan_yu: 你的膽子倒不小！看刀！
+guan_yu: 這傢伙不容易對付……
+呂蒙: ……看你以後還敢……
+guan_yu: 看這刀！別發呆．
+呂蒙: ……打不過，不愧是關羽．關羽，以後再見分曉．
+guan_yu: 只有些小破綻，這傢伙不太好對付．以後再見吧．
+@hide all
+
+# ----- c3_s2_b6 (SNR3D.R3 scene 2 block 6)
+
+== orig_c3_s2_b6_2
+劉貴: 劉備終於暴露了本性．原來，他還是想奪益州．
+wu_yi: 是的．看張任的了．
+pang_tong: 主公，若攻下雒城，離成都就不遠了．請您引軍北上，吸引敵人主力．我趁虛而入，偷襲敵城．嗯……
+@narr 出現敵人伏兵！
+張任: 果不出我所料．有敵軍企圖偷越山道．
+pang_tong: 啊……我的計策被識破了．
+huang_zhong: 副軍師！
+liu_bei: 如果沒有龐統，就不能奪得益州．全軍去營救副軍師！
+@hide all
+
+== orig_c3_s2_b6_3
+pang_tong: 我……我要死在這裡了嗎？……事業未成……我死不瞑目……
+@narr 龐統戰死！
+@hide all
+
+== orig_c3_s2_b6_3_2
+huang_zhong: ……主公，副軍師已經撤退了，我們也退回涪城吧．
+liu_bei: 嗯……那就撤退吧．……龐統，你怎麼樣了？……
+@narr 劉備放棄攻打雒城．
+@hide all
+
+== orig_c3_s2_b6_4
+張任: ……快出來！
+liu_bei: 什麼！？敵人偷襲我軍軍糧．
+huang_zhong: 主公，這樣會使我軍陷入困境．我們先撤回涪城吧．
+liu_bei: 唉．也只好如此了．
+冷苞: 劉貴，敵人好像要撤退．
+劉貴: 喔．張任的第二個計謀好像成功了．張任這小子，真行！
+@narr 劉備軍軍糧已盡，撤退了．
+@hide all
+
+# ----- c3_s2_b10 (SNR3D.R3 scene 2 block 10)
+
+== orig_c3_s2_b10_3
+劉貴: 劉備不顧打了敗仗，又打來了．各位，為了劉璋主公好好打！
+wu_lan: ……
+lei_tong: 為了劉璋，唉……
+@hide all
+
+== orig_c3_s2_b10_4
+zhang_fei: 誰敢與我張飛交手？出來吧．
+張任: 什麼？是張飛？如果我能打敗張飛，會大大提高我軍士氣．好吧，張飛．我張任來與你交手．
+zhang_fei: 張任？誰都行．過來吧．
+張任: 好傢伙，真打不過他．
+zhang_fei: 別在那裡發呆！
+zhang_fei: 你不是我的對手．
+張任: ……你在幹什麼？快過來交手？
+zhang_fei: 殺死你真是易如反掌．我說，劉璋大勢已去，你不如投降我們，勝於白白送死．
+張任: ……你在說什麼？想要我投降？不！我寧死不降．
+zhang_fei: 你真是個忠臣，我了解你．那麼，我只有殺死你了！
+張任: 哎呀！
+zhang_fei: ……哼！
+張任: 殺死我吧……謝謝……
+zhang_fei: ……真可惜．這小子是個武將！
+@hide all
+
+== orig_c3_s2_b10_5
+liu_bei: 不好……這次又要苦戰了．
+    哎！那是誰？
+@hide all
+
+== orig_c3_s2_b10_5_2
+zhao_yun: 我是趙雲，支援您來了！諸位，跟我來！
+zhuge_liang: 主公，我來遲了一步．我馬上來助戰！
+liu_bei: 噢！趙雲、孔明、伊籍、簡雍，你們都來了！
+@hide all
+
+== orig_c3_s2_b10_7
+zhao_yun: 那是……敵人援軍嗎？
+@hide all
+
+== orig_c3_s2_b10_7_2
+楊懷: 劉備軍終於來了．諸位，為了蜀國，勇敢地戰鬥啊！
+高沛: 努力啊，我們趕到了！
+li_yan: ……這一戰有什麼意義呢？
+fei_guan: ……
+@narr 敵人援軍出現！
+@hide all
+
+== orig_c3_s2_b10_8
+zhao_yun: 那是……敵人援軍嗎？
+@hide all
+
+== orig_c3_s2_b10_8_2
+@narr 敵人援軍出現！
+楊懷: 劉備軍終於來了．諸位，為了蜀國，勇敢地戰鬥啊！
+高沛: 努力啊，我們趕到了！
+li_yan: ……這一戰有什麼意義呢？
+fei_guan: ……
+@hide all
+
+== orig_c3_s2_b10_9
+劉貴: 什麼？部分敵人越過山道，逼近城池了？
+張任: 劉備這小子怎麼又來了……嗯！？
+@hide all
+
+== orig_c3_s2_b10_9_2
+楊懷: 劉備軍終於來了．諸位，為了蜀國，勇敢地戰鬥啊！
+高沛: 努力啊，我們趕到了！
+li_yan: ……這一戰有什麼意義呢？
+fei_guan: ……
+@narr 敵人援軍出現！
+@hide all
+
+== orig_c3_s2_b10_10
+liu_bei: 吳懿，連嚴顏都投降我們了，你又為什麼要白白流血呢？怎麼樣，投降我們吧？
+wu_yi: ……明白了，我願為劉備效力．
+@narr 吳懿成為部下！
+wu_yi: 不過，我不想跟以前的同伴交戰，我先撤退了．
+@hide all
+
+== orig_c3_s2_b10_11
+liu_bei: 吳蘭，不想建設新益州嗎？與我們一起努力吧．
+wu_lan: ……有道理．聽說嚴顏也加入了……好吧，我願意加入你們．
+@narr 吳蘭成為部下！
+@hide all
+
+== orig_c3_s2_b10_12
+liu_bei: 雷銅，我不是來這裡搶掠的．而是因為劉璋黯弱，不能抵禦曹操．怎麼樣，與我一起抵禦曹操好嗎？
+lei_tong: 嗯，確實是這樣．劉璋不知何時就會被打垮，不如……好吧，我雷銅從今天起就是劉備的部下了．
+@narr 雷銅成為部下！
+lei_tong: 不過，我不忍與過去的朋友交手，我先走了．
+@hide all
+
+== orig_c3_s2_b10_13
+liu_bei: 李嚴，益州的歸屬已定，不如老老實實的投降，勝於白白送死．
+li_yan: 嗯……
+liu_bei: 怎麼樣？李嚴，協助我建設蜀國吧．
+li_yan: 建設蜀國？太好了，我願意投降．
+@narr 李嚴成為部下！
+@hide all
+
+== orig_c3_s2_b10_14
+liu_bei: 費觀，同嚴顏一樣，其他的武將都投降了．你投不投降？
+fei_guan: 說的不錯．連嚴顏都加入了你們，他是不會看錯人的．好吧，我投降．
+@narr 費觀成為部下！
+fei_guan: 那麼，打完仗再見．
+@hide all
+
+# ----- c3_s2_b14 (SNR3D.R3 scene 2 block 14)
+
+== orig_c3_s2_b14_2
+張魯: 那是劉備軍嗎？如果能打敗他，益州的一半就歸我了．各位，衝啊！
+liu_bei: 張魯後方被曹操牽制著，如果在此地擊退他，他就暫時不敢動了．好了，把張魯從葭萌關趕出去！
+@hide all
+
+== orig_c3_s2_b14_5
+張魯: 馬超怎麼還不來？嗯，終於來了．
+@hide all
+
+== orig_c3_s2_b14_5_2
+@narr 馬超軍出現了！
+ma_chao: 張魯好像陷入了苦戰．我要讓劉備知道知道我馬超的厲害！走，跟我來！
+liu_bei: 嗯？那就是馬超嗎？早就聽說他是員勇將，但究竟是何等人物啊……
+@hide all
+
+== orig_c3_s2_b14_6
+@duel zhang_fei ma_chao terrain
+ma_chao: 在那裡的看樣子是有名的武將，我是馬超，敵將通名！
+zhang_fei: 我乃張飛是也！你就是馬超嗎？
+ma_chao: 張飛？沒聽說過．山野村夫我可沒聽過．
+zhang_fei: 什麼？！你敢如此無禮！我要殺了你！
+zhang_fei: 這，挺厲害．這小子還有兩下子．
+ma_chao: 他還挺能打．不過越是勇將，能殺死他越過癮．
+ma_chao: ……好了，今天就打到這裡，收兵！
+zhang_fei: 什麼？你想逃跑嗎？
+ma_chao: 日後再分勝負吧！
+@duel_act right flee
+@duel_end
+@hide all
+
+# ----- c3_s2_b16 (SNR3D.R3 scene 2 block 16)
+
+== orig_c3_s2_b16_2
+劉璋: 劉備打過來了！各位，你們要好好保護我．
+meng_da: 唉！劉璋還是不能護衛國家呀！
+fa_zheng: 劉備，在敵軍裡的孟達是我和張松的至友，請一定設法救出他．
+zhuge_liang: 主公，敵人已經喪失了鬥志，如果能夠說明道理，敵將也許會歸降．
+@hide all
+
+== orig_c3_s2_b16_3
+meng_da: 您就是劉備嗎？我是張松和法正的至友，名叫孟達．我也想像他們那樣，做您的部下．
+@narr 孟達成為部下！
+@hide all
+
+== orig_c3_s2_b16_4
+huang_quan: 劉璋不聽我的忠言，才落到今天這個境地．劉備大人，我相信你能挽救益州．
+@narr 黃權成為部下！
+@hide all
+
+== orig_c3_s2_b16_5
+huo_jun: 劉備大人，請收我做部下．
+@narr 霍峻成為部下！
+@hide all
+
+== orig_c3_s2_b16_6
+wu_ban: 劉備大人，我願做您的部下．
+@narr 吳班成為部下！
+@hide all
+
+== orig_c3_s2_b16_7
+chen_shi: 我已經對劉璋失去了信心．劉備大人，請收下我做部下吧．
+@narr 陳式成為部下！
+@hide all
+
+== orig_c3_s2_b16_8
+orig_p34: 我是劉璋用錢雇用來的．但是，劉璋已經不能再付我錢了．那樣的話，我與其戰死還不如歸降您．
+@narr 沙摩可成為部下！
+@hide all
+
+# ----- c3_s3_b2 (SNR3D.R3 scene 3 block 2)
+
+== orig_c3_s3_b2_2
+zhang_he: 到底打來了，劉備啊！我知道你虎視眈眈．會打進漢中來．我先來一步打你們．將士們，劉備在哪裡，全體進攻！
+zhuge_liang: 有點怪呀！進攻兵力不多……怎麼回事？原來另有安排．
+@narr 出現敵軍伏兵！
+@hide all
+
+== orig_c3_s3_b2_3
+lei_tong: 魏軍，還想得隴望蜀．我雷銅把你們打垮了．
+zhang_he: 好大膽，你膽敢和我張郃較量！有意思，我來逗逗你．過來！
+@duel zhang_he lei_tong terrain
+zhang_he: 一招，兩招……怎麼樣？
+lei_tong: 還殺不了你，再砍過一刀．
+@duel_act right charge
+@duel_act right strike 4
+@duel_act right charge
+@duel_act right strike 6
+lei_tong: 不行！殺不過他！
+zhang_he: 這麼點本事，還想殺我．看我一刺．
+@duel_act left charge
+@duel_act left strike 6
+lei_tong: 哎呀！
+@duel_act right strike 8
+lei_tong: 好厲害，打不過他．……逃吧．
+@duel_act right flee
+zhang_he: 嘿嘿！蜀軍都不經一打．
+@duel_end
+@hide all
+
+== orig_c3_s3_b2_3_2
+@narr 雷銅敗退了！
+@hide all
+
+== orig_c3_s3_b2_4
+zhang_he: 劉備，你已被四面包圍，束手待斃．我來取你首級！好！全軍前進！
+@hide all
+
+# ----- c3_s3_b2_2 (SNR3D.R3 scene 3 block 2)
+
+== orig_c3_s3_b2_2_2
+zhang_he: 剛才沒有打好仗，這次能好好打了．而且已給漢中的曹洪去信，要求派兵支援．劉備，來攻打吧！
+zhuge_liang: 主公，往上看那是瓦口關．我們要把張郃趕出瓦口關．
+@hide all
+
+== orig_c3_s3_b2_2_3
+lei_tong: 魏軍，還想得隴望蜀．我雷銅把你們打垮了．
+zhang_he: 好大膽，你膽敢和我張郃較量！有意思，我來逗逗你．過來！
+@duel zhang_he lei_tong terrain
+zhang_he: 一招，兩招……怎麼樣？
+lei_tong: 還殺不了你，再砍過一刀．
+@duel_act right charge
+@duel_act right strike 4
+@duel_act right charge
+@duel_act right strike 6
+lei_tong: 不行！殺不過他！
+zhang_he: 這麼點本事，還想殺我．看我一刺．
+@duel_act left charge
+@duel_act left strike 6
+lei_tong: 哎呀！
+@duel_act right strike 8
+lei_tong: 好厲害，打不過他．……逃吧．
+@duel_act right flee
+zhang_he: 嘿嘿！蜀軍都不經一打．
+@duel_end
+@hide all
+
+== orig_c3_s3_b2_2_3_2
+@narr 雷銅敗退了！
+@hide all
+
+== orig_c3_s3_b2_2_4
+zhang_he: 來了，援兵？什麼，不派援兵來了．為什麼？原來主帥對上次的爭吵抱有成見．還記仇啊！這就不好打了．
+@hide all
+
+# ----- c3_s3_b4 (SNR3D.R3 scene 3 block 4)
+
+== orig_c3_s3_b4_2
+夏侯德: 又派了援兵？沒什麼，我把他們打垮．
+zhuge_liang: 主公，請注意進攻路上左右的樹林，夏侯德可能在那裡埋下了伏兵．
+@hide all
+
+== orig_c3_s3_b4_3
+@narr 出現敵人伏兵．
+liu_bei: 果然如孔明所料．大家要鎮靜，不要驚慌，敵人出現一批就打垮他一批．
+@hide all
+
+== orig_c3_s3_b4_4
+@narr 出現敵人伏兵．
+liu_bei: 還有埋伏的敵兵．夏侯德真會用兵．
+@hide all
+
+== orig_c3_s3_b4_5
+@narr 出現敵人伏兵．
+liu_bei: 怎麼還有伏兵？究竟埋伏了多少伏兵？
+@hide all
+
+== orig_c3_s3_b4_10
+yan_yan: 來將是夏侯德嗎？我嚴顏要與你單挑．
+夏侯德: 你這個老傢伙，膽敢侵略我國，我絕不饒你！
+yan_yan: 看招！
+夏侯德: 噢，不好．招架不住了．
+yan_yan: 敵人露出了破綻．
+夏侯德: 啊……
+yan_yan: 我殺死了敵將夏侯德．
+@hide all
+
+== orig_c3_s3_b4_10_2
+@narr 嚴顏殺死了夏侯德，曹操軍敗退了．
+@hide all
+
+# ----- c3_s3_b6 (SNR3D.R3 scene 3 block 6)
+
+== orig_c3_s3_b6_2
+xiahou_yuan: 不能讓劉備奪取漢中．竭盡全力制止劉備的進攻．
+@hide all
+
+== orig_c3_s3_b6_3
+huang_zhong: 來將像是夏侯淵．我黃忠來單挑結果你！
+xiahou_yuan: 你這幫蜀國鄉巴佬，膽敢犯我疆土，看我大刀！
+huang_zhong: 我黃忠寶刀未老，你就做我的刀下鬼吧．
+@duel huang_zhong xiahou_yuan terrain
+huang_zhong: 吃這一刀！
+@duel_act left charge
+@duel_act left strike 6
+xiahou_yuan: 不好！哎喲……
+@duel_act right fall
+huang_zhong: 我殺死了敵將夏侯淵．
+@duel_end
+@hide all
+
+== orig_c3_s3_b6_3_2
+@narr 黃忠殺死了夏侯淵，
+    劉備軍佔領了定軍山．
+@hide all
+
+== orig_c3_s3_b6_4
+liu_bei: 嗯，這些兵是……？
+@hide all
+
+== orig_c3_s3_b6_4_2
+@narr 敵人援軍出現了．
+徐晃: 夏侯淵將軍，我來幫你把劉備趕出定軍山．
+wang_ping: ……
+xiahou_yuan: 噢，徐晃你來了．好，全軍向劉備軍衝鋒！我軍要夾擊劉備軍．
+@hide all
+
+== orig_c3_s3_b6_5
+wang_ping: 劉備大人，我想向劉備軍投降，請收容我．
+@narr 王平倒戈了．
+@hide all
+
+# ----- c3_s3_b8 (SNR3D.R3 scene 3 block 8)
+
+== orig_c3_s3_b8_2
+夏侯德: 讓敵人佔領天蕩山，我軍的糧草就沒了！無論如何我們也要守住天蕩山！
+liu_bei: 敵人的兵力不多！一鼓作氣攻下它！
+@hide all
+
+== orig_c3_s3_b8_4
+yan_yan: 夏侯德，我嚴顏要和你單挑！
+夏侯德: 你這個老朽，膽敢侵佔我們領土！殺呀！！
+yan_yan: 殺！
+夏侯德: 嗯、嗯……！不……好了！
+yan_yan: 納命來！
+夏侯德: 啊……！
+yan_yan: 敵將夏侯德，被我嚴顏殺了！！
+@hide all
+
+== orig_c3_s3_b8_4_2
+@narr 嚴顏殺了夏侯德，曹操軍敗退了．
+@hide all
+
+# ----- c3_s3_b10 (SNR3D.R3 scene 3 block 10)
+
+== orig_c3_s3_b10_2
+徐晃: 守不住這裡，漢中也就丟了！將士們，無論如何得守住這個天蕩山！
+@hide all
+
+== orig_c3_s3_b10_4
+wang_ping: 劉皇叔，我遭徐晃忌恨，所以我想投降劉皇叔．今後請您多關照．
+@narr 王平倒戈到這裡！
+@hide all
+
+== orig_c3_s3_b10_5
+liu_bei: 嗯！那莫非是？
+@hide all
+
+== orig_c3_s3_b10_5_2
+@narr 敵人援軍出現了！
+xiahou_yuan: 救出徐晃！把劉備軍趕出天蕩山！
+zhang_he: 剛才由於天意讓你們佔了便意，這次不會啦！劉備軍，你們準備受死吧！
+徐晃: 嘔！是夏侯淵！好，出擊的時候到了！！全軍，向劉備軍突擊！！
+@hide all
+
+== orig_c3_s3_b10_6
+huang_zhong: 喂，夏侯淵！我黃忠與你單挑！！
+xiahou_yuan: 你們這些鄉巴佬，竟敢來搶佔我們領土！我豈能饒你！
+huang_zhong: 哈哈，我黃忠雖已年邁，但還不至於敗給你這鼠輩．
+@duel huang_zhong xiahou_yuan terrain
+huang_zhong: 看刀！
+@duel_act left charge
+@duel_act left strike 6
+xiahou_yuan: 啊……！！
+@duel_act right fall
+huang_zhong: 我殺死了敵將夏侯淵！
+@duel_end
+@hide all
+
+# ----- c3_s3_b12 (SNR3D.R3 scene 3 block 12)
+
+== orig_c3_s3_b12_2
+cao_hong: 在這裡阻住劉備軍．萬一這裡失守，則漢中危矣！各位將軍，一定要死守這裡！
+@hide all
+
+== orig_c3_s3_b12_3
+wu_lan: 我是蜀將吳蘭！誰敢與我單挑？
+曹彰: 你能贏我嗎？我來了．
+wu_lan: 這是……
+曹彰: 怎麼了，不想打了？如果這樣我曹彰就不殺你了．
+wu_lan: 你是曹彰？那麼你是曹操的兒子？
+曹彰: 正是．
+wu_lan: ……好，我要取你首級立功！曹彰，接招！
+曹彰: 哈哈哈．你這點本事還能贏我？該我了，接招！
+wu_lan: 噢……
+曹彰: 嚇傻了吧．我的本事還沒完全使出來呢．
+wu_lan: ……看來是勝不了他了……真不該輕敵．沒辦法，撤吧．
+曹彰: 哼，勝得太容易了．還有沒有人敢與我交手？
+@hide all
+
+== orig_c3_s3_b12_3_2
+@narr 吳蘭退卻了！
+@hide all
+
+== orig_c3_s3_b12_6
+cao_hong: 劉備小兒，的確厲害……嗯？！
+@hide all
+
+== orig_c3_s3_b12_6_2
+@narr 敵人援軍出現了！
+曹彰: 不能讓蜀軍再猖狂了．我來讓你們知道我的厲害！
+cao_hong: 噢，曹彰公子來了．哼，劉備小兒，我要報仇了．
+@hide all
+
+# ----- c3_s3_b14 (SNR3D.R3 scene 3 block 14)
+
+== orig_c3_s3_b14_2
+cao_cao: 大膽的劉備！你竟敢背叛漢朝！我曹操要把你千刀萬剮！
+liu_bei: 住口！你欺辱皇帝，侮辱漢朝，是想取而代之吧．你才是叛逆，你才該千刀萬剮．
+@hide all
+
+== orig_c3_s3_b14_3
+ma_chao: 龐德，你不是龐德嗎？你還活著．
+龐德: ……馬超將軍……
+ma_chao: 為什麼你在曹操軍中？
+龐德: 你離開張魯投奔劉備後，曹……曹丞相進攻漢中……
+ma_chao: 曹丞相？你怎麼會……
+龐德: 是的．我投降了曹丞相，現在是曹軍中的一員．
+ma_chao: 什麼！你怎麼如此糊塗？你不知道曹操的惡行嗎？
+龐德: ……我被張魯疑忌．在走投無路之時，曹丞相熱情歡迎我，還委我以重任．……此恩不報，我義氣又何在呢？
+ma_chao: 你胡說什麼？現在你要重新開始．怎麼樣，與我一起去見劉皇叔吧．
+龐德: ……馬超將軍，過去我雖是您的部下，但現在卻是敵人，你怎麼說都沒用，還是與我戰鬥吧．
+ma_chao: 你這個糊塗蟲！
+ma_chao: 龐德，你再想一下．
+龐德: 不要再說了．……馬超將軍，再見．
+ma_chao: 龐德，等一下！
+ma_chao: 龐德……
+@hide all
+
+== orig_c3_s3_b14_4
+zhang_he: 好，讓我當先鋒，我一定不辜負曹丞相的厚望，衝啊！
+龐德: 是．
+曹彰: 不要落在張郃後面．我們也往前衝！
+xiahou_dun: 快要開戰了，我們再向前一些，以便及早投入戰鬥．
+@hide all
+
+== orig_c3_s3_b14_5
+司馬懿: 媽的，劉備．不能讓他們再靠近陽平關．大家跟我來！
+zhuge_liang: 主公，這夥敵人中有個叫司馬懿的，據說相當有才幹，對他要當心．
+@hide all
+
+# ----- c3_s4_b0 (SNR3D.R3 scene 4 block 0)
+
+== orig_c3_s4_b0_2
+zhao_lei: 關羽將軍，現在沒別的辦法，只有退回成都以求東山再起．到那時再讓他們交還荊州．
+wang_fu: 即使我們都死了，關羽將軍也要逃出去．只要能逃到西面的鹿砦就沒事了．
+guan_ping: 曹操軍馬上就要追來了．父親，快離開這片樹林吧．
+zhou_cang: 我一定拼死護衛您！
+guan_yu: 唉……，大家都不能死，要活著離開這裡！
+呂蒙: 不能讓他們活著逃離樹林．否則我們就動不了手了．一定要在他們離開樹林前消滅他們！
+@hide all
+
+== orig_c3_s4_b0_3
+guan_yu: 嗯！追兵來了！
+@hide all
+
+== orig_c3_s4_b0_3_2
+@narr 曹操軍出現了！
+cao_ren: 不能讓吳把功勞搶走了，關羽的首級就由我們來取吧！
+呂蒙: 那可不行．關羽的首級要由吳來取！
+@hide all
+
+== orig_c3_s4_b0_8
+呂蒙: 完了！被關羽逃走了，這樣將後患無窮．決不能讓關羽跑掉！
+@narr 關羽逃離了戰場．
+@hide all
+
+# ----- c3_s4_b4 (SNR3D.R3 scene 4 block 4)
+
+== orig_c3_s4_b4_2
+liu_bei: 眾將官，要為關羽報仇，向孫權軍雪恨！
+孫桓: 哎呀呀……大家一定要守住，等待援軍的到來．
+guan_xing: 主公，我來遲了，對不起．我是關羽的兒子關興．
+    我此次來是為了報父仇，請讓我加入戰鬥．
+zhang_bao: 我豈能落在關興後面？主公，我是張飛之子張苞，此次作戰我也要參加．
+liu_shan: 父親，請帶我去．不過，刀箭很可怕呀．
+@narr 劉禪、張苞、關興成為部下！
+@hide all
+
+== orig_c3_s4_b4_3
+zhang_bao: 敵將何在！我是張飛之子張苞！
+謝旌: 喔，你就是張飛的兒子．我來教訓你！
+zhang_bao: 殺！
+謝旌: 哎呀！
+zhang_bao: 殺死了敵將！
+@hide all
+
+== orig_c3_s4_b4_4
+guan_xing: 我是關羽的兒子關興，誰敢與我單挑！
+李異: 黃毛小兒，休得猖狂！我來了！
+李異: 你就是關興？還在想爸爸吧．
+guan_xing: 住口！你給我過來！
+李異: 過去又怎樣．
+李異: 一刀結果你……
+guan_xing: 這種對手也敢口出狂言？
+@hide all
+
+# ----- c3_s4_b6 (SNR3D.R3 scene 4 block 6)
+
+== orig_c3_s4_b6_2
+陸遜: 呵呵呵．孔明不在這裡真乃天助我也，只有他才能識破我的戰略．劉備真是個糊塗蟲，竟敢率軍冒然突進．看來劉備的氣數已盡．
+韓當: 都督，起風了．
+陸遜: 好啊．這裡是通風之處，而且地勢狹窄，我就在這裡等候劉備．
+韓當: 都督所言極是．……都督，你有如此妙計，我卻對您無禮，實在對不起．
+陸遜: 行了，等打完這一仗再說這事也不遲．好，放火！燒盡劉備軍！
+ma_liang: 主，主公．大事不好！敵人用火攻了．
+liu_bei: 唉……現在我軍眾多倒成為累贅了．前方道路越來越窄了．
+@hide all
+
+== orig_c3_s4_b6_2_2
+陸遜: 取勝的時機到了！不要放走了劉備！吳國的命運在此一戰！
+@hide all
+
+== orig_c3_s4_b6_3
+周泰: 怎麼？這支部隊是？主將是誰？
+orig_p34: 我就是主將．
+周泰: 嚇，是蠻族啊，一看你就知道是蠻族，我還是第一次見到蠻族．好，與我單挑吧．
+orig_p34: 好，來吧！
+周泰: 招！怎麼只有招架之功．
+orig_p34: 唉呀……太累了……
+周泰: 你怎麼了，動作這麼慢？
+orig_p34: 嘿！這幾下怎麼樣？
+orig_p34: 哈哈……
+周泰: 你好像累了，我送你去歇歇．
+orig_p34: 啊……！
+orig_p34: 我命休矣……
+@hide all
+
+== orig_c3_s4_b6_4
+陸遜: 哈哈哈．機不可失！全軍總攻！劉備，這次你休想逃脫．
+@hide all
+
+# ----- c4_s0_b5 (SNR4D.R3 scene 0 block 5)
+
+== orig_c4_s0_b5_2
+cao_ren: 蜀軍就要攻來了！一定要擋住他們！
+zhuge_liang: 聽說敵軍主將是曹仁．攻下襄陽，再奪回荊州．
+陸遜: 大家不要落在蜀軍後面！向天下顯示吳軍的實力！
+@hide all
+
+== orig_c4_s0_b5_6
+@narr 敵人的援軍到達！
+cao_ren: 哦，援軍來了嗎？大家加把勁！援軍已到，一鼓作氣殺回去！
+liu_bei: 沒想到……敵人的援軍到了．
+@hide all
+
+== orig_c4_s0_b5_6_2
+？？？: 不能讓魏國長期霸佔荊州．
+@hide all
+
+# ----- c4_s0_b7 (SNR4D.R3 scene 0 block 7)
+
+== orig_c4_s0_b7_2
+yu_jin: 別放劉備軍過去，一個兵也不行．
+zhuge_liang: 新野的敵方守將是于禁．攻下這裡，就能以此為根據進攻宛城．
+@hide all
+
+== orig_c4_s0_b7_4
+@narr 敵人援軍到達！
+xu_chu: 別放劉備軍過去，將其趕回江陵！
+yu_jin: 啊，援軍！兄弟們，援軍來了！大家堅守住！
+@hide all
+
+== orig_c4_s0_b7_5
+yu_jin: 什麼？糧倉丟了！如此，怎麼守城！可惡，撤到宛城！
+@hide all
+
+== orig_c4_s0_b7_6
+zhang_fei: 對面可是于禁！敢與我張飛一戰！
+@duel zhang_fei yu_jin terrain
+yu_jin: 壞了！張飛！！哇！
+zhang_fei: 為我二哥關羽報仇！你等死吧！我來也！
+zhang_fei: 如何！你不是我對手！
+yu_jin: 可惡！活命要緊！張飛，後會有期！！
+zhang_fei: 呸！別跑！這豈是大將所為！
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c4_s0_b7_6_2
+yu_jin: 撤退！快回宛城！
+@hide all
+
+# ----- c4_s0_b8 (SNR4D.R3 scene 0 block 8)
+
+== orig_c4_s0_b8_2
+徐晃: 劉備雖來了！但是絕不讓他們過去，我們用水攻．
+zhuge_liang: 此……！主公！此處危險！
+liu_bei: 何出此言？
+zhuge_liang: 此處想必原是舊河床！敵軍肯定在上流建堤攔住水流！一旦放水而下，我軍將完全被激流吞沒！
+liu_bei: 可是，陸遜正在新野作戰，我們如果撤退，陸遜將孤立無援．
+zhuge_liang: 那就奪取敵軍城堡吧，除此別無他法．
+liu_bei: 好吧，全軍迅速攻取敵軍城堡！
+@hide all
+
+== orig_c4_s0_b8_3
+zhang_bao: 我乃張飛之子張苞是也！來將可敢與我單打獨鬥！
+夏侯尚: 原來是張飛之子．我夏侯尚不以為怪，來得好，先打再說吧！
+夏侯尚: 打就打吧……
+zhang_bao: 哼！剛才不知天高地厚，現在後悔了吧！
+夏侯尚: 啊！不、不愧為張飛之……子……
+zhang_bao: 夏侯尚，俺張苞送你見閻王！
+@hide all
+
+== orig_c4_s0_b8_7
+@narr 佔領北面城堡！
+@hide all
+
+== orig_c4_s0_b8_7_2
+liu_bei: 幹得漂亮！佔領了城堡，無須擔心敵人水攻了．一口氣擊垮徐晃！
+徐晃: 什麼！城堡被佔領了！哼，我的妙計不成，沒辦法，回軍宛城！
+@hide all
+
+== orig_c4_s0_b8_8
+@narr 佔領南面城堡！
+@hide all
+
+== orig_c4_s0_b8_8_2
+liu_bei: 幹得漂亮！佔領了城堡，無須擔心敵人水攻了．一口氣擊垮徐晃！
+徐晃: 什麼！城堡被佔領了！哼，我的妙計不成，沒辦法，回軍宛城！
+@hide all
+
+== orig_c4_s0_b8_9
+徐晃: 太好了，現在馬上決堤，放水淹劉備軍．
+@hide all
+
+== orig_c4_s0_b8_9_2
+zhuge_liang: 來不及了……
+徐晃: 哈哈哈！劉備小兒，活該！全軍進攻劉備軍．
+@hide all
+
+# ----- c4_s0_b10 (SNR4D.R3 scene 0 block 10)
+
+== orig_c4_s0_b10_2
+zhang_liao: 太好了，好像來得及，全軍注意，突擊劉備軍側翼．
+zhuge_liang: 主公，遭到攻擊．合淝的張遼軍急襲至此．
+liu_bei: 嗯……全軍迎擊張遼，把他趕回去！
+@hide all
+
+== orig_c4_s0_b10_6
+@narr 張遼的援軍到達！
+yue_jin: 張遼！別鬆勁！樂進來了！
+zhang_liao: 哦，樂進來了！好不容易趕來吧！太棒了，援軍來了！
+@hide all
+
+== orig_c4_s0_b10_7
+@narr 張遼的援軍到達！
+li_dian: 張遼，抱歉，來晚了！
+zhang_liao: 哦，李典終於來了！好，發動總攻擊！
+@hide all
+
+== orig_c4_s0_b10_8
+@duel zhang_fei zhang_liao terrain
+zhang_fei: 張遼，好久不見了！
+zhang_liao: 張飛嗎？來得好！單挑！
+zhang_fei: 哼，輸給你，我就不是張飛！來吧，張遼！
+zhang_fei: 喂，你不行了吧！
+zhang_liao: 呀，還是你厲害！
+zhang_fei: 看槍！！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act right strike 8
+zhang_liao: 哇！哼，沒辦法，全軍撤退！張飛，後會有期！
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c4_s0_b10_8_2
+zhang_fei: 呸，跑得倒快．哈，呂布一死，我就無敵於天下了！
+@hide all
+
+# ----- c4_s0_b11 (SNR4D.R3 scene 0 block 11)
+
+== orig_c4_s0_b11_2
+xiahou_dun: 劉備，你太得意了！我夏侯惇要讓你見識一下魏軍的真正實力．
+zhuge_liang: 主公，如果佔領宛城，洛陽就在眼前了．快進攻吧！
+@hide all
+
+== orig_c4_s0_b11_6
+liu_bei: 好！降下吊橋！
+@hide all
+
+== orig_c4_s0_b11_6_2
+@narr 吊橋降下來了！
+徐晃: 什麼，吊橋被降下來了！？哼，于禁這傢伙真靠不住！唉！以後再跟你算帳，迎擊！
+@hide all
+
+== orig_c4_s0_b11_7
+zhang_fei: 徐晃！明年今日就是你的忌日！碰上我，你算完了！
+徐晃: 放屁！你也想嘗嘗關羽一樣的下場嗎？
+zhang_fei: 放肆！不容你猖獗，看槍！
+zhang_fei: 嗨！嗨！
+徐晃: 啊！太，太強了！
+zhang_fei: 哼，你以為能贏我嗎？看槍！死吧！
+徐晃: 嗚……
+徐晃: 後，後悔莫及……
+@hide all
+
+== orig_c4_s0_b11_8
+xiahou_dun: 進城裡來了嗎，哈哈哈，按我的計謀上當了，也不想想，為什麼特意留一座橋，那裡進退不自如．機會來了！一口氣衝垮敵人！！
+@hide all
+
+== orig_c4_s0_b11_9
+xiahou_dun: 大膽劉備軍！竟敢來此！
+@hide all
+
+== orig_c4_s0_b11_9_2
+guan_yu: 聽說兄長處境艱難，關羽特來參見！想要命的，離我遠點！
+liu_bei: 噢……！我沒認錯吧！關羽，是你吧！
+guan_yu: 夏侯惇，俺關羽特來會你！
+xiahou_dun: 你，你是關羽！你沒死！
+guan_yu: 魏國不亡，我還不能死．我從閻王那裡又回來了．
+xiahou_dun: 那好，我再把你送回去！
+@duel guan_yu xiahou_dun terrain
+xiahou_dun: 你這個死不了的，再宰死你．
+guan_yu: 你這兩下子，不足為敵！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act right strike 8
+xiahou_dun: 噢！
+guan_yu: 夏侯惇！小心！
+@duel_act left charge
+@duel_act left strike 4
+xiahou_dun: 哇！！
+@duel_act right fall
+guan_yu: 哼……夏侯惇，再見了……
+@duel_end
+@hide all
+
+# ----- c4_s1_b2 (SNR4D.R3 scene 1 block 2)
+
+== orig_c4_s1_b2_2
+郝昭: 蜀軍終於攻來了，但是別想從陳倉這裡過去，有種的過來一戰！
+@hide all
+
+== orig_c4_s1_b2_2_2
+pang_tong: 陳倉乃咽喉要地，別浪費時間！火速攻下！
+@hide all
+
+== orig_c4_s1_b2_2_3
+zhao_yun: 陳倉乃咽喉要地，別浪費時間！火速攻下！
+@hide all
+
+== orig_c4_s1_b2_2_4
+jiang_wei: 魏軍乃逆賊．我是不是助紂為虐了．
+@hide all
+
+== orig_c4_s1_b2_3
+wei_yan: 來將可是敵方統帥．來得正好，單挑！
+郝昭: 可惡……！讓你們打到這裡，只有決一勝負！
+wei_yan: 不愧是統帥！好厲害！
+郝昭: 嘿……！
+wei_yan: 哈、哈……
+郝昭: 看招！
+wei_yan: 啊！不好！
+wei_yan: 哇啊！……，……，……？我還活著嗎？
+郝昭: 啊！心，心臟……在這種……地方……犯老病……．
+wei_yan: 怎麼回事？
+郝昭: 不好……．因病……倒下……．
+wei_yan: 好險啊！
+@hide all
+
+== orig_c4_s1_b2_3_2
+@narr 劉備軍奇襲隊擊斃郝昭，
+    佔領陳倉．
+@hide all
+
+== orig_c4_s1_b2_7
+jiang_wei: 不能再待在魏軍了！我姜維現在加入蜀軍！
+@narr 姜維加入我方！
+@hide all
+
+== orig_c4_s1_b2_8
+ma_chao: 你們可是羌族人？為何跟著魏軍，阻擋我軍前進！
+orig_p235: 啊，您是馬超將軍！聽說您被魏軍殺害了，看來平安無事呀！
+ma_chao: 當然，哪能那麼容易就死了．
+orig_p235: 我們不打算與馬超將軍作對，現在我們羌族加入您那一方．
+@hide all
+
+== orig_c4_s1_b2_8_2
+@narr 異民族羌族加入我方！
+@hide all
+
+== orig_c4_s1_b2_9
+ma_chao: 你們可是羌族人？為何跟著魏軍，阻擋我軍前進！
+orig_p234: 啊，您是馬超將軍！聽說您被魏軍殺害了，看來平安無事呀！
+ma_chao: 當然，哪能那麼容易就死了．
+orig_p234: 我們不打算與馬超將軍作對，現在我們羌族加入您那一方．
+@hide all
+
+== orig_c4_s1_b2_9_2
+@narr 異民族羌族加入我方！
+@hide all
+
+== orig_c4_s1_b2_10
+ma_chao: 你們可是羌族人？為何跟著魏軍，阻擋我軍前進！
+orig_p236: 啊，您是馬超將軍！聽說您被魏軍殺害了，看來平安無事呀！
+ma_chao: 當然，哪能那麼容易就死了．
+orig_p236: 我們不打算與馬超將軍作對，現在我們羌族加入您那一方．
+@hide all
+
+== orig_c4_s1_b2_10_2
+@narr 異民族羌族加入我方！
+@hide all
+
+== orig_c4_s1_b2_11
+pang_tong: 不行，要趕不上決戰了！全軍，加速前進！
+@hide all
+
+== orig_c4_s1_b2_11_2
+zhao_yun: 不行，要趕不上決戰了！全軍，加速前進！
+@hide all
+
+# ----- c4_s1_b3 (SNR4D.R3 scene 1 block 3)
+
+== orig_c4_s1_b3_2
+曹真: 在這裡箝制住蜀軍！不能讓蜀軍再為所欲為了．
+@hide all
+
+== orig_c4_s1_b3_2_2
+pang_tong: 越過長安，馬上就到洛陽了．大家再加把勁！
+@hide all
+
+== orig_c4_s1_b3_2_3
+zhao_yun: 越過長安，馬上就到洛陽了．大家再加把勁！
+@hide all
+
+== orig_c4_s1_b3_2_4
+xu_shu: 當初玄德公的實力何其渺小，現在如此壯大……我的眼光果然沒錯．
+@hide all
+
+== orig_c4_s1_b3_4
+曹真: 已經打進城裡了！各軍要迎擊敵軍！！不惜一切要阻止敵軍去許昌與主力會合！
+@hide all
+
+== orig_c4_s1_b3_5
+xu_shu: 且慢，不要打！我乃徐庶，現在回歸蜀軍．
+@narr 徐庶加入我方！
+@hide all
+
+== orig_c4_s1_b3_6
+zhao_yun: 那邊可是張郃！
+zhang_he: 趙雲嗎？久違了，有何事指教？來勸降？別開這種玩笑．
+zhao_yun: 張郃，乾脆投降吧！魏國亡定了．
+zhang_he: 別逗了，我自棄袁紹效力曹公，絕不會再投降了．
+zhao_yun: 那就打吧！
+@duel zhao_yun zhang_he terrain
+zhao_yun: 看招！
+@duel_act left charge
+@duel_act left strike 6
+zhang_he: 啊！不愧……是……趙雲，我不行了！
+@duel_act right fall
+zhao_yun: ……張郃，真乃義士．
+@duel_end
+@hide all
+
+== orig_c4_s1_b3_7
+pang_tong: 不好，趕不上決戰了！全軍，加速前進！
+@hide all
+
+== orig_c4_s1_b3_7_2
+zhao_yun: 不好，趕不上決戰了！全軍，加速前進！
+@hide all
+
+# ----- c4_s1_b5 (SNR4D.R3 scene 1 block 5)
+
+== orig_c4_s1_b5_2
+曹真: 此戰關係到魏國的命運，決不能輸！
+zhuge_liang: 主公，聽說洛陽這裡的守將是曹真．
+liu_bei: 嗯，可是以我軍實力，拿下這裡易如反掌．
+zhuge_liang: 大意不得呀，小心進攻吧．
+xu_shu: 當初玄德公的實力多麼渺小，現在如此壯大……我的眼光果然沒錯．
+@hide all
+
+== orig_c4_s1_b5_5
+xu_shu: 且慢，不要打！我乃徐庶，現在回歸蜀軍．
+@narr 徐庶加入我方！
+@hide all
+
+== orig_c4_s1_b5_6
+zhang_fei: 那邊可是張郃！
+zhang_he: 張飛嗎，久違了，有何指教？來勸降嗎？別開這樣的玩笑．
+zhang_fei: 張郃，乾脆投降吧，魏國亡定了．
+zhang_he: 別逗了，我自棄袁紹效力曹公，絕不會再投降了．
+zhang_fei: 既然如此，只有打了！
+@duel zhang_fei zhang_he terrain
+zhang_fei: 看招！
+@duel_act left charge
+@duel_act left strike 6
+zhang_he: 啊！不愧……是……張飛，我不行了！
+@duel_act right fall
+zhang_fei: ……真乃義士，令人敬佩．
+@duel_end
+@hide all
+
+# ----- c4_s1_b6 (SNR4D.R3 scene 1 block 6)
+
+== orig_c4_s1_b6_2
+司馬懿: 蜀軍，別那麼得意，我司馬懿想讓你們嘗嘗魏軍的厲害．
+zhuge_liang: 主公，敵軍統帥司馬懿是個對手，不能大意．請多留神．
+@hide all
+
+== orig_c4_s1_b6_3
+guan_xing: 我乃關羽之子關興！有誰敢與我單挑？
+xu_chu: 哦，關羽的兒子嗎？如此，打起來也帶勁．好吧！我許褚與你單挑．
+guan_xing: 成全你了！來吧！
+@duel guan_xing xu_chu terrain
+guan_xing: 嘿，是許褚！有點真本事！
+xu_chu: 哈哈哈！我許褚還不老，不會輕易敗陣！來吧！
+@duel_act right charge
+@duel_act right strike 6
+@duel_act right charge
+@duel_act right strike 4
+@duel_act right charge
+@duel_act right strike 6
+@duel_act right charge
+@duel_act right strike 4
+guan_xing: 嘿嘿嘿……！這刀如何！
+@duel_act left charge
+@duel_act left strike 4
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 4
+xu_chu: 喂，且住！哈哈，還是年輕人體力足……我得撤了．
+guan_xing: 想逃跑！留下首級！
+xu_chu: 關興，以後再見！
+@duel_act right flee
+@duel_end
+@hide all
+
+== orig_c4_s1_b6_6
+ma_chao: 馬上趕去！還來得及參戰！
+liu_bei: 什麼？敵人的援軍？
+zhuge_liang: 主公，奇襲隊總算及時趕到了．
+liu_bei: 好，全軍總攻擊．
+@hide all
+
+# ----- c4_s1_b7 (SNR4D.R3 scene 1 block 7)
+
+== orig_c4_s1_b7_3
+曹丕: 劉備之流，與朕作對！朕身為大魏皇帝，這種態度，絕不容許！
+司馬懿: 陛下，這座許昌城，不適合防守，請暫時撤退到鄴城吧．
+曹丕: 司馬懿，朕如此狼狽，你要負責！
+司馬懿: 真愧對陛下．可是，現在不是責臣的時候，請……
+曹丕: 好吧，朕先去鄴城．司馬懿，你斷後，不要讓我見到蜀軍．
+司馬懿: 哈哈……
+zhuge_liang: 許昌城很大，易於進攻．一鼓作氣拿下城中心！
+@hide all
+
+== orig_c4_s1_b7_4
+guan_yu: 文遠，又見面了．
+zhang_liao: 關將軍，看來我好像跟錯主君了，董卓、呂布、還有……曹丕．曹丕哪像是曹操主公的兒子？竟然拋下臣子，簡直就像呂布……
+guan_yu: 既然知錯，投降我們如何？
+zhang_liao: 什麼……？
+guan_yu: 下邳之戰，我被曹軍圍困於土山，正在絕望之際，你來見我，陳說利害．要死很容易，但什麼也解決不了．眼光放長遠些吧．
+zhang_liao: ……
+guan_yu: 當年我被你說的話打動，忍辱投降曹操．這次，我也用那話勸你．
+zhang_liao: ……
+guan_yu: 文遠，……意下如何？
+zhang_liao: ……好吧，投降．
+@narr 張遼加入我方！
+zhang_liao: 可是，讓我稍微平靜一下心緒．現在不想打了．
+guan_yu: 好吧，你先撤退．
+zhang_liao: 抱歉．
+@hide all
+
+== orig_c4_s1_b7_5
+曹丕: 劉備，我會報此仇的！
+@hide all
+
+== orig_c4_s1_b7_6
+liu_bei: 什麼？城門沒開？嗯，如何是好……
+@hide all
+
+== orig_c4_s1_b7_6_2
+yan_yan: 黃忠老將軍，很容易就混進城了．
+huang_zhong: 是呀，因為能看見魏軍從這裡逃走，我想說不定能混進來．可惜沒捉到魏軍大將．
+yan_yan: 可惜．捉住魏兵了嗎？
+huang_zhong: 嗯，盤問魏兵，讓他招出如何從城門內側開門．如果打開城門，就是首功．軍師也會對我等另眼相看．
+yan_yan: 好，趕快去好嗎？
+huang_zhong: 走，嚴老將軍！
+@hide all
+
+== orig_c4_s1_b7_6_3
+yan_yan: 太好了，城門打開了！
+huang_zhong: 主公，快請入城！
+liu_bei: 黃忠！嚴顏！你們為何在此？
+huang_zhong: 見到敵軍從城中逃走，從他們逃出的地方進城的．
+yan_yan: 城門已打開，請進來吧！
+liu_bei: 黃忠、嚴顏，你們幹得漂亮！
+huang_zhong: 哈哈哈哈！人雖老了，但也不輸給年輕後生……！！
+@hide all
+
+== orig_c4_s1_b7_6_4
+弓兵隊: 快射敵將！
+huang_zhong: 啊，沒想……到！有……伏兵！
+liu_bei: 黃忠！嚴顏！不要緊吧！
+yan_yan: 不礙事．主公，快……
+liu_bei: 好吧，別擔心！好好養傷！黃忠！嚴顏！來人，照看好二位老將軍！
+@hide all
+
+== orig_c4_s1_b7_9
+guan_yu: 文遠，又見面了．
+zhang_liao: 關將軍，看來我好像跟錯主君了，董卓、呂布、還有……曹丕．曹丕哪像是曹操主公的兒子？竟然拋下臣子，簡直就像呂布……
+guan_yu: 既然知錯，投降我們如何？
+zhang_liao: 什麼……？
+guan_yu: 下邳之戰，我被曹軍圍困於土山，正在絕望之際，你來見我，陳說利害．要死很容易，但什麼也解決不了．眼光放長遠些吧．
+zhang_liao: ……
+guan_yu: 當年我被你說的話打動，忍辱投降曹操．這次，我也用那話勸你．
+zhang_liao: ……
+guan_yu: 文遠，……意下如何？
+zhang_liao: ……好吧，投降．
+@narr 張遼加入我方！
+zhang_liao: 可是，讓我稍微平靜一下心緒．現在不想打了．
+guan_yu: 好吧，你先撤退．
+zhang_liao: 抱歉．
+@hide all
+
+== orig_c4_s1_b7_10
+曹丕: 劉備，我會報此仇的！
+@hide all
+
+# ----- c4_s2_b2 (SNR4D.R3 scene 2 block 2)
+
+== orig_c4_s2_b2_2
+曹丕: 你們這些東西，侵犯朕的領土．這個國家是父親傳給我的，比什麼都重要，不能交給任何人．
+zhuge_liang: 曹丕已來到城外決戰了，奮勇進攻吧！
+@hide all
+
+== orig_c4_s2_b2_3
+zhang_bao: 來將可是曹彰？喂，那個黃毛小子！速來與我決戰！
+曹彰: 呸，少廢話，我曹彰可不是吃素的！
+曹彰: 真是對手，看我一戟？
+zhang_bao: 哦，這……
+曹彰: 招傢伙！
+zhang_bao: 好險！
+曹彰: 好小子！躲過去了！
+zhang_bao: 該我的了．
+曹彰: 哎呀！可惜……
+zhang_bao: 刺中了！幹掉這小子！
+@hide all
+
+== orig_c4_s2_b2_4
+guan_xing: 曹氏兄弟也親自出征了，好吧，看我宰了你！曹植，小心了！
+曹植: 啊……既然如此，不戰也不行了．
+guan_xing: 我乃關羽之子關興，曹植，你死定了！
+曹植: 打就打吧！
+曹植: 啊！
+guan_xing: 曹植，宰你的是我關興！
+@hide all
+
+# ----- c4_s2_b3 (SNR4D.R3 scene 2 block 3)
+
+== orig_c4_s2_b3_2
+司馬懿: 哈哈！如此魏國不會滅亡了！蜀軍，來受死吧！
+@hide all
+
+== orig_c4_s2_b3_2_2
+liu_bei: 哦，怎麼？在自家城裡放火！
+zhuge_liang: 敵人好像孤注一擲了，要麼徹底勝利，要麼寧為玉碎．
+liu_bei: 什麼？自家軍隊被火燒，也是預料之中？
+zhuge_liang: 是的，這座城也保不住了，如果不撤退……啊！城門！
+@hide all
+
+== orig_c4_s2_b3_2_3
+liu_bei: 可惡！怎麼連退路都沒有！
+司馬懿: 哈哈哈！燒死才好！曹操主公，來世再追隨您！
+zhuge_liang: 主公，只有衝了．司馬懿肯定準備好了逃跑的路．
+liu_bei: 好，全體將士，捉住司馬懿！
+@hide all
+
+== orig_c4_s2_b3_7
+zhuge_liang: 主公，危險！請趕快吧！
+@hide all
+
+== orig_c4_s2_b3_8
+zhuge_liang: 主公，請趕快！
+@hide all
+
+== orig_c4_s2_b3_9
+zhuge_liang: 主公，趕快！
+@hide all
+
+== orig_c4_s2_b3_10
+zhuge_liang: 主公，請趕快！城牆已不堅固了，危險！
+@hide all
+
+== orig_c4_s2_b3_11
+司馬懿: 時候到了．劉備，再見了．和鄴城一起毀滅吧．
+zhuge_liang: 主公，城崩塌了．
+liu_bei: 什麼！啊！
+@narr 鄴城被燒毀．
+    劉備軍中了司馬懿的火計，全軍覆沒．
+@hide all
+
+# ----- c4_s2_b4 (SNR4D.R3 scene 2 block 4)
+
+== orig_c4_s2_b4_2
+liu_bei: 曹操，沒想到吧！你不是就要完了嗎！
+cao_cao: 連曹丕、司馬懿等人都被騙了，你一定不知道，好吧，我為你解釋一下．
+cao_cao: 魏、蜀、吳這三國，關係微妙，勢均力敵，互相牽制．如果這種狀況持續下去，我無法統一天下．所以，我決定詐死．
+liu_bei: 詐死？
+cao_cao: 正是．如果我死了，料想三國的平衡就打破了．接著，我播下了禍種，先殺了關羽，把責任推給東吳，想讓吳蜀相爭．
+zhuge_liang: 什麼！如此說，吳、蜀相爭竟是曹操的圈套．
+cao_cao: 正是．那時我已不在了，東吳可以安心與蜀作戰．就是那麼想的，可真沒想到蜀吳會結成同盟．劉備，你能容忍東吳，我萬沒想到．
+liu_bei: ……
+cao_cao: 蜀吳兩敗俱傷，不論哪家滅亡了，剩下的另一家都已元氣大傷．那時再出擊，可輕易取勝，於是，魏國就可統一天下．這正是我的如意算盤，……沒想到我錯了．
+cao_cao: 而且，將國家交給曹丕等人也是大錯，這個國家輕易地毀在那傢伙手裡．這座美麗的城市，也如此狼狽．
+liu_bei: ……
+cao_cao: 但是，還不會就這麼結束！打敗你，合併魏、蜀兩國，再統一天下．劉備，不要妨礙我的夢想的實現．
+liu_bei: 曹操，你那樣的想法製造了世上的戰亂，是萬民塗炭的元兇！董卓、呂布、袁紹、袁術……，這些人，都只顧自己．曹操，你也和他們一樣．
+cao_cao: 什麼！說我與董卓之流一樣！混蛋……！
+liu_bei: 曹操，天下人已容不下你！亂國害君，你不死無以謝天下．
+@hide all
+
+== orig_c4_s2_b4_3
+zhang_fei: 來將可是許褚．張飛在此，特來送你見閻王，許褚，一決勝負．
+xu_chu: 呸！張飛，過來受死！
+@duel zhang_fei xu_chu terrain
+zhang_fei: 呀！
+xu_chu: 哦，果然有兩下子！
+zhang_fei: 看不出，你還有兩手！呀！
+xu_chu: 難決勝負．張飛，這刀結束你算了．
+zhang_fei: 來呀！
+xu_chu: 看招！
+@duel_act right charge
+@duel_act right strike 6
+zhang_fei: 不過如此！
+@duel_act left charge
+@duel_act left strike 4
+@duel_act right strike 8
+zhang_fei: 真可惜．
+xu_chu: 殺了我吧．
+zhang_fei: 死吧！
+@duel_act left charge
+@duel_act left strike 4
+xu_chu: 啊……！
+@duel_act right fall
+@duel_act left back
+@wait 300
+zhang_fei: ……剛才真驚險．
+@duel_end
+@hide all
+
+== orig_c4_s2_b4_4
+guan_yu: 張遼……
+zhang_liao: 關羽……
+guan_yu: 張遼，我和你勢必一戰……
+zhang_liao: 什麼也別說了．來吧，亮武器吧！
+guan_yu: ……
+@duel guan_yu zhang_liao terrain
+zhang_liao: 關羽！別愣著！好好打！不然，會被我殺了！來吧！
+@duel_act right charge
+@duel_act right strike 6
+@duel_act right charge
+@duel_act right strike 4
+@duel_act right charge
+@duel_act right strike 6
+zhang_liao: 哈哈……
+guan_yu: 張遼，死定了！
+@duel_act left charge
+@duel_act left strike 6
+zhang_liao: 哎呀！！不好！
+@duel_act right fall
+guan_yu: 張遼……
+zhang_liao: 別那麼傷心．現在，我感覺很清爽，為了我所效忠的君主……而死．士為知己者死，這是我的夢想……沒想到現在實現了．
+guan_yu: 可是，我……發生了這樣的結果……
+zhang_liao: 關羽，如果當年在下邳沒有你，也到不了今日．有……禮了，多……謝了！
+guan_yu: 張遼……為什麼？注定要如此悲慘的結局！嗚！！
+@duel_end
+@hide all
+
+== orig_c4_s2_b4_5
+zhao_yun: 李典！與我決一死戰！
+li_dian: 既然如此，我也無計可施．趙雲，放馬過來！
+@duel zhao_yun li_dian terrain
+li_dian: 啊！
+@duel_act left strike 10
+@wait 300
+@duel_act right fall
+li_dian: 啊，魏國也要亡了……
+@duel_end
+@hide all
+
+== orig_c4_s2_b4_6
+ma_chao: 樂進！在渭水多蒙你”關照”！現在在此，我要報仇雪恨！看招！
+yue_jin: 嘿！
+@duel ma_chao yue_jin terrain
+ma_chao: 呀！
+@duel_act left charge
+@duel_act left strike 6
+@duel_act left charge
+@duel_act left strike 4
+@duel_act left charge
+@duel_act left strike 6
+yue_jin: 哇！
+ma_chao: 嘿！
+@duel_act left charge
+@duel_act left strike 6
+yue_jin: 啊！
+@duel_act right fall
+@duel_act left back
+@duel_act left strike 8
+ma_chao: 哼！渭水之恨，稍稍得雪！
+@duel_end
+@hide all
+
+== orig_c4_s2_b4_7
+cao_cao: 我要出征了．
+@narr 城內起火了！
+cao_cao: 太好了，哈哈哈……劉備，沒想到我預先在城中做了手腳．啊，火啊，著得好！用火打斷劉備軍！
+@hide all
+
+== orig_c4_s2_b4_9
+zhuge_liang: 哦，主公，前面路上！
+liu_bei: 什麼事……
+cao_cao: 哈哈哈！燒吧，燒吧！用火攻，將你們打斷！
+@hide all
+
+== orig_c4_s2_b4_14
+liu_bei: 啊！還有火！
+司馬懿: 別管城中之事了！打敗你們這些人，天下就盡歸曹公了！劉備！孔明！為了曹公，一定消滅你們！
+cao_cao: 正是如此，司馬懿，這是最後決戰，在這裡只許勝不准敗．
+@hide all
+
+== orig_c4_s2_b4_19
+cao_cao: 劉備，當年，在許昌的花園煮酒論英雄，那時的話還記得嗎？當時說到最後，只有兩個英雄，就是你我二人……我的眼力還是沒有錯．
+cao_cao: 如果你不背叛我，與我同舟共濟的話，我也許走的是另一條路吧．或者還是……嗨，現在說這些都晚了．
+cao_cao: 劉備，不管怎麼說，我二人相爭已是天命，現在就是決定命運的時候，你來得正好！
+@hide all

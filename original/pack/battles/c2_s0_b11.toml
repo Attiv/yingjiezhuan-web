@@ -1,0 +1,270 @@
+# c2_s0_b11: a battle of the original's chapters, made from the original battle (SNR2D.R3 scene 0 block 11) on the
+# original map hexz_18. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 8 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 3: the duel of 關羽 (1) and 蔡陽 (152) is left out (not both officers of the pack)
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 36 at (7, 13) has no base-pack item
+
+id = "c2_s0_b11"
+name = "穎川 전투"
+location = ""
+objective = "一、殲滅蔡陽．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+treasures = []
+reward_gold = 700
+outro = "c2_s0_b11_outro"
+
+[map]
+use = "hexz_18"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 8
+required = []
+forbidden = ["guan_ping", "guan_yu", "zhou_cang"]
+slots = [[30, 2], [30, 1], [30, 3], [29, 2], [29, 3], [31, 0], [31, 2], [31, 1]]
+
+[[units]]
+side = "player"
+officer = "guan_yu"
+pos = [1, 1]
+ai = "aggressive"
+commander = false
+group = "original_5"
+
+[[units]]
+side = "player"
+officer = "guan_ping"
+pos = [0, 2]
+ai = "aggressive"
+commander = false
+group = "original_5"
+
+[[units]]
+side = "player"
+officer = "zhou_cang"
+pos = [2, 0]
+ai = "aggressive"
+commander = false
+group = "original_5"
+
+[[units]]
+side = "enemy"
+name = "蔡陽"
+class = "long_infantry"
+level = 25
+stats = [53, 39, 40]
+pos = [2, 13]
+ai = "defensive"
+commander = true
+tag = "person_152"
+
+[[units]]
+side = "enemy"
+name = "朱靈"
+class = "long_infantry"
+level = 22
+stats = [74, 35, 69]
+pos = [14, 7]
+ai = "advance"
+ai_pos = [16, 6]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "路昭"
+class = "long_infantry"
+level = 21
+stats = [65, 42, 61]
+pos = [3, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 20
+stats = [40, 30, 50]
+pos = [13, 9]
+ai = "advance"
+ai_pos = [16, 7]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 20
+stats = [40, 50, 30]
+pos = [3, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 19
+stats = [40, 50, 30]
+pos = [15, 8]
+ai = "advance"
+ai_pos = [17, 7]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 18
+stats = [40, 50, 30]
+pos = [9, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 18
+stats = [50, 30, 40]
+pos = [11, 10]
+ai = "advance"
+ai_pos = [15, 6]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 17
+stats = [50, 30, 40]
+pos = [7, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 17
+stats = [50, 30, 40]
+pos = [8, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 20
+stats = [50, 40, 30]
+pos = [12, 8]
+ai = "advance"
+ai_pos = [18, 7]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 19
+stats = [50, 40, 30]
+pos = [6, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 19
+stats = [10, 70, 10]
+pos = [9, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 20
+stats = [50, 10, 60]
+pos = [13, 6]
+ai = "advance"
+ai_pos = [16, 5]
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b11_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "person_152"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b11_3"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b11_3_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c2_s0_b11_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 8
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b11_5"
+
+[[events.actions]]
+type = "spawn"
+group = "original_5"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b11_5_2"

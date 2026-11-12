@@ -1,0 +1,554 @@
+# c1_s0_b15: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 0 block 15) on the
+# original map hexz_06. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: 1 roster(s) for another route of the original are not used
+# note: record 2: the duel of 文醜 (52) and 陳蔣 (227) is left out (not both officers of the pack)
+# note: record 2: a duel move without a duel it belongs to is left out
+# note: record 2: a duel move without a duel it belongs to is left out
+# note: record 2: retreat: 陳蔣 (227) is not on the map
+# note: record 5: AI change: 陳震 (56) is not on the map
+# note: record 5: AI change: 許攸 (55) is not on the map
+# note: record 5: AI change: 麴義 (60) is not on the map
+# note: record 6: AI change: 麴義 (60) is not on the map
+# note: record 6: AI change: 陳震 (56) is not on the map
+# note: record 6: AI change: 許攸 (55) is not on the map
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 41 at (8, 21) has no base-pack item
+# note: named by the setup but not in the army at this battle, so allies at their slot: gongsun_zan
+
+id = "c1_s0_b15"
+name = "界橋 전투"
+location = ""
+objective = "一、袁紹撤退． / 二、劉備奪取兵糧庫．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+reward_gold = 200
+outro = "c1_s0_b15_outro"
+
+[map]
+use = "hexz_06"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = []
+forbidden = ["gongsun_zan", "zhao_yun"]
+slots = [[0, 14], [2, 14], [3, 13], [1, 13], [1, 15], [6, 14], [4, 15]]
+
+[[units]]
+side = "ally"
+officer = "gongsun_zan"
+pos = [3, 15]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "zhao_yun"
+pos = [0, 17]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "yuan_shao"
+class = "short_infantry"
+level = 13
+pos = [25, 15]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+officer = "tian_feng"
+class = "archer"
+level = 8
+pos = [26, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "wen_chou"
+class = "light_cavalry"
+level = 10
+pos = [4, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "chen_lin"
+class = "supply"
+level = 8
+pos = [15, 23]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "ju_shou"
+class = "archer"
+level = 8
+pos = [7, 17]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "jiao_chu"
+class = "archer"
+level = 7
+pos = [25, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "zhang_he"
+class = "light_cavalry"
+level = 10
+pos = [23, 19]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "yan_liang"
+class = "light_cavalry"
+level = 10
+pos = [25, 19]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "guo_tu"
+class = "short_infantry"
+level = 7
+pos = [27, 3]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "shen_pei"
+class = "short_infantry"
+level = 7
+pos = [24, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "feng_ji"
+class = "short_infantry"
+level = 8
+pos = [6, 18]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "gao_lan"
+class = "archer"
+level = 7
+pos = [9, 18]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 5
+stats = [40, 30, 50]
+pos = [28, 6]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 5
+stats = [40, 30, 50]
+pos = [29, 6]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 3
+stats = [50, 30, 40]
+pos = [15, 21]
+ai = "defensive"
+commander = false
+tag = "person_292"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 3
+stats = [50, 30, 40]
+pos = [5, 19]
+ai = "defensive"
+commander = false
+tag = "person_293"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 3
+stats = [40, 50, 30]
+pos = [8, 19]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 5
+stats = [10, 70, 10]
+pos = [7, 20]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 5
+stats = [10, 70, 10]
+pos = [16, 22]
+ai = "defensive"
+commander = false
+tag = "person_329"
+
+[[victory]]
+type = "defeat_commander"
+
+[[victory]]
+type = "reach"
+who = "liu_bei"
+pos = [27, 1]
+radius = 0
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b15_2"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b15_2_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "wen_chou"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b15_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "wen_chou"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+pos = [10, 17]
+radius = 0
+to = [15, 23]
+
+[[events.when]]
+flag = "orig_f133"
+cmp = "=="
+value = 0
+
+[[events.when]]
+flag = "orig_f148"
+cmp = "=="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b15_5"
+
+[[events.actions]]
+type = "set_ai"
+target = "yuan_shao"
+ai = "advance"
+ai_pos = [16, 22]
+
+[[events.actions]]
+type = "set_ai"
+target = "shen_pei"
+ai = "advance"
+ai_pos = [15, 23]
+
+[[events.actions]]
+type = "set_ai"
+target = "tian_feng"
+ai = "advance"
+ai_pos = [15, 21]
+
+[[events.actions]]
+type = "set_ai"
+target = "yan_liang"
+ai = "advance"
+ai_pos = [14, 22]
+
+[[events.actions]]
+type = "set_ai"
+target = "zhang_he"
+ai = "advance"
+ai_pos = [13, 23]
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "advance"
+ai_pos = [16, 21]
+
+[[events.actions]]
+type = "set_ai"
+target = "chen_lin"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "jiao_chu"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_329"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f213"
+value = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+pos = [10, 17]
+radius = 0
+to = [15, 23]
+
+[[events.when]]
+flag = "orig_f133"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f148"
+cmp = "=="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b15_5_2"
+
+[[events.actions]]
+type = "set_ai"
+target = "tian_feng"
+ai = "advance"
+ai_pos = [15, 21]
+
+[[events.actions]]
+type = "set_ai"
+target = "yuan_shao"
+ai = "advance"
+ai_pos = [16, 22]
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "advance"
+ai_pos = [16, 21]
+
+[[events.actions]]
+type = "set_ai"
+target = "chen_lin"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "jiao_chu"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_292"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f213"
+value = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+who = "liu_bei"
+pos = [23, 6]
+radius = 0
+to = [29, 9]
+
+[[events.when]]
+flag = "orig_f133"
+cmp = "=="
+value = 0
+
+[[events.when]]
+flag = "orig_f148"
+cmp = "=="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b15_6"
+
+[[events.actions]]
+type = "set_ai"
+target = "yuan_shao"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "shen_pei"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "tian_feng"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "jiao_chu"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "yan_liang"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "zhang_he"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f148"
+value = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+who = "liu_bei"
+pos = [23, 6]
+radius = 0
+to = [29, 9]
+
+[[events.when]]
+flag = "orig_f133"
+cmp = "!="
+value = 0
+
+[[events.when]]
+flag = "orig_f148"
+cmp = "=="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s0_b15_6_2"
+
+[[events.actions]]
+type = "set_ai"
+target = "yuan_shao"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "tian_feng"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "target"
+ai_target = "liu_bei"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f148"
+value = 1
+
+[[treasures]]
+pos = [14, 23]
+item = "long_spear"
+gold = 0
+
+[[treasures]]
+pos = [29, 1]
+item = "repeater"
+gold = 0
+
+[[treasures]]
+pos = [22, 3]
+item = "wheat"
+gold = 0

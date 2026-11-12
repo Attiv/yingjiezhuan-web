@@ -1,0 +1,3841 @@
+{
+  "note": "Entries of 16×16 planar cells (plane p = colour bit p) composed in row-major cell order, or packed planar images; only the stored facing exists (the game mirrors the other one). Colour 0 is transparent. Groups were identified by looking at the images; class groups follow the game's class order.",
+  "archives": [
+    {
+      "file": "HEXBCHR.R3",
+      "what": "battle-scene unit frames and effects",
+      "palette_slot": 1,
+      "sheets": [
+        "gfx/original/sheets/hexbchr.png"
+      ],
+      "entries": [
+        {
+          "index": 0,
+          "bytes": 2048,
+          "key": "original/hexbchr/000",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 1,
+          "bytes": 2048,
+          "key": "original/hexbchr/001",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 2,
+          "bytes": 2048,
+          "key": "original/hexbchr/002",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 3,
+          "bytes": 2048,
+          "key": "original/hexbchr/003",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 4,
+          "bytes": 2048,
+          "key": "original/hexbchr/004",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 5,
+          "bytes": 2048,
+          "key": "original/hexbchr/005",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 6,
+          "bytes": 2048,
+          "key": "original/hexbchr/006",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 7,
+          "bytes": 2048,
+          "key": "original/hexbchr/007",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 8,
+          "bytes": 2048,
+          "key": "original/hexbchr/008",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 9,
+          "bytes": 2048,
+          "key": "original/hexbchr/009",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 10,
+          "bytes": 2048,
+          "key": "original/hexbchr/010",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 11,
+          "bytes": 2048,
+          "key": "original/hexbchr/011",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 12,
+          "bytes": 2048,
+          "key": "original/hexbchr/012",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 13,
+          "bytes": 2048,
+          "key": "original/hexbchr/013",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 14,
+          "bytes": 2048,
+          "key": "original/hexbchr/014",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 15,
+          "bytes": 2048,
+          "key": "original/hexbchr/015",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 16,
+          "bytes": 2048,
+          "key": "original/hexbchr/016",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 17,
+          "bytes": 2048,
+          "key": "original/hexbchr/017",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 18,
+          "bytes": 2048,
+          "key": "original/hexbchr/018",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 19,
+          "bytes": 2048,
+          "key": "original/hexbchr/019",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 20,
+          "bytes": 2048,
+          "key": "original/hexbchr/020",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 21,
+          "bytes": 2048,
+          "key": "original/hexbchr/021",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 22,
+          "bytes": 2048,
+          "key": "original/hexbchr/022",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 23,
+          "bytes": 2048,
+          "key": "original/hexbchr/023",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 24,
+          "bytes": 2048,
+          "key": "original/hexbchr/024",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 25,
+          "bytes": 2048,
+          "key": "original/hexbchr/025",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 26,
+          "bytes": 2048,
+          "key": "original/hexbchr/026",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 27,
+          "bytes": 2048,
+          "key": "original/hexbchr/027",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 28,
+          "bytes": 2048,
+          "key": "original/hexbchr/028",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 29,
+          "bytes": 2048,
+          "key": "original/hexbchr/029",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 30,
+          "bytes": 2048,
+          "key": "original/hexbchr/030",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 31,
+          "bytes": 2048,
+          "key": "original/hexbchr/031",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 32,
+          "bytes": 2048,
+          "key": "original/hexbchr/032",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 33,
+          "bytes": 2048,
+          "key": "original/hexbchr/033",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 34,
+          "bytes": 2048,
+          "key": "original/hexbchr/034",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 35,
+          "bytes": 2048,
+          "key": "original/hexbchr/035",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 36,
+          "bytes": 2048,
+          "key": "original/hexbchr/036",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 37,
+          "bytes": 2048,
+          "key": "original/hexbchr/037",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 38,
+          "bytes": 2048,
+          "key": "original/hexbchr/038",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 39,
+          "bytes": 2048,
+          "key": "original/hexbchr/039",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 40,
+          "bytes": 2048,
+          "key": "original/hexbchr/040",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 41,
+          "bytes": 2048,
+          "key": "original/hexbchr/041",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 42,
+          "bytes": 2048,
+          "key": "original/hexbchr/042",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 43,
+          "bytes": 2048,
+          "key": "original/hexbchr/043",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 44,
+          "bytes": 2048,
+          "key": "original/hexbchr/044",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 45,
+          "bytes": 2048,
+          "key": "original/hexbchr/045",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 46,
+          "bytes": 2048,
+          "key": "original/hexbchr/046",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 47,
+          "bytes": 2048,
+          "key": "original/hexbchr/047",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 48,
+          "bytes": 2048,
+          "key": "original/hexbchr/048",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 49,
+          "bytes": 2048,
+          "key": "original/hexbchr/049",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 50,
+          "bytes": 2048,
+          "key": "original/hexbchr/050",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 51,
+          "bytes": 2048,
+          "key": "original/hexbchr/051",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 52,
+          "bytes": 2048,
+          "key": "original/hexbchr/052",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 53,
+          "bytes": 2048,
+          "key": "original/hexbchr/053",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 54,
+          "bytes": 2048,
+          "key": "original/hexbchr/054",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 55,
+          "bytes": 2048,
+          "key": "original/hexbchr/055",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 56,
+          "bytes": 2048,
+          "key": "original/hexbchr/056",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 57,
+          "bytes": 2048,
+          "key": "original/hexbchr/057",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 58,
+          "bytes": 2048,
+          "key": "original/hexbchr/058",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 59,
+          "bytes": 2048,
+          "key": "original/hexbchr/059",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 60,
+          "bytes": 2048,
+          "key": "original/hexbchr/060",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 61,
+          "bytes": 2048,
+          "key": "original/hexbchr/061",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 62,
+          "bytes": 2048,
+          "key": "original/hexbchr/062",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 63,
+          "bytes": 2048,
+          "key": "original/hexbchr/063",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 64,
+          "bytes": 2048,
+          "key": "original/hexbchr/064",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 65,
+          "bytes": 2048,
+          "key": "original/hexbchr/065",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 66,
+          "bytes": 2048,
+          "key": "original/hexbchr/066",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 67,
+          "bytes": 2048,
+          "key": "original/hexbchr/067",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 68,
+          "bytes": 2048,
+          "key": "original/hexbchr/068",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 69,
+          "bytes": 2048,
+          "key": "original/hexbchr/069",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 70,
+          "bytes": 2048,
+          "key": "original/hexbchr/070",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 71,
+          "bytes": 2048,
+          "key": "original/hexbchr/071",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 72,
+          "bytes": 2048,
+          "key": "original/hexbchr/072",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 73,
+          "bytes": 2048,
+          "key": "original/hexbchr/073",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 74,
+          "bytes": 2048,
+          "key": "original/hexbchr/074",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 75,
+          "bytes": 2048,
+          "key": "original/hexbchr/075",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 76,
+          "bytes": 2048,
+          "key": "original/hexbchr/076",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 77,
+          "bytes": 2048,
+          "key": "original/hexbchr/077",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 78,
+          "bytes": 2048,
+          "key": "original/hexbchr/078",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 79,
+          "bytes": 2048,
+          "key": "original/hexbchr/079",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 80,
+          "bytes": 2048,
+          "key": "original/hexbchr/080",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 81,
+          "bytes": 2048,
+          "key": "original/hexbchr/081",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 82,
+          "bytes": 2048,
+          "key": "original/hexbchr/082",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 83,
+          "bytes": 2048,
+          "key": "original/hexbchr/083",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 84,
+          "bytes": 2048,
+          "key": "original/hexbchr/084",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 85,
+          "bytes": 2048,
+          "key": "original/hexbchr/085",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 86,
+          "bytes": 2048,
+          "key": "original/hexbchr/086",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 87,
+          "bytes": 2048,
+          "key": "original/hexbchr/087",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 88,
+          "bytes": 2048,
+          "key": "original/hexbchr/088",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 89,
+          "bytes": 2048,
+          "key": "original/hexbchr/089",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 90,
+          "bytes": 2048,
+          "key": "original/hexbchr/090",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 91,
+          "bytes": 2048,
+          "key": "original/hexbchr/091",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 92,
+          "bytes": 2048,
+          "key": "original/hexbchr/092",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 93,
+          "bytes": 2048,
+          "key": "original/hexbchr/093",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 94,
+          "bytes": 2048,
+          "key": "original/hexbchr/094",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 95,
+          "bytes": 2048,
+          "key": "original/hexbchr/095",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 96,
+          "bytes": 2048,
+          "key": "original/hexbchr/096",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 97,
+          "bytes": 2048,
+          "key": "original/hexbchr/097",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 98,
+          "bytes": 2048,
+          "key": "original/hexbchr/098",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 99,
+          "bytes": 2048,
+          "key": "original/hexbchr/099",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 100,
+          "bytes": 2048,
+          "key": "original/hexbchr/100",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 101,
+          "bytes": 2048,
+          "key": "original/hexbchr/101",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 102,
+          "bytes": 2048,
+          "key": "original/hexbchr/102",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 103,
+          "bytes": 2048,
+          "key": "original/hexbchr/103",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 104,
+          "bytes": 2048,
+          "key": "original/hexbchr/104",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 105,
+          "bytes": 2048,
+          "key": "original/hexbchr/105",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 106,
+          "bytes": 2048,
+          "key": "original/hexbchr/106",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 107,
+          "bytes": 2048,
+          "key": "original/hexbchr/107",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 108,
+          "bytes": 2048,
+          "key": "original/hexbchr/108",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 109,
+          "bytes": 2048,
+          "key": "original/hexbchr/109",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 110,
+          "bytes": 2048,
+          "key": "original/hexbchr/110",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 111,
+          "bytes": 2048,
+          "key": "original/hexbchr/111",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 112,
+          "bytes": 2048,
+          "key": "original/hexbchr/112",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 113,
+          "bytes": 2048,
+          "key": "original/hexbchr/113",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 114,
+          "bytes": 2048,
+          "key": "original/hexbchr/114",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 115,
+          "bytes": 2048,
+          "key": "original/hexbchr/115",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 116,
+          "bytes": 2048,
+          "key": "original/hexbchr/116",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 117,
+          "bytes": 2048,
+          "key": "original/hexbchr/117",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 118,
+          "bytes": 2048,
+          "key": "original/hexbchr/118",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 119,
+          "bytes": 2048,
+          "key": "original/hexbchr/119",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 120,
+          "bytes": 2048,
+          "key": "original/hexbchr/120",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 121,
+          "bytes": 2048,
+          "key": "original/hexbchr/121",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 122,
+          "bytes": 2048,
+          "key": "original/hexbchr/122",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 123,
+          "bytes": 2048,
+          "key": "original/hexbchr/123",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 124,
+          "bytes": 2048,
+          "key": "original/hexbchr/124",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 125,
+          "bytes": 2048,
+          "key": "original/hexbchr/125",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 126,
+          "bytes": 2048,
+          "key": "original/hexbchr/126",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 127,
+          "bytes": 2048,
+          "key": "original/hexbchr/127",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 128,
+          "bytes": 2048,
+          "key": "original/hexbchr/128",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 129,
+          "bytes": 2048,
+          "key": "original/hexbchr/129",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 130,
+          "bytes": 2048,
+          "key": "original/hexbchr/130",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 131,
+          "bytes": 2048,
+          "key": "original/hexbchr/131",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 132,
+          "bytes": 2048,
+          "key": "original/hexbchr/132",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 133,
+          "bytes": 2048,
+          "key": "original/hexbchr/133",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 134,
+          "bytes": 2048,
+          "key": "original/hexbchr/134",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 135,
+          "bytes": 2048,
+          "key": "original/hexbchr/135",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 136,
+          "bytes": 2048,
+          "key": "original/hexbchr/136",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 137,
+          "bytes": 2048,
+          "key": "original/hexbchr/137",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 138,
+          "bytes": 2048,
+          "key": "original/hexbchr/138",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 139,
+          "bytes": 2048,
+          "key": "original/hexbchr/139",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 140,
+          "bytes": 2048,
+          "key": "original/hexbchr/140",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 141,
+          "bytes": 2048,
+          "key": "original/hexbchr/141",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 142,
+          "bytes": 2048,
+          "key": "original/hexbchr/142",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 143,
+          "bytes": 2048,
+          "key": "original/hexbchr/143",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 144,
+          "bytes": 2048,
+          "key": "original/hexbchr/144",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 145,
+          "bytes": 2048,
+          "key": "original/hexbchr/145",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 146,
+          "bytes": 2048,
+          "key": "original/hexbchr/146",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 147,
+          "bytes": 2048,
+          "key": "original/hexbchr/147",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 148,
+          "bytes": 2048,
+          "key": "original/hexbchr/148",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 149,
+          "bytes": 2048,
+          "key": "original/hexbchr/149",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 150,
+          "bytes": 2048,
+          "key": "original/hexbchr/150",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 151,
+          "bytes": 2048,
+          "key": "original/hexbchr/151",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 152,
+          "bytes": 2048,
+          "key": "original/hexbchr/152",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 153,
+          "bytes": 2048,
+          "key": "original/hexbchr/153",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 154,
+          "bytes": 2048,
+          "key": "original/hexbchr/154",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 155,
+          "bytes": 2048,
+          "key": "original/hexbchr/155",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 156,
+          "bytes": 2048,
+          "key": "original/hexbchr/156",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 157,
+          "bytes": 2048,
+          "key": "original/hexbchr/157",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 158,
+          "bytes": 2048,
+          "key": "original/hexbchr/158",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 159,
+          "bytes": 2048,
+          "key": "original/hexbchr/159",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 160,
+          "bytes": 2048,
+          "key": "original/hexbchr/160",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 161,
+          "bytes": 2048,
+          "key": "original/hexbchr/161",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 162,
+          "bytes": 2048,
+          "key": "original/hexbchr/162",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 163,
+          "bytes": 2048,
+          "key": "original/hexbchr/163",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 164,
+          "bytes": 2048,
+          "key": "original/hexbchr/164",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 165,
+          "bytes": 2048,
+          "key": "original/hexbchr/165",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 166,
+          "bytes": 2048,
+          "key": "original/hexbchr/166",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 167,
+          "bytes": 2048,
+          "key": "original/hexbchr/167",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 168,
+          "bytes": 2048,
+          "key": "original/hexbchr/168",
+          "arrangement": "4×4 cells",
+          "size": [
+            64,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 169,
+          "bytes": 1152,
+          "key": "original/hexbchr/169",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 170,
+          "bytes": 1152,
+          "key": "original/hexbchr/170",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 171,
+          "bytes": 1152,
+          "key": "original/hexbchr/171",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 172,
+          "bytes": 1152,
+          "key": "original/hexbchr/172",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 173,
+          "bytes": 1152,
+          "key": "original/hexbchr/173",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 174,
+          "bytes": 1152,
+          "key": "original/hexbchr/174",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 175,
+          "bytes": 1152,
+          "key": "original/hexbchr/175",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 176,
+          "bytes": 1152,
+          "key": "original/hexbchr/176",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 177,
+          "bytes": 1152,
+          "key": "original/hexbchr/177",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 178,
+          "bytes": 1152,
+          "key": "original/hexbchr/178",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 179,
+          "bytes": 1152,
+          "key": "original/hexbchr/179",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 180,
+          "bytes": 1152,
+          "key": "original/hexbchr/180",
+          "arrangement": "3×3 cells",
+          "size": [
+            48,
+            48
+          ],
+          "palette_slot": 1
+        }
+      ],
+      "groups": [
+        {
+          "first": 0,
+          "last": 7,
+          "what": "short-weapon infantry (sword)"
+        },
+        {
+          "first": 8,
+          "last": 15,
+          "what": "long-weapon infantry (spear)"
+        },
+        {
+          "first": 16,
+          "last": 23,
+          "what": "chariot"
+        },
+        {
+          "first": 24,
+          "last": 29,
+          "what": "archers"
+        },
+        {
+          "first": 30,
+          "last": 35,
+          "what": "crossbowmen"
+        },
+        {
+          "first": 36,
+          "last": 45,
+          "what": "catapult (machine and crew frames)"
+        },
+        {
+          "first": 46,
+          "last": 55,
+          "what": "light cavalry"
+        },
+        {
+          "first": 56,
+          "last": 65,
+          "what": "heavy cavalry"
+        },
+        {
+          "first": 66,
+          "last": 75,
+          "what": "guard cavalry (white horses)"
+        },
+        {
+          "first": 76,
+          "last": 83,
+          "what": "bandits"
+        },
+        {
+          "first": 84,
+          "last": 91,
+          "what": "brigands"
+        },
+        {
+          "first": 92,
+          "last": 99,
+          "what": "outlaws"
+        },
+        {
+          "first": 100,
+          "last": 108,
+          "what": "military band (drums and cymbals)"
+        },
+        {
+          "first": 109,
+          "last": 114,
+          "what": "beast unit (tiger tamers)"
+        },
+        {
+          "first": 115,
+          "last": 122,
+          "what": "martial artists"
+        },
+        {
+          "first": 123,
+          "last": 133,
+          "what": "sorcerers"
+        },
+        {
+          "first": 134,
+          "last": 141,
+          "what": "barbarians"
+        },
+        {
+          "first": 142,
+          "last": 144,
+          "what": "civilians"
+        },
+        {
+          "first": 145,
+          "last": 153,
+          "what": "transport (supply carts)"
+        },
+        {
+          "first": 154,
+          "last": 159,
+          "what": "fire effect: three 128×64 frames, each stored as left and right 64×64 halves"
+        },
+        {
+          "first": 160,
+          "last": 165,
+          "what": "flood effect: three 128×64 frames, each stored as left and right halves"
+        },
+        {
+          "first": 166,
+          "last": 168,
+          "what": "boulders"
+        },
+        {
+          "first": 169,
+          "last": 172,
+          "what": "projectiles: arrows, stones (48×48)"
+        },
+        {
+          "first": 173,
+          "last": 174,
+          "what": "music notes (48×48)"
+        },
+        {
+          "first": 175,
+          "last": 177,
+          "what": "tigers (48×48)"
+        },
+        {
+          "first": 178,
+          "last": 180,
+          "what": "carts (48×48)"
+        }
+      ]
+    },
+    {
+      "file": "HEXICHR.R3",
+      "what": "battle-scene mounted officers",
+      "palette_slot": 1,
+      "sheets": [
+        "gfx/original/sheets/hexichr.png"
+      ],
+      "entries": [
+        {
+          "index": 0,
+          "bytes": 4608,
+          "key": "original/hexichr/000",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 1,
+          "bytes": 4608,
+          "key": "original/hexichr/001",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 2,
+          "bytes": 4608,
+          "key": "original/hexichr/002",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 3,
+          "bytes": 4608,
+          "key": "original/hexichr/003",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 4,
+          "bytes": 4608,
+          "key": "original/hexichr/004",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 5,
+          "bytes": 4608,
+          "key": "original/hexichr/005",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 6,
+          "bytes": 4608,
+          "key": "original/hexichr/006",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 7,
+          "bytes": 4608,
+          "key": "original/hexichr/007",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 8,
+          "bytes": 4608,
+          "key": "original/hexichr/008",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 9,
+          "bytes": 4608,
+          "key": "original/hexichr/009",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 10,
+          "bytes": 4608,
+          "key": "original/hexichr/010",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 11,
+          "bytes": 4608,
+          "key": "original/hexichr/011",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 12,
+          "bytes": 4608,
+          "key": "original/hexichr/012",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 13,
+          "bytes": 4608,
+          "key": "original/hexichr/013",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 14,
+          "bytes": 4608,
+          "key": "original/hexichr/014",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 15,
+          "bytes": 4608,
+          "key": "original/hexichr/015",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 16,
+          "bytes": 4608,
+          "key": "original/hexichr/016",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 17,
+          "bytes": 4608,
+          "key": "original/hexichr/017",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 18,
+          "bytes": 4608,
+          "key": "original/hexichr/018",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 19,
+          "bytes": 4608,
+          "key": "original/hexichr/019",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 20,
+          "bytes": 4608,
+          "key": "original/hexichr/020",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 21,
+          "bytes": 4608,
+          "key": "original/hexichr/021",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 22,
+          "bytes": 4608,
+          "key": "original/hexichr/022",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 23,
+          "bytes": 4608,
+          "key": "original/hexichr/023",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 24,
+          "bytes": 4608,
+          "key": "original/hexichr/024",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 25,
+          "bytes": 4608,
+          "key": "original/hexichr/025",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 26,
+          "bytes": 4608,
+          "key": "original/hexichr/026",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 27,
+          "bytes": 4608,
+          "key": "original/hexichr/027",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 28,
+          "bytes": 4608,
+          "key": "original/hexichr/028",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 29,
+          "bytes": 4608,
+          "key": "original/hexichr/029",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 30,
+          "bytes": 4608,
+          "key": "original/hexichr/030",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 31,
+          "bytes": 4608,
+          "key": "original/hexichr/031",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 32,
+          "bytes": 4608,
+          "key": "original/hexichr/032",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 33,
+          "bytes": 4608,
+          "key": "original/hexichr/033",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 34,
+          "bytes": 4608,
+          "key": "original/hexichr/034",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 35,
+          "bytes": 4608,
+          "key": "original/hexichr/035",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 36,
+          "bytes": 4608,
+          "key": "original/hexichr/036",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 37,
+          "bytes": 4608,
+          "key": "original/hexichr/037",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 38,
+          "bytes": 4608,
+          "key": "original/hexichr/038",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 39,
+          "bytes": 4608,
+          "key": "original/hexichr/039",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 40,
+          "bytes": 4608,
+          "key": "original/hexichr/040",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 41,
+          "bytes": 4608,
+          "key": "original/hexichr/041",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 42,
+          "bytes": 4608,
+          "key": "original/hexichr/042",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 43,
+          "bytes": 4608,
+          "key": "original/hexichr/043",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 44,
+          "bytes": 4608,
+          "key": "original/hexichr/044",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 45,
+          "bytes": 4608,
+          "key": "original/hexichr/045",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 46,
+          "bytes": 4608,
+          "key": "original/hexichr/046",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 47,
+          "bytes": 4608,
+          "key": "original/hexichr/047",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 48,
+          "bytes": 4608,
+          "key": "original/hexichr/048",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 49,
+          "bytes": 4608,
+          "key": "original/hexichr/049",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 50,
+          "bytes": 4608,
+          "key": "original/hexichr/050",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 51,
+          "bytes": 4608,
+          "key": "original/hexichr/051",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 52,
+          "bytes": 4608,
+          "key": "original/hexichr/052",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 53,
+          "bytes": 4608,
+          "key": "original/hexichr/053",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 54,
+          "bytes": 4608,
+          "key": "original/hexichr/054",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 55,
+          "bytes": 4608,
+          "key": "original/hexichr/055",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 56,
+          "bytes": 4608,
+          "key": "original/hexichr/056",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 57,
+          "bytes": 4608,
+          "key": "original/hexichr/057",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 58,
+          "bytes": 4608,
+          "key": "original/hexichr/058",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 59,
+          "bytes": 4608,
+          "key": "original/hexichr/059",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 60,
+          "bytes": 4608,
+          "key": "original/hexichr/060",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 61,
+          "bytes": 4608,
+          "key": "original/hexichr/061",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 62,
+          "bytes": 4608,
+          "key": "original/hexichr/062",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 63,
+          "bytes": 4608,
+          "key": "original/hexichr/063",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 64,
+          "bytes": 4608,
+          "key": "original/hexichr/064",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 65,
+          "bytes": 4608,
+          "key": "original/hexichr/065",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 66,
+          "bytes": 4608,
+          "key": "original/hexichr/066",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 67,
+          "bytes": 4608,
+          "key": "original/hexichr/067",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 68,
+          "bytes": 4608,
+          "key": "original/hexichr/068",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 69,
+          "bytes": 4608,
+          "key": "original/hexichr/069",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 70,
+          "bytes": 4608,
+          "key": "original/hexichr/070",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 71,
+          "bytes": 4608,
+          "key": "original/hexichr/071",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 72,
+          "bytes": 4608,
+          "key": "original/hexichr/072",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 73,
+          "bytes": 4608,
+          "key": "original/hexichr/073",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 74,
+          "bytes": 4608,
+          "key": "original/hexichr/074",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 75,
+          "bytes": 4608,
+          "key": "original/hexichr/075",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 76,
+          "bytes": 4608,
+          "key": "original/hexichr/076",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 77,
+          "bytes": 4608,
+          "key": "original/hexichr/077",
+          "arrangement": "6×6 cells",
+          "size": [
+            96,
+            96
+          ],
+          "palette_slot": 1
+        }
+      ],
+      "groups": [
+        {
+          "first": 0,
+          "last": 14,
+          "what": "mounted officer set 1"
+        },
+        {
+          "first": 15,
+          "last": 29,
+          "what": "mounted officer set 2"
+        },
+        {
+          "first": 30,
+          "last": 44,
+          "what": "mounted officer set 3"
+        },
+        {
+          "first": 45,
+          "last": 59,
+          "what": "mounted officer set 4"
+        },
+        {
+          "first": 60,
+          "last": 74,
+          "what": "mounted officer set 5"
+        },
+        {
+          "first": 75,
+          "last": 77,
+          "what": "mounted archer"
+        }
+      ]
+    },
+    {
+      "file": "HEXZCHR.R3",
+      "what": "battle-map unit icons (two 32×32 frames each)",
+      "palette_slot": 1,
+      "sheets": [
+        "gfx/original/sheets/hexzchr.png"
+      ],
+      "entries": [
+        {
+          "index": 0,
+          "bytes": 1024,
+          "key": "original/hexzchr/000",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 1,
+          "bytes": 1024,
+          "key": "original/hexzchr/001",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 2,
+          "bytes": 1024,
+          "key": "original/hexzchr/002",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 3,
+          "bytes": 1024,
+          "key": "original/hexzchr/003",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 4,
+          "bytes": 1024,
+          "key": "original/hexzchr/004",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 5,
+          "bytes": 1024,
+          "key": "original/hexzchr/005",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 6,
+          "bytes": 1024,
+          "key": "original/hexzchr/006",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 7,
+          "bytes": 1024,
+          "key": "original/hexzchr/007",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 8,
+          "bytes": 1024,
+          "key": "original/hexzchr/008",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 9,
+          "bytes": 1024,
+          "key": "original/hexzchr/009",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 10,
+          "bytes": 1024,
+          "key": "original/hexzchr/010",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 11,
+          "bytes": 1024,
+          "key": "original/hexzchr/011",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 12,
+          "bytes": 1024,
+          "key": "original/hexzchr/012",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 13,
+          "bytes": 1024,
+          "key": "original/hexzchr/013",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 14,
+          "bytes": 1024,
+          "key": "original/hexzchr/014",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 15,
+          "bytes": 1024,
+          "key": "original/hexzchr/015",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 16,
+          "bytes": 1024,
+          "key": "original/hexzchr/016",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 17,
+          "bytes": 1024,
+          "key": "original/hexzchr/017",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 18,
+          "bytes": 1024,
+          "key": "original/hexzchr/018",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 19,
+          "bytes": 1024,
+          "key": "original/hexzchr/019",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 20,
+          "bytes": 1024,
+          "key": "original/hexzchr/020",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 21,
+          "bytes": 1024,
+          "key": "original/hexzchr/021",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 22,
+          "bytes": 1024,
+          "key": "original/hexzchr/022",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 23,
+          "bytes": 1024,
+          "key": "original/hexzchr/023",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 24,
+          "bytes": 1024,
+          "key": "original/hexzchr/024",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 25,
+          "bytes": 1024,
+          "key": "original/hexzchr/025",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 26,
+          "bytes": 1024,
+          "key": "original/hexzchr/026",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 27,
+          "bytes": 1024,
+          "key": "original/hexzchr/027",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 28,
+          "bytes": 1024,
+          "key": "original/hexzchr/028",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 29,
+          "bytes": 1024,
+          "key": "original/hexzchr/029",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 30,
+          "bytes": 1024,
+          "key": "original/hexzchr/030",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 31,
+          "bytes": 1024,
+          "key": "original/hexzchr/031",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 32,
+          "bytes": 1024,
+          "key": "original/hexzchr/032",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 33,
+          "bytes": 1024,
+          "key": "original/hexzchr/033",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 34,
+          "bytes": 1024,
+          "key": "original/hexzchr/034",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 35,
+          "bytes": 1024,
+          "key": "original/hexzchr/035",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 36,
+          "bytes": 1024,
+          "key": "original/hexzchr/036",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 37,
+          "bytes": 1024,
+          "key": "original/hexzchr/037",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 38,
+          "bytes": 1024,
+          "key": "original/hexzchr/038",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 39,
+          "bytes": 1024,
+          "key": "original/hexzchr/039",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 40,
+          "bytes": 1024,
+          "key": "original/hexzchr/040",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 41,
+          "bytes": 1024,
+          "key": "original/hexzchr/041",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 42,
+          "bytes": 1024,
+          "key": "original/hexzchr/042",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 43,
+          "bytes": 1024,
+          "key": "original/hexzchr/043",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 44,
+          "bytes": 1024,
+          "key": "original/hexzchr/044",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 45,
+          "bytes": 1024,
+          "key": "original/hexzchr/045",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 46,
+          "bytes": 1024,
+          "key": "original/hexzchr/046",
+          "arrangement": "2×4 cells",
+          "size": [
+            32,
+            64
+          ],
+          "palette_slot": 1
+        }
+      ],
+      "groups": [
+        {
+          "first": 0,
+          "last": 1,
+          "what": "short-weapon infantry"
+        },
+        {
+          "first": 2,
+          "last": 3,
+          "what": "long-weapon infantry"
+        },
+        {
+          "first": 4,
+          "last": 5,
+          "what": "chariot"
+        },
+        {
+          "first": 6,
+          "last": 7,
+          "what": "archers"
+        },
+        {
+          "first": 8,
+          "last": 9,
+          "what": "crossbowmen"
+        },
+        {
+          "first": 10,
+          "last": 11,
+          "what": "catapult"
+        },
+        {
+          "first": 12,
+          "last": 13,
+          "what": "light cavalry"
+        },
+        {
+          "first": 14,
+          "last": 15,
+          "what": "heavy cavalry"
+        },
+        {
+          "first": 16,
+          "last": 17,
+          "what": "guard cavalry"
+        },
+        {
+          "first": 18,
+          "last": 19,
+          "what": "bandits"
+        },
+        {
+          "first": 20,
+          "last": 21,
+          "what": "brigands"
+        },
+        {
+          "first": 22,
+          "last": 23,
+          "what": "outlaws"
+        },
+        {
+          "first": 24,
+          "last": 25,
+          "what": "military band"
+        },
+        {
+          "first": 26,
+          "last": 27,
+          "what": "beast unit"
+        },
+        {
+          "first": 28,
+          "last": 29,
+          "what": "martial artists"
+        },
+        {
+          "first": 30,
+          "last": 31,
+          "what": "sorcerers"
+        },
+        {
+          "first": 32,
+          "last": 33,
+          "what": "barbarians"
+        },
+        {
+          "first": 34,
+          "last": 35,
+          "what": "civilians"
+        },
+        {
+          "first": 36,
+          "last": 37,
+          "what": "transport"
+        },
+        {
+          "first": 38,
+          "last": 39,
+          "what": "banner infantry (special unit)"
+        },
+        {
+          "first": 40,
+          "last": 40,
+          "what": "chariot with white horses (special unit)"
+        },
+        {
+          "first": 41,
+          "last": 41,
+          "what": "fire"
+        },
+        {
+          "first": 42,
+          "last": 42,
+          "what": "flood"
+        },
+        {
+          "first": 43,
+          "last": 44,
+          "what": "stratagem effect"
+        },
+        {
+          "first": 45,
+          "last": 46,
+          "what": "banner cavalry on red / yellow horses (special units)"
+        }
+      ]
+    },
+    {
+      "file": "HEXZCHP.R3",
+      "what": "battle-map chips",
+      "palette_slot": 1,
+      "sheets": [
+        "gfx/original/sheets/hexzchp.png"
+      ],
+      "entries": [
+        {
+          "index": 0,
+          "bytes": 10240,
+          "key": "original/hexzchp/000",
+          "arrangement": "cell sheet, 16 per row",
+          "size": [
+            256,
+            80
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 1,
+          "bytes": 22272,
+          "key": "original/hexzchp/001",
+          "arrangement": "cell sheet, 16 per row",
+          "size": [
+            256,
+            176
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 2,
+          "bytes": 22400,
+          "key": "original/hexzchp/002",
+          "arrangement": "cell sheet, 16 per row",
+          "size": [
+            256,
+            176
+          ],
+          "palette_slot": 1
+        }
+      ]
+    },
+    {
+      "file": "HEXBCHP.R3",
+      "what": "battle-scene backdrop cells (sky, mountains, ground)",
+      "palette_slot": 1,
+      "sheets": [
+        "gfx/original/sheets/hexbchp.png"
+      ],
+      "entries": [
+        {
+          "index": 0,
+          "bytes": 28672,
+          "key": "original/hexbchp/000",
+          "arrangement": "cell sheet, 16 per row",
+          "size": [
+            256,
+            224
+          ],
+          "palette_slot": 1
+        }
+      ]
+    },
+    {
+      "file": "MMAPBGPL.R3",
+      "what": "campaign-map cells",
+      "palette_slot": 1,
+      "sheets": [
+        "gfx/original/sheets/mmapbgpl.png"
+      ],
+      "entries": [
+        {
+          "index": 0,
+          "bytes": 32640,
+          "key": "original/mmapbgpl/000",
+          "arrangement": "cell sheet, 16 per row",
+          "size": [
+            256,
+            256
+          ],
+          "palette_slot": 1
+        }
+      ]
+    },
+    {
+      "file": "SMAPBGPL.R3",
+      "what": "town-map cells (entry 0 outdoor, entry 1 palace interiors)",
+      "palette_slot": 0,
+      "sheets": [
+        "gfx/original/sheets/smapbgpl.png",
+        "gfx/original/sheets/smapbgpl-slot2.png"
+      ],
+      "entries": [
+        {
+          "index": 0,
+          "bytes": 27136,
+          "key": "original/smapbgpl/000",
+          "arrangement": "cell sheet, 16 per row",
+          "size": [
+            256,
+            224
+          ],
+          "palette_slot": 0
+        },
+        {
+          "index": 1,
+          "bytes": 30976,
+          "key": "original/smapbgpl/001",
+          "arrangement": "cell sheet, 16 per row",
+          "size": [
+            256,
+            256
+          ],
+          "palette_slot": 2
+        }
+      ]
+    },
+    {
+      "file": "HEXGRP.R3",
+      "what": "battle UI buttons, weather and stratagem icons (entry 0; entries 1–2 are text)",
+      "palette_slot": 1,
+      "sheets": [
+        "gfx/original/sheets/hexgrp.png"
+      ],
+      "entries": [
+        {
+          "index": 0,
+          "bytes": 14592,
+          "key": "original/hexgrp/000",
+          "arrangement": "packed planar, 32 px wide",
+          "size": [
+            32,
+            912
+          ],
+          "palette_slot": 1
+        },
+        {
+          "index": 1,
+          "bytes": 815,
+          "skipped": "not an image of a known geometry"
+        },
+        {
+          "index": 2,
+          "bytes": 1234,
+          "skipped": "not an image of a known geometry"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,428 @@
+# c1_s1_b7: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 1 block 7) on the
+# original map hexz_09. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: named by the setup but not in the army at this battle, so allies at their slot: tao_qian, sun_qian, mi_fang
+
+id = "c1_s1_b7"
+name = "小沛 전투"
+location = ""
+objective = "一、曹操退兵"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+treasures = []
+reward_gold = 0
+outro = "c1_s1_b7_outro"
+
+[map]
+use = "hexz_09"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = ["zhao_yun"]
+forbidden = ["mi_fang", "sun_qian", "tao_qian"]
+slots = [[20, 7], [21, 4], [19, 6], [19, 7], [21, 6], [22, 5], [23, 4]]
+
+[[units]]
+side = "ally"
+officer = "tao_qian"
+pos = [23, 2]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "sun_qian"
+pos = [20, 3]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "ally"
+officer = "mi_fang"
+pos = [20, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "cao_cao"
+class = "heavy_cavalry"
+level = 23
+pos = [1, 13]
+ai = "defensive"
+commander = true
+
+[[units]]
+side = "enemy"
+officer = "xun_yu"
+class = "band"
+level = 14
+pos = [0, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "guo_jia"
+class = "archer"
+level = 13
+pos = [4, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "xiahou_dun"
+class = "light_cavalry"
+level = 14
+pos = [2, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "xiahou_yuan"
+class = "light_cavalry"
+level = 14
+pos = [0, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "li_dian"
+class = "short_infantry"
+level = 14
+pos = [3, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "yue_jin"
+class = "light_cavalry"
+level = 13
+pos = [7, 10]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "yu_jin"
+class = "short_infantry"
+level = 14
+pos = [8, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "cao_hong"
+class = "short_infantry"
+level = 14
+pos = [5, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 10
+stats = [40, 30, 50]
+pos = [10, 14]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 10
+stats = [40, 30, 50]
+pos = [6, 9]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "short_infantry"
+level = 10
+stats = [40, 30, 50]
+pos = [6, 14]
+ai = "defensive"
+commander = false
+tag = "person_258"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 10
+stats = [40, 50, 30]
+pos = [6, 11]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 9
+stats = [40, 50, 30]
+pos = [9, 13]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 9
+stats = [40, 50, 30]
+pos = [2, 11]
+ai = "defensive"
+commander = false
+tag = "person_276"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 10
+stats = [50, 30, 40]
+pos = [7, 15]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 10
+stats = [50, 30, 40]
+pos = [3, 15]
+ai = "defensive"
+commander = false
+tag = "person_293"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 9
+stats = [50, 30, 40]
+pos = [1, 14]
+ai = "defensive"
+commander = false
+tag = "person_294"
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 10
+stats = [10, 70, 10]
+pos = [7, 12]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 10
+stats = [10, 70, 10]
+pos = [0, 10]
+ai = "defensive"
+commander = false
+tag = "person_329"
+
+[[units]]
+side = "enemy"
+name = "運輸隊"
+class = "supply"
+level = 10
+stats = [10, 70, 10]
+pos = [1, 10]
+ai = "defensive"
+commander = false
+tag = "person_348"
+
+[[units]]
+side = "enemy"
+name = "運輸隊"
+class = "supply"
+level = 9
+stats = [10, 70, 10]
+pos = [1, 15]
+ai = "defensive"
+commander = false
+tag = "person_349"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b7_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "xiahou_yuan"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b7_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "xiahou_yuan"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 4
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b7_4"
+
+[[events.actions]]
+type = "set_ai"
+target = "guo_jia"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "li_dian"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "cao_hong"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_258"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_276"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_293"
+ai = "aggressive"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 8
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b7_5"
+
+[[events.actions]]
+type = "set_ai"
+target = "cao_cao"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "xun_yu"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "xiahou_dun"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "xiahou_yuan"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_294"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_329"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_348"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_349"
+ai = "aggressive"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 10
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b7_6"
+
+[[events.actions]]
+type = "retreat"
+target = "cao_cao"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s1_b7_6_2"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c1_s1_b7_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"

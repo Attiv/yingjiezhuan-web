@@ -1,0 +1,529 @@
+# c4_s1_b7: a battle of the original's chapters, made from the original battle (SNR4D.R3 scene 1 block 7) on the
+# original map hexz_51. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: a second treasure at (12, 17) left out: the first one stays
+
+id = "c4_s1_b7"
+name = "許昌Ⅱ 전투"
+location = ""
+objective = "一、我軍部隊到達內城城門．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+reward_gold = 1600
+outro = "c4_s1_b7_outro"
+
+[map]
+use = "hexz_51"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 12
+required = ["zhuge_liang"]
+forbidden = ["huang_zhong", "yan_yan"]
+slots = [[24, 17], [24, 18], [2, 17], [21, 19], [2, 19], [22, 18], [3, 18], [23, 19], [4, 19], [25, 17], [5, 18], [26, 18], [5, 19]]
+
+[[units]]
+side = "ally"
+officer = "huang_zhong"
+pos = [8, 0]
+ai = "aggressive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "ally"
+officer = "yan_yan"
+pos = [8, 1]
+ai = "aggressive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "司馬懿"
+class = "sorcerer"
+level = 65
+stats = [48, 99, 95]
+pos = [13, 2]
+ai = "advance"
+ai_pos = [13, 1]
+commander = true
+
+[[units]]
+side = "enemy"
+name = "曹丕"
+class = "guard_cavalry"
+level = 62
+stats = [68, 65, 65]
+pos = [13, 1]
+ai = "advance"
+ai_pos = [8, 0]
+commander = false
+tag = "person_212"
+
+[[units]]
+side = "enemy"
+name = "司馬師"
+class = "sorcerer"
+level = 61
+stats = [65, 87, 79]
+pos = [12, 2]
+ai = "advance"
+ai_pos = [12, 1]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "司馬昭"
+class = "sorcerer"
+level = 61
+stats = [66, 85, 75]
+pos = [14, 2]
+ai = "advance"
+ai_pos = [14, 1]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "曹彰"
+class = "guard_cavalry"
+level = 60
+stats = [81, 42, 93]
+pos = [13, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "曹植"
+class = "band"
+level = 60
+stats = [15, 78, 13]
+pos = [13, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "xu_chu"
+class = "guard_cavalry"
+level = 62
+pos = [20, 7]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賈詡"
+class = "supply"
+level = 61
+stats = [40, 96, 81]
+pos = [27, 7]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "zhang_liao"
+class = "chariot"
+level = 62
+pos = [6, 7]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "yue_jin"
+class = "guard_cavalry"
+level = 61
+pos = [0, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "li_dian"
+class = "chariot"
+level = 61
+pos = [7, 11]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 57
+stats = [40, 30, 50]
+pos = [1, 3]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 57
+stats = [40, 30, 50]
+pos = [20, 12]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 56
+stats = [40, 30, 50]
+pos = [26, 6]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 59
+stats = [50, 30, 40]
+pos = [11, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 59
+stats = [50, 30, 40]
+pos = [15, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 57
+stats = [40, 50, 30]
+pos = [4, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 57
+stats = [40, 50, 30]
+pos = [6, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 56
+stats = [40, 50, 30]
+pos = [9, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 56
+stats = [40, 50, 30]
+pos = [9, 15]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 55
+stats = [40, 50, 30]
+pos = [17, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 55
+stats = [40, 50, 30]
+pos = [17, 15]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 55
+stats = [40, 50, 30]
+pos = [20, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 57
+stats = [40, 50, 30]
+pos = [22, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 56
+stats = [40, 50, 30]
+pos = [24, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 55
+stats = [40, 50, 30]
+pos = [12, 7]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 55
+stats = [40, 50, 30]
+pos = [13, 6]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 52
+stats = [40, 50, 30]
+pos = [14, 7]
+ai = "defensive"
+commander = false
+group = "original_6"
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "set_objective"
+text = "一、我軍部隊到達內城城門．"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f218"
+value = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "zhang_liao"
+
+[[events.when]]
+flag = "orig_f173"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_4"
+
+[[events.actions]]
+type = "retreat"
+target = "zhang_liao"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f218"
+value = 0
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_zhang_liao"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+who = "person_212"
+pos = [8, 0]
+radius = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_5"
+
+[[events.actions]]
+type = "retreat"
+target = "person_212"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f173"
+value = 1
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "reach"
+pos = [13, 10]
+radius = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_6"
+
+[[events.actions]]
+type = "spawn"
+group = "original_6"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_6_2"
+
+[[events.actions]]
+type = "set_terrain"
+pos = [13, 9]
+terrain = "plain"
+image = "hexz_51_13_9_0"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_6_3"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_6_4"
+
+[[events.actions]]
+type = "retreat"
+target = "huang_zhong"
+
+[[events.actions]]
+type = "retreat"
+target = "yan_yan"
+
+[[events.actions]]
+type = "set_objective"
+text = "一、司馬懿的撤退"
+
+[[events.actions]]
+type = "set_stage"
+stage = 1
+
+[[events]]
+once = true
+stage = 1
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "zhang_liao"
+
+[[events.when]]
+flag = "orig_f173"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_9"
+
+[[events.actions]]
+type = "retreat"
+target = "zhang_liao"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f218"
+value = 0
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_zhang_liao"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events]]
+once = true
+stage = 1
+
+[events.trigger]
+type = "reach"
+who = "person_212"
+pos = [8, 0]
+radius = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b7_10"
+
+[[events.actions]]
+type = "retreat"
+target = "person_212"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f173"
+value = 1
+
+[[treasures]]
+pos = [12, 17]
+item = "imperial_seal"
+gold = 0

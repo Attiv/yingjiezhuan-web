@@ -1,0 +1,123 @@
+# Battle-map terrain of the original mode, learned from the battle maps of the player's
+# copy by `hero-tools original pack` (do not edit; run the importer again). One 32-px tile
+# is one 2×2-chip cell of the original maps, the grid units move on. An `auto` layer picks
+# the tile by the mask of orthogonal neighbours in `connect` (1 = north, 2 = east,
+# 4 = south, 8 = west; outside the map counts as connected, docs/ASSETS.md); each tile is
+# the block the original maps show most often for that terrain and mask.
+
+tile_size = 32
+image = "terrain.png"
+
+# plain: plain, 10516 cells in the original maps
+[tiles.plain]
+layers = [
+  { cells = [[0, 0]] },
+]
+
+# grass: grass, 3791 cells in the original maps
+[tiles.grass]
+layers = [
+  { auto = [[1, 0], [2, 0], [3, 0], [3, 0], [4, 0], [5, 0], [6, 0], [5, 0], [2, 0], [5, 0], [5, 0], [5, 0], [7, 0], [5, 0], [5, 0], [5, 0]], connect = ["grass"] },
+]
+
+# road: plain, 10516 cells in the original maps
+[tiles.road]
+layers = [
+  { cells = [[0, 0]] },
+]
+
+# forest: forest, 4606 cells in the original maps
+[tiles.forest]
+layers = [
+  { auto = [[8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [13, 0], [3, 1], [5, 1]], connect = ["forest"] },
+]
+
+# mountain: mountain, 2963 cells in the original maps
+[tiles.mountain]
+layers = [
+  { auto = [[6, 1], [7, 1], [6, 1], [8, 1], [9, 1], [10, 1], [11, 1], [10, 1], [12, 1], [13, 1], [10, 1], [14, 1], [15, 1], [14, 1], [10, 1], [0, 2]], connect = ["mountain"] },
+]
+
+# wasteland: wasteland, 1777 cells in the original maps
+[tiles.wasteland]
+layers = [
+  { auto = [[1, 2], [2, 2], [2, 2], [2, 2], [3, 2], [2, 2], [2, 2], [2, 2], [3, 2], [2, 2], [2, 2], [2, 2], [2, 2], [2, 2], [2, 2], [2, 2]], connect = ["wasteland"] },
+]
+
+# bridge: bridge, 113 cells in the original maps
+[tiles.bridge]
+layers = [
+  { auto = [[4, 2], [4, 2], [5, 2], [4, 2], [6, 2], [7, 2], [6, 2], [7, 2], [8, 2], [4, 2], [9, 2], [9, 2], [6, 2], [7, 2], [9, 2], [7, 2]], connect = ["river"] },
+]
+
+# castle: castle, 2016 cells in the original maps
+[tiles.castle]
+layers = [
+  { auto = [[10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2], [10, 2]], connect = ["castle", "gate", "closed_gate", "wall"] },
+]
+
+# gate: gate, 8 cells in the original maps
+[tiles.gate]
+layers = [
+  { cells = [[11, 2]] },
+]
+
+# village: village, 94 cells in the original maps
+[tiles.village]
+layers = [
+  { cells = [[12, 2]] },
+]
+
+# barracks: barracks, 99 cells in the original maps
+[tiles.barracks]
+layers = [
+  { cells = [[13, 2]] },
+]
+
+# fort: fort, 57 cells in the original maps
+[tiles.fort]
+layers = [
+  { cells = [[14, 2]] },
+]
+
+# granary: granary, 14 cells in the original maps
+[tiles.granary]
+layers = [
+  { cells = [[15, 2]] },
+]
+
+# treasury: treasury, 81 cells in the original maps
+[tiles.treasury]
+layers = [
+  { cells = [[0, 3]] },
+]
+
+# river: river, 2875 cells in the original maps
+[tiles.river]
+layers = [
+  { auto = [[1, 3], [2, 3], [3, 3], [4, 3], [1, 3], [5, 3], [6, 3], [5, 3], [7, 3], [2, 3], [8, 3], [5, 3], [9, 3], [10, 3], [11, 3], [5, 3]], connect = ["river", "bridge"] },
+]
+
+# wall: wall, 1681 cells in the original maps
+[tiles.wall]
+layers = [
+  { auto = [[12, 3], [13, 3], [14, 3], [13, 3], [12, 3], [15, 3], [14, 3], [0, 4], [1, 4], [2, 4], [3, 4], [13, 3], [1, 4], [4, 4], [3, 4], [5, 4]], connect = ["wall", "gate", "closed_gate"] },
+]
+
+# cliff: cliff, 2691 cells in the original maps
+[tiles.cliff]
+layers = [
+  { auto = [[6, 4], [7, 4], [8, 4], [9, 4], [10, 4], [11, 4], [12, 4], [12, 4], [6, 4], [7, 4], [13, 4], [14, 4], [15, 4], [0, 5], [13, 4], [2, 2]], connect = ["cliff"] },
+]
+
+# house: house, 565 cells in the original maps
+[tiles.house]
+layers = [
+  { cells = [[1, 5]] },
+]
+
+# fence: fence, 290 cells in the original maps
+[tiles.fence]
+layers = [
+  { auto = [[2, 5], [2, 5], [3, 5], [4, 5], [5, 5], [6, 5], [7, 5], [7, 5], [3, 5], [8, 5], [3, 5], [9, 5], [10, 5], [11, 5], [3, 5], [12, 5]], connect = ["fence"] },
+]

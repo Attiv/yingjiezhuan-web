@@ -1,0 +1,262 @@
+# c1_s2_b3: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 2 block 3) on the
+# original map hexz_10. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 34 at (10, 0) has no base-pack item
+# note: treasure item 33 at (8, 8) has no base-pack item
+
+id = "c1_s2_b3"
+name = "泰山 전투"
+location = ""
+objective = "一、全數殲滅敵人． / 二、敵軍投降．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+treasures = []
+reward_gold = 400
+outro = "c1_s2_b3_outro"
+
+[map]
+use = "hexz_10"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = []
+forbidden = []
+slots = [[23, 11], [22, 11], [22, 12], [24, 10], [25, 10], [25, 11], [21, 10]]
+
+[[units]]
+side = "enemy"
+officer = "orig_p375"
+class = "beast"
+level = 12
+pos = [4, 2]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 10
+stats = [50, 40, 30]
+pos = [26, 1]
+ai = "advance"
+ai_pos = [29, 6]
+commander = false
+tag = "person_310"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 10
+stats = [50, 40, 30]
+pos = [14, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 8
+stats = [50, 40, 30]
+pos = [15, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 10
+stats = [50, 40, 30]
+pos = [9, 2]
+ai = "defensive"
+commander = false
+tag = "person_313"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 8
+stats = [50, 40, 30]
+pos = [7, 1]
+ai = "defensive"
+commander = false
+tag = "person_314"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 7
+stats = [50, 40, 30]
+pos = [4, 1]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 7
+stats = [50, 40, 30]
+pos = [5, 2]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 8
+stats = [70, 10, 40]
+pos = [25, 2]
+ai = "advance"
+ai_pos = [29, 6]
+commander = false
+tag = "person_332"
+
+[[units]]
+side = "enemy"
+name = "猛獸師"
+class = "beast"
+level = 8
+stats = [70, 10, 40]
+pos = [5, 1]
+ai = "defensive"
+commander = false
+tag = "person_333"
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 10
+stats = [50, 10, 60]
+pos = [24, 3]
+ai = "advance"
+ai_pos = [29, 6]
+commander = false
+tag = "person_336"
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 9
+stats = [50, 10, 60]
+pos = [8, 3]
+ai = "defensive"
+commander = false
+tag = "person_337"
+
+[[victory]]
+type = "defeat_all"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s2_b3_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 3
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s2_b3_3"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_310"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_313"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_314"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_332"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_333"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_336"
+ai = "aggressive"
+
+[[events.actions]]
+type = "set_ai"
+target = "person_337"
+ai = "aggressive"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "orig_p375"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s2_b3_4"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_orig_p375"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "orig_p375"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f11"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "liu_bei"
+amount = 1
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c1_s2_b3_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"

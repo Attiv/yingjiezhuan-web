@@ -1,0 +1,466 @@
+# c4_s2_b4: a battle of the original's chapters, made from the original battle (SNR4D.R3 scene 2 block 4) on the
+# original map hexz_57. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: 張遼 (79) needs a campaign flag in the original and is left out
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+
+id = "c4_s2_b4"
+name = "鄴Ⅲ 전투"
+location = ""
+objective = "一、曹操的滅亡"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 50
+defeat = []
+treasures = []
+reward_gold = 0
+outro = "c4_s2_b4_outro"
+
+[map]
+use = "hexz_57"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 12
+required = ["zhuge_liang"]
+forbidden = []
+slots = [[25, 21], [24, 21], [13, 23], [8, 23], [23, 22], [9, 21], [14, 23], [25, 23], [10, 22], [22, 21], [26, 22], [12, 22], [11, 22], [12, 23], [15, 22]]
+
+[[units]]
+side = "enemy"
+officer = "cao_cao"
+class = "guard_cavalry"
+level = 77
+pos = [19, 1]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "司馬懿"
+class = "sorcerer"
+level = 70
+stats = [48, 99, 95]
+pos = [19, 3]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "司馬師"
+class = "sorcerer"
+level = 65
+stats = [65, 87, 79]
+pos = [18, 3]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "司馬昭"
+class = "sorcerer"
+level = 65
+stats = [66, 85, 75]
+pos = [20, 3]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "xun_yu"
+class = "sorcerer"
+level = 64
+pos = [30, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "xun_you"
+class = "sorcerer"
+level = 64
+pos = [35, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "xu_chu"
+class = "guard_cavalry"
+level = 65
+pos = [31, 9]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賈詡"
+class = "supply"
+level = 64
+stats = [40, 96, 81]
+pos = [34, 16]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "yue_jin"
+class = "guard_cavalry"
+level = 63
+pos = [4, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "li_dian"
+class = "chariot"
+level = 63
+pos = [23, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 61
+stats = [40, 50, 30]
+pos = [2, 17]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 61
+stats = [40, 50, 30]
+pos = [11, 11]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 60
+stats = [40, 50, 30]
+pos = [18, 17]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 60
+stats = [40, 50, 30]
+pos = [32, 9]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 59
+stats = [40, 50, 30]
+pos = [35, 16]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 61
+stats = [40, 30, 50]
+pos = [6, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 61
+stats = [40, 30, 50]
+pos = [8, 11]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 60
+stats = [40, 30, 50]
+pos = [23, 15]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 60
+stats = [40, 30, 50]
+pos = [32, 5]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 59
+stats = [40, 30, 50]
+pos = [30, 15]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 62
+stats = [50, 30, 40]
+pos = [6, 17]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 62
+stats = [50, 30, 40]
+pos = [16, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 62
+stats = [50, 30, 40]
+pos = [16, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 61
+stats = [50, 30, 40]
+pos = [35, 17]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 61
+stats = [50, 30, 40]
+pos = [34, 17]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 61
+stats = [50, 30, 40]
+pos = [32, 6]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 61
+stats = [40, 30, 50]
+pos = [17, 15]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 60
+stats = [40, 30, 50]
+pos = [17, 16]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 61
+stats = [50, 30, 40]
+pos = [3, 8]
+ai = "defensive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhang_fei"
+b = "xu_chu"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhang_fei"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "xu_chu"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "guan_yu"
+b = "zhang_liao"
+
+[[events.when]]
+flag = "orig_f218"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_4"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_yu"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "zhang_liao"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhao_yun"
+b = "li_dian"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_5"
+
+[[events.actions]]
+type = "level_up"
+target = "zhao_yun"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "li_dian"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "ma_chao"
+b = "yue_jin"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_6"
+
+[[events.actions]]
+type = "level_up"
+target = "ma_chao"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "yue_jin"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 4
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_7"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 8
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_9"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 18
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_14"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 28
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s2_b4_19"

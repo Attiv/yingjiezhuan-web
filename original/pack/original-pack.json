@@ -1,0 +1,4614 @@
+{
+  "format": "eiketsuden-original-pack",
+  "format_version": 23,
+  "tool": "hero-import 0.7.0",
+  "edition": {
+    "id": "chinese-dos",
+    "name": "Traditional-Chinese DOS (三國志英傑傳)",
+    "confidence": "none",
+    "evidence": [
+      "chosen with --edition; identification said `chinese-dos` (medium confidence)",
+      "DOS/V file family present (MAIN.EXE, SNR0M.R3)",
+      "text in SNR0M.R3, SNR1M.R3, SNR2M.R3, SNR3M.R3, SNR4M.R3, IPPAN0M.R3, BAKDATA.R3: 52585 EUC-KR/Big5 pairs, 58030 Big5-only pairs; 21875 of 112864 double-byte pairs in the EUC-KR Hangul block"
+    ],
+    "forced": true
+  },
+  "extends": "../eiketsuden-reloaded/data/base",
+  "canvas": [
+    640,
+    400
+  ],
+  "base_fingerprint": "d3515bc20259e6420d2e659f49b4d1081ac13818d0485bf88d9bf585c5eaaee6",
+  "assets": {
+    "battles": {
+      "status": "extracted",
+      "requested": false,
+      "summary": "1 of 1 base battles re-staged as the original battles on the original maps, 64 battles and 160 story scenes of the original's chapters, 366 events (376 drama scenes, 15 changed-cell pictures, 25 duel pictures)",
+      "outputs": 114,
+      "sources": [
+        {
+          "file": "MAIN.EXE",
+          "sha256": "45e0b40b34943b3dbf05266d5a5fbdbeb2d8498c85e5a4a98082a040420c1aa5"
+        },
+        {
+          "file": "BAKDATA.R3",
+          "sha256": "776e242a65c12f61de146d3ded7c9de6221af84c2ef5210daf9d785f4b98dc1d"
+        },
+        {
+          "file": "SNR0D.R3",
+          "sha256": "72d25a2a5292044e16df7136d6785defcadca2db441136616fccdbf40eb303c3"
+        },
+        {
+          "file": "SNR0M.R3",
+          "sha256": "d58a316a6289f46046141286c8ae2e9aae58e56f2e4724ebead540955e96926c"
+        },
+        {
+          "file": "SNR1D.R3",
+          "sha256": "7b99fde5d33496075e98458e66e9c6d485d09c8b9934d507f688bdd9c7cfbef6"
+        },
+        {
+          "file": "SNR1M.R3",
+          "sha256": "ef3ad3e84774fba4e029d29aecda74ec8fc73abb67cb3928e62762cbfd0e0a84"
+        },
+        {
+          "file": "SNR2D.R3",
+          "sha256": "063ca2739dc6a43c12a443f7e598df0c8695e05f81b00872f26079965c9c91a1"
+        },
+        {
+          "file": "SNR2M.R3",
+          "sha256": "7d21fc40adcb0924dbf93a6f9fbee2365c6fe71cd92937debe805b1bcd9cba87"
+        },
+        {
+          "file": "SNR3D.R3",
+          "sha256": "322c57ea89bcaba4cfd2158c23cbadbf72ad7f2981aea3cf9ed35af6d55f7a60"
+        },
+        {
+          "file": "SNR3M.R3",
+          "sha256": "fe70fe7acd8e00d875f9ed0d8942831551ec797cecdcd466769852a350bb4ae6"
+        },
+        {
+          "file": "SNR4D.R3",
+          "sha256": "654ec8e35fadb36946fbd043cf96c5cbccb38ced9611982ffa4cebf6f0a6c162"
+        },
+        {
+          "file": "SNR4M.R3",
+          "sha256": "1a2d2117e0c56797996d41165fe4a801951ff1931dded09d994db1c266bb60dc"
+        },
+        {
+          "file": "HEXICHR.R3",
+          "sha256": "a90d3dfd686ae1c14fcde411587bad7df66dece67f165bd1724c3ad6af0296dc"
+        },
+        {
+          "file": "HEXBMAP.R3",
+          "sha256": "abf85526302a8eba7c5c83840d8bc70597808aadc54e4755cf5c13ba77b60e45"
+        },
+        {
+          "file": "HEXBCHP.R3",
+          "sha256": "e3df9f7cc278774b5693023243414e5c1b0008aa8cd13980303f400c204d43b8"
+        }
+      ],
+      "notes": [
+        "c4_s0_b10: some routes give no setup for it (they do not fight it there); the campaign sends them to `c4_s0_b10`",
+        "c4_s1_b5: some routes give no setup for it (they do not fight it there); the campaign sends them to `c4_s1_b5`",
+        "c0_s0_b5_outro: left out: songs the pack has no music key for",
+        "c0_s0_story6: left out: songs the pack has no music key for",
+        "c0_s0_b7_outro: left out: songs the pack has no music key for",
+        "c1_s0_story0: left out: songs the pack has no music key for",
+        "c1_s0_story3: left out: songs the pack has no music key for",
+        "c1_s0_story5: left out: songs the pack has no music key for",
+        "c1_s0_story7: left out: songs the pack has no music key for",
+        "c1_s0_story10: left out: songs the pack has no music key for",
+        "c1_s0_b11_outro: left out: songs the pack has no music key for",
+        "c1_s0_story12: left out: songs the pack has no music key for",
+        "c1_s0_b13_outro: left out: songs the pack has no music key for",
+        "c1_s0_story14: left out: songs the pack has no music key for",
+        "c1_s0_b15_outro: left out: songs the pack has no music key for",
+        "c1_s0_story16: left out: songs the pack has no music key for",
+        "c1_s1_story0: left out: songs the pack has no music key for",
+        "c1_s1_story2: left out: songs the pack has no music key for",
+        "c1_s1_b3_outro: left out: songs the pack has no music key for",
+        "c1_s1_story4: left out: levels and classes of officers who never join the army, songs the pack has no music key for",
+        "c1_s1_b5_outro: left out: songs the pack has no music key for",
+        "c1_s1_story6: left out: songs the pack has no music key for",
+        "c1_s1_b7_outro: left out: songs the pack has no music key for",
+        "c1_s1_b7_before: left out: levels and classes of a battle's enemies set up before it",
+        "c1_s1_story9: left out: songs the pack has no music key for",
+        "c1_s1_story10: left out: items without a pack item",
+        "c1_s2_story0: left out: songs the pack has no music key for",
+        "c1_s2_story1: left out: songs the pack has no music key for",
+        "c1_s2_b3_outro: left out: songs the pack has no music key for",
+        "c1_s2_b4_outro: left out: songs the pack has no music key for",
+        "c1_s2_b5_outro: left out: songs the pack has no music key for",
+        "c1_s2_story6: left out: items without a pack item",
+        "c1_s2_story9: left out: songs the pack has no music key for",
+        "c1_s2_b12_outro: left out: songs the pack has no music key for",
+        "c1_s2_story13: left out: songs the pack has no music key for",
+        "c1_s3_story0: left out: songs the pack has no music key for",
+        "c1_s3_b1_outro: left out: songs the pack has no music key for",
+        "c1_s3_b2_outro: left out: songs the pack has no music key for",
+        "c1_s3_story3: left out: songs the pack has no music key for",
+        "c1_s3_b4_outro: left out: songs the pack has no music key for",
+        "c1_s4_story0: left out: songs the pack has no music key for",
+        "c1_s4_story2: left out: songs the pack has no music key for",
+        "c1_s4_story4: left out: songs the pack has no music key for",
+        "c1_s4_story8: left out: songs the pack has no music key for",
+        "c1_s4_story11: left out: songs the pack has no music key for",
+        "c1_s4_story12: left out: songs the pack has no music key for",
+        "c1_s4_b13_outro: left out: songs the pack has no music key for",
+        "c1_s4_story14: left out: songs the pack has no music key for",
+        "c1_s4_b15_outro: left out: songs the pack has no music key for",
+        "c2_s0_story0: left out: songs the pack has no music key for",
+        "c2_s0_story7: left out: songs the pack has no music key for",
+        "c2_s0_b8_outro: left out: songs the pack has no music key for",
+        "c2_s0_b9_outro: left out: songs the pack has no music key for",
+        "c2_s0_story10: left out: songs the pack has no music key for",
+        "c2_s0_b11_outro: left out: songs the pack has no music key for",
+        "c2_s0_b16_outro: left out: songs the pack has no music key for",
+        "c2_s1_story0: left out: songs the pack has no music key for",
+        "c2_s1_story6: left out: songs the pack has no music key for",
+        "c2_s1_b7_outro: left out: songs the pack has no music key for",
+        "c2_s1_story10: left out: songs the pack has no music key for",
+        "c2_s1_story12: left out: songs the pack has no music key for",
+        "c2_s1_story13: left out: songs the pack has no music key for",
+        "c2_s1_story15: left out: songs the pack has no music key for",
+        "c2_s1_b16_outro: left out: songs the pack has no music key for",
+        "c2_s2_story0: left out: songs the pack has no music key for",
+        "c2_s2_story2: left out: songs the pack has no music key for",
+        "c2_s2_story3: left out: songs the pack has no music key for",
+        "c2_s3_story0: left out: songs the pack has no music key for",
+        "c2_s3_story1: left out: songs the pack has no music key for",
+        "c2_s3_b2_outro: left out: songs the pack has no music key for",
+        "c2_s3_b3_outro: left out: songs the pack has no music key for",
+        "c2_s3_story5: left out: songs the pack has no music key for",
+        "c2_s3_b6_outro: left out: `data` payloads other than gold, songs the pack has no music key for",
+        "c2_s3_b7_2_outro: left out: songs the pack has no music key for",
+        "c2_s3_story9: left out: songs the pack has no music key for",
+        "c3_s0_story0: left out: songs the pack has no music key for",
+        "c3_s0_story1: left out: songs the pack has no music key for",
+        "c3_s0_b2_outro: left out: allegiances of persons without a pack officer, songs the pack has no music key for",
+        "c3_s0_story7: left out: songs the pack has no music key for",
+        "c3_s0_b8_outro: left out: songs the pack has no music key for",
+        "c3_s0_b9_outro: left out: songs the pack has no music key for",
+        "c3_s0_b10_outro: left out: songs the pack has no music key for",
+        "c3_s0_story11: left out: songs the pack has no music key for",
+        "c3_s0_story12: left out: songs the pack has no music key for",
+        "c3_s0_b13_outro: left out: songs the pack has no music key for",
+        "c3_s0_story15: left out: songs the pack has no music key for",
+        "c3_s1_story0: left out: songs the pack has no music key for",
+        "c3_s1_story4: left out: songs the pack has no music key for",
+        "c3_s1_story6: left out: songs the pack has no music key for",
+        "c3_s1_story8: left out: songs the pack has no music key for",
+        "c3_s1_story9: left out: songs the pack has no music key for",
+        "c3_s1_story10: left out: songs the pack has no music key for",
+        "c3_s1_story12: left out: songs the pack has no music key for",
+        "c3_s1_story13: left out: songs the pack has no music key for",
+        "c3_s2_story0: left out: songs the pack has no music key for",
+        "c3_s2_story3: left out: songs the pack has no music key for",
+        "c3_s2_story5: left out: songs the pack has no music key for",
+        "c3_s2_story9: left out: songs the pack has no music key for",
+        "c3_s2_story11: left out: songs the pack has no music key for",
+        "c3_s2_story13: left out: songs the pack has no music key for",
+        "c3_s2_story15: left out: items without a pack item, songs the pack has no music key for",
+        "c3_s2_b16_outro: left out: songs the pack has no music key for",
+        "c3_s2_story17: left out: songs the pack has no music key for",
+        "c3_s3_story0: left out: songs the pack has no music key for",
+        "c3_s3_story1: left out: songs the pack has no music key for",
+        "c3_s3_b2_2_outro: left out: songs the pack has no music key for",
+        "c3_s3_story3: left out: songs the pack has no music key for",
+        "c3_s3_b4_outro: left out: songs the pack has no music key for",
+        "c3_s3_story5: left out: songs the pack has no music key for",
+        "c3_s3_b6_outro: left out: songs the pack has no music key for",
+        "c3_s3_story7: left out: songs the pack has no music key for",
+        "c3_s3_b8_outro: left out: songs the pack has no music key for",
+        "c3_s3_story9: left out: songs the pack has no music key for",
+        "c3_s3_b10_outro: left out: songs the pack has no music key for",
+        "c3_s3_story11: left out: songs the pack has no music key for",
+        "c3_s3_b12_outro: left out: songs the pack has no music key for",
+        "c3_s3_story13: left out: songs the pack has no music key for",
+        "c3_s3_b14_outro: left out: songs the pack has no music key for",
+        "c3_s4_b0_outro: left out: allegiances of persons without a pack officer, songs the pack has no music key for",
+        "c3_s4_b0_before: left out: allegiances of persons without a pack officer",
+        "c3_s4_b0_defeat: left out: allegiances of persons without a pack officer",
+        "c3_s4_story3: left out: items without a pack item, songs the pack has no music key for",
+        "c3_s4_b4_outro: left out: songs the pack has no music key for",
+        "c3_s4_story5: left out: items without a pack item, songs the pack has no music key for",
+        "c3_s4_b6_outro: left out: songs the pack has no music key for",
+        "c3_s4_story8: left out: songs the pack has no music key for",
+        "c4_s0_story0: left out: songs the pack has no music key for",
+        "c4_s0_story4: left out: levels of persons without a pack officer, songs the pack has no music key for",
+        "c4_s0_b5_outro: left out: songs the pack has no music key for",
+        "c4_s0_story6: left out: songs the pack has no music key for",
+        "c4_s0_b7_outro: left out: songs the pack has no music key for",
+        "c4_s0_b8_outro: left out: songs the pack has no music key for",
+        "c4_s0_story9: left out: songs the pack has no music key for",
+        "c4_s0_b10_outro: left out: songs the pack has no music key for",
+        "c4_s0_b11_outro: left out: songs the pack has no music key for",
+        "c4_s1_story0: left out: songs the pack has no music key for",
+        "c4_s1_story1: left out: songs the pack has no music key for",
+        "c4_s1_b2_outro: left out: songs the pack has no music key for",
+        "c4_s1_b3_outro: left out: songs the pack has no music key for",
+        "c4_s1_story4: left out: songs the pack has no music key for",
+        "c4_s1_b5_outro: left out: songs the pack has no music key for",
+        "c4_s1_b6_outro: left out: songs the pack has no music key for",
+        "c4_s1_b7_outro: left out: songs the pack has no music key for",
+        "c4_s2_story0: left out: songs the pack has no music key for",
+        "c4_s2_story1: left out: songs the pack has no music key for",
+        "c4_s2_b2_outro: left out: songs the pack has no music key for",
+        "c4_s2_b3_outro: left out: songs the pack has no music key for",
+        "c4_s2_b4_outro: left out: songs the pack has no music key for",
+        "c4_s2_story5: left out: songs the pack has no music key for",
+        "the original's mid-battle events come from the scenario's trigger records; where the base battle keeps an event with the same trigger, the base event stays"
+      ]
+    },
+    "maps": {
+      "status": "extracted",
+      "requested": true,
+      "summary": "58 battle maps (picture layer + rules grid), 1 cells with a stand-in terrain",
+      "outputs": 117,
+      "sources": [
+        {
+          "file": "MAIN.EXE",
+          "sha256": "45e0b40b34943b3dbf05266d5a5fbdbeb2d8498c85e5a4a98082a040420c1aa5"
+        },
+        {
+          "file": "HEXZMAP.R3",
+          "sha256": "6e1ab5d0d5fe53f658860c08fb36942aaea845bbf973e24a1ba15483fbc7452e"
+        },
+        {
+          "file": "HEXZCHP.R3",
+          "sha256": "f61fdd0cc4e49c964b25b07d980ba5ebfa0a0675f00e670205dbcfa04478dbb1"
+        }
+      ],
+      "notes": [
+        "1 cells have a terrain code without pack terrain; they get the terrain their chips are drawn with elsewhere, or cliff for the off-map code 255 (listed per map in original-pack.json and maps/original.toml)",
+        "the base battles re-staged as the original battles use them (`battles`); the other maps wait for the chapters the base pack does not have yet"
+      ]
+    },
+    "music": {
+      "status": "extracted",
+      "requested": false,
+      "summary": "10 songs, 1023 s at 22050 Hz",
+      "outputs": 10,
+      "sources": [
+        {
+          "file": "OPMUSIC.R3",
+          "sha256": "a94860448aede3391cacd40ea10fd7e1fd8a3838bf66fe4214182ada173b1d0a"
+        },
+        {
+          "file": "EDMUSIC.R3",
+          "sha256": "32705eb026f9f39225da2382bd61affe0f971a0b6506fe126b7c12c59bf154f0"
+        },
+        {
+          "file": "MUSIC.R3",
+          "sha256": "26ef3d09c03755e27e3aaced704f25eb27bd5c7263f28de65b13dc8bb6148122"
+        }
+      ],
+      "notes": [
+        "title: OPMUSIC.R3 song 0, 205 s",
+        "ending: EDMUSIC.R3 song 0, 248 s; its tracks' loops hardly fit together, so it is played once from the start and repeats with a seam",
+        "camp: MUSIC.R3 song 12, 57 s",
+        "peace: MUSIC.R3 song 5, 60 s",
+        "tension: MUSIC.R3 song 11, 60 s",
+        "sad: MUSIC.R3 song 2, 63 s; a 0.4 s intro played once before it",
+        "defeat: MUSIC.R3 song 4, 60 s; a 0.8 s intro played once before it",
+        "battle: MUSIC.R3 song 18, 85 s; a 2.7 s intro played once before it",
+        "enemy: MUSIC.R3 song 9, 89 s",
+        "boss: MUSIC.R3 song 16, 92 s"
+      ]
+    },
+    "officers": {
+      "status": "extracted",
+      "requested": false,
+      "summary": "129 officers: 103 changed to the original's values, 11 added",
+      "outputs": 12,
+      "sources": [
+        {
+          "file": "MAIN.EXE",
+          "sha256": "45e0b40b34943b3dbf05266d5a5fbdbeb2d8498c85e5a4a98082a040420c1aa5"
+        },
+        {
+          "file": "BAKDATA.R3",
+          "sha256": "776e242a65c12f61de146d3ded7c9de6221af84c2ef5210daf9d785f4b98dc1d"
+        },
+        {
+          "file": "SNR0D.R3",
+          "sha256": "72d25a2a5292044e16df7136d6785defcadca2db441136616fccdbf40eb303c3"
+        },
+        {
+          "file": "SNR1D.R3",
+          "sha256": "7b99fde5d33496075e98458e66e9c6d485d09c8b9934d507f688bdd9c7cfbef6"
+        },
+        {
+          "file": "SNR2D.R3",
+          "sha256": "063ca2739dc6a43c12a443f7e598df0c8695e05f81b00872f26079965c9c91a1"
+        },
+        {
+          "file": "SNR3D.R3",
+          "sha256": "322c57ea89bcaba4cfd2158c23cbadbf72ad7f2981aea3cf9ed35af6d55f7a60"
+        },
+        {
+          "file": "SNR4D.R3",
+          "sha256": "654ec8e35fadb36946fbd043cf96c5cbccb38ced9611982ffa4cebf6f0a6c162"
+        },
+        {
+          "file": "FACEDAT.R3",
+          "sha256": "a123b354eda54ecf66c3bedb5c67066d6eadb5f024274ee01236b1c0471439f0"
+        }
+      ]
+    },
+    "portraits": {
+      "status": "extracted",
+      "requested": true,
+      "summary": "106 of 118 officers have their original portrait",
+      "outputs": 106,
+      "sources": [
+        {
+          "file": "MAIN.EXE",
+          "sha256": "45e0b40b34943b3dbf05266d5a5fbdbeb2d8498c85e5a4a98082a040420c1aa5"
+        },
+        {
+          "file": "BAKDATA.R3",
+          "sha256": "776e242a65c12f61de146d3ded7c9de6221af84c2ef5210daf9d785f4b98dc1d"
+        },
+        {
+          "file": "FACEDAT.R3",
+          "sha256": "a123b354eda54ecf66c3bedb5c67066d6eadb5f024274ee01236b1c0471439f0"
+        }
+      ],
+      "notes": [
+        "12 officers keep the base pack's portrait (the base pack's own characters, or names the release does not have); listed in original-pack.json"
+      ]
+    },
+    "rules": {
+      "status": "extracted",
+      "requested": false,
+      "summary": "20 terrain (7 notes), 19 classes (20 notes), 37 strategies (15 notes), the original strategy formulas, 63 items (9 notes)",
+      "outputs": 5,
+      "sources": [
+        {
+          "file": "MAIN.EXE",
+          "sha256": "45e0b40b34943b3dbf05266d5a5fbdbeb2d8498c85e5a4a98082a040420c1aa5"
+        },
+        {
+          "file": "BAKDATA.R3",
+          "sha256": "776e242a65c12f61de146d3ded7c9de6221af84c2ef5210daf9d785f4b98dc1d"
+        }
+      ],
+      "notes": [
+        "closed_gate: added (glyph 'K'), the original's gates are closed",
+        "barracks: horse 2 -> 3",
+        "fort: horse 2 -> 3",
+        "closed_gate: foot 1 -> cannot enter",
+        "closed_gate: horse 1 -> cannot enter",
+        "closed_gate: slow 1 -> cannot enter",
+        "closed_gate: mountain 1 -> cannot enter",
+        "archer: strategies [whirlpool@6 false_report@12 torrent@18 encourage@24 aid@28] -> [whirlpool@6 false_report@12]",
+        "band: strategies [encourage@1 cheer@12 inspire@16 great_encourage@24 great_cheer@32 great_inspire@40] -> [encourage@1 cheer@8 inspire@16 great_encourage@24 great_cheer@32 great_inspire@40]",
+        "bandit: strategies [rockfall@3 landslide@8 harass@8 false_report@12 mudflow@16 encourage@16 aid@20 great_rockfall@24 great_landslide@32] -> [rockfall@1 landslide@8 harass@8 false_report@12 encourage@16 aid@20]",
+        "beast: strategies [harass@4 false_report@8 false_troops@12 provoke@16 intimidate@24 disguise@32] -> [false_report@1 harass@1 false_troops@8 provoke@16 disguise@24 intimidate@32]",
+        "brigand: strategies [] -> [rockfall@1 landslide@8 harass@8 false_report@12 mudflow@16 encourage@16 aid@20 great_rockfall@24]",
+        "catapult: strategies [] -> [whirlpool@6 false_report@12 torrent@18 encourage@24 aid@28]",
+        "chariot: strategies [] -> [scorch@6 false_report@12 fire_dragon@18 encourage@24 aid@28]",
+        "civilian: atk 0 -> 4",
+        "civilian: def 0 -> 4",
+        "civilian: troops 200 + 0/level -> 500 + 50/level",
+        "crossbow: strategies [] -> [whirlpool@6 false_report@12 torrent@18 encourage@24 aid@28]",
+        "guard_cavalry: strategies [] -> [harass@8 encourage@12 provoke@20]",
+        "heavy_cavalry: strategies [] -> [harass@8 encourage@12 provoke@20]",
+        "light_cavalry: strategies [harass@8 encourage@12 provoke@20] -> [harass@8 encourage@12]",
+        "long_infantry: strategies [] -> [scorch@6 false_report@12 fire_dragon@18 encourage@24 aid@28]",
+        "martial: strategies [scorch@4 fire_dragon@8 hellfire@16 great_scorch@24 great_fire_dragon@32] -> [scorch@1 fire_dragon@8 hellfire@16 great_scorch@24 great_fire_dragon@32]",
+        "outlaw: strategies [] -> [rockfall@1 landslide@8 harass@8 false_report@12 mudflow@16 encourage@16 aid@20 great_rockfall@24 great_landslide@32]",
+        "short_infantry: strategies [scorch@6 false_report@12 fire_dragon@18 encourage@24 aid@28] -> [scorch@6 false_report@12]",
+        "sorcerer: strategies [scorch@1 whirlpool@1 rockfall@1 false_report@1 harass@1 nurse@1 fire_dragon@10 torrent@10 landslide@10 provoke@10 great_encourage@10 false_troops@20 cure@20 great_aid@20 great_scorch@20 great_whirlpool@20 great_rockfall@20 hellfire@30 tsunami@30 mudflow@30 intimidate@30 great_cheer@30 great_resupply@30 disguise@40 revive@40 great_fire_dragon@40 great_torrent@40 great_landslide@40 great_inspire@50 great_relief@50] -> [scorch@1 whirlpool@1 rockfall@1 false_report@1 harass@1 nurse@1 fire_dragon@4 torrent@4 landslide@6 false_troops@6 provoke@8 cure@8 hellfire@12 tsunami@12 mudflow@14 disguise@14 intimidate@16 revive@16 great_encourage@18 great_aid@20 great_scorch@22 great_whirlpool@24 great_rockfall@26 great_cheer@28 great_resupply@30 great_fire_dragon@32 great_torrent@34 great_landslide@36 great_inspire@38 great_relief@40]",
+        "tribe: strategies [whirlpool@4 torrent@8 tsunami@16 great_whirlpool@24 great_torrent@32] -> [whirlpool@1 torrent@8 tsunami@16 great_whirlpool@24 great_torrent@32]",
+        "aid: heal 400 -> heal 600",
+        "cheer: morale +35 -> morale +40",
+        "cure: heal 800 -> heal 1200",
+        "cure: morale +35 -> morale +40",
+        "encourage: morale +20 -> morale +30",
+        "great_aid: heal 400 -> heal 600",
+        "great_cheer: morale +35 -> morale +40",
+        "great_encourage: morale +20 -> morale +30",
+        "great_relief: heal 1200 -> heal 1800",
+        "great_resupply: heal 800 -> heal 1200",
+        "nurse: heal 400 -> heal 600",
+        "nurse: morale +20 -> morale +30",
+        "relief: heal 1200 -> heal 1800",
+        "resupply: heal 800 -> heal 1200",
+        "revive: heal 1200 -> heal 1800",
+        "wine: [Morale { amount: 20 }] -> [Morale { amount: 30 }]",
+        "fine_wine: [Morale { amount: 35 }] -> [Morale { amount: 40 }]",
+        "healing item 29 (老酒): no single item of the chain by that name",
+        "bean: [Heal { power: 400 }] -> [Heal { power: 600 }]",
+        "wheat: [Heal { power: 800 }] -> [Heal { power: 1200 }]",
+        "rice: [Heal { power: 1200 }] -> [Heal { power: 1800 }]",
+        "salve: [Heal { power: 400 }, Morale { amount: 20 }] -> [Heal { power: 600 }, Morale { amount: 30 }]",
+        "healing item 53 (中藥  ): no single item of the chain by that name",
+        "tea: [Heal { power: 1200 }, Morale { amount: 50 }] -> [Heal { power: 1800 }, Morale { amount: 50 }]"
+      ]
+    },
+    "tiles": {
+      "status": "extracted",
+      "requested": true,
+      "summary": "18 terrain tiles from 58 battle maps (93 distinct 32-px blocks)",
+      "outputs": 2,
+      "sources": [
+        {
+          "file": "MAIN.EXE",
+          "sha256": "45e0b40b34943b3dbf05266d5a5fbdbeb2d8498c85e5a4a98082a040420c1aa5"
+        },
+        {
+          "file": "HEXZMAP.R3",
+          "sha256": "6e1ab5d0d5fe53f658860c08fb36942aaea845bbf973e24a1ba15483fbc7452e"
+        },
+        {
+          "file": "HEXZCHP.R3",
+          "sha256": "f61fdd0cc4e49c964b25b07d980ba5ebfa0a0675f00e670205dbcfa04478dbb1"
+        }
+      ],
+      "notes": [
+        "`road`: the original has no such terrain; drawn with the `plain` tile",
+        "`bridge`: neighbour masks 0, 3, 6, 7, 9, 11, 12, 14, 15 never occur in the maps; the closest observed mask's tile is used",
+        "`castle`: neighbour masks 0 never occur in the maps; the closest observed mask's tile is used",
+        "`cliff`: neighbour masks 0, 1 never occur in the maps; the closest observed mask's tile is used",
+        "`fence`: neighbour masks 0 never occur in the maps; the closest observed mask's tile is used",
+        "`mountain`: neighbour masks 0, 5, 10 never occur in the maps; the closest observed mask's tile is used",
+        "`river`: neighbour masks 0 never occur in the maps; the closest observed mask's tile is used",
+        "`wall`: neighbour masks 0 never occur in the maps; the closest observed mask's tile is used"
+      ]
+    },
+    "ui": {
+      "status": "extracted",
+      "requested": false,
+      "summary": "battle frame, camp frame, status window (frames 640×400), 31 event pictures (224×144)",
+      "outputs": 34,
+      "sources": [
+        {
+          "file": "MAIN.EXE",
+          "sha256": "45e0b40b34943b3dbf05266d5a5fbdbeb2d8498c85e5a4a98082a040420c1aa5"
+        },
+        {
+          "file": "PACKGRP.R3",
+          "sha256": "7943e3cbbbf538b473ae1752eb8571674548ef30cc46388efc778a34e917baa9"
+        }
+      ]
+    },
+    "units": {
+      "status": "extracted",
+      "requested": true,
+      "summary": "19 classes, 5 officer icons and 1 status icon(s), 32×32 frames",
+      "outputs": 151,
+      "sources": [
+        {
+          "file": "MAIN.EXE",
+          "sha256": "45e0b40b34943b3dbf05266d5a5fbdbeb2d8498c85e5a4a98082a040420c1aa5"
+        },
+        {
+          "file": "HEXZCHR.R3",
+          "sha256": "f55af5f32624277e55b4d66b190c9eec91ed17290dc335c426c82e2257a6a335"
+        }
+      ]
+    }
+  },
+  "portraits": [
+    {
+      "officer": "cao_cao",
+      "bakdata": 8,
+      "portrait": 27
+    },
+    {
+      "officer": "cao_hong",
+      "bakdata": 19,
+      "portrait": 31
+    },
+    {
+      "officer": "cao_ren",
+      "bakdata": 18,
+      "portrait": 30
+    },
+    {
+      "officer": "che_zhou",
+      "bakdata": 89,
+      "portrait": 54
+    },
+    {
+      "officer": "chen_gong",
+      "bakdata": 75,
+      "portrait": 149
+    },
+    {
+      "officer": "chen_ji",
+      "bakdata": 71,
+      "portrait": 156
+    },
+    {
+      "officer": "chen_lin",
+      "bakdata": 98,
+      "portrait": 124
+    },
+    {
+      "officer": "chen_shi",
+      "bakdata": 208,
+      "portrait": 24
+    },
+    {
+      "officer": "chen_zhen",
+      "bakdata": 56,
+      "portrait": 118
+    },
+    {
+      "officer": "cheng_yu",
+      "bakdata": 77,
+      "portrait": 35
+    },
+    {
+      "officer": "chunyu_qiong",
+      "bakdata": 105,
+      "portrait": 127
+    },
+    {
+      "officer": "ding_feng",
+      "bakdata": 164,
+      "portrait": 90
+    },
+    {
+      "officer": "fa_zheng",
+      "bakdata": 187,
+      "portrait": 9
+    },
+    {
+      "officer": "fei_guan",
+      "bakdata": 254,
+      "portrait": 105
+    },
+    {
+      "officer": "fei_yi",
+      "bakdata": 378,
+      "portrait": 203
+    },
+    {
+      "officer": "feng_ji",
+      "bakdata": 54,
+      "portrait": 122
+    },
+    {
+      "officer": "gan_ning",
+      "bakdata": 147,
+      "portrait": 84
+    },
+    {
+      "officer": "gao_lan",
+      "bakdata": 103,
+      "portrait": 125
+    },
+    {
+      "officer": "gao_shun",
+      "bakdata": 72,
+      "portrait": 150
+    },
+    {
+      "officer": "geng_wu",
+      "bakdata": 57,
+      "portrait": 120
+    },
+    {
+      "officer": "gong_zhi",
+      "bakdata": 181,
+      "portrait": 74
+    },
+    {
+      "officer": "gongsun_zan",
+      "bakdata": 12,
+      "portrait": 107
+    },
+    {
+      "officer": "guan_chun",
+      "bakdata": 58,
+      "portrait": 60
+    },
+    {
+      "officer": "guan_hai",
+      "bakdata": 216,
+      "portrait": 197
+    },
+    {
+      "officer": "guan_ping",
+      "bakdata": 127,
+      "portrait": 19
+    },
+    {
+      "officer": "guan_xing",
+      "bakdata": 29,
+      "portrait": 64
+    },
+    {
+      "officer": "guan_yu",
+      "bakdata": 1,
+      "portrait": 1
+    },
+    {
+      "officer": "guo_jia",
+      "bakdata": 61,
+      "portrait": 34
+    },
+    {
+      "officer": "guo_tu",
+      "bakdata": 92,
+      "portrait": 115
+    },
+    {
+      "officer": "hou_cheng",
+      "bakdata": 80,
+      "portrait": 153
+    },
+    {
+      "officer": "hu_zhen",
+      "bakdata": 21,
+      "portrait": 140
+    },
+    {
+      "officer": "hua_xiong",
+      "bakdata": 5,
+      "portrait": 138
+    },
+    {
+      "officer": "huang_quan",
+      "bakdata": 23,
+      "portrait": 161
+    },
+    {
+      "officer": "huang_zhong",
+      "bakdata": 169,
+      "portrait": 6
+    },
+    {
+      "officer": "huo_jun",
+      "bakdata": 207,
+      "portrait": 22
+    },
+    {
+      "officer": "ji_ling",
+      "bakdata": 69,
+      "portrait": 146
+    },
+    {
+      "officer": "jian_yong",
+      "bakdata": 82,
+      "portrait": 15
+    },
+    {
+      "officer": "jiang_wan",
+      "bakdata": 377,
+      "portrait": 207
+    },
+    {
+      "officer": "jiang_wei",
+      "bakdata": 243,
+      "portrait": 21
+    },
+    {
+      "officer": "jiao_chu",
+      "bakdata": 138,
+      "portrait": 134
+    },
+    {
+      "officer": "ju_shou",
+      "bakdata": 50,
+      "portrait": 114
+    },
+    {
+      "officer": "kong_rong",
+      "bakdata": 7,
+      "portrait": 195
+    },
+    {
+      "officer": "lei_tong",
+      "bakdata": 201,
+      "portrait": 173
+    },
+    {
+      "officer": "li_dian",
+      "bakdata": 115,
+      "portrait": 41
+    },
+    {
+      "officer": "li_feng",
+      "bakdata": 31,
+      "portrait": 183
+    },
+    {
+      "officer": "li_su",
+      "bakdata": 20,
+      "portrait": 139
+    },
+    {
+      "officer": "li_yan",
+      "bakdata": 253,
+      "portrait": 106
+    },
+    {
+      "officer": "liao_hua",
+      "bakdata": 33,
+      "portrait": 16
+    },
+    {
+      "officer": "liu_bei",
+      "bakdata": 0,
+      "portrait": 0
+    },
+    {
+      "officer": "liu_feng",
+      "bakdata": 116,
+      "portrait": 18
+    },
+    {
+      "officer": "liu_pi",
+      "bakdata": 247,
+      "portrait": 129
+    },
+    {
+      "officer": "liu_shan",
+      "bakdata": 252,
+      "portrait": 196
+    },
+    {
+      "officer": "lu_bu",
+      "bakdata": 4,
+      "portrait": 148
+    },
+    {
+      "officer": "ma_chao",
+      "bakdata": 189,
+      "portrait": 186
+    },
+    {
+      "officer": "ma_dai",
+      "bakdata": 203,
+      "portrait": 187
+    },
+    {
+      "officer": "ma_liang",
+      "bakdata": 174,
+      "portrait": 25
+    },
+    {
+      "officer": "ma_su",
+      "bakdata": 30,
+      "portrait": 26
+    },
+    {
+      "officer": "meng_da",
+      "bakdata": 190,
+      "portrait": 61
+    },
+    {
+      "officer": "mi_fang",
+      "bakdata": 81,
+      "portrait": 14
+    },
+    {
+      "officer": "mi_zhu",
+      "bakdata": 64,
+      "portrait": 13
+    },
+    {
+      "officer": "pang_tong",
+      "bakdata": 132,
+      "portrait": 8
+    },
+    {
+      "officer": "qu_yi",
+      "bakdata": 60,
+      "portrait": 128
+    },
+    {
+      "officer": "shen_pei",
+      "bakdata": 91,
+      "portrait": 116
+    },
+    {
+      "officer": "song_xian",
+      "bakdata": 74,
+      "portrait": 152
+    },
+    {
+      "officer": "sun_qian",
+      "bakdata": 63,
+      "portrait": 12
+    },
+    {
+      "officer": "taishi_ci",
+      "bakdata": 149,
+      "portrait": 85
+    },
+    {
+      "officer": "tao_qian",
+      "bakdata": 15,
+      "portrait": 189
+    },
+    {
+      "officer": "tian_feng",
+      "bakdata": 49,
+      "portrait": 113
+    },
+    {
+      "officer": "wang_fu",
+      "bakdata": 37,
+      "portrait": 63
+    },
+    {
+      "officer": "wang_kai",
+      "bakdata": 85,
+      "portrait": 155
+    },
+    {
+      "officer": "wang_ping",
+      "bakdata": 251,
+      "portrait": 119
+    },
+    {
+      "officer": "wei_xu",
+      "bakdata": 73,
+      "portrait": 151
+    },
+    {
+      "officer": "wei_yan",
+      "bakdata": 126,
+      "portrait": 7
+    },
+    {
+      "officer": "wen_chou",
+      "bakdata": 52,
+      "portrait": 112
+    },
+    {
+      "officer": "wu_ban",
+      "bakdata": 90,
+      "portrait": 89
+    },
+    {
+      "officer": "wu_lan",
+      "bakdata": 200,
+      "portrait": 172
+    },
+    {
+      "officer": "wu_yi",
+      "bakdata": 199,
+      "portrait": 171
+    },
+    {
+      "officer": "xiahou_dun",
+      "bakdata": 16,
+      "portrait": 28
+    },
+    {
+      "officer": "xiahou_yuan",
+      "bakdata": 17,
+      "portrait": 29
+    },
+    {
+      "officer": "xu_chu",
+      "bakdata": 67,
+      "portrait": 37
+    },
+    {
+      "officer": "xu_sheng",
+      "bakdata": 165,
+      "portrait": 91
+    },
+    {
+      "officer": "xu_shu",
+      "bakdata": 111,
+      "portrait": 5
+    },
+    {
+      "officer": "xu_si",
+      "bakdata": 84,
+      "portrait": 154
+    },
+    {
+      "officer": "xu_you",
+      "bakdata": 55,
+      "portrait": 123
+    },
+    {
+      "officer": "xun_you",
+      "bakdata": 76,
+      "portrait": 33
+    },
+    {
+      "officer": "xun_yu",
+      "bakdata": 68,
+      "portrait": 32
+    },
+    {
+      "officer": "yan_gang",
+      "bakdata": 59,
+      "portrait": 109
+    },
+    {
+      "officer": "yan_liang",
+      "bakdata": 51,
+      "portrait": 111
+    },
+    {
+      "officer": "yan_yan",
+      "bakdata": 202,
+      "portrait": 23
+    },
+    {
+      "officer": "yi_ji",
+      "bakdata": 113,
+      "portrait": 11
+    },
+    {
+      "officer": "yu_jin",
+      "bakdata": 62,
+      "portrait": 39
+    },
+    {
+      "officer": "yuan_shao",
+      "bakdata": 9,
+      "portrait": 110
+    },
+    {
+      "officer": "yuan_shu",
+      "bakdata": 11,
+      "portrait": 144
+    },
+    {
+      "officer": "yuan_yin",
+      "bakdata": 42,
+      "portrait": 145
+    },
+    {
+      "officer": "yue_jin",
+      "bakdata": 217,
+      "portrait": 40
+    },
+    {
+      "officer": "yue_jiu",
+      "bakdata": 66,
+      "portrait": 165
+    },
+    {
+      "officer": "zhang_bao",
+      "bakdata": 43,
+      "portrait": 211
+    },
+    {
+      "officer": "zhang_fei",
+      "bakdata": 2,
+      "portrait": 2
+    },
+    {
+      "officer": "zhang_he",
+      "bakdata": 102,
+      "portrait": 117
+    },
+    {
+      "officer": "zhang_liao",
+      "bakdata": 79,
+      "portrait": 36
+    },
+    {
+      "officer": "zhang_nan",
+      "bakdata": 139,
+      "portrait": 135
+    },
+    {
+      "officer": "zhao_cen",
+      "bakdata": 27,
+      "portrait": 200
+    },
+    {
+      "officer": "zhao_lei",
+      "bakdata": 38,
+      "portrait": 147
+    },
+    {
+      "officer": "zhao_yun",
+      "bakdata": 53,
+      "portrait": 3
+    },
+    {
+      "officer": "zhou_cang",
+      "bakdata": 154,
+      "portrait": 20
+    },
+    {
+      "officer": "zhuge_liang",
+      "bakdata": 125,
+      "portrait": 4
+    }
+  ],
+  "maps": [
+    {
+      "number": 0,
+      "id": "hexz_00",
+      "name": "汜水關",
+      "cells": [
+        28,
+        16
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 1,
+      "id": "hexz_01",
+      "name": "虎牢關",
+      "cells": [
+        16,
+        24
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 2,
+      "id": "hexz_02",
+      "name": "廣川",
+      "cells": [
+        20,
+        11
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 3,
+      "id": "hexz_03",
+      "name": "信都",
+      "cells": [
+        22,
+        11
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 4,
+      "id": "hexz_04",
+      "name": "巨鹿",
+      "cells": [
+        18,
+        18
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 5,
+      "id": "hexz_05",
+      "name": "清河",
+      "cells": [
+        28,
+        16
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 6,
+      "id": "hexz_06",
+      "name": "界橋",
+      "cells": [
+        32,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 7,
+      "id": "hexz_07",
+      "name": "北海",
+      "cells": [
+        24,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 8,
+      "id": "hexz_08",
+      "name": "徐州",
+      "cells": [
+        30,
+        18
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 9,
+      "id": "hexz_09",
+      "name": "小沛",
+      "cells": [
+        24,
+        16
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 10,
+      "id": "hexz_10",
+      "name": "泰山",
+      "cells": [
+        32,
+        16
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 11,
+      "id": "hexz_11",
+      "name": "夏丘",
+      "cells": [
+        28,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 12,
+      "id": "hexz_12",
+      "name": "彭城",
+      "cells": [
+        20,
+        16
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 13,
+      "id": "hexz_13",
+      "name": "淮南",
+      "cells": [
+        24,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 14,
+      "id": "hexz_14",
+      "name": "下邳",
+      "cells": [
+        32,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 15,
+      "id": "hexz_15",
+      "name": "廣陵",
+      "cells": [
+        24,
+        16
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 16,
+      "id": "hexz_16",
+      "name": "兗州",
+      "cells": [
+        30,
+        20
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 17,
+      "id": "hexz_17",
+      "name": "古城",
+      "cells": [
+        20,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 18,
+      "id": "hexz_18",
+      "name": "穎川",
+      "cells": [
+        32,
+        16
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 19,
+      "id": "hexz_19",
+      "name": "汝南",
+      "cells": [
+        36,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 20,
+      "id": "hexz_20",
+      "name": "江夏",
+      "cells": [
+        32,
+        20
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 21,
+      "id": "hexz_21",
+      "name": "南陽",
+      "cells": [
+        22,
+        18
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 22,
+      "id": "hexz_22",
+      "name": "博望坡",
+      "cells": [
+        40,
+        16
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 23,
+      "id": "hexz_23",
+      "name": "新野",
+      "cells": [
+        32,
+        16
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 24,
+      "id": "hexz_24",
+      "name": "襄陽",
+      "cells": [
+        24,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 25,
+      "id": "hexz_25",
+      "name": "長阪坡Ⅰ",
+      "cells": [
+        36,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 26,
+      "id": "hexz_26",
+      "name": "長阪坡Ⅱ",
+      "cells": [
+        36,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 27,
+      "id": "hexz_27",
+      "name": "江陵",
+      "cells": [
+        36,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 28,
+      "id": "hexz_28",
+      "name": "公安",
+      "cells": [
+        40,
+        24
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 29,
+      "id": "hexz_29",
+      "name": "桂陽",
+      "cells": [
+        24,
+        24
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 30,
+      "id": "hexz_30",
+      "name": "武陵",
+      "cells": [
+        30,
+        20
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 31,
+      "id": "hexz_31",
+      "name": "零陵",
+      "cells": [
+        16,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 32,
+      "id": "hexz_32",
+      "name": "長沙",
+      "cells": [
+        36,
+        20
+      ],
+      "chip_set": 1,
+      "stand_ins": [
+        {
+          "cell": [
+            5,
+            13
+          ],
+          "code": 255,
+          "used": 9
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "id": "hexz_33",
+      "name": "雒",
+      "cells": [
+        32,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 34,
+      "id": "hexz_34",
+      "name": "成都",
+      "cells": [
+        28,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 35,
+      "id": "hexz_35",
+      "name": "瓦口關Ⅰ",
+      "cells": [
+        28,
+        20
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 36,
+      "id": "hexz_36",
+      "name": "瓦口關Ⅱ",
+      "cells": [
+        28,
+        20
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 37,
+      "id": "hexz_37",
+      "name": "葭萌關Ⅰ",
+      "cells": [
+        20,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 38,
+      "id": "hexz_38",
+      "name": "葭萌關Ⅱ",
+      "cells": [
+        40,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 39,
+      "id": "hexz_39",
+      "name": "定軍山",
+      "cells": [
+        38,
+        18
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 40,
+      "id": "hexz_40",
+      "name": "天蕩山",
+      "cells": [
+        34,
+        20
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 41,
+      "id": "hexz_41",
+      "name": "漢水",
+      "cells": [
+        32,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 42,
+      "id": "hexz_42",
+      "name": "陽平關",
+      "cells": [
+        36,
+        16
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 43,
+      "id": "hexz_43",
+      "name": "西陵",
+      "cells": [
+        32,
+        20
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 44,
+      "id": "hexz_44",
+      "name": "彝陵",
+      "cells": [
+        36,
+        24
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 45,
+      "id": "hexz_45",
+      "name": "麥",
+      "cells": [
+        32,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 46,
+      "id": "hexz_46",
+      "name": "南郡",
+      "cells": [
+        24,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 47,
+      "id": "hexz_47",
+      "name": "新野",
+      "cells": [
+        28,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 48,
+      "id": "hexz_48",
+      "name": "宛Ⅰ",
+      "cells": [
+        28,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 49,
+      "id": "hexz_49",
+      "name": "宛Ⅱ",
+      "cells": [
+        24,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 50,
+      "id": "hexz_50",
+      "name": "許昌Ⅰ",
+      "cells": [
+        28,
+        24
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 51,
+      "id": "hexz_51",
+      "name": "許昌Ⅱ",
+      "cells": [
+        28,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 52,
+      "id": "hexz_52",
+      "name": "陳倉",
+      "cells": [
+        32,
+        16
+      ],
+      "chip_set": 2
+    },
+    {
+      "number": 53,
+      "id": "hexz_53",
+      "name": "長安",
+      "cells": [
+        32,
+        16
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 54,
+      "id": "hexz_54",
+      "name": "洛陽",
+      "cells": [
+        32,
+        20
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 55,
+      "id": "hexz_55",
+      "name": "鄴Ⅰ",
+      "cells": [
+        36,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 56,
+      "id": "hexz_56",
+      "name": "鄴Ⅱ",
+      "cells": [
+        28,
+        24
+      ],
+      "chip_set": 1
+    },
+    {
+      "number": 57,
+      "id": "hexz_57",
+      "name": "鄴Ⅲ",
+      "cells": [
+        40,
+        24
+      ],
+      "chip_set": 1
+    }
+  ],
+  "battles": [
+    {
+      "id": "p1_sishui",
+      "file": "battles/p1_sishui.toml",
+      "source": "SNR0D.R3 scene 0 block 5",
+      "map": "hexz_00",
+      "turn_limit": 30,
+      "units": 7,
+      "treasures": 2,
+      "events": 2,
+      "base_events": 2,
+      "notes": [
+        "2 player slot(s) that need a campaign flag (officers who join for this battle only) are left out",
+        "record 5: the base battle's event on Adjacent { a: Some(\"guan_yu\"), b: \"hua_xiong\" } is kept instead",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c0_s0_b5",
+      "file": "battles/c0_s0_b5.toml",
+      "source": "SNR0D.R3 scene 0 block 5",
+      "map": "hexz_00",
+      "turn_limit": 30,
+      "units": 9,
+      "treasures": 2,
+      "events": 2,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 3 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "named by the setup but not in the army at this battle, so allies at their slot: gongsun_zan, tao_qian"
+      ]
+    },
+    {
+      "id": "c0_s0_b7",
+      "file": "battles/c0_s0_b7.toml",
+      "source": "SNR0D.R3 scene 0 block 7",
+      "map": "hexz_01",
+      "turn_limit": 30,
+      "units": 9,
+      "treasures": 1,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 3 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 40 at (13, 10) has no base-pack item",
+        "named by the setup but not in the army at this battle, so allies at their slot: gongsun_zan, tao_qian"
+      ]
+    },
+    {
+      "id": "c1_s0_b4",
+      "file": "battles/c1_s0_b4.toml",
+      "source": "SNR1D.R3 scene 0 block 4",
+      "map": "hexz_02",
+      "turn_limit": 30,
+      "units": 9,
+      "treasures": 0,
+      "events": 1,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 4 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it"
+      ]
+    },
+    {
+      "id": "c1_s0_b6",
+      "file": "battles/c1_s0_b6.toml",
+      "source": "SNR1D.R3 scene 0 block 6",
+      "map": "hexz_03",
+      "turn_limit": 30,
+      "units": 13,
+      "treasures": 2,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 4 slots",
+        "not converted: the original's victory and defeat scripts",
+        "named by the setup but not in the army at this battle, so allies at their slot: orig_p220, orig_p245, orig_p244"
+      ]
+    },
+    {
+      "id": "c1_s0_b11",
+      "file": "battles/c1_s0_b11.toml",
+      "source": "SNR1D.R3 scene 0 block 11",
+      "map": "hexz_05",
+      "turn_limit": 30,
+      "units": 11,
+      "treasures": 2,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 5 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "named by the setup but not in the army at this battle, so allies at their slot: yan_gang"
+      ]
+    },
+    {
+      "id": "c1_s0_b13",
+      "file": "battles/c1_s0_b13.toml",
+      "source": "SNR1D.R3 scene 0 block 13",
+      "map": "hexz_04",
+      "turn_limit": 30,
+      "units": 16,
+      "treasures": 1,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c1_s0_b15",
+      "file": "battles/c1_s0_b15.toml",
+      "source": "SNR1D.R3 scene 0 block 15",
+      "map": "hexz_06",
+      "turn_limit": 40,
+      "units": 21,
+      "treasures": 3,
+      "events": 6,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "1 roster(s) for another route of the original are not used",
+        "record 2: the duel of 文醜 (52) and 陳蔣 (227) is left out (not both officers of the pack)",
+        "record 2: a duel move without a duel it belongs to is left out",
+        "record 2: a duel move without a duel it belongs to is left out",
+        "record 2: retreat: 陳蔣 (227) is not on the map",
+        "record 5: AI change: 陳震 (56) is not on the map",
+        "record 5: AI change: 許攸 (55) is not on the map",
+        "record 5: AI change: 麴義 (60) is not on the map",
+        "record 6: AI change: 麴義 (60) is not on the map",
+        "record 6: AI change: 陳震 (56) is not on the map",
+        "record 6: AI change: 許攸 (55) is not on the map",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 41 at (8, 21) has no base-pack item",
+        "named by the setup but not in the army at this battle, so allies at their slot: gongsun_zan"
+      ]
+    },
+    {
+      "id": "c1_s0_b15_f133",
+      "file": "battles/c1_s0_b15_f133.toml",
+      "source": "SNR1D.R3 scene 0 block 15",
+      "map": "hexz_06",
+      "turn_limit": 40,
+      "units": 19,
+      "treasures": 3,
+      "events": 6,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "1 roster(s) for another route of the original are not used",
+        "record 2: the duel of 文醜 (52) and 陳蔣 (227) is left out (not both officers of the pack)",
+        "record 2: a duel move without a duel it belongs to is left out",
+        "record 2: a duel move without a duel it belongs to is left out",
+        "record 2: retreat: 陳蔣 (227) is not on the map",
+        "record 5: AI change: 審配 (91) is not on the map",
+        "record 5: AI change: 顏良 (51) is not on the map",
+        "record 5: AI change: 張郃 (102) is not on the map",
+        "record 5: AI change: 軍樂隊 (329) is not on the map",
+        "record 6: AI change: 審配 (91) is not on the map",
+        "record 6: AI change: 顏良 (51) is not on the map",
+        "record 6: AI change: 張郃 (102) is not on the map",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 41 at (8, 21) has no base-pack item",
+        "route variant of `c1_s0_b15`: the original's setup and rosters with scenario flag(s) 133 set",
+        "named by the setup but not in the army at this battle, so allies at their slot: gongsun_zan"
+      ]
+    },
+    {
+      "id": "c1_s1_b3",
+      "file": "battles/c1_s1_b3.toml",
+      "source": "SNR1D.R3 scene 1 block 3",
+      "map": "hexz_07",
+      "turn_limit": 30,
+      "units": 15,
+      "treasures": 1,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 5: AI change: 孟肅 (233) is not on the map",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 49 at (13, 17) has no base-pack item",
+        "named by the setup but not in the army at this battle, so allies at their slot: kong_rong, taishi_ci"
+      ]
+    },
+    {
+      "id": "c1_s1_b5",
+      "file": "battles/c1_s1_b5.toml",
+      "source": "SNR1D.R3 scene 1 block 5",
+      "map": "hexz_08",
+      "turn_limit": 30,
+      "units": 21,
+      "treasures": 0,
+      "events": 5,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "not converted: the original's victory and defeat scripts",
+        "named by the setup but not in the army at this battle, so allies at their slot: tao_qian, mi_fang, sun_qian"
+      ]
+    },
+    {
+      "id": "c1_s1_b7",
+      "file": "battles/c1_s1_b7.toml",
+      "source": "SNR1D.R3 scene 1 block 7",
+      "map": "hexz_09",
+      "turn_limit": 30,
+      "units": 25,
+      "treasures": 0,
+      "events": 5,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "named by the setup but not in the army at this battle, so allies at their slot: tao_qian, sun_qian, mi_fang"
+      ]
+    },
+    {
+      "id": "c1_s2_b3",
+      "file": "battles/c1_s2_b3.toml",
+      "source": "SNR1D.R3 scene 2 block 3",
+      "map": "hexz_10",
+      "turn_limit": 40,
+      "units": 12,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 34 at (10, 0) has no base-pack item",
+        "treasure item 33 at (8, 8) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c1_s2_b4",
+      "file": "battles/c1_s2_b4.toml",
+      "source": "SNR1D.R3 scene 2 block 4",
+      "map": "hexz_12",
+      "turn_limit": 30,
+      "units": 12,
+      "treasures": 0,
+      "events": 2,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 18 at (16, 12) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c1_s2_b5",
+      "file": "battles/c1_s2_b5.toml",
+      "source": "SNR1D.R3 scene 2 block 5",
+      "map": "hexz_11",
+      "turn_limit": 30,
+      "units": 12,
+      "treasures": 0,
+      "events": 2,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 37 at (7, 0) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c1_s2_b12",
+      "file": "battles/c1_s2_b12.toml",
+      "source": "SNR1D.R3 scene 2 block 12",
+      "map": "hexz_13",
+      "turn_limit": 30,
+      "units": 22,
+      "treasures": 0,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 9 slots",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 42 at (2, 22) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c1_s3_b1",
+      "file": "battles/c1_s3_b1.toml",
+      "source": "SNR1D.R3 scene 3 block 1",
+      "map": "hexz_11",
+      "turn_limit": 30,
+      "units": 16,
+      "treasures": 1,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "named by the setup but not in the army at this battle, so allies at their slot: xun_yu, cao_ren, cao_hong"
+      ]
+    },
+    {
+      "id": "c1_s3_b2",
+      "file": "battles/c1_s3_b2.toml",
+      "source": "SNR1D.R3 scene 3 block 2",
+      "map": "hexz_12",
+      "turn_limit": 30,
+      "units": 17,
+      "treasures": 1,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "named by the setup but not in the army at this battle, so allies at their slot: guo_jia, xiahou_dun, xiahou_yuan"
+      ]
+    },
+    {
+      "id": "c1_s3_b4",
+      "file": "battles/c1_s3_b4.toml",
+      "source": "SNR1D.R3 scene 3 block 4",
+      "map": "hexz_14",
+      "turn_limit": 45,
+      "units": 30,
+      "treasures": 1,
+      "events": 9,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 7 at (6, 0) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c1_s4_b13",
+      "file": "battles/c1_s4_b13.toml",
+      "source": "SNR1D.R3 scene 4 block 13",
+      "map": "hexz_15",
+      "turn_limit": 30,
+      "units": 12,
+      "treasures": 1,
+      "events": 2,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 11 at (18, 7) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c1_s4_b15",
+      "file": "battles/c1_s4_b15.toml",
+      "source": "SNR1D.R3 scene 4 block 15",
+      "map": "hexz_08",
+      "turn_limit": 50,
+      "units": 28,
+      "treasures": 0,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 9 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c2_s0_b8",
+      "file": "battles/c2_s0_b8.toml",
+      "source": "SNR2D.R3 scene 0 block 8",
+      "map": "hexz_16",
+      "turn_limit": 45,
+      "units": 26,
+      "treasures": 1,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 9 slots",
+        "record 10 is not converted: trigger kind 3 is not converted",
+        "record 11 is not converted: trigger kind 3 is not converted",
+        "record 12 is not converted: trigger kind 3 is not converted",
+        "record 13 is not converted: trigger kind 3 is not converted",
+        "record 14 is not converted: trigger kind 3 is not converted",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 33 at (20, 7) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c2_s0_b9",
+      "file": "battles/c2_s0_b9.toml",
+      "source": "SNR2D.R3 scene 0 block 9",
+      "map": "hexz_17",
+      "turn_limit": 40,
+      "units": 13,
+      "treasures": 1,
+      "events": 2,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 18 at (15, 22) has no base-pack item",
+        "treasure item 35 at (4, 19) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c2_s0_b11",
+      "file": "battles/c2_s0_b11.toml",
+      "source": "SNR2D.R3 scene 0 block 11",
+      "map": "hexz_18",
+      "turn_limit": 30,
+      "units": 17,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 8 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 關羽 (1) and 蔡陽 (152) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 36 at (7, 13) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c2_s0_b16",
+      "file": "battles/c2_s0_b16.toml",
+      "source": "SNR2D.R3 scene 0 block 16",
+      "map": "hexz_19",
+      "turn_limit": 40,
+      "units": 24,
+      "treasures": 1,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 11 slots",
+        "record 10 is not converted: trigger kind 1 is not converted",
+        "record 11: a script at the start of a later phase is not converted",
+        "record 12: a script at the start of a later phase is not converted",
+        "not converted: the original's victory and defeat scripts",
+        "named by the setup but not in the army at this battle, so allies at their slot: liu_pi"
+      ]
+    },
+    {
+      "id": "c2_s1_b7",
+      "file": "battles/c2_s1_b7.toml",
+      "source": "SNR2D.R3 scene 1 block 7",
+      "map": "hexz_20",
+      "turn_limit": 40,
+      "units": 18,
+      "treasures": 2,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 張飛 (2) and 陳孫 (118) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 4: the duel of 趙雲 (53) and 張武 (117) is left out (not both officers of the pack)",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "2 unit(s) brought in only by records that are not converted are left out",
+        "treasure item 26 at (28, 7) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c2_s1_b16",
+      "file": "battles/c2_s1_b16.toml",
+      "source": "SNR2D.R3 scene 1 block 16",
+      "map": "hexz_21",
+      "turn_limit": 40,
+      "units": 22,
+      "treasures": 0,
+      "events": 13,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 張飛 (2) and 呂翔 (124) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 4: the duel of 趙雲 (53) and 呂曠 (123) is left out (not both officers of the pack)",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 15: the duel of 張飛 (2) and 呂翔 (124) is left out (not both officers of the pack)",
+        "record 15: a duel move without a duel it belongs to is left out",
+        "record 15: a duel move without a duel it belongs to is left out",
+        "record 16: the duel of 趙雲 (53) and 呂曠 (123) is left out (not both officers of the pack)",
+        "record 16: a duel move without a duel it belongs to is left out",
+        "record 16: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c2_s3_b2",
+      "file": "battles/c2_s3_b2.toml",
+      "source": "SNR2D.R3 scene 3 block 2",
+      "map": "hexz_22",
+      "turn_limit": 40,
+      "units": 26,
+      "treasures": 0,
+      "events": 7,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 8 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c2_s3_b3",
+      "file": "battles/c2_s3_b3.toml",
+      "source": "SNR2D.R3 scene 3 block 3",
+      "map": "hexz_23",
+      "turn_limit": 40,
+      "units": 25,
+      "treasures": 0,
+      "events": 7,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 8 slots",
+        "6 unit(s) the original keeps off the map and brings in only from other events are left out",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "2 deploy slot(s) on terrain foot units cannot enter or under a unit left out"
+      ]
+    },
+    {
+      "id": "c2_s3_b6",
+      "file": "battles/c2_s3_b6.toml",
+      "source": "SNR2D.R3 scene 3 block 6",
+      "map": "hexz_24",
+      "turn_limit": 20,
+      "units": 15,
+      "treasures": 1,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 趙雲 (53) and 張允 (130) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 42 at (5, 8) has no base-pack item",
+        "treasure item 9 at (16, 3) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c2_s3_b7",
+      "file": "battles/c2_s3_b7.toml",
+      "source": "SNR2D.R3 scene 3 block 7",
+      "map": "hexz_25",
+      "turn_limit": 70,
+      "units": 31,
+      "treasures": 0,
+      "events": 5,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c2_s3_b7_2",
+      "file": "battles/c2_s3_b7_2.toml",
+      "source": "SNR2D.R3 scene 3 block 7",
+      "map": "hexz_26",
+      "turn_limit": 99,
+      "units": 31,
+      "treasures": 0,
+      "events": 6,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 趙雲 (53) and 夏侯恩 (135) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: item 10 has no base-pack item",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c3_s0_b2",
+      "file": "battles/c3_s0_b2.toml",
+      "source": "SNR3D.R3 scene 0 block 2",
+      "map": "hexz_27",
+      "turn_limit": 30,
+      "units": 22,
+      "treasures": 0,
+      "events": 10,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 9 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 16 at (19, 17) has no base-pack item",
+        "treasure item 16 at (19, 17) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s0_b8",
+      "file": "battles/c3_s0_b8.toml",
+      "source": "SNR3D.R3 scene 0 block 8",
+      "map": "hexz_31",
+      "turn_limit": 35,
+      "units": 15,
+      "treasures": 0,
+      "events": 5,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 關平 (127) and 邢道榮 (177) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 46 at (0, 6) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s0_b9",
+      "file": "battles/c3_s0_b9.toml",
+      "source": "SNR3D.R3 scene 0 block 9",
+      "map": "hexz_30",
+      "turn_limit": 35,
+      "units": 15,
+      "treasures": 1,
+      "events": 9,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 周倉 (154) and 金旋 (180) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 22 at (20, 3) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s0_b10",
+      "file": "battles/c3_s0_b10.toml",
+      "source": "SNR3D.R3 scene 0 block 10",
+      "map": "hexz_29",
+      "turn_limit": 35,
+      "units": 16,
+      "treasures": 0,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 7 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 劉封 (116) and 鮑龍 (151) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 38 at (4, 7) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s0_b13",
+      "file": "battles/c3_s0_b13.toml",
+      "source": "SNR3D.R3 scene 0 block 13",
+      "map": "hexz_32",
+      "turn_limit": 40,
+      "units": 19,
+      "treasures": 0,
+      "events": 5,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 11 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 58 at (28, 4) has no base-pack item",
+        "treasure item 18 at (20, 17) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s1_b5",
+      "file": "battles/c3_s1_b5.toml",
+      "source": "SNR3D.R3 scene 1 block 5",
+      "map": "hexz_28",
+      "turn_limit": 40,
+      "units": 26,
+      "treasures": 1,
+      "events": 16,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 關羽 (1) and 呂蒙 (148) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 13: AI change: 軍樂隊 (328) is not on the map",
+        "record 13: AI change: 運輸隊 (348) is not on the map",
+        "record 16: the duel of 關羽 (1) and 呂蒙 (148) is left out (not both officers of the pack)",
+        "record 16: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 39 at (14, 1) has no base-pack item",
+        "a second treasure at (21, 7) left out: the first one stays",
+        "treasure item 39 at (14, 1) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s2_b6",
+      "file": "battles/c3_s2_b6.toml",
+      "source": "SNR3D.R3 scene 2 block 6",
+      "map": "hexz_33",
+      "turn_limit": 30,
+      "units": 21,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 11 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c3_s2_b10",
+      "file": "battles/c3_s2_b10.toml",
+      "source": "SNR3D.R3 scene 2 block 10",
+      "map": "hexz_33",
+      "turn_limit": 40,
+      "units": 27,
+      "treasures": 0,
+      "events": 12,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 9 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 4: the duel of 張飛 (2) and 張任 (195) is left out (not both officers of the pack)",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c3_s2_b14",
+      "file": "battles/c3_s2_b14.toml",
+      "source": "SNR3D.R3 scene 2 block 14",
+      "map": "hexz_37",
+      "turn_limit": 30,
+      "units": 20,
+      "treasures": 1,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c3_s2_b16",
+      "file": "battles/c3_s2_b16.toml",
+      "source": "SNR3D.R3 scene 2 block 16",
+      "map": "hexz_34",
+      "turn_limit": 40,
+      "units": 22,
+      "treasures": 1,
+      "events": 8,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 9 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 22 at (8, 4) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s3_b2",
+      "file": "battles/c3_s3_b2.toml",
+      "source": "SNR3D.R3 scene 3 block 2",
+      "map": "hexz_35",
+      "turn_limit": 40,
+      "units": 15,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c3_s3_b2_2",
+      "file": "battles/c3_s3_b2_2.toml",
+      "source": "SNR3D.R3 scene 3 block 2",
+      "map": "hexz_36",
+      "turn_limit": 40,
+      "units": 14,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 55 at (15, 11) has no base-pack item",
+        "treasure item 42 at (3, 6) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s3_b4",
+      "file": "battles/c3_s3_b4.toml",
+      "source": "SNR3D.R3 scene 3 block 4",
+      "map": "hexz_38",
+      "turn_limit": 35,
+      "units": 25,
+      "treasures": 2,
+      "events": 5,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 10: the duel of 嚴顏 (202) and 夏侯德 (210) is left out (not both officers of the pack)",
+        "record 10: a duel move without a duel it belongs to is left out",
+        "record 10: a duel move without a duel it belongs to is left out",
+        "record 10: a duel move without a duel it belongs to is left out",
+        "record 10: a duel move without a duel it belongs to is left out",
+        "record 10: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 39 at (15, 5) has no base-pack item",
+        "treasure item 29 at (29, 5) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s3_b6",
+      "file": "battles/c3_s3_b6.toml",
+      "source": "SNR3D.R3 scene 3 block 6",
+      "map": "hexz_39",
+      "turn_limit": 35,
+      "units": 25,
+      "treasures": 1,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 1 at (21, 3) has no base-pack item",
+        "treasure item 36 at (23, 4) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s3_b8",
+      "file": "battles/c3_s3_b8.toml",
+      "source": "SNR3D.R3 scene 3 block 8",
+      "map": "hexz_40",
+      "turn_limit": 40,
+      "units": 16,
+      "treasures": 0,
+      "events": 2,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 4: the duel of 嚴顏 (202) and 夏侯德 (210) is left out (not both officers of the pack)",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 53 at (31, 8) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s3_b10",
+      "file": "battles/c3_s3_b10.toml",
+      "source": "SNR3D.R3 scene 3 block 10",
+      "map": "hexz_40",
+      "turn_limit": 40,
+      "units": 25,
+      "treasures": 0,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 53 at (31, 8) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s3_b12",
+      "file": "battles/c3_s3_b12.toml",
+      "source": "SNR3D.R3 scene 3 block 12",
+      "map": "hexz_41",
+      "turn_limit": 40,
+      "units": 28,
+      "treasures": 2,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 曹彰 (211) and 吳蘭 (200) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c3_s3_b14",
+      "file": "battles/c3_s3_b14.toml",
+      "source": "SNR3D.R3 scene 3 block 14",
+      "map": "hexz_42",
+      "turn_limit": 45,
+      "units": 28,
+      "treasures": 0,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 10 is not converted: trigger kind 3 is not converted",
+        "record 11 is not converted: trigger kind 3 is not converted",
+        "record 12 is not converted: trigger kind 3 is not converted",
+        "record 13 is not converted: trigger kind 3 is not converted",
+        "record 14 is not converted: trigger kind 3 is not converted",
+        "record 15 is not converted: trigger kind 3 is not converted",
+        "record 16 is not converted: trigger kind 3 is not converted",
+        "record 17 is not converted: trigger kind 3 is not converted",
+        "record 18 is not converted: trigger kind 3 is not converted",
+        "record 19 is not converted: trigger kind 3 is not converted",
+        "record 20 is not converted: trigger kind 3 is not converted",
+        "record 21 is not converted: trigger kind 3 is not converted",
+        "record 3: the duel of 馬超 (189) and 龐德 (215) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 17 at (14, 10) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s4_b0",
+      "file": "battles/c3_s4_b0.toml",
+      "source": "SNR3D.R3 scene 4 block 0",
+      "map": "hexz_45",
+      "turn_limit": 50,
+      "units": 16,
+      "treasures": 1,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 6 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 48 at (16, 14) has no base-pack item",
+        "treasure item 48 at (7, 8) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c3_s4_b4",
+      "file": "battles/c3_s4_b4.toml",
+      "source": "SNR3D.R3 scene 4 block 4",
+      "map": "hexz_43",
+      "turn_limit": 40,
+      "units": 23,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 9 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 張苞 (43) and 謝旌 (109) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 4: the duel of 關興 (29) and 李異 (108) is left out (not both officers of the pack)",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c3_s4_b6",
+      "file": "battles/c3_s4_b6.toml",
+      "source": "SNR3D.R3 scene 4 block 6",
+      "map": "hexz_44",
+      "turn_limit": 50,
+      "units": 30,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 周泰 (162) and 沙摩可 (34) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c4_s0_b5",
+      "file": "battles/c4_s0_b5.toml",
+      "source": "SNR4D.R3 scene 0 block 5",
+      "map": "hexz_24",
+      "turn_limit": 40,
+      "units": 32,
+      "treasures": 1,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "？？？ (372): an officer who joins during the battle without a base-pack officer; left out",
+        "deploy max 12 lowered to the original's 9 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 11 is not converted: ？？？ (372) is not on the map",
+        "record 6: AI change: ？？？ (372) is not on the map",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 17 at (5, 8) has no base-pack item",
+        "treasure item 1 at (16, 3) has no base-pack item",
+        "a second treasure at (10, 3) left out: the first one stays",
+        "treasure item 17 at (5, 8) has no base-pack item",
+        "treasure item 1 at (16, 3) has no base-pack item",
+        "named by the setup but not in the army at this battle, so allies at their slot: gan_ning, orig_p166, xu_sheng, ding_feng",
+        "a record that ends the battle (in its last stage, or by itself in an earlier one) is not converted: the outro's victory script always plays"
+      ]
+    },
+    {
+      "id": "c4_s0_b7",
+      "file": "battles/c4_s0_b7.toml",
+      "source": "SNR4D.R3 scene 0 block 7",
+      "map": "hexz_47",
+      "turn_limit": 40,
+      "units": 22,
+      "treasures": 0,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 51 at (3, 19) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s0_b8",
+      "file": "battles/c4_s0_b8.toml",
+      "source": "SNR4D.R3 scene 0 block 8",
+      "map": "hexz_46",
+      "turn_limit": 40,
+      "units": 20,
+      "treasures": 1,
+      "events": 7,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 張苞 (43) and 夏侯尚 (209) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 39 at (3, 3) has no base-pack item",
+        "treasure item 46 at (10, 0) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s0_b10",
+      "file": "battles/c4_s0_b10.toml",
+      "source": "SNR4D.R3 scene 0 block 10",
+      "map": "hexz_48",
+      "turn_limit": 40,
+      "units": 23,
+      "treasures": 0,
+      "events": 4,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 46 at (14, 13) has no base-pack item",
+        "treasure item 42 at (17, 3) has no base-pack item",
+        "treasure item 33 at (27, 17) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s0_b11",
+      "file": "battles/c4_s0_b11.toml",
+      "source": "SNR4D.R3 scene 0 block 11",
+      "map": "hexz_49",
+      "turn_limit": 30,
+      "units": 26,
+      "treasures": 1,
+      "events": 5,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 7: the duel of 張飛 (2) and 徐晃 (78) is left out (not both officers of the pack)",
+        "record 7: a duel move without a duel it belongs to is left out",
+        "record 7: a duel move without a duel it belongs to is left out",
+        "record 7: a duel move without a duel it belongs to is left out",
+        "record 7: a duel move without a duel it belongs to is left out",
+        "record 7: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 17 at (19, 12) has no base-pack item",
+        "treasure item 18 at (16, 3) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s1_b2",
+      "file": "battles/c4_s1_b2.toml",
+      "source": "SNR4D.R3 scene 1 block 2",
+      "map": "hexz_52",
+      "turn_limit": 30,
+      "units": 25,
+      "treasures": 2,
+      "events": 12,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 魏延 (126) and 郝昭 (242) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 16 at (18, 3) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s1_b2_f38",
+      "file": "battles/c4_s1_b2_f38.toml",
+      "source": "SNR4D.R3 scene 1 block 2",
+      "map": "hexz_52",
+      "turn_limit": 30,
+      "units": 25,
+      "treasures": 2,
+      "events": 12,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 9 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 魏延 (126) and 郝昭 (242) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 16 at (18, 3) has no base-pack item",
+        "route variant of `c4_s1_b2`: the original's setup and rosters with scenario flag(s) 38 set"
+      ]
+    },
+    {
+      "id": "c4_s1_b3",
+      "file": "battles/c4_s1_b3.toml",
+      "source": "SNR4D.R3 scene 1 block 3",
+      "map": "hexz_53",
+      "turn_limit": 60,
+      "units": 25,
+      "treasures": 0,
+      "events": 10,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 48 at (26, 2) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s1_b3_f38",
+      "file": "battles/c4_s1_b3_f38.toml",
+      "source": "SNR4D.R3 scene 1 block 3",
+      "map": "hexz_53",
+      "turn_limit": 60,
+      "units": 25,
+      "treasures": 0,
+      "events": 10,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 48 at (26, 2) has no base-pack item",
+        "route variant of `c4_s1_b3`: the original's setup and rosters with scenario flag(s) 38 set"
+      ]
+    },
+    {
+      "id": "c4_s1_b5",
+      "file": "battles/c4_s1_b5.toml",
+      "source": "SNR4D.R3 scene 1 block 5",
+      "map": "hexz_54",
+      "turn_limit": 40,
+      "units": 26,
+      "treasures": 1,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 48 at (10, 8) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s1_b6",
+      "file": "battles/c4_s1_b6.toml",
+      "source": "SNR4D.R3 scene 1 block 6",
+      "map": "hexz_50",
+      "turn_limit": 40,
+      "units": 22,
+      "treasures": 0,
+      "events": 5,
+      "base_events": 0,
+      "notes": [
+        "deploy max 12 lowered to the original's 10 slots",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 6: 龐統 (132) arrives without a unit of their own in the battle (the army's officer): only the scene is converted",
+        "record 6: 趙雲 (53) arrives without a unit of their own in the battle (the army's officer): only the scene is converted",
+        "record 6: 馬超 (189) arrives without a unit of their own in the battle (the army's officer): only the scene is converted",
+        "record 6: 魏延 (126) arrives without a unit of their own in the battle (the army's officer): only the scene is converted",
+        "record 6: 姜維 (243) arrives without a unit of their own in the battle (the army's officer): only the scene is converted",
+        "not converted: the original's victory and defeat scripts",
+        "treasure item 16 at (2, 12) has no base-pack item",
+        "treasure item 18 at (24, 8) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s1_b7",
+      "file": "battles/c4_s1_b7.toml",
+      "source": "SNR4D.R3 scene 1 block 7",
+      "map": "hexz_51",
+      "turn_limit": 40,
+      "units": 30,
+      "treasures": 1,
+      "events": 6,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "a second treasure at (12, 17) left out: the first one stays"
+      ]
+    },
+    {
+      "id": "c4_s2_b2",
+      "file": "battles/c4_s2_b2.toml",
+      "source": "SNR4D.R3 scene 2 block 2",
+      "map": "hexz_55",
+      "turn_limit": 40,
+      "units": 28,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "張遼 (79) needs a campaign flag in the original and is left out",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 張苞 (43) and 曹彰 (211) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 4: the duel of 關興 (29) and 曹植 (238) is left out (not both officers of the pack)",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "1 unit(s) brought in only by records that are not converted are left out",
+        "treasure item 48 at (9, 2) has no base-pack item",
+        "treasure item 59 at (26, 2) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s2_b2_f218",
+      "file": "battles/c4_s2_b2_f218.toml",
+      "source": "SNR4D.R3 scene 2 block 2",
+      "map": "hexz_55",
+      "turn_limit": 40,
+      "units": 29,
+      "treasures": 0,
+      "events": 3,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "record 3: the duel of 張苞 (43) and 曹彰 (211) is left out (not both officers of the pack)",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 3: a duel move without a duel it belongs to is left out",
+        "record 4: the duel of 關興 (29) and 曹植 (238) is left out (not both officers of the pack)",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "record 4: a duel move without a duel it belongs to is left out",
+        "not converted: the original's victory and defeat scripts",
+        "1 unit(s) brought in only by records that are not converted are left out",
+        "treasure item 48 at (9, 2) has no base-pack item",
+        "treasure item 59 at (26, 2) has no base-pack item",
+        "route variant of `c4_s2_b2`: the original's setup and rosters with scenario flag(s) 218 set"
+      ]
+    },
+    {
+      "id": "c4_s2_b3",
+      "file": "battles/c4_s2_b3.toml",
+      "source": "SNR4D.R3 scene 2 block 3",
+      "map": "hexz_56",
+      "turn_limit": 40,
+      "units": 28,
+      "treasures": 0,
+      "events": 6,
+      "base_events": 0,
+      "notes": [
+        "張遼 (79) needs a campaign flag in the original and is left out",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "1 unit(s) brought in only by records that are not converted are left out",
+        "treasure item 48 at (0, 11) has no base-pack item",
+        "treasure item 48 at (11, 10) has no base-pack item",
+        "treasure item 51 at (23, 13) has no base-pack item",
+        "treasure item 51 at (6, 5) has no base-pack item"
+      ]
+    },
+    {
+      "id": "c4_s2_b3_f218",
+      "file": "battles/c4_s2_b3_f218.toml",
+      "source": "SNR4D.R3 scene 2 block 3",
+      "map": "hexz_56",
+      "turn_limit": 40,
+      "units": 29,
+      "treasures": 0,
+      "events": 6,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "1 unit(s) brought in only by records that are not converted are left out",
+        "treasure item 48 at (0, 11) has no base-pack item",
+        "treasure item 48 at (11, 10) has no base-pack item",
+        "treasure item 51 at (23, 13) has no base-pack item",
+        "treasure item 51 at (6, 5) has no base-pack item",
+        "route variant of `c4_s2_b3`: the original's setup and rosters with scenario flag(s) 218 set"
+      ]
+    },
+    {
+      "id": "c4_s2_b4",
+      "file": "battles/c4_s2_b4.toml",
+      "source": "SNR4D.R3 scene 2 block 4",
+      "map": "hexz_57",
+      "turn_limit": 50,
+      "units": 29,
+      "treasures": 0,
+      "events": 9,
+      "base_events": 0,
+      "notes": [
+        "張遼 (79) needs a campaign flag in the original and is left out",
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts"
+      ]
+    },
+    {
+      "id": "c4_s2_b4_f218",
+      "file": "battles/c4_s2_b4_f218.toml",
+      "source": "SNR4D.R3 scene 2 block 4",
+      "map": "hexz_57",
+      "turn_limit": 50,
+      "units": 30,
+      "treasures": 0,
+      "events": 9,
+      "base_events": 0,
+      "notes": [
+        "victory condition `reach` dropped: the original has no single objective area for it",
+        "not converted: the original's victory and defeat scripts",
+        "route variant of `c4_s2_b4`: the original's setup and rosters with scenario flag(s) 218 set"
+      ]
+    }
+  ],
+  "officers": [
+    {
+      "officer": "cao_cao",
+      "bakdata": 8,
+      "changes": [
+        "int 92 → 94",
+        "class heavy_cavalry → light_cavalry",
+        "level 23 → 18",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out",
+        "accessory - → imperial_seal"
+      ]
+    },
+    {
+      "officer": "cao_hong",
+      "bakdata": 19,
+      "changes": [
+        "int 45 → 47",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "cao_ren",
+      "bakdata": 18,
+      "changes": [
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "che_zhou",
+      "bakdata": 89,
+      "changes": [
+        "str 62 → 72",
+        "int 45 → 60",
+        "lead 60 → 70",
+        "class long_infantry → short_infantry",
+        "level 21 → 1",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "chen_gong",
+      "bakdata": 75,
+      "changes": [
+        "int 92 → 80",
+        "class crossbow → archer",
+        "level 17 → 4",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "chen_ji",
+      "bakdata": 71,
+      "changes": [
+        "str 55 → 68",
+        "int 50 → 42",
+        "lead 58 → 62",
+        "level 14 → 1"
+      ]
+    },
+    {
+      "officer": "chen_lin",
+      "bakdata": 98,
+      "changes": [
+        "str 30 → 23",
+        "int 82 → 80",
+        "lead 45 → 55",
+        "level 11 → 3"
+      ]
+    },
+    {
+      "officer": "chen_shi",
+      "bakdata": 208,
+      "changes": [
+        "level 52 → 5"
+      ]
+    },
+    {
+      "officer": "chen_zhen",
+      "bakdata": 56,
+      "changes": [
+        "str 50 → 35",
+        "int 70 → 65",
+        "lead 58 → 32",
+        "level 10 → 4"
+      ]
+    },
+    {
+      "officer": "cheng_yu",
+      "bakdata": 77,
+      "changes": [
+        "str 50 → 25",
+        "int 88 → 90",
+        "lead 70 → 85",
+        "class crossbow → archer",
+        "level 21 → 4",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "chunyu_qiong",
+      "bakdata": 105,
+      "changes": [
+        "int 42 → 62",
+        "level 8 → 4"
+      ]
+    },
+    {
+      "officer": "ding_feng",
+      "bakdata": 164,
+      "changes": [
+        "class chariot → short_infantry",
+        "level 52 → 5"
+      ]
+    },
+    {
+      "officer": "fa_zheng",
+      "bakdata": 187,
+      "changes": [
+        "level 46 → 34"
+      ]
+    },
+    {
+      "officer": "fei_guan",
+      "bakdata": 254,
+      "changes": [
+        "class chariot → short_infantry",
+        "level 51 → 4"
+      ]
+    },
+    {
+      "officer": "fei_yi",
+      "bakdata": 378,
+      "changes": [
+        "level 45 → 30"
+      ]
+    },
+    {
+      "officer": "feng_ji",
+      "bakdata": 54,
+      "changes": [
+        "int 72 → 82",
+        "level 9 → 3",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "gan_ning",
+      "bakdata": 147,
+      "changes": [
+        "level 54 → 5"
+      ]
+    },
+    {
+      "officer": "gao_lan",
+      "bakdata": 103,
+      "changes": [
+        "str 76 → 75",
+        "int 45 → 50",
+        "lead 70 → 72",
+        "level 10 → 4"
+      ]
+    },
+    {
+      "officer": "gao_shun",
+      "bakdata": 72,
+      "changes": [
+        "str 85 → 56",
+        "int 50 → 60",
+        "lead 80 → 63",
+        "level 18 → 3",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "geng_wu",
+      "bakdata": 57,
+      "changes": [
+        "level 5 → 4"
+      ]
+    },
+    {
+      "officer": "gong_zhi",
+      "bakdata": 181,
+      "changes": [
+        "class catapult → archer",
+        "level 43 → 1"
+      ]
+    },
+    {
+      "officer": "gongsun_zan",
+      "bakdata": 12,
+      "changes": [
+        "str 70 → 71",
+        "lead 66 → 67",
+        "level 6 → 4"
+      ]
+    },
+    {
+      "officer": "guan_chun",
+      "bakdata": 58,
+      "changes": [
+        "level 5 → 4"
+      ]
+    },
+    {
+      "officer": "guan_hai",
+      "bakdata": 216,
+      "changes": [
+        "int 30 → 14",
+        "level 10 → 5",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "guan_ping",
+      "bakdata": 127,
+      "changes": [
+        "level 31 → 22"
+      ]
+    },
+    {
+      "officer": "guan_xing",
+      "bakdata": 29,
+      "changes": [
+        "level 56 → 41"
+      ]
+    },
+    {
+      "officer": "guan_yu",
+      "bakdata": 1,
+      "changes": [
+        "item 12 has no pack item; left out",
+        "weapon green_dragon_blade → -"
+      ]
+    },
+    {
+      "officer": "guo_jia",
+      "bakdata": 61,
+      "changes": [
+        "str 30 → 36",
+        "lead 70 → 32",
+        "level 14 → 15",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "guo_tu",
+      "bakdata": 92,
+      "changes": [
+        "str 48 → 34",
+        "int 72 → 76",
+        "lead 55 → 31",
+        "level 10 → 3",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "hou_cheng",
+      "bakdata": 80,
+      "changes": [
+        "str 70 → 67",
+        "int 38 → 42",
+        "lead 60 → 65",
+        "level 3 → 4"
+      ]
+    },
+    {
+      "officer": "hu_zhen",
+      "bakdata": 21,
+      "changes": [
+        "str 64 → 58",
+        "int 34 → 30",
+        "lead 55 → 37",
+        "level 2 → 3"
+      ]
+    },
+    {
+      "officer": "hua_xiong",
+      "bakdata": 5,
+      "changes": [
+        "int 40 → 29",
+        "level 5 → 3"
+      ]
+    },
+    {
+      "officer": "huang_quan",
+      "bakdata": 23,
+      "changes": [
+        "class chariot → short_infantry",
+        "level 54 → 4"
+      ]
+    },
+    {
+      "officer": "huang_zhong",
+      "bakdata": 169,
+      "changes": [
+        "class chariot → short_infantry",
+        "level 46 → 7"
+      ]
+    },
+    {
+      "officer": "huo_jun",
+      "bakdata": 207,
+      "changes": [
+        "level 53 → 5"
+      ]
+    },
+    {
+      "officer": "ji_ling",
+      "bakdata": 69,
+      "changes": [
+        "int 40 → 35",
+        "class heavy_cavalry → light_cavalry",
+        "level 16 → 5",
+        "item 62 has no pack item; left out",
+        "weapon - → three_point_blade"
+      ]
+    },
+    {
+      "officer": "jian_yong",
+      "bakdata": 82,
+      "changes": [
+        "level 4 → 3"
+      ]
+    },
+    {
+      "officer": "jiang_wan",
+      "bakdata": 377,
+      "changes": [
+        "level 45 → 30"
+      ]
+    },
+    {
+      "officer": "jiang_wei",
+      "bakdata": 243,
+      "changes": [
+        "level 71 → 40"
+      ]
+    },
+    {
+      "officer": "jiao_chu",
+      "bakdata": 138,
+      "changes": [
+        "int 38 → 34",
+        "lead 58 → 61",
+        "level 10 → 3"
+      ]
+    },
+    {
+      "officer": "ju_shou",
+      "bakdata": 50,
+      "changes": [
+        "str 40 → 60",
+        "int 88 → 85",
+        "lead 80 → 71",
+        "level 10 → 4"
+      ]
+    },
+    {
+      "officer": "kong_rong",
+      "bakdata": 7,
+      "changes": [
+        "str 57 → 58",
+        "int 80 → 83",
+        "lead 66 → 67",
+        "level 12 → 8"
+      ]
+    },
+    {
+      "officer": "lei_tong",
+      "bakdata": 201,
+      "changes": [
+        "class guard_cavalry → light_cavalry",
+        "level 52 → 4"
+      ]
+    },
+    {
+      "officer": "li_dian",
+      "bakdata": 115,
+      "changes": [
+        "int 70 → 47",
+        "level 15 → 4",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "li_feng",
+      "bakdata": 31,
+      "changes": [
+        "str 50 → 68",
+        "int 40 → 35",
+        "lead 50 → 62",
+        "class crossbow → archer",
+        "level 17 → 1"
+      ]
+    },
+    {
+      "officer": "li_su",
+      "bakdata": 20,
+      "changes": [
+        "int 66 → 68",
+        "level 2 → 3"
+      ]
+    },
+    {
+      "officer": "li_yan",
+      "bakdata": 253,
+      "changes": [
+        "class catapult → archer",
+        "level 51 → 4"
+      ]
+    },
+    {
+      "officer": "liao_hua",
+      "bakdata": 33,
+      "changes": [
+        "level 52 → 40"
+      ]
+    },
+    {
+      "officer": "liu_feng",
+      "bakdata": 116,
+      "changes": [
+        "level 32 → 23"
+      ]
+    },
+    {
+      "officer": "liu_pi",
+      "bakdata": 247,
+      "changes": [
+        "level 32 → 23"
+      ]
+    },
+    {
+      "officer": "liu_shan",
+      "bakdata": 252,
+      "changes": [
+        "level 59 → 41"
+      ]
+    },
+    {
+      "officer": "lu_bu",
+      "bakdata": 4,
+      "changes": [
+        "int 26 → 21",
+        "item 7 has no pack item; left out",
+        "weapon - → sky_piercer"
+      ]
+    },
+    {
+      "officer": "ma_chao",
+      "bakdata": 189,
+      "changes": [
+        "class guard_cavalry → light_cavalry",
+        "level 56 → 7"
+      ]
+    },
+    {
+      "officer": "ma_dai",
+      "bakdata": 203,
+      "changes": [
+        "class guard_cavalry → light_cavalry",
+        "level 55 → 7"
+      ]
+    },
+    {
+      "officer": "ma_liang",
+      "bakdata": 174,
+      "changes": [
+        "lead 74 → 73",
+        "level 42 → 30"
+      ]
+    },
+    {
+      "officer": "ma_su",
+      "bakdata": 30,
+      "changes": [
+        "level 42 → 30"
+      ]
+    },
+    {
+      "officer": "meng_da",
+      "bakdata": 190,
+      "changes": [
+        "class chariot → short_infantry",
+        "level 53 → 5"
+      ]
+    },
+    {
+      "officer": "mi_fang",
+      "bakdata": 81,
+      "changes": [
+        "level 13 → 9"
+      ]
+    },
+    {
+      "officer": "mi_zhu",
+      "bakdata": 64,
+      "changes": [
+        "level 13 → 10"
+      ]
+    },
+    {
+      "officer": "pang_tong",
+      "bakdata": 132,
+      "changes": [
+        "level 49 → 34"
+      ]
+    },
+    {
+      "officer": "qu_yi",
+      "bakdata": 60,
+      "changes": [
+        "str 70 → 73",
+        "int 40 → 39",
+        "level 9 → 4"
+      ]
+    },
+    {
+      "officer": "shen_pei",
+      "bakdata": 91,
+      "changes": [
+        "str 60 → 71",
+        "int 75 → 67",
+        "lead 78 → 73",
+        "level 9 → 3",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "song_xian",
+      "bakdata": 74,
+      "changes": [
+        "int 42 → 45"
+      ]
+    },
+    {
+      "officer": "sun_qian",
+      "bakdata": 63,
+      "changes": [
+        "level 11 → 9"
+      ]
+    },
+    {
+      "officer": "taishi_ci",
+      "bakdata": 149,
+      "changes": [
+        "str 93 → 94",
+        "int 66 → 67",
+        "lead 80 → 81",
+        "level 13 → 9"
+      ]
+    },
+    {
+      "officer": "tao_qian",
+      "bakdata": 15,
+      "changes": [
+        "str 52 → 53",
+        "int 62 → 61",
+        "lead 40 → 42",
+        "level 6 → 4"
+      ]
+    },
+    {
+      "officer": "tian_feng",
+      "bakdata": 49,
+      "changes": [
+        "level 10 → 5",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "wang_fu",
+      "bakdata": 37,
+      "changes": [
+        "level 52 → 40"
+      ]
+    },
+    {
+      "officer": "wang_kai",
+      "bakdata": 85,
+      "changes": [
+        "str 40 → 32",
+        "int 70 → 54",
+        "lead 45 → 29",
+        "level 17 → 2"
+      ]
+    },
+    {
+      "officer": "wang_ping",
+      "bakdata": 251,
+      "changes": [
+        "class chariot → short_infantry",
+        "level 59 → 5"
+      ]
+    },
+    {
+      "officer": "wei_xu",
+      "bakdata": 73,
+      "changes": [
+        "int 38 → 46",
+        "class archer → short_infantry",
+        "level 2 → 3"
+      ]
+    },
+    {
+      "officer": "wei_yan",
+      "bakdata": 126,
+      "changes": [
+        "class martial → light_cavalry",
+        "level 46 → 5"
+      ]
+    },
+    {
+      "officer": "wen_chou",
+      "bakdata": 52,
+      "changes": [
+        "int 30 → 19",
+        "level 13 → 4",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "wu_ban",
+      "bakdata": 90,
+      "changes": [
+        "class catapult → archer",
+        "level 52 → 5"
+      ]
+    },
+    {
+      "officer": "wu_lan",
+      "bakdata": 200,
+      "changes": [
+        "class guard_cavalry → light_cavalry",
+        "level 52 → 4"
+      ]
+    },
+    {
+      "officer": "wu_yi",
+      "bakdata": 199,
+      "changes": [
+        "class catapult → archer",
+        "level 52 → 5"
+      ]
+    },
+    {
+      "officer": "xiahou_dun",
+      "bakdata": 16,
+      "changes": [
+        "int 58 → 60",
+        "level 18 → 15",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "xiahou_yuan",
+      "bakdata": 17,
+      "changes": [
+        "int 55 → 52",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "xu_chu",
+      "bakdata": 67,
+      "changes": [
+        "int 36 → 25",
+        "class heavy_cavalry → light_cavalry",
+        "level 21 → 5",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "xu_sheng",
+      "bakdata": 165,
+      "changes": [
+        "class chariot → short_infantry",
+        "level 53 → 5"
+      ]
+    },
+    {
+      "officer": "xu_shu",
+      "bakdata": 111,
+      "changes": [
+        "level 36 → 26"
+      ]
+    },
+    {
+      "officer": "xu_si",
+      "bakdata": 84,
+      "changes": [
+        "str 60 → 23",
+        "int 70 → 78",
+        "lead 50 → 20",
+        "level 18 → 4"
+      ]
+    },
+    {
+      "officer": "xu_you",
+      "bakdata": 55,
+      "changes": [
+        "str 32 → 45",
+        "int 84 → 61",
+        "level 10 → 4"
+      ]
+    },
+    {
+      "officer": "xun_you",
+      "bakdata": 76,
+      "changes": [
+        "str 38 → 40",
+        "int 92 → 94",
+        "lead 65 → 60",
+        "level 21 → 5",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "xun_yu",
+      "bakdata": 68,
+      "changes": [
+        "str 35 → 37",
+        "int 95 → 96",
+        "level 18 → 15",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "yan_gang",
+      "bakdata": 59,
+      "changes": [
+        "str 62 → 66",
+        "int 38 → 45",
+        "lead 55 → 60",
+        "level 9 → 4"
+      ]
+    },
+    {
+      "officer": "yan_liang",
+      "bakdata": 51,
+      "changes": [
+        "int 42 → 32",
+        "level 10 → 4",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "yan_yan",
+      "bakdata": 202,
+      "changes": [
+        "level 49 → 34"
+      ]
+    },
+    {
+      "officer": "yi_ji",
+      "bakdata": 113,
+      "changes": [
+        "level 38 → 23"
+      ]
+    },
+    {
+      "officer": "yu_jin",
+      "bakdata": 62,
+      "changes": [
+        "int 65 → 52",
+        "level 14 → 12",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "yuan_shao",
+      "bakdata": 9,
+      "changes": [
+        "str 57 → 58",
+        "int 68 → 47",
+        "lead 70 → 71",
+        "level 13 → 5",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "yuan_shu",
+      "bakdata": 11,
+      "changes": [
+        "int 58 → 43",
+        "lead 70 → 71",
+        "class long_infantry → short_infantry",
+        "level 20 → 3",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "yuan_yin",
+      "bakdata": 42,
+      "changes": [
+        "str 45 → 25",
+        "int 55 → 59",
+        "lead 50 → 23",
+        "class crossbow → archer",
+        "level 17 → 1"
+      ]
+    },
+    {
+      "officer": "yue_jin",
+      "bakdata": 217,
+      "changes": [
+        "str 80 → 74",
+        "int 50 → 39",
+        "lead 70 → 74",
+        "level 15 → 4",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "yue_jiu",
+      "bakdata": 66,
+      "changes": [
+        "str 60 → 70",
+        "int 45 → 51",
+        "lead 62 → 67",
+        "class long_infantry → short_infantry",
+        "level 15 → 1"
+      ]
+    },
+    {
+      "officer": "zhang_bao",
+      "bakdata": 43,
+      "changes": [
+        "level 56 → 41"
+      ]
+    },
+    {
+      "officer": "zhang_he",
+      "bakdata": 102,
+      "changes": [
+        "int 69 → 62",
+        "level 10 → 4",
+        "item 10 has no pack item; left out",
+        "item 62 has no pack item; left out"
+      ]
+    },
+    {
+      "officer": "zhang_liao",
+      "bakdata": 79,
+      "changes": [
+        "level 3 → 4"
+      ]
+    },
+    {
+      "officer": "zhang_nan",
+      "bakdata": 139,
+      "changes": [
+        "str 64 → 56",
+        "int 36 → 46",
+        "lead 55 → 47",
+        "level 10 → 1"
+      ]
+    },
+    {
+      "officer": "zhao_cen",
+      "bakdata": 27,
+      "changes": [
+        "str 58 → 63",
+        "int 36 → 25",
+        "lead 60 → 57",
+        "level 2 → 3"
+      ]
+    },
+    {
+      "officer": "zhao_lei",
+      "bakdata": 38,
+      "changes": [
+        "level 52 → 40"
+      ]
+    },
+    {
+      "officer": "zhou_cang",
+      "bakdata": 154,
+      "changes": [
+        "level 31 → 22"
+      ]
+    },
+    {
+      "officer": "zhuge_liang",
+      "bakdata": 125,
+      "changes": [
+        "level 41 → 30"
+      ]
+    },
+    {
+      "officer": "orig_p34",
+      "bakdata": 34,
+      "added": true
+    },
+    {
+      "officer": "orig_p166",
+      "bakdata": 166,
+      "added": true
+    },
+    {
+      "officer": "orig_p220",
+      "bakdata": 220,
+      "added": true
+    },
+    {
+      "officer": "orig_p223",
+      "bakdata": 223,
+      "added": true
+    },
+    {
+      "officer": "orig_p228",
+      "bakdata": 228,
+      "added": true
+    },
+    {
+      "officer": "orig_p234",
+      "bakdata": 234,
+      "added": true
+    },
+    {
+      "officer": "orig_p235",
+      "bakdata": 235,
+      "added": true
+    },
+    {
+      "officer": "orig_p236",
+      "bakdata": 236,
+      "added": true
+    },
+    {
+      "officer": "orig_p244",
+      "bakdata": 244,
+      "added": true
+    },
+    {
+      "officer": "orig_p245",
+      "bakdata": 245,
+      "added": true
+    },
+    {
+      "officer": "orig_p375",
+      "bakdata": 375,
+      "added": true
+    }
+  ],
+  "unmatched_officers": [
+    {
+      "officer": "chang_xi",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "lian_biao",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "ling_tong",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "shamoke",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "shan_jing",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "shi_meng",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "tian_kai",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "tian_yu",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "xia_kun",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "xu_dan",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "yue_lin",
+      "reason": "no BAKDATA officer of that name"
+    },
+    {
+      "officer": "zong_bao",
+      "reason": "no BAKDATA officer of that name"
+    }
+  ],
+  "files": [
+    "battles/c0_s0_b5.toml",
+    "battles/c0_s0_b7.toml",
+    "battles/c1_s0_b11.toml",
+    "battles/c1_s0_b13.toml",
+    "battles/c1_s0_b15.toml",
+    "battles/c1_s0_b15_f133.toml",
+    "battles/c1_s0_b4.toml",
+    "battles/c1_s0_b6.toml",
+    "battles/c1_s1_b3.toml",
+    "battles/c1_s1_b5.toml",
+    "battles/c1_s1_b7.toml",
+    "battles/c1_s2_b12.toml",
+    "battles/c1_s2_b3.toml",
+    "battles/c1_s2_b4.toml",
+    "battles/c1_s2_b5.toml",
+    "battles/c1_s3_b1.toml",
+    "battles/c1_s3_b2.toml",
+    "battles/c1_s3_b4.toml",
+    "battles/c1_s4_b13.toml",
+    "battles/c1_s4_b15.toml",
+    "battles/c2_s0_b11.toml",
+    "battles/c2_s0_b16.toml",
+    "battles/c2_s0_b8.toml",
+    "battles/c2_s0_b9.toml",
+    "battles/c2_s1_b16.toml",
+    "battles/c2_s1_b7.toml",
+    "battles/c2_s3_b2.toml",
+    "battles/c2_s3_b3.toml",
+    "battles/c2_s3_b6.toml",
+    "battles/c2_s3_b7.toml",
+    "battles/c2_s3_b7_2.toml",
+    "battles/c3_s0_b10.toml",
+    "battles/c3_s0_b13.toml",
+    "battles/c3_s0_b2.toml",
+    "battles/c3_s0_b8.toml",
+    "battles/c3_s0_b9.toml",
+    "battles/c3_s1_b5.toml",
+    "battles/c3_s2_b10.toml",
+    "battles/c3_s2_b14.toml",
+    "battles/c3_s2_b16.toml",
+    "battles/c3_s2_b6.toml",
+    "battles/c3_s3_b10.toml",
+    "battles/c3_s3_b12.toml",
+    "battles/c3_s3_b14.toml",
+    "battles/c3_s3_b2.toml",
+    "battles/c3_s3_b2_2.toml",
+    "battles/c3_s3_b4.toml",
+    "battles/c3_s3_b6.toml",
+    "battles/c3_s3_b8.toml",
+    "battles/c3_s4_b0.toml",
+    "battles/c3_s4_b4.toml",
+    "battles/c3_s4_b6.toml",
+    "battles/c4_s0_b10.toml",
+    "battles/c4_s0_b11.toml",
+    "battles/c4_s0_b5.toml",
+    "battles/c4_s0_b7.toml",
+    "battles/c4_s0_b8.toml",
+    "battles/c4_s1_b2.toml",
+    "battles/c4_s1_b2_f38.toml",
+    "battles/c4_s1_b3.toml",
+    "battles/c4_s1_b3_f38.toml",
+    "battles/c4_s1_b5.toml",
+    "battles/c4_s1_b6.toml",
+    "battles/c4_s1_b7.toml",
+    "battles/c4_s2_b2.toml",
+    "battles/c4_s2_b2_f218.toml",
+    "battles/c4_s2_b3.toml",
+    "battles/c4_s2_b3_f218.toml",
+    "battles/c4_s2_b4.toml",
+    "battles/c4_s2_b4_f218.toml",
+    "battles/p1_sishui.toml",
+    "bgm/battle.wav",
+    "bgm/boss.wav",
+    "bgm/camp.wav",
+    "bgm/defeat.wav",
+    "bgm/ending.wav",
+    "bgm/enemy.wav",
+    "bgm/peace.wav",
+    "bgm/sad.wav",
+    "bgm/tension.wav",
+    "bgm/title.wav",
+    "campaign.toml",
+    "dramas/original_battles.drama",
+    "dramas/original_chapters.drama",
+    "gfx/duel/guan_yu.png",
+    "gfx/duel/left.png",
+    "gfx/duel/lu_bu.png",
+    "gfx/duel/right.png",
+    "gfx/duel/terrain_barracks.png",
+    "gfx/duel/terrain_bridge.png",
+    "gfx/duel/terrain_castle.png",
+    "gfx/duel/terrain_cliff.png",
+    "gfx/duel/terrain_closed_gate.png",
+    "gfx/duel/terrain_fence.png",
+    "gfx/duel/terrain_forest.png",
+    "gfx/duel/terrain_fort.png",
+    "gfx/duel/terrain_gate.png",
+    "gfx/duel/terrain_granary.png",
+    "gfx/duel/terrain_grass.png",
+    "gfx/duel/terrain_house.png",
+    "gfx/duel/terrain_mountain.png",
+    "gfx/duel/terrain_plain.png",
+    "gfx/duel/terrain_river.png",
+    "gfx/duel/terrain_road.png",
+    "gfx/duel/terrain_treasury.png",
+    "gfx/duel/terrain_village.png",
+    "gfx/duel/terrain_wall.png",
+    "gfx/duel/terrain_wasteland.png",
+    "gfx/duel/zhang_fei.png",
+    "gfx/maps/hexz_00.png",
+    "gfx/maps/hexz_01.png",
+    "gfx/maps/hexz_02.png",
+    "gfx/maps/hexz_03.png",
+    "gfx/maps/hexz_04.png",
+    "gfx/maps/hexz_05.png",
+    "gfx/maps/hexz_06.png",
+    "gfx/maps/hexz_07.png",
+    "gfx/maps/hexz_07_2_2_0.png",
+    "gfx/maps/hexz_08.png",
+    "gfx/maps/hexz_09.png",
+    "gfx/maps/hexz_10.png",
+    "gfx/maps/hexz_11.png",
+    "gfx/maps/hexz_12.png",
+    "gfx/maps/hexz_13.png",
+    "gfx/maps/hexz_14.png",
+    "gfx/maps/hexz_14_11_11_2.png",
+    "gfx/maps/hexz_14_11_12_2.png",
+    "gfx/maps/hexz_14_12_11_2.png",
+    "gfx/maps/hexz_14_12_12_2.png",
+    "gfx/maps/hexz_14_13_11_2.png",
+    "gfx/maps/hexz_14_13_12_2.png",
+    "gfx/maps/hexz_15.png",
+    "gfx/maps/hexz_16.png",
+    "gfx/maps/hexz_17.png",
+    "gfx/maps/hexz_18.png",
+    "gfx/maps/hexz_19.png",
+    "gfx/maps/hexz_20.png",
+    "gfx/maps/hexz_21.png",
+    "gfx/maps/hexz_22.png",
+    "gfx/maps/hexz_23.png",
+    "gfx/maps/hexz_24.png",
+    "gfx/maps/hexz_25.png",
+    "gfx/maps/hexz_26.png",
+    "gfx/maps/hexz_27.png",
+    "gfx/maps/hexz_28.png",
+    "gfx/maps/hexz_29.png",
+    "gfx/maps/hexz_30.png",
+    "gfx/maps/hexz_31.png",
+    "gfx/maps/hexz_32.png",
+    "gfx/maps/hexz_33.png",
+    "gfx/maps/hexz_34.png",
+    "gfx/maps/hexz_35.png",
+    "gfx/maps/hexz_36.png",
+    "gfx/maps/hexz_37.png",
+    "gfx/maps/hexz_38.png",
+    "gfx/maps/hexz_39.png",
+    "gfx/maps/hexz_40.png",
+    "gfx/maps/hexz_41.png",
+    "gfx/maps/hexz_42.png",
+    "gfx/maps/hexz_43.png",
+    "gfx/maps/hexz_44.png",
+    "gfx/maps/hexz_45.png",
+    "gfx/maps/hexz_46.png",
+    "gfx/maps/hexz_47.png",
+    "gfx/maps/hexz_48.png",
+    "gfx/maps/hexz_49.png",
+    "gfx/maps/hexz_49_14_16_2.png",
+    "gfx/maps/hexz_49_14_17_2.png",
+    "gfx/maps/hexz_49_15_16_2.png",
+    "gfx/maps/hexz_49_15_17_2.png",
+    "gfx/maps/hexz_49_16_16_2.png",
+    "gfx/maps/hexz_49_16_17_2.png",
+    "gfx/maps/hexz_50.png",
+    "gfx/maps/hexz_51.png",
+    "gfx/maps/hexz_51_13_9_0.png",
+    "gfx/maps/hexz_52.png",
+    "gfx/maps/hexz_53.png",
+    "gfx/maps/hexz_54.png",
+    "gfx/maps/hexz_55.png",
+    "gfx/maps/hexz_56.png",
+    "gfx/maps/hexz_56_22_23_1.png",
+    "gfx/maps/hexz_57.png",
+    "gfx/pictures/orig_03.png",
+    "gfx/pictures/orig_04.png",
+    "gfx/pictures/orig_05.png",
+    "gfx/pictures/orig_06.png",
+    "gfx/pictures/orig_07.png",
+    "gfx/pictures/orig_08.png",
+    "gfx/pictures/orig_09.png",
+    "gfx/pictures/orig_10.png",
+    "gfx/pictures/orig_11.png",
+    "gfx/pictures/orig_12.png",
+    "gfx/pictures/orig_13.png",
+    "gfx/pictures/orig_14.png",
+    "gfx/pictures/orig_15.png",
+    "gfx/pictures/orig_16.png",
+    "gfx/pictures/orig_17.png",
+    "gfx/pictures/orig_18.png",
+    "gfx/pictures/orig_19.png",
+    "gfx/pictures/orig_20.png",
+    "gfx/pictures/orig_21.png",
+    "gfx/pictures/orig_22.png",
+    "gfx/pictures/orig_23.png",
+    "gfx/pictures/orig_24.png",
+    "gfx/pictures/orig_25.png",
+    "gfx/pictures/orig_26.png",
+    "gfx/pictures/orig_27.png",
+    "gfx/pictures/orig_28.png",
+    "gfx/pictures/orig_29.png",
+    "gfx/pictures/orig_30.png",
+    "gfx/pictures/orig_31.png",
+    "gfx/pictures/orig_32.png",
+    "gfx/pictures/orig_33.png",
+    "gfx/portraits/cao_cao.png",
+    "gfx/portraits/cao_hong.png",
+    "gfx/portraits/cao_ren.png",
+    "gfx/portraits/che_zhou.png",
+    "gfx/portraits/chen_gong.png",
+    "gfx/portraits/chen_ji.png",
+    "gfx/portraits/chen_lin.png",
+    "gfx/portraits/chen_shi.png",
+    "gfx/portraits/chen_zhen.png",
+    "gfx/portraits/cheng_yu.png",
+    "gfx/portraits/chunyu_qiong.png",
+    "gfx/portraits/ding_feng.png",
+    "gfx/portraits/fa_zheng.png",
+    "gfx/portraits/fei_guan.png",
+    "gfx/portraits/fei_yi.png",
+    "gfx/portraits/feng_ji.png",
+    "gfx/portraits/gan_ning.png",
+    "gfx/portraits/gao_lan.png",
+    "gfx/portraits/gao_shun.png",
+    "gfx/portraits/geng_wu.png",
+    "gfx/portraits/gong_zhi.png",
+    "gfx/portraits/gongsun_zan.png",
+    "gfx/portraits/guan_chun.png",
+    "gfx/portraits/guan_hai.png",
+    "gfx/portraits/guan_ping.png",
+    "gfx/portraits/guan_xing.png",
+    "gfx/portraits/guan_yu.png",
+    "gfx/portraits/guo_jia.png",
+    "gfx/portraits/guo_tu.png",
+    "gfx/portraits/hou_cheng.png",
+    "gfx/portraits/hu_zhen.png",
+    "gfx/portraits/hua_xiong.png",
+    "gfx/portraits/huang_quan.png",
+    "gfx/portraits/huang_zhong.png",
+    "gfx/portraits/huo_jun.png",
+    "gfx/portraits/ji_ling.png",
+    "gfx/portraits/jian_yong.png",
+    "gfx/portraits/jiang_wan.png",
+    "gfx/portraits/jiang_wei.png",
+    "gfx/portraits/jiao_chu.png",
+    "gfx/portraits/ju_shou.png",
+    "gfx/portraits/kong_rong.png",
+    "gfx/portraits/lei_tong.png",
+    "gfx/portraits/li_dian.png",
+    "gfx/portraits/li_feng.png",
+    "gfx/portraits/li_su.png",
+    "gfx/portraits/li_yan.png",
+    "gfx/portraits/liao_hua.png",
+    "gfx/portraits/liu_bei.png",
+    "gfx/portraits/liu_feng.png",
+    "gfx/portraits/liu_pi.png",
+    "gfx/portraits/liu_shan.png",
+    "gfx/portraits/lu_bu.png",
+    "gfx/portraits/ma_chao.png",
+    "gfx/portraits/ma_dai.png",
+    "gfx/portraits/ma_liang.png",
+    "gfx/portraits/ma_su.png",
+    "gfx/portraits/meng_da.png",
+    "gfx/portraits/mi_fang.png",
+    "gfx/portraits/mi_zhu.png",
+    "gfx/portraits/orig_p166.png",
+    "gfx/portraits/orig_p220.png",
+    "gfx/portraits/orig_p223.png",
+    "gfx/portraits/orig_p228.png",
+    "gfx/portraits/orig_p234.png",
+    "gfx/portraits/orig_p235.png",
+    "gfx/portraits/orig_p236.png",
+    "gfx/portraits/orig_p244.png",
+    "gfx/portraits/orig_p245.png",
+    "gfx/portraits/orig_p34.png",
+    "gfx/portraits/orig_p375.png",
+    "gfx/portraits/pang_tong.png",
+    "gfx/portraits/qu_yi.png",
+    "gfx/portraits/shen_pei.png",
+    "gfx/portraits/song_xian.png",
+    "gfx/portraits/sun_qian.png",
+    "gfx/portraits/taishi_ci.png",
+    "gfx/portraits/tao_qian.png",
+    "gfx/portraits/tian_feng.png",
+    "gfx/portraits/wang_fu.png",
+    "gfx/portraits/wang_kai.png",
+    "gfx/portraits/wang_ping.png",
+    "gfx/portraits/wei_xu.png",
+    "gfx/portraits/wei_yan.png",
+    "gfx/portraits/wen_chou.png",
+    "gfx/portraits/wu_ban.png",
+    "gfx/portraits/wu_lan.png",
+    "gfx/portraits/wu_yi.png",
+    "gfx/portraits/xiahou_dun.png",
+    "gfx/portraits/xiahou_yuan.png",
+    "gfx/portraits/xu_chu.png",
+    "gfx/portraits/xu_sheng.png",
+    "gfx/portraits/xu_shu.png",
+    "gfx/portraits/xu_si.png",
+    "gfx/portraits/xu_you.png",
+    "gfx/portraits/xun_you.png",
+    "gfx/portraits/xun_yu.png",
+    "gfx/portraits/yan_gang.png",
+    "gfx/portraits/yan_liang.png",
+    "gfx/portraits/yan_yan.png",
+    "gfx/portraits/yi_ji.png",
+    "gfx/portraits/yu_jin.png",
+    "gfx/portraits/yuan_shao.png",
+    "gfx/portraits/yuan_shu.png",
+    "gfx/portraits/yuan_yin.png",
+    "gfx/portraits/yue_jin.png",
+    "gfx/portraits/yue_jiu.png",
+    "gfx/portraits/zhang_bao.png",
+    "gfx/portraits/zhang_fei.png",
+    "gfx/portraits/zhang_he.png",
+    "gfx/portraits/zhang_liao.png",
+    "gfx/portraits/zhang_nan.png",
+    "gfx/portraits/zhao_cen.png",
+    "gfx/portraits/zhao_lei.png",
+    "gfx/portraits/zhao_yun.png",
+    "gfx/portraits/zhou_cang.png",
+    "gfx/portraits/zhuge_liang.png",
+    "gfx/remake/maps/hexz_00.png",
+    "gfx/remake/maps/hexz_01.png",
+    "gfx/remake/maps/hexz_02.png",
+    "gfx/remake/maps/hexz_03.png",
+    "gfx/remake/maps/hexz_04.png",
+    "gfx/remake/maps/hexz_05.png",
+    "gfx/remake/maps/hexz_06.png",
+    "gfx/remake/maps/hexz_07.png",
+    "gfx/remake/maps/hexz_07_2_2_0.png",
+    "gfx/remake/maps/hexz_08.png",
+    "gfx/remake/maps/hexz_09.png",
+    "gfx/remake/maps/hexz_10.png",
+    "gfx/remake/maps/hexz_11.png",
+    "gfx/remake/maps/hexz_12.png",
+    "gfx/remake/maps/hexz_13.png",
+    "gfx/remake/maps/hexz_14.png",
+    "gfx/remake/maps/hexz_14_11_11_2.png",
+    "gfx/remake/maps/hexz_14_11_12_2.png",
+    "gfx/remake/maps/hexz_14_12_11_2.png",
+    "gfx/remake/maps/hexz_14_12_12_2.png",
+    "gfx/remake/maps/hexz_14_13_11_2.png",
+    "gfx/remake/maps/hexz_14_13_12_2.png",
+    "gfx/remake/maps/hexz_15.png",
+    "gfx/remake/maps/hexz_16.png",
+    "gfx/remake/maps/hexz_17.png",
+    "gfx/remake/maps/hexz_18.png",
+    "gfx/remake/maps/hexz_19.png",
+    "gfx/remake/maps/hexz_20.png",
+    "gfx/remake/maps/hexz_21.png",
+    "gfx/remake/maps/hexz_22.png",
+    "gfx/remake/maps/hexz_23.png",
+    "gfx/remake/maps/hexz_24.png",
+    "gfx/remake/maps/hexz_25.png",
+    "gfx/remake/maps/hexz_26.png",
+    "gfx/remake/maps/hexz_27.png",
+    "gfx/remake/maps/hexz_28.png",
+    "gfx/remake/maps/hexz_29.png",
+    "gfx/remake/maps/hexz_30.png",
+    "gfx/remake/maps/hexz_31.png",
+    "gfx/remake/maps/hexz_32.png",
+    "gfx/remake/maps/hexz_33.png",
+    "gfx/remake/maps/hexz_34.png",
+    "gfx/remake/maps/hexz_35.png",
+    "gfx/remake/maps/hexz_36.png",
+    "gfx/remake/maps/hexz_37.png",
+    "gfx/remake/maps/hexz_38.png",
+    "gfx/remake/maps/hexz_39.png",
+    "gfx/remake/maps/hexz_40.png",
+    "gfx/remake/maps/hexz_41.png",
+    "gfx/remake/maps/hexz_42.png",
+    "gfx/remake/maps/hexz_43.png",
+    "gfx/remake/maps/hexz_44.png",
+    "gfx/remake/maps/hexz_45.png",
+    "gfx/remake/maps/hexz_46.png",
+    "gfx/remake/maps/hexz_47.png",
+    "gfx/remake/maps/hexz_48.png",
+    "gfx/remake/maps/hexz_49.png",
+    "gfx/remake/maps/hexz_49_14_16_2.png",
+    "gfx/remake/maps/hexz_49_14_17_2.png",
+    "gfx/remake/maps/hexz_49_15_16_2.png",
+    "gfx/remake/maps/hexz_49_15_17_2.png",
+    "gfx/remake/maps/hexz_49_16_16_2.png",
+    "gfx/remake/maps/hexz_49_16_17_2.png",
+    "gfx/remake/maps/hexz_50.png",
+    "gfx/remake/maps/hexz_51.png",
+    "gfx/remake/maps/hexz_51_13_9_0.png",
+    "gfx/remake/maps/hexz_52.png",
+    "gfx/remake/maps/hexz_53.png",
+    "gfx/remake/maps/hexz_54.png",
+    "gfx/remake/maps/hexz_55.png",
+    "gfx/remake/maps/hexz_56.png",
+    "gfx/remake/maps/hexz_56_22_23_1.png",
+    "gfx/remake/maps/hexz_57.png",
+    "gfx/remake/units/archer_ally.png",
+    "gfx/remake/units/archer_enemy.png",
+    "gfx/remake/units/archer_player.png",
+    "gfx/remake/units/band_ally.png",
+    "gfx/remake/units/band_enemy.png",
+    "gfx/remake/units/band_player.png",
+    "gfx/remake/units/bandit_ally.png",
+    "gfx/remake/units/bandit_enemy.png",
+    "gfx/remake/units/bandit_player.png",
+    "gfx/remake/units/beast_ally.png",
+    "gfx/remake/units/beast_enemy.png",
+    "gfx/remake/units/beast_player.png",
+    "gfx/remake/units/brigand_ally.png",
+    "gfx/remake/units/brigand_enemy.png",
+    "gfx/remake/units/brigand_player.png",
+    "gfx/remake/units/catapult_ally.png",
+    "gfx/remake/units/catapult_enemy.png",
+    "gfx/remake/units/catapult_player.png",
+    "gfx/remake/units/chariot_ally.png",
+    "gfx/remake/units/chariot_enemy.png",
+    "gfx/remake/units/chariot_player.png",
+    "gfx/remake/units/civilian_ally.png",
+    "gfx/remake/units/civilian_enemy.png",
+    "gfx/remake/units/civilian_player.png",
+    "gfx/remake/units/crossbow_ally.png",
+    "gfx/remake/units/crossbow_enemy.png",
+    "gfx/remake/units/crossbow_player.png",
+    "gfx/remake/units/guard_cavalry_ally.png",
+    "gfx/remake/units/guard_cavalry_enemy.png",
+    "gfx/remake/units/guard_cavalry_player.png",
+    "gfx/remake/units/heavy_cavalry_ally.png",
+    "gfx/remake/units/heavy_cavalry_enemy.png",
+    "gfx/remake/units/heavy_cavalry_player.png",
+    "gfx/remake/units/light_cavalry_ally.png",
+    "gfx/remake/units/light_cavalry_enemy.png",
+    "gfx/remake/units/light_cavalry_player.png",
+    "gfx/remake/units/long_infantry_ally.png",
+    "gfx/remake/units/long_infantry_enemy.png",
+    "gfx/remake/units/long_infantry_player.png",
+    "gfx/remake/units/martial_ally.png",
+    "gfx/remake/units/martial_enemy.png",
+    "gfx/remake/units/martial_player.png",
+    "gfx/remake/units/officer_cao_cao_ally.png",
+    "gfx/remake/units/officer_cao_cao_enemy.png",
+    "gfx/remake/units/officer_cao_cao_player.png",
+    "gfx/remake/units/officer_liu_bei_chariot_ally.png",
+    "gfx/remake/units/officer_liu_bei_chariot_enemy.png",
+    "gfx/remake/units/officer_liu_bei_chariot_player.png",
+    "gfx/remake/units/officer_liu_bei_long_infantry_ally.png",
+    "gfx/remake/units/officer_liu_bei_long_infantry_enemy.png",
+    "gfx/remake/units/officer_liu_bei_long_infantry_player.png",
+    "gfx/remake/units/officer_liu_bei_short_infantry_ally.png",
+    "gfx/remake/units/officer_liu_bei_short_infantry_enemy.png",
+    "gfx/remake/units/officer_liu_bei_short_infantry_player.png",
+    "gfx/remake/units/officer_lu_bu_ally.png",
+    "gfx/remake/units/officer_lu_bu_enemy.png",
+    "gfx/remake/units/officer_lu_bu_player.png",
+    "gfx/remake/units/outlaw_ally.png",
+    "gfx/remake/units/outlaw_enemy.png",
+    "gfx/remake/units/outlaw_player.png",
+    "gfx/remake/units/short_infantry_ally.png",
+    "gfx/remake/units/short_infantry_enemy.png",
+    "gfx/remake/units/short_infantry_player.png",
+    "gfx/remake/units/sorcerer_ally.png",
+    "gfx/remake/units/sorcerer_enemy.png",
+    "gfx/remake/units/sorcerer_player.png",
+    "gfx/remake/units/status_confused_ally.png",
+    "gfx/remake/units/status_confused_enemy.png",
+    "gfx/remake/units/status_confused_player.png",
+    "gfx/remake/units/supply_ally.png",
+    "gfx/remake/units/supply_enemy.png",
+    "gfx/remake/units/supply_player.png",
+    "gfx/remake/units/tribe_ally.png",
+    "gfx/remake/units/tribe_enemy.png",
+    "gfx/remake/units/tribe_player.png",
+    "gfx/tiles/terrain.png",
+    "gfx/tiles/terrain.toml",
+    "gfx/ui/orig_battle_frame.png",
+    "gfx/ui/orig_camp_frame.png",
+    "gfx/ui/orig_status.png",
+    "gfx/units/archer_ally.png",
+    "gfx/units/archer_enemy.png",
+    "gfx/units/archer_player.png",
+    "gfx/units/band_ally.png",
+    "gfx/units/band_enemy.png",
+    "gfx/units/band_player.png",
+    "gfx/units/bandit_ally.png",
+    "gfx/units/bandit_enemy.png",
+    "gfx/units/bandit_player.png",
+    "gfx/units/beast_ally.png",
+    "gfx/units/beast_enemy.png",
+    "gfx/units/beast_player.png",
+    "gfx/units/brigand_ally.png",
+    "gfx/units/brigand_enemy.png",
+    "gfx/units/brigand_player.png",
+    "gfx/units/catapult_ally.png",
+    "gfx/units/catapult_enemy.png",
+    "gfx/units/catapult_player.png",
+    "gfx/units/chariot_ally.png",
+    "gfx/units/chariot_enemy.png",
+    "gfx/units/chariot_player.png",
+    "gfx/units/civilian_ally.png",
+    "gfx/units/civilian_enemy.png",
+    "gfx/units/civilian_player.png",
+    "gfx/units/crossbow_ally.png",
+    "gfx/units/crossbow_enemy.png",
+    "gfx/units/crossbow_player.png",
+    "gfx/units/guard_cavalry_ally.png",
+    "gfx/units/guard_cavalry_enemy.png",
+    "gfx/units/guard_cavalry_player.png",
+    "gfx/units/heavy_cavalry_ally.png",
+    "gfx/units/heavy_cavalry_enemy.png",
+    "gfx/units/heavy_cavalry_player.png",
+    "gfx/units/light_cavalry_ally.png",
+    "gfx/units/light_cavalry_enemy.png",
+    "gfx/units/light_cavalry_player.png",
+    "gfx/units/long_infantry_ally.png",
+    "gfx/units/long_infantry_enemy.png",
+    "gfx/units/long_infantry_player.png",
+    "gfx/units/martial_ally.png",
+    "gfx/units/martial_enemy.png",
+    "gfx/units/martial_player.png",
+    "gfx/units/officer_cao_cao_ally.png",
+    "gfx/units/officer_cao_cao_enemy.png",
+    "gfx/units/officer_cao_cao_player.png",
+    "gfx/units/officer_liu_bei_chariot_ally.png",
+    "gfx/units/officer_liu_bei_chariot_enemy.png",
+    "gfx/units/officer_liu_bei_chariot_player.png",
+    "gfx/units/officer_liu_bei_long_infantry_ally.png",
+    "gfx/units/officer_liu_bei_long_infantry_enemy.png",
+    "gfx/units/officer_liu_bei_long_infantry_player.png",
+    "gfx/units/officer_liu_bei_short_infantry_ally.png",
+    "gfx/units/officer_liu_bei_short_infantry_enemy.png",
+    "gfx/units/officer_liu_bei_short_infantry_player.png",
+    "gfx/units/officer_lu_bu_ally.png",
+    "gfx/units/officer_lu_bu_enemy.png",
+    "gfx/units/officer_lu_bu_player.png",
+    "gfx/units/outlaw_ally.png",
+    "gfx/units/outlaw_enemy.png",
+    "gfx/units/outlaw_player.png",
+    "gfx/units/short_infantry_ally.png",
+    "gfx/units/short_infantry_enemy.png",
+    "gfx/units/short_infantry_player.png",
+    "gfx/units/sorcerer_ally.png",
+    "gfx/units/sorcerer_enemy.png",
+    "gfx/units/sorcerer_player.png",
+    "gfx/units/status_confused_ally.png",
+    "gfx/units/status_confused_enemy.png",
+    "gfx/units/status_confused_player.png",
+    "gfx/units/supply_ally.png",
+    "gfx/units/supply_enemy.png",
+    "gfx/units/supply_player.png",
+    "gfx/units/tribe_ally.png",
+    "gfx/units/tribe_enemy.png",
+    "gfx/units/tribe_player.png",
+    "gfx/units/units.toml",
+    "maps/original.toml",
+    "officers.toml",
+    "pack.toml",
+    "rules/classes.toml",
+    "rules/game.toml",
+    "rules/items.toml",
+    "rules/strategies.toml",
+    "rules/terrain.toml"
+  ]
+}

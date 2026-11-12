@@ -1,0 +1,247 @@
+# c2_s3_b6: a battle of the original's chapters, made from the original battle (SNR2D.R3 scene 3 block 6) on the
+# original map hexz_24. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 3: the duel of 趙雲 (53) and 張允 (130) is left out (not both officers of the pack)
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: record 3: a duel move without a duel it belongs to is left out
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 42 at (5, 8) has no base-pack item
+# note: treasure item 9 at (16, 3) has no base-pack item
+
+id = "c2_s3_b6"
+name = "襄陽 전투"
+location = ""
+objective = "一、蔡瑁被殺．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 20
+defeat = []
+reward_gold = 0
+outro = "c2_s3_b6_outro"
+
+[map]
+use = "hexz_24"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 12
+required = []
+forbidden = []
+slots = [[9, 22], [8, 22], [10, 22], [8, 21], [10, 21], [7, 22], [12, 22], [11, 21], [7, 20], [7, 23], [9, 20], [10, 20]]
+
+[[units]]
+side = "ally"
+name = "民眾"
+class = "civilian"
+level = 1
+stats = [0, 0, 0]
+pos = [6, 23]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "ally"
+name = "民眾"
+class = "civilian"
+level = 1
+stats = [0, 0, 0]
+pos = [9, 23]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "ally"
+name = "民眾"
+class = "civilian"
+level = 1
+stats = [0, 0, 0]
+pos = [11, 23]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "蔡瑁"
+class = "long_infantry"
+level = 31
+stats = [70, 68, 67]
+pos = [18, 4]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "文聘"
+class = "heavy_cavalry"
+level = 28
+stats = [84, 24, 78]
+pos = [14, 9]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "王威"
+class = "heavy_cavalry"
+level = 27
+stats = [40, 58, 36]
+pos = [17, 5]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "蒯越"
+class = "crossbow"
+level = 28
+stats = [29, 74, 26]
+pos = [17, 6]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "張允"
+class = "long_infantry"
+level = 28
+stats = [59, 60, 50]
+pos = [12, 14]
+ai = "hold"
+commander = false
+tag = "person_130"
+
+[[units]]
+side = "enemy"
+name = "王粲"
+class = "band"
+level = 27
+stats = [30, 70, 28]
+pos = [15, 8]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 24
+stats = [40, 30, 50]
+pos = [11, 4]
+ai = "advance"
+ai_pos = [9, 8]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 24
+stats = [40, 30, 50]
+pos = [10, 14]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 23
+stats = [40, 30, 50]
+pos = [11, 14]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 24
+stats = [40, 50, 30]
+pos = [15, 10]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 24
+stats = [40, 50, 30]
+pos = [10, 4]
+ai = "advance"
+ai_pos = [8, 8]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 24
+stats = [40, 50, 30]
+pos = [9, 14]
+ai = "hold"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b6_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "zhao_yun"
+b = "person_130"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b6_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhao_yun"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "person_130"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 15
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s3_b6_4"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c2_s3_b6_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[treasures]]
+pos = [10, 3]
+item = "tea"
+gold = 0

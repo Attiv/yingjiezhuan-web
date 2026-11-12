@@ -1,0 +1,210 @@
+# c1_s2_b5: a battle of the original's chapters, made from the original battle (SNR1D.R3 scene 2 block 5) on the
+# original map hexz_11. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 7 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 37 at (7, 0) has no base-pack item
+
+id = "c1_s2_b5"
+name = "夏丘 전투"
+location = ""
+objective = "一、全數殲滅敵人． / 二、敵軍投降．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 30
+defeat = []
+treasures = []
+reward_gold = 400
+outro = "c1_s2_b5_outro"
+
+[map]
+use = "hexz_11"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 7
+required = []
+forbidden = []
+slots = [[23, 15], [23, 16], [24, 15], [22, 15], [23, 14], [24, 17], [25, 16]]
+
+[[units]]
+side = "enemy"
+officer = "orig_p228"
+class = "bandit"
+level = 12
+pos = [3, 3]
+ai = "advance"
+ai_pos = [5, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 10
+stats = [50, 40, 30]
+pos = [4, 2]
+ai = "advance"
+ai_pos = [6, 8]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 10
+stats = [50, 40, 30]
+pos = [4, 4]
+ai = "advance"
+ai_pos = [6, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 9
+stats = [50, 40, 30]
+pos = [5, 3]
+ai = "advance"
+ai_pos = [8, 8]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 9
+stats = [50, 40, 30]
+pos = [6, 3]
+ai = "advance"
+ai_pos = [8, 9]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 8
+stats = [50, 40, 30]
+pos = [6, 4]
+ai = "advance"
+ai_pos = [8, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 8
+stats = [50, 40, 30]
+pos = [15, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 7
+stats = [50, 40, 30]
+pos = [17, 5]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 7
+stats = [50, 40, 30]
+pos = [16, 6]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 11
+stats = [50, 10, 60]
+pos = [9, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 11
+stats = [50, 10, 60]
+pos = [7, 9]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 10
+stats = [40, 50, 30]
+pos = [8, 8]
+ai = "aggressive"
+commander = false
+
+[[victory]]
+type = "defeat_all"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s2_b5_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "liu_bei"
+b = "orig_p228"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c1_s2_b5_3"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_join_orig_p228"
+value = 1
+
+[[events.actions]]
+type = "retreat"
+target = "orig_p228"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f15"
+value = 1
+
+[[events.actions]]
+type = "level_up"
+target = "liu_bei"
+amount = 1
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c1_s2_b5_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"

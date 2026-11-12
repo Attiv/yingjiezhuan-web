@@ -1,0 +1,268 @@
+# c3_s4_b0: a battle of the original's chapters, made from the original battle (SNR3D.R3 scene 4 block 0) on the
+# original map hexz_45. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 6 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 48 at (16, 14) has no base-pack item
+# note: treasure item 48 at (7, 8) has no base-pack item
+
+id = "c3_s4_b0"
+name = "麥 전투"
+location = ""
+objective = "一、全殲敵人． / 二、關羽到達西面鹿砦．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 50
+reward_gold = 0
+outro = "c3_s4_b0_outro"
+
+[map]
+use = "hexz_45"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 6
+required = ["guan_yu", "guan_ping", "zhou_cang", "liao_hua", "wang_fu", "zhao_lei"]
+forbidden = ["liu_bei"]
+slots = [[20, 8], [19, 8], [20, 9], [21, 7], [20, 7], [22, 8]]
+
+[[units]]
+side = "enemy"
+name = "呂蒙"
+class = "chariot"
+level = 52
+stats = [84, 91, 80]
+pos = [3, 3]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "蔣欽"
+class = "chariot"
+level = 48
+stats = [67, 64, 62]
+pos = [16, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "周泰"
+class = "guard_cavalry"
+level = 48
+stats = [87, 53, 78]
+pos = [7, 16]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "韓當"
+class = "chariot"
+level = 47
+stats = [60, 42, 59]
+pos = [7, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "潘璋"
+class = "chariot"
+level = 47
+stats = [75, 39, 72]
+pos = [15, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "陸遜"
+class = "sorcerer"
+level = 47
+stats = [80, 95, 85]
+pos = [8, 5]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "朱然"
+class = "chariot"
+level = 47
+stats = [70, 62, 70]
+pos = [6, 15]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "cao_ren"
+class = "chariot"
+level = 52
+pos = [30, 7]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[units]]
+side = "enemy"
+name = "滿寵"
+class = "chariot"
+level = 48
+stats = [27, 68, 30]
+pos = [31, 7]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[units]]
+side = "enemy"
+name = "呂建"
+class = "catapult"
+level = 47
+stats = [51, 40, 47]
+pos = [27, 6]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[units]]
+side = "enemy"
+name = "徐商"
+class = "catapult"
+level = 47
+stats = [82, 30, 75]
+pos = [26, 7]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[units]]
+side = "enemy"
+name = "徐晃"
+class = "guard_cavalry"
+level = 48
+stats = [91, 49, 83]
+pos = [29, 6]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 44
+stats = [40, 30, 50]
+pos = [30, 8]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 45
+stats = [40, 50, 30]
+pos = [25, 5]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 45
+stats = [50, 30, 40]
+pos = [24, 6]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 44
+stats = [50, 30, 40]
+pos = [28, 7]
+ai = "aggressive"
+commander = false
+group = "original_3"
+
+[[victory]]
+type = "defeat_all"
+
+[[defeat]]
+type = "unit_retreated"
+target = "guan_yu"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s4_b0_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 2
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s4_b0_3"
+
+[[events.actions]]
+type = "spawn"
+group = "original_3"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s4_b0_3_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+who = "guan_yu"
+pos = [0, 3]
+radius = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c3_s4_b0_8"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f58"
+value = 1
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c3_s4_b0_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"
+
+[[treasures]]
+pos = [9, 17]
+item = "tea"
+gold = 0

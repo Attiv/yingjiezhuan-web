@@ -1,0 +1,342 @@
+# c4_s1_b6: a battle of the original's chapters, made from the original battle (SNR4D.R3 scene 1 block 6) on the
+# original map hexz_50. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 10 slots
+# note: victory condition `reach` dropped: the original has no single objective area for it
+# note: record 6: 龐統 (132) arrives without a unit of their own in the battle (the army's officer): only the scene is converted
+# note: record 6: 趙雲 (53) arrives without a unit of their own in the battle (the army's officer): only the scene is converted
+# note: record 6: 馬超 (189) arrives without a unit of their own in the battle (the army's officer): only the scene is converted
+# note: record 6: 魏延 (126) arrives without a unit of their own in the battle (the army's officer): only the scene is converted
+# note: record 6: 姜維 (243) arrives without a unit of their own in the battle (the army's officer): only the scene is converted
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 16 at (2, 12) has no base-pack item
+# note: treasure item 18 at (24, 8) has no base-pack item
+
+id = "c4_s1_b6"
+name = "許昌Ⅰ 전투"
+location = ""
+objective = "一、司馬懿的撤退"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 40
+defeat = []
+treasures = []
+reward_gold = 1600
+outro = "c4_s1_b6_outro"
+
+[map]
+use = "hexz_50"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 10
+required = ["zhuge_liang"]
+forbidden = []
+slots = [[11, 21], [12, 21], [8, 23], [10, 20], [10, 23], [11, 19], [11, 22], [12, 23], [13, 22], [14, 21]]
+
+[[units]]
+side = "enemy"
+name = "司馬懿"
+class = "sorcerer"
+level = 61
+stats = [48, 99, 95]
+pos = [21, 2]
+ai = "hold"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "司馬師"
+class = "sorcerer"
+level = 58
+stats = [65, 87, 79]
+pos = [20, 3]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "司馬昭"
+class = "sorcerer"
+level = 58
+stats = [66, 85, 75]
+pos = [22, 3]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "曹彰"
+class = "guard_cavalry"
+level = 57
+stats = [81, 42, 93]
+pos = [20, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "曹植"
+class = "band"
+level = 56
+stats = [15, 78, 13]
+pos = [20, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "xu_chu"
+class = "guard_cavalry"
+level = 58
+pos = [15, 17]
+ai = "advance"
+ai_pos = [11, 12]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賈詡"
+class = "supply"
+level = 57
+stats = [40, 96, 81]
+pos = [16, 16]
+ai = "advance"
+ai_pos = [12, 12]
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "zhang_liao"
+class = "chariot"
+level = 58
+pos = [4, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "yue_jin"
+class = "guard_cavalry"
+level = 57
+pos = [3, 15]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "li_dian"
+class = "chariot"
+level = 57
+pos = [2, 13]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 55
+stats = [40, 30, 50]
+pos = [5, 16]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 53
+stats = [40, 30, 50]
+pos = [14, 16]
+ai = "advance"
+ai_pos = [11, 11]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "chariot"
+level = 53
+stats = [40, 30, 50]
+pos = [18, 13]
+ai = "advance"
+ai_pos = [13, 10]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 54
+stats = [50, 30, 40]
+pos = [19, 11]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 54
+stats = [50, 30, 40]
+pos = [21, 6]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 54
+stats = [50, 30, 40]
+pos = [19, 14]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 55
+stats = [50, 30, 40]
+pos = [19, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 54
+stats = [50, 30, 40]
+pos = [22, 4]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 53
+stats = [40, 50, 30]
+pos = [5, 15]
+ai = "hold"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "catapult"
+level = 54
+stats = [40, 50, 30]
+pos = [17, 15]
+ai = "advance"
+ai_pos = [13, 11]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 54
+stats = [50, 30, 40]
+pos = [18, 12]
+ai = "defensive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "guard_cavalry"
+level = 54
+stats = [50, 30, 40]
+pos = [20, 7]
+ai = "defensive"
+commander = false
+
+[[victory]]
+type = "defeat_commander"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b6_2"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "adjacent"
+a = "guan_xing"
+b = "xu_chu"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b6_3"
+
+[[events.actions]]
+type = "level_up"
+target = "guan_xing"
+amount = 1
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f172"
+value = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 12
+side = "player"
+
+[[events.when]]
+flag = "orig_f89"
+cmp = "!="
+value = 0
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c4_s1_b6_6"
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 12
+side = "player"
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_f131"
+value = 1
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "reach"
+pos = [19, 0]
+radius = 0
+to = [24, 4]
+
+[[events.actions]]
+type = "set_flag"
+flag = "orig_c4_s1_b6_ended"
+value = 1
+
+[[events.actions]]
+type = "victory"

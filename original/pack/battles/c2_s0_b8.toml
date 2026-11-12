@@ -1,0 +1,388 @@
+# c2_s0_b8: a battle of the original's chapters, made from the original battle (SNR2D.R3 scene 0 block 8) on the
+# original map hexz_16. Written by `hero-tools original pack` from the player's own
+# copy: keep it on this computer. Rules: docs/ORIGINAL_DATA.md §4.5.
+# note: deploy max 12 lowered to the original's 9 slots
+# note: record 10 is not converted: trigger kind 3 is not converted
+# note: record 11 is not converted: trigger kind 3 is not converted
+# note: record 12 is not converted: trigger kind 3 is not converted
+# note: record 13 is not converted: trigger kind 3 is not converted
+# note: record 14 is not converted: trigger kind 3 is not converted
+# note: not converted: the original's victory and defeat scripts
+# note: treasure item 33 at (20, 7) has no base-pack item
+
+id = "c2_s0_b8"
+name = "兗州 전투"
+location = ""
+objective = "一﹑郭圖的敗退． / 二﹑劉備到達西南的鹿砦．"
+bgm = "battle"
+bgm_enemy = "enemy"
+turn_limit = 45
+defeat = []
+reward_gold = 700
+outro = "c2_s0_b8_outro"
+
+[map]
+use = "hexz_16"
+rows = ""
+
+[map.legend]
+
+[deploy]
+max = 9
+required = []
+forbidden = ["zhao_yun"]
+slots = [[10, 5], [11, 5], [10, 4], [10, 6], [9, 3], [9, 5], [9, 6], [12, 3], [12, 4]]
+
+[[units]]
+side = "ally"
+officer = "zhao_yun"
+pos = [29, 7]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "guo_tu"
+class = "long_infantry"
+level = 26
+pos = [0, 7]
+ai = "target"
+ai_target = "liu_bei"
+commander = true
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 19
+stats = [40, 30, 50]
+pos = [7, 19]
+ai = "advance"
+ai_pos = [11, 13]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 19
+stats = [40, 30, 50]
+pos = [2, 4]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 19
+stats = [40, 30, 50]
+pos = [1, 6]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 19
+stats = [50, 30, 40]
+pos = [1, 9]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 19
+stats = [50, 30, 40]
+pos = [3, 5]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 19
+stats = [10, 70, 10]
+pos = [0, 8]
+ai = "aggressive"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 19
+stats = [40, 50, 30]
+pos = [3, 6]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 18
+stats = [40, 50, 30]
+pos = [2, 5]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 19
+stats = [50, 40, 30]
+pos = [2, 8]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 19
+stats = [50, 10, 60]
+pos = [8, 19]
+ai = "advance"
+ai_pos = [11, 14]
+commander = false
+
+[[units]]
+side = "enemy"
+name = "武術家"
+class = "martial"
+level = 18
+stats = [50, 10, 60]
+pos = [2, 7]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+
+[[units]]
+side = "enemy"
+officer = "zhang_he"
+class = "heavy_cavalry"
+level = 23
+pos = [1, 7]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+officer = "ju_shou"
+class = "crossbow"
+level = 23
+pos = [7, 19]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 19
+stats = [50, 30, 40]
+pos = [7, 18]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "heavy_cavalry"
+level = 18
+stats = [50, 30, 40]
+pos = [8, 0]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "騎兵隊"
+class = "light_cavalry"
+level = 19
+stats = [50, 30, 40]
+pos = [2, 6]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 19
+stats = [40, 30, 50]
+pos = [6, 19]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "步兵隊"
+class = "long_infantry"
+level = 18
+stats = [40, 30, 50]
+pos = [9, 0]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 19
+stats = [40, 50, 30]
+pos = [7, 1]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "archer"
+level = 18
+stats = [40, 50, 30]
+pos = [6, 2]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "弓兵隊"
+class = "crossbow"
+level = 19
+stats = [40, 50, 30]
+pos = [2, 5]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "brigand"
+level = 19
+stats = [50, 40, 30]
+pos = [8, 19]
+ai = "target"
+ai_target = "liu_bei"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "賊兵"
+class = "bandit"
+level = 18
+stats = [50, 40, 30]
+pos = [0, 7]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[units]]
+side = "enemy"
+name = "軍樂隊"
+class = "band"
+level = 19
+stats = [10, 70, 10]
+pos = [0, 8]
+ai = "aggressive"
+commander = false
+group = "original_4"
+
+[[victory]]
+type = "defeat_commander"
+
+[[victory]]
+type = "reach"
+who = "liu_bei"
+pos = [3, 19]
+radius = 0
+
+[[events]]
+once = true
+
+[events.trigger]
+type = "turn_start"
+turn = 1
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b8_2"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "adjacent"
+a = "zhao_yun"
+b = "zhang_he"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b8_3"
+
+[[events.actions]]
+type = "level_up"
+target = "zhao_yun"
+amount = 1
+
+[[events.actions]]
+type = "retreat"
+target = "zhang_he"
+
+[[events]]
+once = true
+stage = 0
+
+[events.trigger]
+type = "turn_start"
+turn = 5
+side = "player"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b8_4"
+
+[[events.actions]]
+type = "spawn"
+group = "original_4"
+
+[[events.actions]]
+type = "drama"
+scene = "orig_c2_s0_b8_4_2"
+
+[[treasures]]
+pos = [18, 11]
+item = "tea"
+gold = 0

@@ -1,0 +1,166 @@
+# Original mode, written by `hero-tools original pack` (hero-import 0.7.0) from the player's own copy
+# of KOEI's Sangokushi Eiketsuden (chinese-dos). It holds converted game art: keep it on this
+# computer, do not share or commit it. Run the importer again to rebuild it; hand edits are
+# lost. What is converted and how: original-pack.json and docs/ORIGINAL_DATA.md.
+
+id = "original"
+name = "영걸전 원작 모드"
+version = "0.7.0"
+license = "LicenseRef-Private (converted from the player's own copy; not redistributable)"
+description = "보유한 원작에서 변환한 얼굴·유닛·지형 그림과 전투 맵, 원작 맵 위로 옮긴 전투를 기본 팩 위에 얹은 팩. 변환되지 않은 것은 기본 팩에서 온다."
+extends = "../eiketsuden-reloaded/data/base"
+maps = ["maps/original.toml"]
+battles = [
+  "battles/p1_sishui.toml",
+  "battles/c0_s0_b5.toml",
+  "battles/c0_s0_b7.toml",
+  "battles/c1_s0_b4.toml",
+  "battles/c1_s0_b6.toml",
+  "battles/c1_s0_b11.toml",
+  "battles/c1_s0_b13.toml",
+  "battles/c1_s0_b15.toml",
+  "battles/c1_s0_b15_f133.toml",
+  "battles/c1_s1_b3.toml",
+  "battles/c1_s1_b5.toml",
+  "battles/c1_s1_b7.toml",
+  "battles/c1_s2_b3.toml",
+  "battles/c1_s2_b4.toml",
+  "battles/c1_s2_b5.toml",
+  "battles/c1_s2_b12.toml",
+  "battles/c1_s3_b1.toml",
+  "battles/c1_s3_b2.toml",
+  "battles/c1_s3_b4.toml",
+  "battles/c1_s4_b13.toml",
+  "battles/c1_s4_b15.toml",
+  "battles/c2_s0_b8.toml",
+  "battles/c2_s0_b9.toml",
+  "battles/c2_s0_b11.toml",
+  "battles/c2_s0_b16.toml",
+  "battles/c2_s1_b7.toml",
+  "battles/c2_s1_b16.toml",
+  "battles/c2_s3_b2.toml",
+  "battles/c2_s3_b3.toml",
+  "battles/c2_s3_b6.toml",
+  "battles/c2_s3_b7.toml",
+  "battles/c2_s3_b7_2.toml",
+  "battles/c3_s0_b2.toml",
+  "battles/c3_s0_b8.toml",
+  "battles/c3_s0_b9.toml",
+  "battles/c3_s0_b10.toml",
+  "battles/c3_s0_b13.toml",
+  "battles/c3_s1_b5.toml",
+  "battles/c3_s2_b6.toml",
+  "battles/c3_s2_b10.toml",
+  "battles/c3_s2_b14.toml",
+  "battles/c3_s2_b16.toml",
+  "battles/c3_s3_b2.toml",
+  "battles/c3_s3_b2_2.toml",
+  "battles/c3_s3_b4.toml",
+  "battles/c3_s3_b6.toml",
+  "battles/c3_s3_b8.toml",
+  "battles/c3_s3_b10.toml",
+  "battles/c3_s3_b12.toml",
+  "battles/c3_s3_b14.toml",
+  "battles/c3_s4_b0.toml",
+  "battles/c3_s4_b4.toml",
+  "battles/c3_s4_b6.toml",
+  "battles/c4_s0_b5.toml",
+  "battles/c4_s0_b7.toml",
+  "battles/c4_s0_b8.toml",
+  "battles/c4_s0_b10.toml",
+  "battles/c4_s0_b11.toml",
+  "battles/c4_s1_b2.toml",
+  "battles/c4_s1_b2_f38.toml",
+  "battles/c4_s1_b3.toml",
+  "battles/c4_s1_b3_f38.toml",
+  "battles/c4_s1_b5.toml",
+  "battles/c4_s1_b6.toml",
+  "battles/c4_s1_b7.toml",
+  "battles/c4_s2_b2.toml",
+  "battles/c4_s2_b2_f218.toml",
+  "battles/c4_s2_b3.toml",
+  "battles/c4_s2_b3_f218.toml",
+  "battles/c4_s2_b4.toml",
+  "battles/c4_s2_b4_f218.toml",
+]
+dramas = ["dramas/original_battles.drama", "dramas/original_chapters.drama"]
+campaign = "campaign.toml"
+officers = "officers.toml"
+
+[presentation]
+canvas = [640, 400]
+
+[presentation.battle_frame]
+image = "ui/orig_battle_frame"
+map = [16, 32, 416, 352]
+info = [448, 74, 176, 196]
+title = [224, 8, 174, 16]
+status = [448, 34, 78, 28]
+menu = [15, 7, 66, 18]
+allies = [528, 31, 32, 34]
+enemies = [560, 31, 33, 34]
+weather = [594, 33, 28, 30]
+
+[presentation.camp_frame]
+image = "ui/orig_camp_frame"
+view = [17, 15, 511, 322]
+portrait = [552, 24, 64, 80]
+gold = [568, 136, 52, 15]
+level = [584, 160, 36, 15]
+place = [568, 200, 52, 15]
+caption = [12, 352, 244, 32]
+clock = [270, 352, 100, 32]
+
+[presentation.status_frame]
+image = "ui/orig_status"
+size = [512, 320]
+title = [8, 8, 288, 32]
+portrait = [320, 16, 64, 80]
+name = [400, 8, 80, 16]
+level = [464, 32, 16, 16]
+lead = [456, 64, 24, 16]
+strength = [456, 96, 24, 16]
+intellect = [456, 128, 24, 16]
+class = [320, 112, 64, 32]
+info = [314, 170, 188, 140]
+page = [48, 272, 48, 32]
+pager = [96, 272, 32, 32]
+rest = [176, 272, 48, 32]
+close = [240, 272, 48, 32]
+
+[[presentation.status_frame.slots]]
+icon = [16, 64, 32, 32]
+level = [16, 96, 32, 16]
+troops = [104, 72, 40, 16]
+
+[[presentation.status_frame.slots]]
+icon = [160, 64, 32, 32]
+level = [160, 96, 32, 16]
+troops = [248, 72, 40, 16]
+
+[[presentation.status_frame.slots]]
+icon = [16, 128, 32, 32]
+level = [16, 160, 32, 16]
+troops = [104, 136, 40, 16]
+
+[[presentation.status_frame.slots]]
+icon = [160, 128, 32, 32]
+level = [160, 160, 32, 16]
+troops = [248, 136, 40, 16]
+
+[[presentation.status_frame.slots]]
+icon = [16, 192, 32, 32]
+level = [16, 224, 32, 16]
+troops = [104, 200, 40, 16]
+
+[[presentation.status_frame.slots]]
+icon = [160, 192, 32, 32]
+level = [160, 224, 32, 16]
+troops = [248, 200, 40, 16]
+
+[rules]
+terrain = "rules/terrain.toml"
+classes = "rules/classes.toml"
+strategies = "rules/strategies.toml"
+game = "rules/game.toml"
+items = "rules/items.toml"

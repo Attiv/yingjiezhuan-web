@@ -1,0 +1,87 @@
+{
+  "note": "HEXBMAP.R3: battle-scene strips drawn with the cells of HEXBCHP.R3 entry 0; backdrops (sky and horizon, 46×5 cells) and grounds (66×8 cells). battle.json's terrain_table gives the strips the game picks for the terrain of the fighting unit's cell.",
+  "palette_slot": 1,
+  "strips": [
+    {
+      "index": 0,
+      "kind": "backdrop",
+      "size_cells": [
+        46,
+        5
+      ],
+      "image": "gfx/original/maps/scene/000.png"
+    },
+    {
+      "index": 1,
+      "kind": "backdrop",
+      "size_cells": [
+        46,
+        5
+      ],
+      "image": "gfx/original/maps/scene/001.png"
+    },
+    {
+      "index": 2,
+      "kind": "backdrop",
+      "size_cells": [
+        46,
+        5
+      ],
+      "image": "gfx/original/maps/scene/002.png"
+    },
+    {
+      "index": 3,
+      "kind": "backdrop",
+      "size_cells": [
+        46,
+        5
+      ],
+      "image": "gfx/original/maps/scene/003.png"
+    },
+    {
+      "index": 4,
+      "kind": "backdrop",
+      "size_cells": [
+        46,
+        5
+      ],
+      "image": "gfx/original/maps/scene/004.png"
+    },
+    {
+      "index": 5,
+      "kind": "ground",
+      "size_cells": [
+        66,
+        8
+      ],
+      "image": "gfx/original/maps/scene/005.png"
+    },
+    {
+      "index": 6,
+      "kind": "ground",
+      "size_cells": [
+        66,
+        8
+      ],
+      "image": "gfx/original/maps/scene/006.png"
+    },
+    {
+      "index": 7,
+      "kind": "ground",
+      "size_cells": [
+        66,
+        8
+      ],
+      "image": "gfx/original/maps/scene/007.png"
+    },
+    {
+      "index": 8,
+      "kind": "ground",
+      "size_cells": [
+        66,
+        8
+      ],
+      "image": "gfx/original/maps/scene/008.png"
+    }
+  ]
+}

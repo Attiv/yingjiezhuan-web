@@ -1,0 +1,4926 @@
+# SNR4D.R3 + SNR4M.R3 (Big5)
+
+## scene 0 (message section at 0x6)
+
+### block 0 @0x001a
+
+record 0 run(0) group 0 args 000000000000 -> code 0x002e
+  002e  20 enable_list reset_all=true [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+  003d  2e reset_player_position target=0 x=0 y=0 dir=255
+  0043  24 set_allegiance person=125 army=0
+          person │ 諸葛亮
+  0047  24 set_allegiance person=53 army=0
+          person │ 趙雲
+  004b  24 set_allegiance person=189 army=0
+          person │ 馬超
+  004f  24 set_allegiance person=203 army=0
+          person │ 馬岱
+  0053  38 play_music song=0
+  0055  0e chapter_title key=0x0000
+             key │ 第四章　奪回荊州
+        title_index │ 183
+  0058  0d title text=0x0011
+            text │ 第四章　奪回荊州
+  005b  07 show_picture picture=26 variant=0
+  005e  08 narration text=0x0022
+            text │ 　劉備為消滅魏國曹丕，已與東吳結為同盟．
+                 │ 　一心想復興漢室的蜀國，與妄想擴張領土的吳國，各懷鬼胎的兩國終於聯手．
+                 │ 　蜀國重臣，集中到成都會議廳，共謀打敗曹魏的大計．
+  0061  09 load_map map=0x2005
+  0064  ff end
+
+### block 1 @0x0065
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0119
+  0119  1d set_previous_map map=0x0000 x=25 y=5
+  011e  2f set_graphic person=0 graphic=2
+          person │ 劉備
+  0122  0a place_person person=0 x=23 y=7 dir=2
+          person │ 劉備
+  0128  0a place_person person=125 x=20 y=7 dir=1
+          person │ 諸葛亮
+  012e  21 if_flags unless set[135] and clear[] skip 1
+  0133  0a place_person person=2 x=13 y=8 dir=1
+          person │ 張飛
+  0139  0a place_person person=169 x=9 y=10 dir=1
+          person │ 黃忠
+  013f  0a place_person person=174 x=20 y=13 dir=3
+          person │ 馬良
+  0145  0a place_person person=202 x=16 y=15 dir=3
+          person │ 嚴顏
+  014b  38 play_music song=5
+  014d  05 show_screen
+  014e  2e reset_player_position target=0 x=0 y=0 dir=255
+  0154  0b caption text=0x00c9
+            text │ 成都會議廳
+  0157  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0158
+  0158  21 if_flags unless set[132] and clear[] skip 21
+  015d  00 dialogue text=0x00d4
+            text │ 諸葛亮: 主公，關羽之子關興，張飛之子張苞來見．
+                 │ 劉備: 哦，快讓進來．
+                 │ 諸葛亮: 是．張苞、關興進來．
+  0160  0a place_person person=43 x=4 y=17 dir=0
+          person │ 張苞
+  0166  0a place_person person=29 x=3 y=17 dir=0
+          person │ 關興
+  016c  01 move_person person=43 x=13 y=13 dir=0
+          person │ 張苞
+  0172  01 move_person person=29 x=11 y=12 dir=0
+          person │ 關興
+  0178  00 dialogue text=0x0127
+            text │ 張苞: 我是張飛之子張苞，今後想和父親一樣，為主公效命．
+                 │ 關興: 我是關羽之子關興，和張苞一樣，也請主公多關照．
+                 │ 劉備: 你二人，都有乃父之風，以後好好幹吧．
+                 │ 張苞: 是．臣先告退．
+  017b  0b caption text=0x01c5
+            text │ 張苞、關興加入我方！
+  017e  24 set_allegiance person=43 army=0
+          person │ 張苞
+  0182  24 set_allegiance person=29 army=0
+          person │ 關興
+  0186  01 move_person person=43 x=3 y=17 dir=2
+          person │ 張苞
+  018c  01 move_person person=29 x=3 y=17 dir=2
+          person │ 關興
+  0192  18 remove_person person=43
+          person │ 張苞
+  0195  18 remove_person person=29
+          person │ 關興
+  0198  0a place_person person=252 x=3 y=17 dir=0
+          person │ 劉禪
+  019e  01 move_person person=252 x=12 y=13 dir=0
+          person │ 劉禪
+  01a4  00 dialogue text=0x01da
+            text │ 劉禪: 嗯，父親，我已長大成人，也要去打仗嗎？
+                 │ 劉備: 我如果把你編排在部隊裡，當然要去打仗．你不願意嗎？
+                 │ 劉禪: 不，不是！沒那麼想……好吧，我先退下了……真煩人……
+  01a7  0b caption text=0x0271
+            text │ 劉禪加入臣下！
+  01aa  24 set_allegiance person=252 army=0
+          person │ 劉禪
+  01ae  01 move_person person=252 x=3 y=17 dir=2
+          person │ 劉禪
+  01b4  18 remove_person person=252
+          person │ 劉禪
+  01b7  00 dialogue text=0x0280
+            text │ 劉備: 孔明，如此安排行嗎？
+                 │ 諸葛亮: 以後如不好生培養，恐不能成大器．他好像還不懂得戰爭的嚴酷，主公，我還有要事與您商量……
+  01ba  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x01bb
+  01bb  01 move_person person=125 x=20 y=7 dir=1
+          person │ 諸葛亮
+  01c1  00 dialogue text=0x02f2
+            text │ 諸葛亮: 已與東吳結盟，這樣就只有魏國是敵人了．
+                 │ 劉備: 嗯，必須伐魏，復興漢室．
+  01c4  30 set_objective text=0x0338
+            text │ 商議今後行動．
+  01c7  17 input_control value=0
+  01c9  ff end
+
+record 3 talk(3) group 3* args 020000000000 [張飛] -> code 0x01ca
+  01ca  00 dialogue text=0x0349
+            text │ 張飛: 二哥的仇不能忘，但復興漢室是頭等大事，二哥一定也是這麼想的．
+  01cd  ff end
+
+record 4 talk(3) group 3 args ae0000000000 [馬良] -> code 0x01ce
+  01ce  00 dialogue text=0x038a
+            text │ 馬良: 盡快伐魏吧．
+  01d1  ff end
+
+record 5 talk(3) group 3 args a90000000000 [黃忠] -> code 0x01d2
+  01d2  00 dialogue text=0x039b
+            text │ 黃忠: 決戰的時刻終於到了，請看我一展身手吧．
+  01d5  ff end
+
+record 6 talk(3) group 3 args ca0000000000 [嚴顏] -> code 0x01d6
+  01d6  00 dialogue text=0x03c6
+            text │ 嚴顏: 我絕不落在黃忠和其他將軍後面．
+  01d9  ff end
+
+record 7 talk(3) group 3 args 7d0000000000 [諸葛亮] -> code 0x01da
+  01da  00 dialogue text=0x03e9
+            text │ 諸葛亮: 到魏國洛陽，有兩條路可走，一條是從荊州的襄陽走，另一條是從漢中取道關中長安．
+  01dd  08 narration text=0x043a
+            text │ 　諸葛亮在此所言”關中”，不是指劉備已奪取的漢中，是指漢中再往北．
+                 │ 　有長安和陳倉二處險要．
+  01e0  00 dialogue text=0x0499
+            text │ 諸葛亮: 荊州和關中都有魏國精銳把守．
+                 │ 劉備: 當然．孔明，你認為如何攻擊為上？
+                 │ 諸葛亮: 既然已與東吳結盟，從襄陽一路與東吳共同進攻為上．但漢中也會因此而薄弱，得向關中派遣奇襲隊，在那裡絆住魏軍．
+                 │ 劉備: 軍師所言極是．但是，我軍兵力比魏軍少，又如此分兵兩路，豈不危險？
+                 │ 諸葛亮: 我也考慮過．奇襲隊的主帥一定得派精明強悍的人．至於派不派奇襲隊，請主公定奪，宜深思熟慮之．
+  01e3  30 set_objective text=0x05ea
+            text │ 考慮是否派奇襲隊去關中．
+  01e6  13 leave_parallel
+  01e7  ff end
+
+record 8 talk(3) group 4* args 020000000000 [張飛] -> code 0x01e8
+  01e8  00 dialogue text=0x0605
+            text │ 張飛: 向關中派兵是可以，但如果那樣……就得分兵，可是我們哪裡有那麼多人馬可分呀？
+  01eb  ff end
+
+record 9 talk(3) group 4 args ae0000000000 [馬良] -> code 0x01ec
+  01ec  00 dialogue text=0x0654
+            text │ 馬良: 是呀……誠如軍師所言，我也認為有必要分兵．
+  01ef  ff end
+
+record 10 talk(3) group 4 args a90000000000 [黃忠] -> code 0x01f0
+  01f0  00 dialogue text=0x0683
+            text │ 黃忠: 我想跟隨主公一齊作戰．
+  01f3  ff end
+
+record 11 talk(3) group 4 args ca0000000000 [嚴顏] -> code 0x01f4
+  01f4  00 dialogue text=0x069e
+            text │ 嚴顏: 關中嗎？關中是漢中以北一帶的總稱，陳倉和長安等處也屬關中．
+  01f7  ff end
+
+record 12 talk(3) group 4 args 7d0000000000 [諸葛亮] -> code 0x01f8
+  01f8  00 dialogue text=0x06dd
+            text │ 諸葛亮: 主公，下決定了嗎？
+  01fb  15 if_answer answer=0 skip=3
+  01fe  3d op_3d value=0
+  0200  17 input_control value=1
+  0202  13 leave_parallel
+  0203  ff end
+
+record 13 condition(1) group 5* args 000000000000 -> code 0x0204
+  0204  25 choice options=0x06f4
+         options │ 派遣奇襲隊
+                 │ 
+                 │ 不派遣奇襲隊
+  0207  21 if_flags unless set[] and clear[38] skip 8
+  020c  00 dialogue text=0x0711
+            text │ 諸葛亮: 奇襲隊的主帥，派龐統是合適人選．
+                 │ 劉備: 嗯，快喚龐統來．
+  020f  01 move_person person=0 x=23 y=7 dir=2
+          person │ 劉備
+  0215  0a place_person person=132 x=3 y=17 dir=0
+          person │ 龐統
+  021b  00 dialogue text=0x0749
+            text │ 龐統: 主公，找我何事？
+  021e  01 move_person person=132 x=15 y=11 dir=0
+          person │ 龐統
+  0224  00 dialogue text=0x075e
+            text │ 劉備: 龐統，你來指揮關中奇襲隊．
+                 │ 龐統: 決定向關中出兵了吧．
+                 │ 劉備: 不錯，你所料極是．
+                 │ 龐統: 得令．我馬上去陽平關．
+                 │ 劉備: 嗯，帶趙雲等人同去吧．
+                 │ 龐統: 是，我先去了．
+  0227  01 move_person person=132 x=3 y=17 dir=2
+          person │ 龐統
+  022d  18 remove_person person=132
+          person │ 龐統
+  0230  21 if_flags unless set[38] and clear[] skip 8
+  0235  00 dialogue text=0x07ec
+            text │ 諸葛亮: 奇襲隊的主帥，趙雲是合適人選．
+                 │ 劉備: 嗯，快喚趙雲來．
+  0238  01 move_person person=0 x=23 y=7 dir=2
+          person │ 劉備
+  023e  0a place_person person=53 x=3 y=17 dir=0
+          person │ 趙雲
+  0244  00 dialogue text=0x0822
+            text │ 趙雲: 主公，找我何事？
+  0247  01 move_person person=53 x=15 y=11 dir=0
+          person │ 趙雲
+  024d  00 dialogue text=0x0837
+            text │ 劉備: 趙雲，你來指揮關中奇襲隊．
+                 │ 趙雲: 決定向關中出兵了吧．
+                 │ 劉備: 不錯，你所料極是．
+                 │ 趙雲: 得令．我馬上去陽平關．
+                 │ 劉備: 嗯，帶馬超等人同去吧．
+                 │ 趙雲: 是，我先去了．
+  0250  01 move_person person=53 x=3 y=17 dir=2
+          person │ 趙雲
+  0256  18 remove_person person=53
+          person │ 趙雲
+  0259  14 set_flag flag=89 clear=0
+  025c  24 set_allegiance person=132 army=14
+          person │ 龐統
+  0260  24 set_allegiance person=53 army=14
+          person │ 趙雲
+  0264  24 set_allegiance person=189 army=14
+          person │ 馬超
+  0268  24 set_allegiance person=126 army=14
+          person │ 魏延
+  026c  24 set_allegiance person=82 army=14
+          person │ 簡雍
+  0270  24 set_allegiance person=64 army=14
+          person │ 糜竺
+  0274  24 set_allegiance person=81 army=14
+          person │ 糜芳
+  0278  24 set_allegiance person=113 army=14
+          person │ 伊籍
+  027c  24 set_allegiance person=116 army=14
+          person │ 劉封
+  0280  24 set_allegiance person=187 army=14
+          person │ 法正
+  0284  13 leave_parallel
+  0285  ff end
+
+record 14 run(0) group 5 args 000000000000 -> code 0x0207
+  0207  21 if_flags unless set[] and clear[38] skip 8
+  020c  00 dialogue text=0x0711
+            text │ 諸葛亮: 奇襲隊的主帥，派龐統是合適人選．
+                 │ 劉備: 嗯，快喚龐統來．
+  020f  01 move_person person=0 x=23 y=7 dir=2
+          person │ 劉備
+  0215  0a place_person person=132 x=3 y=17 dir=0
+          person │ 龐統
+  021b  00 dialogue text=0x0749
+            text │ 龐統: 主公，找我何事？
+  021e  01 move_person person=132 x=15 y=11 dir=0
+          person │ 龐統
+  0224  00 dialogue text=0x075e
+            text │ 劉備: 龐統，你來指揮關中奇襲隊．
+                 │ 龐統: 決定向關中出兵了吧．
+                 │ 劉備: 不錯，你所料極是．
+                 │ 龐統: 得令．我馬上去陽平關．
+                 │ 劉備: 嗯，帶趙雲等人同去吧．
+                 │ 龐統: 是，我先去了．
+  0227  01 move_person person=132 x=3 y=17 dir=2
+          person │ 龐統
+  022d  18 remove_person person=132
+          person │ 龐統
+  0230  21 if_flags unless set[38] and clear[] skip 8
+  0235  00 dialogue text=0x07ec
+            text │ 諸葛亮: 奇襲隊的主帥，趙雲是合適人選．
+                 │ 劉備: 嗯，快喚趙雲來．
+  0238  01 move_person person=0 x=23 y=7 dir=2
+          person │ 劉備
+  023e  0a place_person person=53 x=3 y=17 dir=0
+          person │ 趙雲
+  0244  00 dialogue text=0x0822
+            text │ 趙雲: 主公，找我何事？
+  0247  01 move_person person=53 x=15 y=11 dir=0
+          person │ 趙雲
+  024d  00 dialogue text=0x0837
+            text │ 劉備: 趙雲，你來指揮關中奇襲隊．
+                 │ 趙雲: 決定向關中出兵了吧．
+                 │ 劉備: 不錯，你所料極是．
+                 │ 趙雲: 得令．我馬上去陽平關．
+                 │ 劉備: 嗯，帶馬超等人同去吧．
+                 │ 趙雲: 是，我先去了．
+  0250  01 move_person person=53 x=3 y=17 dir=2
+          person │ 趙雲
+  0256  18 remove_person person=53
+          person │ 趙雲
+  0259  14 set_flag flag=89 clear=0
+  025c  24 set_allegiance person=132 army=14
+          person │ 龐統
+  0260  24 set_allegiance person=53 army=14
+          person │ 趙雲
+  0264  24 set_allegiance person=189 army=14
+          person │ 馬超
+  0268  24 set_allegiance person=126 army=14
+          person │ 魏延
+  026c  24 set_allegiance person=82 army=14
+          person │ 簡雍
+  0270  24 set_allegiance person=64 army=14
+          person │ 糜竺
+  0274  24 set_allegiance person=81 army=14
+          person │ 糜芳
+  0278  24 set_allegiance person=113 army=14
+          person │ 伊籍
+  027c  24 set_allegiance person=116 army=14
+          person │ 劉封
+  0280  24 set_allegiance person=187 army=14
+          person │ 法正
+  0284  13 leave_parallel
+  0285  ff end
+
+record 15 run(0) group 5 args 000000000000 -> code 0x0286
+  0286  00 dialogue text=0x08c5
+            text │ 諸葛亮: 是，全軍進發荊州吧．
+  0289  13 leave_parallel
+  028a  ff end
+
+record 16 run(0) group 6 args 000000000000 -> code 0x028b
+  028b  00 dialogue text=0x08de
+            text │ 馬良: 那，去東吳邀請共同發兵吧．
+                 │ 劉備: 嗯，全靠你了．
+                 │ 馬良: 是．
+  028e  01 move_person person=174 x=3 y=17 dir=2
+          person │ 馬良
+  0294  18 remove_person person=174
+          person │ 馬良
+  0297  ff end
+
+### block 2 @0x0298
+
+record 0 run(0) group 0 args 000000000000 -> code 0x02b6
+  02b6  2e reset_player_position target=12 x=0 y=0 dir=255
+  02bc  09 load_map map=0x2000
+  02bf  0a place_person person=212 x=25 y=6 dir=2
+          person │ 曹丕
+  02c5  0a place_person person=213 x=15 y=8 dir=1
+          person │ 司馬懿
+  02cb  0a place_person person=16 x=21 y=11 dir=3
+          person │ 夏侯惇
+  02d1  0a place_person person=19 x=12 y=10 dir=1
+          person │ 曹洪
+  02d7  0a place_person person=93 x=18 y=13 dir=3
+          person │ 賈詡
+  02dd  38 play_music song=11
+  02df  05 show_screen
+  02e0  0b caption text=0x0915
+            text │ 鄴城宮殿
+  02e3  08 narration text=0x091e
+            text │ 　另一方面，在魏國的大本營鄴城，正在商議對付蜀吳同盟．
+  02e6  01 move_person person=213 x=15 y=8 dir=0
+          person │ 司馬懿
+  02ec  00 dialogue text=0x0957
+            text │ 司馬懿: 陛下，蜀吳已結成同盟，很明顯要共同進攻我們，我們如何應付？
+                 │ 曹丕: 嗯，派援軍去襄陽．那，夏侯惇．
+                 │ 夏侯惇: 在！
+  02ef  01 move_person person=16 x=18 y=10 dir=0
+          person │ 夏侯惇
+  02f5  00 dialogue text=0x09be
+            text │ 曹丕: 馬上率軍增援襄陽，與襄陽守將曹仁協力，頂住蜀軍．
+                 │ 夏侯惇: 遵命，我馬上去！
+  02f8  01 move_person person=16 x=3 y=17 dir=2
+          person │ 夏侯惇
+  02fe  18 remove_person person=16
+          person │ 夏侯惇
+  0301  00 dialogue text=0x0a06
+            text │ 曹丕: 還有，曹洪、賈詡．
+                 │ 曹洪: 在．
+                 │ 賈詡: 有何吩咐．
+  0304  01 move_person person=19 x=17 y=9 dir=0
+          person │ 曹洪
+  030a  01 move_person person=93 x=19 y=10 dir=0
+          person │ 賈詡
+  0310  00 dialogue text=0x0a31
+            text │ 曹丕: 曹洪，你去關中向曹真傳命，敵人若攻來就迎擊，否則就增援襄陽．
+                 │ 曹洪: 是．
+                 │ 曹丕: 賈詡去合淝，向張遼也照此傳令．
+                 │ 賈詡: 遵命．
+  0313  01 move_person person=19 x=3 y=17 dir=2
+          person │ 曹洪
+  0319  01 move_person person=93 x=3 y=17 dir=2
+          person │ 賈詡
+  031f  18 remove_person person=19
+          person │ 曹洪
+  0322  18 remove_person person=93
+          person │ 賈詡
+  0325  2c redraw
+  0326  09 load_map map=0x1000
+  0329  0a place_person person=16 x=41 y=2 dir=2
+          person │ 夏侯惇
+  032f  0a place_person person=19 x=41 y=2 dir=2
+          person │ 曹洪
+  0335  0a place_person person=93 x=41 y=2 dir=2
+          person │ 賈詡
+  033b  05 show_screen
+  033c  01 move_person person=16 x=29 y=46 dir=2
+          person │ 夏侯惇
+  0342  01 move_person person=19 x=14 y=19 dir=2
+          person │ 曹洪
+  0348  01 move_person person=93 x=47 y=39 dir=2
+          person │ 賈詡
+  034e  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x034f
+  034f  2e reset_player_position target=3 x=0 y=0 dir=255
+  0355  09 load_map map=0x2004
+  0358  0a place_person person=18 x=25 y=6 dir=2
+          person │ 曹仁
+  035e  0a place_person person=16 x=3 y=17 dir=0
+          person │ 夏侯惇
+  0364  0a place_person person=78 x=15 y=7 dir=1
+          person │ 徐晃
+  036a  0a place_person person=62 x=22 y=12 dir=3
+          person │ 于禁
+  0370  05 show_screen
+  0371  0b caption text=0x0aa3
+            text │ 襄陽議事廳
+  0374  08 narration text=0x0aae
+            text │ 　夏侯惇遵曹丕之命，已到達曹仁鎮守的襄陽．
+  0377  01 move_person person=16 x=18 y=10 dir=0
+          person │ 夏侯惇
+  037d  00 dialogue text=0x0adb
+            text │ 夏侯惇: 奉聖上之命，前來增援．
+                 │ 曹仁: 來得太好了，光我們這些兵，根本守不住．
+                 │ 徐晃: 提早禦敵吧．
+                 │ 于禁: 是呀，敵人隨時都可能殺來．
+                 │ 曹仁: 那好，夏侯惇去守宛城．
+                 │ 夏侯惇: 我守最後的關口，好的．
+                 │ 曹仁: 徐晃守南郡，于禁守新野，都要用心防守．
+                 │ 徐晃: 遵命．
+                 │ 于禁: 是．
+  0380  01 move_person person=16 x=3 y=17 dir=2
+          person │ 夏侯惇
+  0386  01 move_person person=78 x=3 y=17 dir=2
+          person │ 徐晃
+  038c  01 move_person person=62 x=3 y=17 dir=2
+          person │ 于禁
+  0392  18 remove_person person=16
+          person │ 夏侯惇
+  0395  18 remove_person person=78
+          person │ 徐晃
+  0398  18 remove_person person=62
+          person │ 于禁
+  039b  2c redraw
+  039c  09 load_map map=0x1000
+  039f  0a place_person person=16 x=29 y=46 dir=2
+          person │ 夏侯惇
+  03a5  0a place_person person=78 x=29 y=46 dir=2
+          person │ 徐晃
+  03ab  0a place_person person=62 x=29 y=46 dir=2
+          person │ 于禁
+  03b1  0a place_person person=18 x=29 y=46 dir=2
+          person │ 曹仁
+  03b7  05 show_screen
+  03b8  01 move_person person=16 x=38 y=28 dir=2
+          person │ 夏侯惇
+  03be  01 move_person person=78 x=37 y=39 dir=2
+          person │ 徐晃
+  03c4  01 move_person person=62 x=30 y=39 dir=2
+          person │ 于禁
+  03ca  ff end
+
+### block 3 @0x03cb
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0411
+  0411  2e reset_player_position target=0 x=0 y=0 dir=255
+  0417  09 load_map map=0x2005
+  041a  1d set_previous_map map=0x0000 x=25 y=5
+  041f  0a place_person person=0 x=23 y=7 dir=2
+          person │ 劉備
+  0425  0a place_person person=125 x=20 y=7 dir=2
+          person │ 諸葛亮
+  042b  21 if_flags unless set[135] and clear[] skip 1
+  0430  0a place_person person=2 x=13 y=8 dir=1
+          person │ 張飛
+  0436  0a place_person person=169 x=9 y=10 dir=1
+          person │ 黃忠
+  043c  0a place_person person=202 x=16 y=15 dir=3
+          person │ 嚴顏
+  0442  0a place_person person=174 x=3 y=17 dir=0
+          person │ 馬良
+  0448  38 play_music song=5
+  044a  05 show_screen
+  044b  0b caption text=0x0bb6
+            text │ 成都議事廳
+  044e  01 move_person person=174 x=11 y=13 dir=0
+          person │ 馬良
+  0454  00 dialogue text=0x0bc1
+            text │ 馬良: 主公，我剛從東吳回來．
+  0457  30 set_objective text=0x0bdc
+            text │ 商議今後行動
+  045a  17 input_control value=0
+  045c  ff end
+
+record 1 talk(3) group 1* args 7d0000000000 [諸葛亮] -> code 0x045d
+  045d  00 dialogue text=0x0beb
+            text │ 諸葛亮: 先請聽聽馬良的報告吧．
+  0460  ff end
+
+record 2 talk(3) group 1 args 020000000000 [張飛] -> code 0x0461
+  0461  00 dialogue text=0x0c06
+            text │ 張飛: 大哥，聽聽報告吧．
+  0464  ff end
+
+record 3 talk(3) group 1 args a90000000000 [黃忠] -> code 0x0465
+  0465  00 dialogue text=0x0c1d
+            text │ 黃忠: 主公，有沒有東吳參加無所謂，有我在就夠了．
+  0468  ff end
+
+record 4 talk(3) group 1 args ca0000000000 [嚴顏] -> code 0x0469
+  0469  00 dialogue text=0x0c4c
+            text │ 嚴顏: 與東吳交涉很順利吧．
+  046c  ff end
+
+record 5 talk(3) group 1 args ae0000000000 [馬良] -> code 0x046d
+  046d  17 input_control value=1
+  046f  00 dialogue text=0x0c65
+            text │ 劉備: 馬良，聯合起兵的事如何了？
+                 │ 馬良: 已大功告成，孫權答應聯合起兵了．
+                 │ 劉備: 哦，真是好消息．
+                 │ 馬良: 孫權要去江陵．
+                 │ 劉備: 好，那我們也去江陵．
+                 │ 諸葛亮: 出發吧．
+  0472  21 if_flags unless set[135] and clear[] skip 1
+  0477  01 move_person person=2 x=3 y=17 dir=2
+          person │ 張飛
+  047d  01 move_person person=125 x=3 y=17 dir=2
+          person │ 諸葛亮
+  0483  01 move_person person=174 x=3 y=17 dir=2
+          person │ 馬良
+  0489  01 move_person person=169 x=3 y=17 dir=2
+          person │ 黃忠
+  048f  01 move_person person=202 x=3 y=17 dir=2
+          person │ 嚴顏
+  0495  21 if_flags unless set[135] and clear[] skip 1
+  049a  18 remove_person person=2
+          person │ 張飛
+  049d  18 remove_person person=125
+          person │ 諸葛亮
+  04a0  18 remove_person person=174
+          person │ 馬良
+  04a3  18 remove_person person=169
+          person │ 黃忠
+  04a6  18 remove_person person=202
+          person │ 嚴顏
+  04a9  20 enable_list reset_all=true [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+  04b7  30 set_objective text=0x0ced
+            text │ 去江陵．
+  04ba  17 input_control value=0
+  04bc  13 leave_parallel
+  04bd  ff end
+
+### block 4 @0x04be
+
+record 0 location(2) group 0 args 050002000000 -> code 0x05e0
+  05e0  17 input_control value=1
+  05e2  09 load_map map=0x2005
+  05e5  0a place_person person=0 x=23 y=7 dir=2
+          person │ 劉備
+  05eb  0a place_person person=125 x=20 y=7 dir=2
+          person │ 諸葛亮
+  05f1  21 if_flags unless set[135] and clear[] skip 1
+  05f6  0a place_person person=2 x=13 y=8 dir=1
+          person │ 張飛
+  05fc  0a place_person person=169 x=9 y=10 dir=1
+          person │ 黃忠
+  0602  0a place_person person=202 x=20 y=13 dir=3
+          person │ 嚴顏
+  0608  0a place_person person=174 x=3 y=17 dir=0
+          person │ 馬良
+  060e  05 show_screen
+  060f  0b caption text=0x0cf8
+            text │ 江陵議事廳
+  0612  01 move_person person=174 x=15 y=11 dir=0
+          person │ 馬良
+  0618  00 dialogue text=0x0d03
+            text │ 馬良: 主公，孫權到達江陵了．
+                 │ 劉備: 是嗎，請到這裡來．
+                 │ 馬良: 是．
+  061b  01 move_person person=174 x=3 y=17 dir=2
+          person │ 馬良
+  0621  18 remove_person person=174
+          person │ 馬良
+  0624  00 dialogue text=0x0d3a
+            text │ 劉備: 東吳……．關羽遭東吳毒手時，哪裡想到今日會與孫權聯合攻曹魏．
+                 │ 諸葛亮: 主公的英明決斷，才造成今日的有利局勢．主公，孫權好像已經到了．
+  0627  0a place_person person=141 x=3 y=17 dir=0
+          person │ 孫權
+  062d  01 move_person person=141 x=15 y=11 dir=0
+          person │ 孫權
+  0633  00 dialogue text=0x0dbc
+            text │ 孫權: 劉備公，幸會幸會．
+  0636  30 set_objective text=0x0dd3
+            text │ 與孫權等人商議今後的事．
+  0639  17 input_control value=0
+  063b  ff end
+
+record 1 talk(3) group 1* args 7d0000000000 [諸葛亮] -> code 0x063c
+  063c  00 dialogue text=0x0dee
+            text │ 諸葛亮: 先聽孫權公妙策吧．
+  063f  ff end
+
+record 2 talk(3) group 1 args 020000000000 [張飛] -> code 0x0640
+  0640  00 dialogue text=0x0e05
+            text │ 張飛: 大哥，先問客人吧．
+  0643  ff end
+
+record 3 talk(3) group 1 args a90000000000 [黃忠] -> code 0x0644
+  0644  00 dialogue text=0x0e1c
+            text │ 黃忠: 主公，先聽孫權公妙策吧．
+  0647  ff end
+
+record 4 talk(3) group 1 args ca0000000000 [嚴顏] -> code 0x0648
+  0648  00 dialogue text=0x0e39
+            text │ 嚴顏: 主公，先聽孫權公妙策吧．
+  064b  ff end
+
+record 5 talk(3) group 1 args 8d0000000000 [孫權] -> code 0x064c
+  064c  17 input_control value=1
+  064e  00 dialogue text=0x0e56
+            text │ 孫權: 我率部來此，只為伐魏．我先介紹一下我軍統帥陸遜．陸遜，有請．
+  0651  0a place_person person=150 x=3 y=17 dir=0
+          person │ 陸遜
+  0657  01 move_person person=150 x=15 y=12 dir=0
+          person │ 陸遜
+  065d  00 dialogue text=0x0e97
+            text │ 陸遜: 在下陸遜，大家一回生，二回熟．
+                 │ 劉備: 孫權公，陸遜公，我們一起伐魏，共誅國賊吧．
+                 │ 孫權: 好吧．消滅了曹丕，天下也就太平了．
+  0660  17 input_control value=0
+  0662  13 leave_parallel
+  0663  ff end
+
+record 6 talk(3) group 2* args 8d0000000000 [孫權] -> code 0x0664
+  0664  00 dialogue text=0x0f0c
+            text │ 孫權: 我們也會盡力伐魏．
+  0667  ff end
+
+record 7 talk(3) group 2 args 960000000000 [陸遜] -> code 0x0668
+  0668  00 dialogue text=0x0f23
+            text │ 陸遜: 一同伐魏吧．
+  066b  ff end
+
+record 8 talk(3) group 2 args 020000000000 [張飛] -> code 0x066c
+  066c  00 dialogue text=0x0f34
+            text │ 張飛: 要與東吳一起作戰？在此之前，想都不敢想．
+  066f  ff end
+
+record 9 talk(3) group 2 args a90000000000 [黃忠] -> code 0x0670
+  0670  00 dialogue text=0x0f61
+            text │ 黃忠: 一同伐魏吧．
+  0673  ff end
+
+record 10 talk(3) group 2 args ca0000000000 [嚴顏] -> code 0x0674
+  0674  00 dialogue text=0x0f72
+            text │ 嚴顏: 一同伐魏吧．
+  0677  ff end
+
+record 11 talk(3) group 2 args 7d0000000000 [諸葛亮] -> code 0x0678
+  0678  00 dialogue text=0x0f83
+            text │ 諸葛亮: 請孫權派奇襲隊，分散敵軍兵力為好．
+                 │ 劉備: 讓奇襲隊進攻何處呢？
+                 │ 諸葛亮: 東吳之北是合淝，由張遼鎮守．如果進攻合淝，張遼就不能抽身增援他處．請主公熟思決斷．
+  067b  30 set_objective text=0x1016
+            text │ 考慮是否請孫權派奇襲隊．
+  067e  13 leave_parallel
+  067f  ff end
+
+record 12 talk(3) group 3* args 8d0000000000 [孫權] -> code 0x0680
+  0680  00 dialogue text=0x1031
+            text │ 孫權: 我們也會盡力伐魏．
+  0683  ff end
+
+record 13 talk(3) group 3 args 960000000000 [陸遜] -> code 0x0684
+  0684  00 dialogue text=0x1048
+            text │ 陸遜: 一同伐魏吧．
+  0687  ff end
+
+record 14 talk(3) group 3 args 020000000000 [張飛] -> code 0x0688
+  0688  00 dialogue text=0x1059
+            text │ 張飛: 要與東吳一起作戰？在此之前，想都不敢想．
+  068b  ff end
+
+record 15 talk(3) group 3 args a90000000000 [黃忠] -> code 0x068c
+  068c  00 dialogue text=0x1086
+            text │ 黃忠: 一同伐魏吧．
+  068f  ff end
+
+record 16 talk(3) group 3 args ca0000000000 [嚴顏] -> code 0x0690
+  0690  00 dialogue text=0x1097
+            text │ 嚴顏: 一同伐魏吧．
+  0693  ff end
+
+record 17 talk(3) group 3 args 7d0000000000 [諸葛亮] -> code 0x0694
+  0694  00 dialogue text=0x10a8
+            text │ 諸葛亮: 主公，考慮得如何了？
+  0697  15 if_answer answer=0 skip=3
+  069a  3d op_3d value=0
+  069c  17 input_control value=1
+  069e  13 leave_parallel
+  069f  ff end
+
+record 18 condition(1) group 4* args 000000000000 -> code 0x06a0
+  06a0  25 choice options=0x10c1
+         options │ 請孫權攻合淝
+                 │ 
+                 │ 不邀請
+  06a3  01 move_person person=0 x=18 y=10 dir=2
+          person │ 劉備
+  06a9  00 dialogue text=0x10da
+            text │ 劉備: 孫權公，派奇襲隊如何？
+                 │ 孫權: 奇襲隊？
+                 │ 劉備: 想請您進攻東吳北面的合淝．
+                 │ 孫權: 讓我牽制敵軍．好，我發兵合淝．
+  06ac  14 set_flag flag=90 clear=0
+  06af  00 dialogue text=0x113e
+            text │ 孫權: 那好，我馬上回去，做發兵合淝的準備．
+  06b2  13 leave_parallel
+  06b3  ff end
+
+record 19 run(0) group 4 args 000000000000 -> code 0x06a3
+  06a3  01 move_person person=0 x=18 y=10 dir=2
+          person │ 劉備
+  06a9  00 dialogue text=0x10da
+            text │ 劉備: 孫權公，派奇襲隊如何？
+                 │ 孫權: 奇襲隊？
+                 │ 劉備: 想請您進攻東吳北面的合淝．
+                 │ 孫權: 讓我牽制敵軍．好，我發兵合淝．
+  06ac  14 set_flag flag=90 clear=0
+  06af  00 dialogue text=0x113e
+            text │ 孫權: 那好，我馬上回去，做發兵合淝的準備．
+  06b2  13 leave_parallel
+  06b3  ff end
+
+record 20 run(0) group 4 args 000000000000 -> code 0x06b4
+  06b4  00 dialogue text=0x1167
+            text │ 孫權: 我軍想資助些軍需，請笑納．
+  06b7  2b data kind=2 value=2000
+  06bb  0b caption text=0x1186
+            text │ 接受了東吳２０００黃金的援助！
+  06be  00 dialogue text=0x11a5
+            text │ 孫權: 以後有什麼事，請吩咐陸遜．那我先告退．
+  06c1  13 leave_parallel
+  06c2  ff end
+
+record 21 run(0) group 5 args 000000000000 -> code 0x06c3
+  06c3  01 move_person person=150 x=15 y=11 dir=0
+          person │ 陸遜
+  06c9  01 move_person person=141 x=3 y=17 dir=2
+          person │ 孫權
+  06cf  18 remove_person person=141
+          person │ 孫權
+  06d2  00 dialogue text=0x11d0
+            text │ 諸葛亮: 那我們也準備出征吧．
+  06d5  30 set_objective text=0x11e9
+            text │ 進行出征準備．
+  06d8  17 input_control value=0
+  06da  ff end
+
+record 22 talk(3) group 6* args 020000000000 [張飛] -> code 0x06db
+  06db  00 dialogue text=0x11fa
+            text │ 張飛: 要與東吳一起作戰？在此之前，想都不敢想．
+  06de  ff end
+
+record 23 talk(3) group 6 args a90000000000 [黃忠] -> code 0x06df
+  06df  00 dialogue text=0x1227
+            text │ 黃忠: 一同伐魏吧．
+  06e2  ff end
+
+record 24 talk(3) group 6 args ca0000000000 [嚴顏] -> code 0x06e3
+  06e3  00 dialogue text=0x1238
+            text │ 嚴顏: 一同伐魏吧．
+  06e6  ff end
+
+record 25 talk(3) group 6 args 960000000000 [陸遜] -> code 0x06e7
+  06e7  00 dialogue text=0x1249
+            text │ 陸遜: 一同伐魏吧．
+  06ea  ff end
+
+record 26 talk(3) group 6 args 7d0000000000 [諸葛亮] -> code 0x06eb
+  06eb  00 dialogue text=0x125a
+            text │ 諸葛亮: 出征嗎？
+  06ee  15 if_answer answer=0 skip=3
+  06f1  3d op_3d value=0
+  06f3  17 input_control value=1
+  06f5  13 leave_parallel
+  06f6  ff end
+
+record 27 run(0) group 7 args 000000000000 -> code 0x06f7
+  06f7  38 play_music song=12
+  06f9  00 dialogue text=0x1267
+            text │ 諸葛亮: 請編組部隊．
+  06fc  21 if_flags unless set[136] and clear[] skip 5
+  0701  39 add_levels person=150 levels=6
+          person │ 陸遜
+  0705  39 add_levels person=147 levels=11
+          person │ 甘寧
+  0709  39 add_levels person=166 levels=11
+          person │ 凌統
+  070d  39 add_levels person=165 levels=11
+          person │ 徐盛
+  0711  39 add_levels person=164 levels=11
+          person │ 丁奉
+  0715  03 battle_setup turns=40 win=Some(18) lose=Some(0) other=00000000 units=14
+           units │ 劉備 (8, 20), 諸葛亮 (8, 21), (any unit) (7, 19), (any unit) (9, 19), (any unit) (8, 18), (any unit) (10, 20), (any unit) (9, 21), (any unit) (7, 22), 陸遜 (12, 22), 甘寧 (11, 21), 凌統 (11, 19), 徐盛 (12, 20), 丁奉 (13, 21), ？？？ (1, 16)
+  082f  23 op_23
+  0830  00 dialogue text=0x1278
+            text │ 諸葛亮: 首先進攻離此最近的襄陽吧．
+  0833  09 load_map map=0x1000
+  0836  2f set_graphic person=0 graphic=3
+          person │ 劉備
+  083a  0a place_person person=0 x=39 y=51 dir=2
+          person │ 劉備
+  0840  0a place_person person=18 x=29 y=46 dir=2
+          person │ 曹仁
+  0846  38 play_music song=3
+  0848  05 show_screen
+  0849  01 move_person person=0 x=29 y=46 dir=2
+          person │ 劉備
+  084f  2e reset_player_position target=3 x=0 y=0 dir=0
+  0855  ff end
+
+### block 5 @0x0856
+
+record 0 run(0) group 0 args 000000000000 -> code 0x08ec
+  08ec  22 battle_roster friendly=false units=28
+          unit 18 at (18, 4) class 2 lv 55 ai 2/0
+          unit 168 at (14, 9) class 2 lv 52 ai 2/0
+          unit 256 at (17, 5) class 2 lv 48 ai 2/0
+          unit 257 at (17, 6) class 2 lv 48 ai 2/0
+          unit 258 at (11, 15) class 2 lv 47 ai 2/0
+          unit 259 at (10, 15) class 2 lv 47 ai 2/0
+          unit 260 at (9, 8) class 2 lv 48 ai 2/0
+          unit 261 at (11, 9) class 2 lv 47 ai 1/0
+          unit 292 at (8, 11) class 8 lv 51 ai 1/0
+          unit 293 at (13, 11) class 8 lv 51 ai 1/0
+          unit 274 at (18, 5) class 5 lv 48 ai 1/0
+          unit 275 at (7, 8) class 5 lv 47 ai 0/0
+          unit 276 at (11, 14) class 5 lv 47 ai 2/0
+          unit 277 at (10, 14) class 5 lv 48 ai 2/0
+          unit 83 at (21, 18) class 2 lv 51 ai 3/0
+          unit 170 at (18, 18) class 8 lv 50 ai 3/0
+          unit 294 at (17, 18) class 8 lv 45 ai 3/0
+          unit 295 at (19, 17) class 8 lv 45 ai 3/0
+          unit 296 at (22, 17) class 8 lv 44 ai 3/0
+          unit 297 at (23, 18) class 8 lv 44 ai 3/0
+          unit 298 at (22, 19) class 8 lv 45 ai 3/0
+          unit 262 at (14, 3) class 2 lv 47 ai 0/0
+          unit 263 at (14, 4) class 2 lv 48 ai 0/0
+          unit 264 at (4, 8) class 2 lv 48 ai 2/0
+          unit 278 at (9, 10) class 5 lv 46 ai 2/0
+          unit 279 at (10, 10) class 5 lv 46 ai 2/0
+          unit 280 at (15, 8) class 5 lv 47 ai 2/0
+          unit 281 at (15, 11) class 5 lv 47 ai 2/0
+           units │ 曹仁 (18, 4), 毛玠 (14, 9), 步兵隊 (17, 5), 步兵隊 (17, 6), 步兵隊 (11, 15), 步兵隊 (10, 15), 步兵隊 (9, 8), 步兵隊 (11, 9), 騎兵隊 (8, 11), 騎兵隊 (13, 11), 弓兵隊 (18, 5), 弓兵隊 (7, 8), 弓兵隊 (11, 14), 弓兵隊 (10, 14), 滿寵 (21, 18), 牛金 (18, 18), 騎兵隊 (17, 18), 騎兵隊 (19, 17), 騎兵隊 (22, 17), 騎兵隊 (23, 18), 騎兵隊 (22, 19), 步兵隊 (14, 3), 步兵隊 (14, 4), 步兵隊 (4, 8), 弓兵隊 (9, 10), 弓兵隊 (10, 10), 弓兵隊 (15, 8), 弓兵隊 (15, 11)
+  0a74  09 load_map map=0x3018
+  0a77  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0a78
+  0a78  36 begin_battle
+  0a79  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x0a7a
+  0a7a  38 play_music song=11
+  0a7c  30 set_objective text=0x1297
+            text │ 一、曹仁的結局
+  0a7f  00 dialogue text=0x12a8
+            text │ 曹仁: 蜀軍就要攻來了！一定要擋住他們！
+                 │ 諸葛亮: 聽說敵軍主將是曹仁．攻下襄陽，再奪回荊州．
+                 │ 陸遜: 大家不要落在蜀軍後面！向天下顯示吳軍的實力！
+  0a82  38 play_music song=9
+  0a84  ff end
+
+record 3 unit_at_cell(6) group 3* args 0004030a0000 [(any unit)] -> code 0x0a85
+  0a85  21 if_flags unless set[] and clear[98] skip 2
+  0a8a  1b add_item item=54
+            item │ 茶
+  0a8c  14 set_flag flag=98 clear=0
+  0a8f  ff end
+
+record 4 unit_at_cell(6) group 3 args 000408050000 [(any unit)] -> code 0x0a90
+  0a90  21 if_flags unless set[] and clear[99] skip 2
+  0a95  1b add_item item=17
+            item │ 馬術指南書
+  0a97  14 set_flag flag=99 clear=0
+  0a9a  ff end
+
+record 5 unit_at_cell(6) group 3 args 000403100000 [(any unit)] -> code 0x0a9b
+  0a9b  21 if_flags unless set[] and clear[100] skip 2
+  0aa0  1b add_item item=1
+            item │ 青囊書
+  0aa2  14 set_flag flag=100 clear=0
+  0aa5  ff end
+
+record 6 unit_in_area(11) group 3 args 000407040c0e [(any unit)] -> code 0x0aa6
+  0aa6  38 play_music song=11
+  0aa8  1a join_battle person=83
+          person │ 滿寵
+  0aab  1a join_battle person=170
+          person │ 牛金
+  0aae  1a join_battle person=294
+          person │ 騎兵隊
+  0ab1  1a join_battle person=295
+          person │ 騎兵隊
+  0ab4  1a join_battle person=296
+          person │ 騎兵隊
+  0ab7  1a join_battle person=297
+          person │ 騎兵隊
+  0aba  1a join_battle person=298
+          person │ 騎兵隊
+  0abd  0b caption text=0x1329
+            text │ 敵人的援軍到達！
+  0ac0  00 dialogue text=0x133a
+            text │ 曹仁: 哦，援軍來了嗎？大家加把勁！援軍已到，一鼓作氣殺回去！
+                 │ 劉備: 沒想到……敵人的援軍到了．
+  0ac3  21 if_flags unless set[58] and clear[] skip 4
+  0ac8  38 play_music song=12
+  0aca  1a join_battle person=372
+          person │ ？？？
+  0acd  00 dialogue text=0x1392
+            text │ ？？？: 不能讓魏國長期霸佔荊州．
+  0ad0  1c set_ai person=372 mode=5 target=18
+          person │ ？？？
+          target │ 曹仁
+  0ad6  38 play_music song=9
+  0ad8  13 leave_parallel
+  0ad9  ff end
+
+record 7 battle_won(7) group 3 args 000000000000 -> code 0x0ada
+  0ada  08 narration text=0x13af
+            text │ 此作戰勝利是檢測遊戲用的，一般若遊戲至此，表示遊戲過程有錯誤．
+  0add  11 battle_end next_map=0x1000
+  0ae0  20 enable_list reset_all=true [1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+  0aed  09 load_map map=0x1000
+  0af0  0a place_person person=0 x=29 y=46 dir=2
+          person │ 劉備
+  0af6  0a place_person person=78 x=37 y=39 dir=2
+          person │ 徐晃
+  0afc  0a place_person person=62 x=30 y=39 dir=2
+          person │ 于禁
+  0b02  38 play_music song=3
+  0b04  05 show_screen
+  0b05  00 dialogue text=0x13f0
+            text │ 諸葛亮: 進襄陽城吧．
+  0b08  30 set_objective text=0x1401
+            text │ 在襄陽討論下一步行動．
+  0b0b  17 input_control value=0
+  0b0d  0f goto_block block=6
+  0b0f  ff end
+
+record 8 unit_at_cell(6) group 4* args 0004030a0000 [(any unit)] -> code 0x0b10
+  0b10  21 if_flags unless set[] and clear[98] skip 2
+  0b15  1b add_item item=54
+            item │ 茶
+  0b17  14 set_flag flag=98 clear=0
+  0b1a  ff end
+
+record 9 unit_at_cell(6) group 4 args 000408050000 [(any unit)] -> code 0x0b1b
+  0b1b  21 if_flags unless set[] and clear[99] skip 2
+  0b20  1b add_item item=17
+            item │ 馬術指南書
+  0b22  14 set_flag flag=99 clear=0
+  0b25  ff end
+
+record 10 unit_at_cell(6) group 4 args 000403100000 [(any unit)] -> code 0x0b26
+  0b26  21 if_flags unless set[] and clear[100] skip 2
+  0b2b  1b add_item item=1
+            item │ 青囊書
+  0b2d  14 set_flag flag=100 clear=0
+  0b30  ff end
+
+record 11 unit_contact(4) group 4 args 740112000000 [？？？] -> code 0x0b31
+  0b31  00 dialogue text=0x141a
+            text │ ？？？: 曹仁，久違了．
+                 │ 曹仁: 哦，何人？你……，是你！還活著！？
+                 │ ？？？: 我怎會這麼容易就死，現在我要雪荊州之恨！
+                 │ 曹仁: 哼！來吧！
+  0b34  10 duel first=372 second=18
+           first │ ？？？
+          second │ 曹仁
+  0b39  00 dialogue text=0x148a
+            text │ 曹仁: 我來也！
+                 │ ？？？: 好小子！你哪裡是我的對手！
+  0b3c  34 duel_begin
+  0b3d  00 dialogue text=0x14b4
+            text │ ？？？: 不陪你玩了！先宰了再說！！
+  0b40  35 duel_action person=372 action=0
+          person │ ？？？
+  0b44  00 dialogue text=0x14d3
+            text │ 曹仁: 哇！
+  0b47  35 duel_action person=18 action=3
+          person │ 曹仁
+  0b4b  33 duel_end
+  0b4c  18 remove_person person=18
+          person │ 曹仁
+  0b4f  0b caption text=0x14dc
+            text │ 神祕武將殺了曹仁！
+  0b52  00 dialogue text=0x14ef
+            text │ 劉備: 怎麼？發生了什麼事？
+                 │ 諸葛亮: 敵人內鬨了？一定要抓住這個時機！
+                 │ 劉備: 好，猛勁殺過去！
+  0b55  2b data kind=4 value=50
+  0b59  13 leave_parallel
+  0b5a  ff end
+
+record 12 battle_won(7) group 4 args 000000000000 -> code 0x0b5b
+  0b5b  00 dialogue text=0x153e
+            text │ 曹仁: 可、可惡……劉備小兒！哇！！
+                 │ 劉備: 好，殺了曹仁！
+  0b5e  13 leave_parallel
+  0b5f  ff end
+
+record 13 run(0) group 5 args 000000000000 -> code 0x0b60
+  0b60  38 play_music song=7
+  0b62  08 narration text=0x1570
+            text │ 　殺了曹仁，劉備軍佔領了襄陽．
+  0b65  21 if_flags unless set[58] and clear[] skip 5
+  0b6a  38 play_music song=2
+  0b6c  00 dialogue text=0x1591
+            text │ ？？？: ……我哪有面目去見兄長……
+  0b6f  18 remove_person person=372
+          person │ ？？？
+  0b72  0b caption text=0x15b0
+            text │ 神祕武將走了．
+  0b75  00 dialogue text=0x15bf
+            text │ 劉備: 嗯！那是……？莫非……
+                 │ 張飛: 大哥，怎麼了？
+                 │ 劉備: 奇怪……沒什麼……
+                 │ 張飛: 大哥，不舒服嗎？高興點．
+                 │ 劉備: 是呀．（肯定是看花眼了，莫非……）好，進襄陽吧！
+  0b78  38 play_music song=7
+  0b7a  2b data kind=2 value=1500
+  0b7e  0b caption text=0x164e
+            text │ 得到黃金１５００！
+  0b81  11 battle_end next_map=0x1000
+  0b84  20 enable_list reset_all=true [1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+  0b91  09 load_map map=0x1000
+  0b94  0a place_person person=0 x=29 y=46 dir=2
+          person │ 劉備
+  0b9a  0a place_person person=78 x=37 y=39 dir=2
+          person │ 徐晃
+  0ba0  0a place_person person=62 x=30 y=39 dir=2
+          person │ 于禁
+  0ba6  38 play_music song=3
+  0ba8  05 show_screen
+  0ba9  00 dialogue text=0x1661
+            text │ 諸葛亮: 那就進襄陽城吧．
+  0bac  30 set_objective text=0x1676
+            text │ 在襄陽商議下一步行動
+  0baf  17 input_control value=0
+  0bb1  ff end
+
+### block 6 @0x0bb2
+
+record 0 location(2) group 0 args 040003000000 -> code 0x0ca2
+  0ca2  17 input_control value=1
+  0ca4  09 load_map map=0x2004
+  0ca7  2f set_graphic person=0 graphic=2
+          person │ 劉備
+  0cab  0a place_person person=0 x=25 y=6 dir=2
+          person │ 劉備
+  0cb1  0a place_person person=125 x=22 y=6 dir=2
+          person │ 諸葛亮
+  0cb7  21 if_flags unless set[135] and clear[] skip 1
+  0cbc  0a place_person person=2 x=15 y=7 dir=1
+          person │ 張飛
+  0cc2  0a place_person person=169 x=11 y=9 dir=1
+          person │ 黃忠
+  0cc8  0a place_person person=150 x=22 y=12 dir=3
+          person │ 陸遜
+  0cce  0a place_person person=147 x=18 y=14 dir=3
+          person │ 甘寧
+  0cd4  38 play_music song=5
+  0cd6  05 show_screen
+  0cd7  0b caption text=0x168d
+            text │ 襄陽議事廳
+  0cda  01 move_person person=125 x=22 y=6 dir=1
+          person │ 諸葛亮
+  0ce0  00 dialogue text=0x1698
+            text │ 諸葛亮: 恭喜主公，終於又奪回了襄陽．
+  0ce3  17 input_control value=0
+  0ce5  ff end
+
+record 1 talk(3) group 1* args 960000000000 [陸遜] -> code 0x0ce6
+  0ce6  00 dialogue text=0x16b9
+            text │ 陸遜: 雖然打敗了曹仁，但若要打到洛陽，還得先攻下宛城，於路上，敵人也會嚴陣以待．
+  0ce9  ff end
+
+record 2 talk(3) group 1 args 020000000000 [張飛] -> code 0x0cea
+  0cea  00 dialogue text=0x1708
+            text │ 張飛: 大哥，二哥雖已過世，但總覺得他還活著．
+  0ced  ff end
+
+record 3 talk(3) group 1 args a90000000000 [黃忠] -> code 0x0cee
+  0cee  00 dialogue text=0x1733
+            text │ 黃忠: 賀喜主公，能重奪襄陽．
+  0cf1  ff end
+
+record 4 talk(3) group 1 args 930000000000 [甘寧] -> code 0x0cf2
+  0cf2  00 dialogue text=0x174e
+            text │ 甘寧: 初次相見，我乃東吳之臣甘寧．以後，我們會相處的很好的．
+  0cf5  ff end
+
+record 5 talk(3) group 1 args 7d0000000000 [諸葛亮] -> code 0x0cf6
+  0cf6  00 dialogue text=0x1789
+            text │ 諸葛亮: 要去洛陽，必須先通過新野或南郡，然後過宛城．
+                 │ 劉備: 嗯，若不攻下新野和南郡，有在宛城被夾擊的危險．
+                 │ 諸葛亮: 正是，應該請陸遜支援，同時進攻新野和南郡．
+  0cf9  13 leave_parallel
+  0cfa  ff end
+
+record 6 talk(3) group 2* args 7d0000000000 [諸葛亮] -> code 0x0cfb
+  0cfb  00 dialogue text=0x1818
+            text │ 諸葛亮: 正是，應該請陸遜支援，同時進攻新野和南郡．
+  0cfe  ff end
+
+record 7 talk(3) group 2 args 020000000000 [張飛] -> code 0x0cff
+  0cff  00 dialogue text=0x1847
+            text │ 張飛: 大哥，二哥雖已過世，但總覺得他還活著．
+  0d02  ff end
+
+record 8 talk(3) group 2 args a90000000000 [黃忠] -> code 0x0d03
+  0d03  00 dialogue text=0x1872
+            text │ 黃忠: 賀喜主公，能重奪襄陽．
+  0d06  ff end
+
+record 9 talk(3) group 2 args 930000000000 [甘寧] -> code 0x0d07
+  0d07  00 dialogue text=0x188d
+            text │ 甘寧: 我們東吳之臣也願與蜀軍合力對付魏國．
+  0d0a  ff end
+
+record 10 talk(3) group 2 args 960000000000 [陸遜] -> code 0x0d0b
+  0d0b  00 dialogue text=0x18b6
+            text │ 陸遜: 你們的話，我都聽到了．我是去打新野還是南郡？決定後告訴我．
+  0d0e  30 set_objective text=0x18f5
+            text │ 請陸遜援手，攻打新野或南郡．
+  0d11  13 leave_parallel
+  0d12  ff end
+
+record 11 talk(3) group 3* args 7d0000000000 [諸葛亮] -> code 0x0d13
+  0d13  00 dialogue text=0x1914
+            text │ 諸葛亮: 聽說于禁鎮守新野，徐晃鎮守南郡．
+  0d16  ff end
+
+record 12 talk(3) group 3 args 020000000000 [張飛] -> code 0x0d17
+  0d17  00 dialogue text=0x1939
+            text │ 張飛: 大哥，二哥雖已過世，但總覺得他還活著．
+  0d1a  ff end
+
+record 13 talk(3) group 3 args a90000000000 [黃忠] -> code 0x0d1b
+  0d1b  00 dialogue text=0x1964
+            text │ 黃忠: 賀喜主公，能重奪襄陽．
+  0d1e  ff end
+
+record 14 talk(3) group 3 args 930000000000 [甘寧] -> code 0x0d1f
+  0d1f  00 dialogue text=0x197f
+            text │ 甘寧: 如果拿下新野和南郡，後面就只剩下宛城了．
+  0d22  ff end
+
+record 15 talk(3) group 3 args 960000000000 [陸遜] -> code 0x0d23
+  0d23  00 dialogue text=0x19ac
+            text │ 陸遜: 考慮的如何了？
+  0d26  15 if_answer answer=0 skip=3
+  0d29  3d op_3d value=0
+  0d2b  17 input_control value=1
+  0d2d  13 leave_parallel
+  0d2e  ff end
+
+record 16 condition(1) group 4* args 000000000000 -> code 0x0d2f
+  0d2f  25 choice options=0x19bf
+         options │ 請陸遜去攻打南郡
+                 │ 
+                 │ 請陸遜去攻打新野
+  0d32  14 set_flag flag=92 clear=0
+  0d35  00 dialogue text=0x19e6
+            text │ 陸遜: 好吧，那我就去打南郡．
+  0d38  03 battle_setup turns=40 win=Some(62) lose=Some(0) other=00000000 units=10
+           units │ 劉備 (3, 6), 諸葛亮 (4, 7), (any unit) (2, 6), (any unit) (2, 7), (any unit) (5, 8), (any unit) (7, 4), (any unit) (7, 5), (any unit) (8, 3), (any unit) (9, 5), (any unit) (3, 9)
+  0e52  13 leave_parallel
+  0e53  ff end
+
+record 17 run(0) group 4 args 000000000000 -> code 0x0d32
+  0d32  14 set_flag flag=92 clear=0
+  0d35  00 dialogue text=0x19e6
+            text │ 陸遜: 好吧，那我就去打南郡．
+  0d38  03 battle_setup turns=40 win=Some(62) lose=Some(0) other=00000000 units=10
+           units │ 劉備 (3, 6), 諸葛亮 (4, 7), (any unit) (2, 6), (any unit) (2, 7), (any unit) (5, 8), (any unit) (7, 4), (any unit) (7, 5), (any unit) (8, 3), (any unit) (9, 5), (any unit) (3, 9)
+  0e52  13 leave_parallel
+  0e53  ff end
+
+record 18 run(0) group 4 args 000000000000 -> code 0x0e54
+  0e54  00 dialogue text=0x1a01
+            text │ 陸遜: 好吧，那我就去打新野．
+  0e57  03 battle_setup turns=40 win=Some(78) lose=Some(0) other=00000000 units=10
+           units │ 劉備 (3, 18), 諸葛亮 (2, 18), (any unit) (1, 15), (any unit) (1, 17), (any unit) (1, 19), (any unit) (2, 16), (any unit) (3, 17), (any unit) (4, 16), (any unit) (5, 18), (any unit) (6, 17)
+  0f71  13 leave_parallel
+  0f72  ff end
+
+record 19 run(0) group 5 args 000000000000 -> code 0x0f73
+  0f73  01 move_person person=150 x=3 y=17 dir=2
+          person │ 陸遜
+  0f79  01 move_person person=147 x=3 y=17 dir=2
+          person │ 甘寧
+  0f7f  18 remove_person person=150
+          person │ 陸遜
+  0f82  18 remove_person person=147
+          person │ 甘寧
+  0f85  00 dialogue text=0x1a1c
+            text │ 諸葛亮: 我們也出發吧，準備好了，請告訴我．
+                 │ 黃忠: 那我們先準備去．
+  0f88  21 if_flags unless set[135] and clear[] skip 1
+  0f8d  01 move_person person=2 x=3 y=17 dir=2
+          person │ 張飛
+  0f93  01 move_person person=169 x=3 y=17 dir=2
+          person │ 黃忠
+  0f99  21 if_flags unless set[135] and clear[] skip 1
+  0f9e  18 remove_person person=2
+          person │ 張飛
+  0fa1  18 remove_person person=169
+          person │ 黃忠
+  0fa4  30 set_objective text=0x1a56
+            text │ 進行出征準備．
+  0fa7  17 input_control value=0
+  0fa9  ff end
+
+record 20 talk(3) group 6* args 7d0000000000 [諸葛亮] -> code 0x0faa
+  0faa  00 dialogue text=0x1a67
+            text │ 諸葛亮: 準備好了嗎？
+  0fad  15 if_answer answer=0 skip=3
+  0fb0  3d op_3d value=0
+  0fb2  17 input_control value=1
+  0fb4  13 leave_parallel
+  0fb5  ff end
+
+record 21 run(0) group 7 args 000000000000 -> code 0x0fb6
+  0fb6  38 play_music song=12
+  0fb8  00 dialogue text=0x1a78
+            text │ 諸葛亮: 請編組部隊．
+  0fbb  23 op_23
+  0fbc  09 load_map map=0x1000
+  0fbf  2f set_graphic person=0 graphic=3
+          person │ 劉備
+  0fc3  2f set_graphic person=141 graphic=5
+          person │ 孫權
+  0fc7  2f set_graphic person=150 graphic=5
+          person │ 陸遜
+  0fcb  2f set_graphic person=0 graphic=3
+          person │ 劉備
+  0fcf  0a place_person person=0 x=29 y=46 dir=2
+          person │ 劉備
+  0fd5  0a place_person person=150 x=29 y=46 dir=2
+          person │ 陸遜
+  0fdb  0a place_person person=78 x=37 y=39 dir=2
+          person │ 徐晃
+  0fe1  0a place_person person=62 x=30 y=39 dir=2
+          person │ 于禁
+  0fe7  38 play_music song=3
+  0fe9  05 show_screen
+  0fea  ff end
+
+record 22 run(0) group 8 args 000000000000 -> code 0x0feb
+  0feb  21 if_flags unless set[92] and clear[] skip 4
+  0ff0  00 dialogue text=0x1a89
+            text │ 陸遜: 那好劉備公，我們去打南郡．
+                 │ 劉備: 嗯，拜託了．
+                 │ 諸葛亮: 我們也向新野出發吧．
+  0ff3  01 move_person person=0 x=37 y=39 dir=0
+          person │ 劉備
+  0ff9  01 move_person person=150 x=30 y=39 dir=0
+          person │ 陸遜
+  0fff  2e reset_player_position target=5 x=0 y=0 dir=255
+  1005  21 if_flags unless set[] and clear[92] skip 5
+  100a  00 dialogue text=0x1ace
+            text │ 陸遜: 那好劉備公，我們去打新野．
+                 │ 劉備: 嗯，拜託了．
+                 │ 諸葛亮: 我們也向南郡出發吧．
+  100d  01 move_person person=0 x=30 y=39 dir=0
+          person │ 劉備
+  1013  01 move_person person=150 x=37 y=39 dir=0
+          person │ 陸遜
+  1019  2e reset_player_position target=4 x=0 y=0 dir=255
+  101f  0f goto_block block=8
+  1021  ff end
+
+### block 7 @0x1022
+
+record 0 run(0) group 0 args 000000000000 -> code 0x1086
+  1086  22 battle_roster friendly=false units=22
+          unit 62 at (22, 12) class 2 lv 55 ai 2/0
+          unit 256 at (24, 14) class 2 lv 45 ai 2/0
+          unit 299 at (13, 13) class 8 lv 52 ai 0/0
+          unit 300 at (13, 15) class 8 lv 49 ai 0/0
+          unit 301 at (15, 11) class 8 lv 50 ai 0/0
+          unit 260 at (17, 13) class 2 lv 51 ai 2/0
+          unit 261 at (21, 17) class 2 lv 51 ai 2/0
+          unit 274 at (14, 7) class 5 lv 48 ai 2/0
+          unit 275 at (16, 7) class 5 lv 48 ai 2/0
+          unit 276 at (18, 13) class 5 lv 46 ai 2/0
+          unit 277 at (21, 16) class 5 lv 46 ai 2/0
+          unit 292 at (8, 14) class 8 lv 49 ai 0/0
+          unit 293 at (19, 13) class 8 lv 52 ai 0/0
+          unit 294 at (22, 13) class 8 lv 51 ai 0/0
+          unit 332 at (15, 13) class 13 lv 45 ai 0/0
+          unit 278 at (21, 11) class 5 lv 44 ai 2/0
+          unit 257 at (15, 6) class 2 lv 43 ai 2/0
+          unit 67 at (0, 18) class 8 lv 55 ai 1/0
+          unit 295 at (1, 19) class 8 lv 52 ai 1/0
+          unit 296 at (17, 0) class 8 lv 49 ai 1/0
+          unit 297 at (18, 0) class 8 lv 49 ai 1/0
+          unit 298 at (19, 1) class 8 lv 50 ai 1/0
+           units │ 于禁 (22, 12), 步兵隊 (24, 14), 騎兵隊 (13, 13), 騎兵隊 (13, 15), 騎兵隊 (15, 11), 步兵隊 (17, 13), 步兵隊 (21, 17), 弓兵隊 (14, 7), 弓兵隊 (16, 7), 弓兵隊 (18, 13), 弓兵隊 (21, 16), 騎兵隊 (8, 14), 騎兵隊 (19, 13), 騎兵隊 (22, 13), 猛獸師 (15, 13), 弓兵隊 (21, 11), 步兵隊 (15, 6), 許褚 (0, 18), 騎兵隊 (1, 19), 騎兵隊 (17, 0), 騎兵隊 (18, 0), 騎兵隊 (19, 1)
+  120e  09 load_map map=0x302f
+  1211  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x1212
+  1212  36 begin_battle
+  1213  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x1214
+  1214  38 play_music song=11
+  1216  30 set_objective text=0x1b13
+            text │ 一、于禁的撤退．
+                 │ 二、自軍部隊奪取糧倉．
+  1219  00 dialogue text=0x1b3e
+            text │ 于禁: 別放劉備軍過去，一個兵也不行．
+                 │ 諸葛亮: 新野的敵方守將是于禁．攻下這裡，就能以此為根據進攻宛城．
+  121c  38 play_music song=9
+  121e  ff end
+
+record 3 unit_at_cell(6) group 3* args 000413030000 [(any unit)] -> code 0x121f
+  121f  21 if_flags unless set[] and clear[101] skip 2
+  1224  1b add_item item=51
+            item │ 勇氣書  
+  1226  14 set_flag flag=101 clear=0
+  1229  ff end
+
+record 4 turn(9) group 3 args 080000000000 -> code 0x122a
+  122a  38 play_music song=11
+  122c  1a join_battle person=67
+          person │ 許褚
+  122f  1a join_battle person=295
+          person │ 騎兵隊
+  1232  1a join_battle person=296
+          person │ 騎兵隊
+  1235  1a join_battle person=297
+          person │ 騎兵隊
+  1238  1a join_battle person=298
+          person │ 騎兵隊
+  123b  0b caption text=0x1b9c
+            text │ 敵人援軍到達！
+  123e  00 dialogue text=0x1bab
+            text │ 許褚: 別放劉備軍過去，將其趕回江陵！
+                 │ 于禁: 啊，援軍！兄弟們，援軍來了！大家堅守住！
+  1241  38 play_music song=9
+  1243  ff end
+
+record 5 unit_at_cell(6) group 3 args 00040e180000 [(any unit)] -> code 0x1244
+  1244  2b data kind=4 value=50
+  1248  38 play_music song=11
+  124a  00 dialogue text=0x1bf9
+            text │ 于禁: 什麼？糧倉丟了！如此，怎麼守城！可惡，撤到宛城！
+  124d  13 leave_parallel
+  124e  ff end
+
+record 6 unit_contact(4) group 3 args 02003e000000 [張飛] -> code 0x124f
+  124f  00 dialogue text=0x1c2e
+            text │ 張飛: 對面可是于禁！敢與我張飛一戰！
+  1252  10 duel first=2 second=62
+           first │ 張飛
+          second │ 于禁
+  1257  00 dialogue text=0x1c51
+            text │ 于禁: 壞了！張飛！！哇！
+                 │ 張飛: 為我二哥關羽報仇！你等死吧！我來也！
+  125a  34 duel_begin
+  125b  00 dialogue text=0x1c8f
+            text │ 張飛: 如何！你不是我對手！
+                 │ 于禁: 可惡！活命要緊！張飛，後會有期！！
+                 │ 張飛: 呸！別跑！這豈是大將所為！
+  125e  35 duel_action person=62 action=4
+          person │ 于禁
+  1262  33 duel_end
+  1263  39 add_levels person=2 levels=1
+          person │ 張飛
+  1267  0b caption text=0x1cea
+            text │ 張飛的等級上升！
+  126a  00 dialogue text=0x1cfb
+            text │ 于禁: 撤退！快回宛城！
+  126d  13 leave_parallel
+  126e  ff end
+
+record 7 battle_won(7) group 3 args 000000000000 -> code 0x126f
+  126f  00 dialogue text=0x1d10
+            text │ 于禁: 可、可惡！撤退！回宛城！
+  1272  13 leave_parallel
+  1273  ff end
+
+record 8 run(0) group 4 args 000000000000 -> code 0x1274
+  1274  38 play_music song=7
+  1276  08 narration text=0x1d2d
+            text │ 　于禁撤退了，劉備軍佔領新野．
+  1279  00 dialogue text=0x1d4e
+            text │ 劉備: 幹得好！如此，再攻下宛城，就直逼洛陽了！
+  127c  2b data kind=2 value=1500
+  1280  0b caption text=0x1d7b
+            text │ 得到黃金１５００！
+  1283  11 battle_end next_map=0x1000
+  1286  0f goto_block block=9
+  1288  ff end
+
+### block 8 @0x1289
+
+record 0 run(0) group 0 args 000000000000 -> code 0x1329
+  1329  22 battle_roster friendly=false units=20
+          unit 78 at (22, 6) class 8 lv 56 ai 2/0
+          unit 209 at (16, 14) class 5 lv 53 ai 2/0
+          unit 274 at (17, 17) class 5 lv 49 ai 2/0
+          unit 256 at (10, 3) class 2 lv 47 ai 4/2819
+          unit 257 at (13, 5) class 2 lv 47 ai 4/2819
+          unit 258 at (16, 18) class 2 lv 47 ai 2/0
+          unit 292 at (5, 5) class 8 lv 48 ai 0/0
+          unit 293 at (3, 5) class 8 lv 48 ai 0/0
+          unit 294 at (4, 5) class 8 lv 52 ai 0/0
+          unit 295 at (13, 6) class 8 lv 48 ai 0/0
+          unit 296 at (19, 6) class 8 lv 52 ai 0/0
+          unit 275 at (4, 4) class 5 lv 49 ai 0/0
+          unit 276 at (14, 8) class 5 lv 46 ai 0/0
+          unit 277 at (21, 7) class 5 lv 46 ai 0/0
+          unit 310 at (12, 10) class 11 lv 48 ai 0/0
+          unit 311 at (12, 12) class 11 lv 47 ai 0/0
+          unit 297 at (8, 0) class 8 lv 52 ai 1/0
+          unit 298 at (9, 1) class 8 lv 52 ai 1/0
+          unit 299 at (11, 1) class 8 lv 48 ai 1/0
+          unit 300 at (7, 1) class 8 lv 48 ai 1/0
+           units │ 徐晃 (22, 6), 夏侯尚 (16, 14), 弓兵隊 (17, 17), 步兵隊 (10, 3), 步兵隊 (13, 5), 步兵隊 (16, 18), 騎兵隊 (5, 5), 騎兵隊 (3, 5), 騎兵隊 (4, 5), 騎兵隊 (13, 6), 騎兵隊 (19, 6), 弓兵隊 (4, 4), 弓兵隊 (14, 8), 弓兵隊 (21, 7), 賊兵 (12, 10), 賊兵 (12, 12), 騎兵隊 (8, 0), 騎兵隊 (9, 1), 騎兵隊 (11, 1), 騎兵隊 (7, 1)
+  14b1  09 load_map map=0x302e
+  14b4  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x14b5
+  14b5  36 begin_battle
+  14b6  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x14b7
+  14b7  38 play_music song=11
+  14b9  30 set_objective text=0x1d8e
+            text │ 一、徐晃的撤退．
+                 │ 二、佔領兩個鹿砦．
+  14bc  00 dialogue text=0x1db5
+            text │ 徐晃: 劉備雖來了！但是絕不讓他們過去，我們用水攻．
+                 │ 諸葛亮: 此……！主公！此處危險！
+                 │ 劉備: 何出此言？
+                 │ 諸葛亮: 此處想必原是舊河床！敵軍肯定在上流建堤攔住水流！一旦放水而下，我軍將完全被激流吞沒！
+                 │ 劉備: 可是，陸遜正在新野作戰，我們如果撤退，陸遜將孤立無援．
+                 │ 諸葛亮: 那就奪取敵軍城堡吧，除此別無他法．
+                 │ 劉備: 好吧，全軍迅速攻取敵軍城堡！
+  14bf  38 play_music song=9
+  14c1  ff end
+
+record 3 unit_contact(4) group 3* args 2b00d1000000 [張苞] -> code 0x14c2
+  14c2  00 dialogue text=0x1ee2
+            text │ 張苞: 我乃張飛之子張苞是也！來將可敢與我單打獨鬥！
+                 │ 夏侯尚: 原來是張飛之子．我夏侯尚不以為怪，來得好，先打再說吧！
+  14c5  10 duel first=43 second=209
+           first │ 張苞
+          second │ 夏侯尚
+  14ca  34 duel_begin
+  14cb  00 dialogue text=0x1f4c
+            text │ 夏侯尚: 打就打吧……
+                 │ 張苞: 哼！剛才不知天高地厚，現在後悔了吧！
+  14ce  35 duel_action person=43 action=7
+          person │ 張苞
+  14d2  00 dialogue text=0x1f84
+            text │ 夏侯尚: 啊！不、不愧為張飛之……子……
+  14d5  35 duel_action person=209 action=3
+          person │ 夏侯尚
+  14d9  35 duel_action person=43 action=9
+          person │ 張苞
+  14dd  35 duel_action person=43 action=2
+          person │ 張苞
+  14e1  00 dialogue text=0x1fa7
+            text │ 張苞: 夏侯尚，俺張苞送你見閻王！
+  14e4  33 duel_end
+  14e5  39 add_levels person=43 levels=1
+          person │ 張苞
+  14e9  0b caption text=0x1fc6
+            text │ 張苞的等級上升！
+  14ec  18 remove_person person=209
+          person │ 夏侯尚
+  14ef  ff end
+
+record 4 unit_at_cell(6) group 3 args 000403030000 [(any unit)] -> code 0x14f0
+  14f0  21 if_flags unless set[] and clear[102] skip 2
+  14f5  1b add_item item=39
+            item │ 海嘯書  
+  14f7  14 set_flag flag=102 clear=0
+  14fa  ff end
+
+record 5 unit_at_cell(6) group 3 args 0004000a0000 [(any unit)] -> code 0x14fb
+  14fb  21 if_flags unless set[] and clear[103] skip 2
+  1500  1b add_item item=46
+            item │ 援隊書  
+  1502  14 set_flag flag=103 clear=0
+  1505  ff end
+
+record 6 unit_at_cell(6) group 3 args 000407130000 [(any unit)] -> code 0x1506
+  1506  21 if_flags unless set[] and clear[104] skip 3
+  150b  2b data kind=2 value=2000
+  150f  0b caption text=0x1fd7
+            text │ 得到黃金２０００！
+  1512  14 set_flag flag=104 clear=0
+  1515  ff end
+
+record 7 unit_at_cell(6) group 3 args 00040e100000 [(any unit)] -> code 0x1516
+  1516  21 if_flags unless set[] and clear[105] skip 2
+  151b  0b caption text=0x1fea
+            text │ 佔領北面城堡！
+  151e  14 set_flag flag=105 clear=0
+  1521  21 if_flags unless set[106] and clear[110] skip 5
+  1527  2b data kind=4 value=50
+  152b  38 play_music song=7
+  152d  00 dialogue text=0x1ff9
+            text │ 劉備: 幹得漂亮！佔領了城堡，無須擔心敵人水攻了．一口氣擊垮徐晃！
+                 │ 徐晃: 什麼！城堡被佔領了！哼，我的妙計不成，沒辦法，回軍宛城！
+  1530  18 remove_person person=78
+          person │ 徐晃
+  1533  13 leave_parallel
+  1534  ff end
+
+record 8 unit_at_cell(6) group 3 args 000411110000 [(any unit)] -> code 0x1535
+  1535  21 if_flags unless set[] and clear[106] skip 2
+  153a  0b caption text=0x2073
+            text │ 佔領南面城堡！
+  153d  14 set_flag flag=106 clear=0
+  1540  21 if_flags unless set[105] and clear[110] skip 5
+  1546  2b data kind=4 value=50
+  154a  38 play_music song=7
+  154c  00 dialogue text=0x2082
+            text │ 劉備: 幹得漂亮！佔領了城堡，無須擔心敵人水攻了．一口氣擊垮徐晃！
+                 │ 徐晃: 什麼！城堡被佔領了！哼，我的妙計不成，沒辦法，回軍宛城！
+  154f  18 remove_person person=78
+          person │ 徐晃
+  1552  13 leave_parallel
+  1553  ff end
+
+record 9 turn(9) group 3 args 0a0000000000 -> code 0x1554
+  1554  38 play_music song=11
+  1556  00 dialogue text=0x20fc
+            text │ 徐晃: 太好了，現在馬上決堤，放水淹劉備軍．
+  1559  27 screen_effect x=14 y=15 effect=1
+  155d  27 screen_effect x=13 y=14 effect=1
+  1561  27 screen_effect x=12 y=14 effect=1
+  1565  27 screen_effect x=11 y=14 effect=1
+  1569  27 screen_effect x=6 y=13 effect=1
+  156d  27 screen_effect x=5 y=12 effect=1
+  1571  27 screen_effect x=4 y=12 effect=1
+  1575  27 screen_effect x=3 y=12 effect=1
+  1579  27 screen_effect x=2 y=11 effect=1
+  157d  27 screen_effect x=1 y=11 effect=1
+  1581  27 screen_effect x=0 y=11 effect=1
+  1585  27 screen_effect x=12 y=12 effect=1
+  1589  27 screen_effect x=5 y=10 effect=1
+  158d  27 screen_effect x=4 y=10 effect=1
+  1591  27 screen_effect x=3 y=9 effect=1
+  1595  27 screen_effect x=2 y=9 effect=1
+  1599  27 screen_effect x=1 y=9 effect=1
+  159d  27 screen_effect x=0 y=8 effect=1
+  15a1  27 screen_effect x=6 y=7 effect=1
+  15a5  27 screen_effect x=5 y=7 effect=1
+  15a9  27 screen_effect x=4 y=6 effect=1
+  15ad  27 screen_effect x=3 y=6 effect=1
+  15b1  27 screen_effect x=12 y=11 effect=1
+  15b5  27 screen_effect x=17 y=13 effect=1
+  15b9  27 screen_effect x=17 y=12 effect=1
+  15bd  27 screen_effect x=15 y=10 effect=1
+  15c1  27 screen_effect x=14 y=9 effect=1
+  15c5  27 screen_effect x=14 y=8 effect=1
+  15c9  27 screen_effect x=14 y=6 effect=1
+  15cd  27 screen_effect x=13 y=5 effect=1
+  15d1  27 screen_effect x=10 y=8 effect=1
+  15d5  27 screen_effect x=10 y=7 effect=1
+  15d9  27 screen_effect x=12 y=3 effect=1
+  15dd  27 screen_effect x=11 y=5 effect=1
+  15e1  27 screen_effect x=11 y=4 effect=1
+  15e5  27 screen_effect x=10 y=4 effect=1
+  15e9  27 screen_effect x=9 y=3 effect=1
+  15ed  27 screen_effect x=7 y=4 effect=1
+  15f1  27 screen_effect x=6 y=4 effect=1
+  15f5  2d halve a=0 b=1
+  15f8  2d halve a=0 b=0
+  15fb  00 dialogue text=0x2125
+            text │ 諸葛亮: 來不及了……
+                 │ 徐晃: 哈哈哈！劉備小兒，活該！全軍進攻劉備軍．
+  15fe  1a join_battle person=297
+          person │ 騎兵隊
+  1601  1a join_battle person=298
+          person │ 騎兵隊
+  1604  1a join_battle person=299
+          person │ 騎兵隊
+  1607  1a join_battle person=300
+          person │ 騎兵隊
+  160a  1c set_ai person=256 mode=1 unused=0
+          person │ 步兵隊
+  1610  1c set_ai person=257 mode=1 unused=0
+          person │ 步兵隊
+  1616  1c set_ai person=258 mode=1 unused=0
+          person │ 步兵隊
+  161c  1c set_ai person=292 mode=1 unused=0
+          person │ 騎兵隊
+  1622  1c set_ai person=293 mode=1 unused=0
+          person │ 騎兵隊
+  1628  1c set_ai person=294 mode=1 unused=0
+          person │ 騎兵隊
+  162e  1c set_ai person=295 mode=1 unused=0
+          person │ 騎兵隊
+  1634  1c set_ai person=296 mode=1 unused=0
+          person │ 騎兵隊
+  163a  1c set_ai person=275 mode=1 unused=0
+          person │ 弓兵隊
+  1640  1c set_ai person=276 mode=1 unused=0
+          person │ 弓兵隊
+  1646  1c set_ai person=310 mode=1 unused=0
+          person │ 賊兵
+  164c  1c set_ai person=311 mode=1 unused=0
+          person │ 賊兵
+  1652  30 set_objective text=0x2161
+            text │ 一、徐晃的撤退．
+  1655  14 set_flag flag=105 clear=0
+  1658  14 set_flag flag=106 clear=0
+  165b  14 set_flag flag=110 clear=0
+  165e  38 play_music song=9
+  1660  ff end
+
+record 10 turn(9) group 3 args 0b0000000000 -> code 0x1661
+  1661  27 screen_effect x=3 y=6 effect=2
+  1665  27 screen_effect x=5 y=7 effect=2
+  1669  27 screen_effect x=6 y=7 effect=2
+  166d  27 screen_effect x=1 y=9 effect=2
+  1671  27 screen_effect x=4 y=10 effect=2
+  1675  27 screen_effect x=5 y=10 effect=2
+  1679  27 screen_effect x=12 y=12 effect=2
+  167d  27 screen_effect x=3 y=12 effect=2
+  1681  27 screen_effect x=0 y=11 effect=2
+  1685  27 screen_effect x=12 y=11 effect=2
+  1689  27 screen_effect x=14 y=8 effect=2
+  168d  27 screen_effect x=10 y=8 effect=2
+  1691  27 screen_effect x=10 y=7 effect=2
+  1695  27 screen_effect x=9 y=3 effect=2
+  1699  27 screen_effect x=6 y=4 effect=2
+  169d  ff end
+
+record 11 turn(9) group 3 args 0c0000000000 -> code 0x169e
+  169e  27 screen_effect x=4 y=6 effect=2
+  16a2  27 screen_effect x=0 y=8 effect=2
+  16a6  27 screen_effect x=3 y=9 effect=2
+  16aa  27 screen_effect x=11 y=14 effect=2
+  16ae  27 screen_effect x=13 y=14 effect=2
+  16b2  27 screen_effect x=1 y=11 effect=2
+  16b6  27 screen_effect x=4 y=12 effect=2
+  16ba  27 screen_effect x=17 y=13 effect=2
+  16be  27 screen_effect x=13 y=5 effect=2
+  16c2  27 screen_effect x=11 y=5 effect=2
+  16c6  27 screen_effect x=10 y=4 effect=2
+  16ca  27 screen_effect x=7 y=4 effect=2
+  16ce  ff end
+
+record 12 turn(9) group 3 args 0d0000000000 -> code 0x16cf
+  16cf  27 screen_effect x=2 y=9 effect=2
+  16d3  27 screen_effect x=2 y=11 effect=2
+  16d7  27 screen_effect x=5 y=12 effect=2
+  16db  27 screen_effect x=6 y=13 effect=2
+  16df  27 screen_effect x=12 y=14 effect=2
+  16e3  27 screen_effect x=14 y=15 effect=2
+  16e7  27 screen_effect x=17 y=12 effect=2
+  16eb  27 screen_effect x=15 y=10 effect=2
+  16ef  27 screen_effect x=14 y=9 effect=2
+  16f3  27 screen_effect x=14 y=6 effect=2
+  16f7  27 screen_effect x=12 y=3 effect=2
+  16fb  27 screen_effect x=11 y=4 effect=2
+  16ff  ff end
+
+record 13 battle_won(7) group 3 args 000000000000 -> code 0x1700
+  1700  00 dialogue text=0x2174
+            text │ 徐晃: 可惡！先撤退再說！回宛城！
+  1703  38 play_music song=7
+  1705  13 leave_parallel
+  1706  ff end
+
+record 14 run(0) group 4 args 000000000000 -> code 0x1707
+  1707  08 narration text=0x2193
+            text │ 　徐晃撤退了，劉備軍佔領了南郡．
+  170a  00 dialogue text=0x21b6
+            text │ 劉備: 幹得漂亮！此去陷落宛城，洛陽就在眼前了！
+  170d  2b data kind=2 value=1500
+  1711  0b caption text=0x21e3
+            text │ 得到黃金１５００！
+  1714  11 battle_end next_map=0x1000
+  1717  ff end
+
+### block 9 @0x1718
+
+record 0 run(0) group 0 args 000000000000 -> code 0x179a
+  179a  09 load_map map=0x2010
+  179d  0a place_person person=0 x=21 y=8 dir=2
+          person │ 劉備
+  17a3  0a place_person person=125 x=18 y=8 dir=2
+          person │ 諸葛亮
+  17a9  21 if_flags unless set[135] and clear[] skip 1
+  17ae  0a place_person person=2 x=22 y=10 dir=2
+          person │ 張飛
+  17b4  0a place_person person=169 x=13 y=9 dir=1
+          person │ 黃忠
+  17ba  0a place_person person=202 x=9 y=11 dir=1
+          person │ 嚴顏
+  17c0  0a place_person person=174 x=19 y=12 dir=3
+          person │ 馬良
+  17c6  0a place_person person=150 x=15 y=11 dir=0
+          person │ 陸遜
+  17cc  38 play_music song=5
+  17ce  05 show_screen
+  17cf  0b caption text=0x21f6
+            text │ 新野營帳
+  17d2  08 narration text=0x21ff
+            text │ 　這裡是劉備軍的營帳，劉備軍為進攻宛城，陳兵於新野，謀劃今後的對策．
+  17d5  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x17d6
+  17d6  00 dialogue text=0x2246
+            text │ 劉備: 陸遜大人，辛苦了．
+                 │ 陸遜: 此須小事，何足掛齒．蜀軍如此強大，也讓人驚奇．劉備公，我主有令，命我返回，實在對不起……
+                 │ 劉備: 好吧，那就請代我向孫權致意．
+                 │ 陸遜: 多謝．那我留下他們留在這裡幫忙．
+  17d9  21 if_flags unless set[132] and clear[] skip 6
+  17de  0a place_person person=147 x=5 y=16 dir=0
+          person │ 甘寧
+  17e4  01 move_person person=147 x=9 y=14 dir=0
+          person │ 甘寧
+  17ea  00 dialogue text=0x22fa
+            text │ 甘寧: 奉陸遜都督之命，我與凌統、徐盛、丁奉留在這裡與劉備公並肩作戰，聽從您的調遣．
+  17ed  0b caption text=0x234b
+            text │ 甘寧、凌統、徐盛、丁奉加入！
+  17f0  24 set_allegiance person=147 army=0
+          person │ 甘寧
+  17f4  24 set_allegiance person=166 army=0
+          person │ 凌統
+  17f8  21 if_flags unless set[136] and clear[] skip 5
+  17fd  0a place_person person=166 x=5 y=16 dir=0
+          person │ 凌統
+  1803  01 move_person person=166 x=9 y=14 dir=0
+          person │ 凌統
+  1809  00 dialogue text=0x2368
+            text │ 凌統: 奉陸遜都督之命，我與甘寧、徐盛、丁奉留在這裡與劉備公並肩作戰，聽從您的調遣．
+  180c  0b caption text=0x23b9
+            text │ 甘寧、凌統、徐盛、丁奉加入！
+  180f  24 set_allegiance person=166 army=0
+          person │ 凌統
+  1813  21 if_flags unless set[] and clear[132, 136] skip 4
+  1819  0a place_person person=165 x=5 y=16 dir=0
+          person │ 徐盛
+  181f  01 move_person person=165 x=9 y=14 dir=0
+          person │ 徐盛
+  1825  00 dialogue text=0x23d6
+            text │ 徐盛: 奉陸遜都督之命，我與丁奉留在這裡與劉備公並肩作戰，聽從您的調遣．
+  1828  0b caption text=0x241b
+            text │ 徐盛、丁奉加入！
+  182b  24 set_allegiance person=165 army=0
+          person │ 徐盛
+  182f  24 set_allegiance person=164 army=0
+          person │ 丁奉
+  1833  00 dialogue text=0x242c
+            text │ 劉備: 哦，這下有倚仗了．陸遜都督，多謝了．
+                 │ 陸遜: 那我先走一步．
+  1836  01 move_person person=150 x=5 y=16 dir=2
+          person │ 陸遜
+  183c  00 dialogue text=0x2466
+            text │ 陸遜: （劉備、還有孔明……與之為敵不會有好下場．如果主公也不了解我的苦心……）
+  183f  18 remove_person person=150
+          person │ 陸遜
+  1842  01 move_person person=125 x=18 y=8 dir=1
+          person │ 諸葛亮
+  1848  00 dialogue text=0x24b3
+            text │ 諸葛亮: 那就乘勢進攻宛城吧，請作出征準備．
+  184b  30 set_objective text=0x24da
+            text │ 進行出征準備
+  184e  17 input_control value=0
+  1850  ff end
+
+record 2 talk(3) group 2* args 020000000000 [張飛] -> code 0x1851
+  1851  00 dialogue text=0x24e9
+            text │ 張飛: 大哥，早做準備．
+  1854  ff end
+
+record 3 talk(3) group 2 args a90000000000 [黃忠] -> code 0x1855
+  1855  00 dialogue text=0x24fe
+            text │ 黃忠: 主公，請讓我出征吧．
+  1858  ff end
+
+record 4 talk(3) group 2 args ca0000000000 [嚴顏] -> code 0x1859
+  1859  00 dialogue text=0x2517
+            text │ 嚴顏: 主公，請讓我出征吧．
+  185c  ff end
+
+record 5 talk(3) group 2 args ae0000000000 [馬良] -> code 0x185d
+  185d  00 dialogue text=0x2530
+            text │ 馬良: 主公，請作出征準備．
+  1860  ff end
+
+record 6 talk(3) group 2 args 930000000000 [甘寧] -> code 0x1861
+  1861  00 dialogue text=0x2549
+            text │ 甘寧: 劉備公，以後請多關照．
+  1864  ff end
+
+record 7 talk(3) group 2 args a60000000000 [凌統] -> code 0x1865
+  1865  00 dialogue text=0x2564
+            text │ 凌統: 劉備公，以後請多關照．
+  1868  ff end
+
+record 8 talk(3) group 2 args a50000000000 [徐盛] -> code 0x1869
+  1869  00 dialogue text=0x257f
+            text │ 徐盛: 劉備公，以後請多關照．
+  186c  ff end
+
+record 9 talk(3) group 2 args a40000000000 [丁奉] -> code 0x186d
+  186d  00 dialogue text=0x259a
+            text │ 丁奉: 劉備公，以後請多關照．
+  1870  ff end
+
+record 10 talk(3) group 2 args 7d0000000000 [諸葛亮] -> code 0x1871
+  1871  00 dialogue text=0x25b5
+            text │ 諸葛亮: 準備好了嗎？
+  1874  15 if_answer answer=0 skip=3
+  1877  3d op_3d value=0
+  1879  17 input_control value=1
+  187b  13 leave_parallel
+  187c  ff end
+
+record 11 run(0) group 3 args 000000000000 -> code 0x187d
+  187d  38 play_music song=12
+  187f  00 dialogue text=0x25c6
+            text │ 諸葛亮: 請編組部隊．
+  1882  39 add_levels person=1 levels=6
+          person │ 關羽
+  1886  39 add_levels person=127 levels=6
+          person │ 關平
+  188a  39 add_levels person=154 levels=6
+          person │ 周倉
+  188e  39 add_levels person=37 levels=6
+          person │ 王甫
+  1892  39 add_levels person=38 levels=6
+          person │ 趙累
+  1896  39 add_levels person=33 levels=6
+          person │ 廖化
+  189a  21 if_flags unless set[] and clear[90] skip 1
+  189f  03 battle_setup turns=40 win=Some(79) lose=Some(0) other=00000000 units=10
+           units │ 劉備 (2, 15), 諸葛亮 (2, 14), (any unit) (0, 13), (any unit) (0, 17), (any unit) (1, 14), (any unit) (1, 16), (any unit) (2, 17), (any unit) (3, 16), (any unit) (3, 19), (any unit) (4, 17)
+  19b9  21 if_flags unless set[90] and clear[] skip 1
+  19be  03 battle_setup turns=50 win=Some(16) lose=Some(0) other=00000000 units=11
+           units │ 劉備 (8, 20), 諸葛亮 (7, 20), (any unit) (4, 18), (any unit) (6, 17), (any unit) (6, 19), (any unit) (7, 18), (any unit) (9, 18), (any unit) (9, 19), (any unit) (9, 21), (any unit) (11, 19), 關羽 (23, 5)
+  1ad8  23 op_23
+  1ad9  00 dialogue text=0x25d7
+            text │ 諸葛亮: 現在進兵宛城吧．
+  1adc  09 load_map map=0x1000
+  1adf  0a place_person person=141 x=54 y=49 dir=2
+          person │ 孫權
+  1ae5  0a place_person person=79 x=45 y=39 dir=2
+          person │ 張遼
+  1aeb  0a place_person person=0 x=37 y=39 dir=2
+          person │ 劉備
+  1af1  0a place_person person=16 x=38 y=28 dir=2
+          person │ 夏侯惇
+  1af7  05 show_screen
+  1af8  21 if_flags unless set[90] and clear[] skip 4
+  1afd  38 play_music song=3
+  1aff  00 dialogue text=0x25ec
+            text │ 孫權: 我軍攻打合淝，絆住張遼，全軍！出發！
+  1b02  01 move_person person=141 x=45 y=39 dir=0
+          person │ 孫權
+  1b08  00 dialogue text=0x2615
+            text │ 張遼: 哎呀！不能去增援夏侯惇了，可惡！
+  1b0b  21 if_flags unless set[] and clear[90] skip 2
+  1b10  38 play_music song=11
+  1b12  00 dialogue text=0x263a
+            text │ 孫權: 我們先坐山觀蜀魏兩虎相鬥．憑什麼幫劉備，對我來說，最好兩敗俱傷．
+  1b15  38 play_music song=3
+  1b17  3b op_3b x=37 y=39
+  1b1a  3c op_3c person=0
+          person │ 劉備
+  1b1d  21 if_flags unless set[90] and clear[] skip 3
+  1b22  01 move_person person=0 x=38 y=28 dir=0
+          person │ 劉備
+  1b28  2e reset_player_position target=7 x=0 y=0 dir=255
+  1b2e  0f goto_block block=11
+  1b30  01 move_person person=0 x=40 y=35 dir=0
+          person │ 劉備
+  1b36  38 play_music song=11
+  1b38  3b op_3b x=45 y=39
+  1b3b  3c op_3c person=79
+          person │ 張遼
+  1b3e  00 dialogue text=0x267f
+            text │ 張遼: 吳軍不來進攻合淝，太好了，全軍馬上行動，襲擊劉備軍側翼．
+  1b41  01 move_person person=79 x=40 y=35 dir=3
+          person │ 張遼
+  1b47  ff end
+
+### block 10 @0x1b48
+
+record 0 run(0) group 0 args 000000000000 -> code 0x1bc0
+  1bc0  22 battle_roster friendly=false units=23
+          unit 79 at (15, 6) class 2 lv 58 ai 2/0
+          unit 256 at (12, 10) class 2 lv 52 ai 0/0
+          unit 257 at (12, 12) class 2 lv 50 ai 0/0
+          unit 258 at (10, 9) class 2 lv 50 ai 0/0
+          unit 259 at (13, 7) class 2 lv 49 ai 0/0
+          unit 260 at (14, 7) class 2 lv 50 ai 0/0
+          unit 261 at (13, 14) class 2 lv 49 ai 0/0
+          unit 274 at (13, 11) class 5 lv 52 ai 0/0
+          unit 275 at (13, 9) class 5 lv 50 ai 0/0
+          unit 276 at (15, 12) class 5 lv 49 ai 0/0
+          unit 332 at (12, 9) class 13 lv 50 ai 0/0
+          unit 217 at (25, 15) class 8 lv 54 ai 1/0
+          unit 292 at (24, 15) class 8 lv 52 ai 1/0
+          unit 293 at (25, 17) class 8 lv 51 ai 1/0
+          unit 294 at (26, 14) class 8 lv 51 ai 1/0
+          unit 295 at (26, 16) class 8 lv 50 ai 1/0
+          unit 296 at (27, 15) class 8 lv 50 ai 1/0
+          unit 115 at (14, 1) class 2 lv 54 ai 1/0
+          unit 297 at (12, 1) class 8 lv 52 ai 1/0
+          unit 298 at (13, 2) class 8 lv 51 ai 1/0
+          unit 299 at (14, 3) class 8 lv 51 ai 1/0
+          unit 300 at (15, 2) class 8 lv 50 ai 1/0
+          unit 301 at (16, 1) class 8 lv 50 ai 1/0
+           units │ 張遼 (15, 6), 步兵隊 (12, 10), 步兵隊 (12, 12), 步兵隊 (10, 9), 步兵隊 (13, 7), 步兵隊 (14, 7), 步兵隊 (13, 14), 弓兵隊 (13, 11), 弓兵隊 (13, 9), 弓兵隊 (15, 12), 猛獸師 (12, 9), 樂進 (25, 15), 騎兵隊 (24, 15), 騎兵隊 (25, 17), 騎兵隊 (26, 14), 騎兵隊 (26, 16), 騎兵隊 (27, 15), 李典 (14, 1), 騎兵隊 (12, 1), 騎兵隊 (13, 2), 騎兵隊 (14, 3), 騎兵隊 (15, 2), 騎兵隊 (16, 1)
+  1d48  09 load_map map=0x3030
+  1d4b  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x1d4c
+  1d4c  36 begin_battle
+  1d4d  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x1d4e
+  1d4e  38 play_music song=11
+  1d50  30 set_objective text=0x26bc
+            text │ 一、張遼的撤退
+  1d53  00 dialogue text=0x26cd
+            text │ 張遼: 太好了，好像來得及，全軍注意，突擊劉備軍側翼．
+                 │ 諸葛亮: 主公，遭到攻擊．合淝的張遼軍急襲至此．
+                 │ 劉備: 嗯……全軍迎擊張遼，把他趕回去！
+  1d56  38 play_music song=9
+  1d58  ff end
+
+record 3 unit_at_cell(6) group 3* args 00040d0e0000 [(any unit)] -> code 0x1d59
+  1d59  21 if_flags unless set[] and clear[107] skip 2
+  1d5e  1b add_item item=46
+            item │ 援隊書  
+  1d60  14 set_flag flag=107 clear=0
+  1d63  ff end
+
+record 4 unit_at_cell(6) group 3 args 000403110000 [(any unit)] -> code 0x1d64
+  1d64  21 if_flags unless set[] and clear[108] skip 2
+  1d69  1b add_item item=42
+            item │ 猛火書  
+  1d6b  14 set_flag flag=108 clear=0
+  1d6e  ff end
+
+record 5 unit_at_cell(6) group 3 args 0004111b0000 [(any unit)] -> code 0x1d6f
+  1d6f  21 if_flags unless set[] and clear[109] skip 2
+  1d74  1b add_item item=33
+            item │ 炸彈
+  1d76  14 set_flag flag=109 clear=0
+  1d79  ff end
+
+record 6 turn(9) group 3 args 080000000000 -> code 0x1d7a
+  1d7a  38 play_music song=11
+  1d7c  1a join_battle person=217
+          person │ 樂進
+  1d7f  1a join_battle person=292
+          person │ 騎兵隊
+  1d82  1a join_battle person=293
+          person │ 騎兵隊
+  1d85  1a join_battle person=294
+          person │ 騎兵隊
+  1d88  1a join_battle person=295
+          person │ 騎兵隊
+  1d8b  1a join_battle person=296
+          person │ 騎兵隊
+  1d8e  0b caption text=0x274c
+            text │ 張遼的援軍到達！
+  1d91  00 dialogue text=0x275d
+            text │ 樂進: 張遼！別鬆勁！樂進來了！
+                 │ 張遼: 哦，樂進來了！好不容易趕來吧！太棒了，援軍來了！
+  1d94  38 play_music song=9
+  1d96  ff end
+
+record 7 turn(9) group 3 args 0a0000000000 -> code 0x1d97
+  1d97  38 play_music song=11
+  1d99  1a join_battle person=115
+          person │ 李典
+  1d9c  1a join_battle person=297
+          person │ 騎兵隊
+  1d9f  1a join_battle person=298
+          person │ 騎兵隊
+  1da2  1a join_battle person=299
+          person │ 騎兵隊
+  1da5  1a join_battle person=300
+          person │ 騎兵隊
+  1da8  1a join_battle person=301
+          person │ 騎兵隊
+  1dab  0b caption text=0x27ad
+            text │ 張遼的援軍到達！
+  1dae  00 dialogue text=0x27be
+            text │ 李典: 張遼，抱歉，來晚了！
+                 │ 張遼: 哦，李典終於來了！好，發動總攻擊！
+  1db1  38 play_music song=9
+  1db3  ff end
+
+record 8 unit_contact(4) group 3 args 02004f000000 [張飛] -> code 0x1db4
+  1db4  10 duel first=2 second=79
+           first │ 張飛
+          second │ 張遼
+  1db9  00 dialogue text=0x27fc
+            text │ 張飛: 張遼，好久不見了！
+                 │ 張遼: 張飛嗎？來得好！單挑！
+                 │ 張飛: 哼，輸給你，我就不是張飛！來吧，張遼！
+  1dbc  34 duel_begin
+  1dbd  00 dialogue text=0x2855
+            text │ 張飛: 喂，你不行了吧！
+                 │ 張遼: 呀，還是你厲害！
+                 │ 張飛: 看槍！！
+  1dc0  35 duel_action person=2 action=1
+          person │ 張飛
+  1dc4  35 duel_action person=79 action=2
+          person │ 張遼
+  1dc8  00 dialogue text=0x2888
+            text │ 張遼: 哇！哼，沒辦法，全軍撤退！張飛，後會有期！
+  1dcb  35 duel_action person=79 action=4
+          person │ 張遼
+  1dcf  33 duel_end
+  1dd0  39 add_levels person=2 levels=1
+          person │ 張飛
+  1dd4  0b caption text=0x28b7
+            text │ 張飛的等級上升！
+  1dd7  18 remove_person person=79
+          person │ 張遼
+  1dda  00 dialogue text=0x28c8
+            text │ 張飛: 呸，跑得倒快．哈，呂布一死，我就無敵於天下了！
+  1ddd  13 leave_parallel
+  1dde  ff end
+
+record 9 battle_won(7) group 3 args 000000000000 -> code 0x1ddf
+  1ddf  00 dialogue text=0x28fb
+            text │ 張遼: 哼，沒辦法，撤退！快撤！
+  1de2  13 leave_parallel
+  1de3  ff end
+
+record 10 run(0) group 4 args 000000000000 -> code 0x1de4
+  1de4  38 play_music song=7
+  1de6  08 narration text=0x2918
+            text │ 　張遼軍撤退了．
+  1de9  2b data kind=2 value=1500
+  1ded  0b caption text=0x292b
+            text │ 得到黃金１５００！
+  1df0  11 battle_end next_map=0x1000
+  1df3  09 load_map map=0x1000
+  1df6  0a place_person person=0 x=40 y=35 dir=0
+          person │ 劉備
+  1dfc  38 play_music song=3
+  1dfe  05 show_screen
+  1dff  00 dialogue text=0x293e
+            text │ 劉備: 終於頂住了，好，全軍重新整編，馬上進攻宛城．
+  1e02  3d op_3d value=1
+  1e04  00 dialogue text=0x296f
+            text │ 諸葛亮: 請編組部隊．
+  1e07  03 battle_setup turns=30 win=Some(16) lose=Some(0) other=00000000 units=11
+           units │ 劉備 (8, 20), 諸葛亮 (7, 20), (any unit) (4, 18), (any unit) (6, 17), (any unit) (6, 19), (any unit) (7, 18), (any unit) (9, 18), (any unit) (9, 19), (any unit) (9, 21), (any unit) (11, 19), 關羽 (23, 5)
+  1f21  23 op_23
+  1f22  01 move_person person=0 x=38 y=28 dir=0
+          person │ 劉備
+  1f28  2e reset_player_position target=7 x=0 y=0 dir=255
+  1f2e  ff end
+
+### block 11 @0x1f2f
+
+record 0 run(0) group 0 args 000000000000 -> code 0x1fb1
+  1fb1  22 battle_roster friendly=false units=25
+          unit 16 at (12, 3) class 8 lv 59 ai 2/0
+          unit 78 at (11, 8) class 8 lv 56 ai 2/0
+          unit 62 at (15, 14) class 5 lv 55 ai 2/0
+          unit 256 at (4, 8) class 2 lv 54 ai 2/0
+          unit 257 at (16, 10) class 2 lv 54 ai 2/0
+          unit 258 at (8, 11) class 2 lv 49 ai 2/0
+          unit 259 at (9, 3) class 2 lv 49 ai 0/0
+          unit 260 at (8, 6) class 2 lv 50 ai 0/0
+          unit 261 at (9, 11) class 2 lv 50 ai 2/0
+          unit 262 at (18, 5) class 2 lv 49 ai 0/0
+          unit 292 at (5, 3) class 8 lv 54 ai 0/0
+          unit 293 at (5, 11) class 8 lv 54 ai 2/0
+          unit 294 at (6, 4) class 8 lv 52 ai 0/0
+          unit 295 at (8, 9) class 8 lv 52 ai 0/0
+          unit 296 at (19, 7) class 8 lv 53 ai 0/0
+          unit 297 at (13, 7) class 8 lv 53 ai 0/0
+          unit 298 at (13, 9) class 8 lv 52 ai 0/0
+          unit 299 at (16, 7) class 8 lv 52 ai 0/0
+          unit 300 at (18, 7) class 8 lv 51 ai 0/0
+          unit 274 at (5, 7) class 5 lv 50 ai 2/0
+          unit 275 at (6, 13) class 5 lv 54 ai 2/0
+          unit 276 at (7, 12) class 5 lv 54 ai 2/0
+          unit 277 at (8, 4) class 5 lv 50 ai 0/0
+          unit 278 at (18, 4) class 5 lv 50 ai 0/0
+          unit 279 at (12, 5) class 5 lv 50 ai 0/0
+           units │ 夏侯惇 (12, 3), 徐晃 (11, 8), 于禁 (15, 14), 步兵隊 (4, 8), 步兵隊 (16, 10), 步兵隊 (8, 11), 步兵隊 (9, 3), 步兵隊 (8, 6), 步兵隊 (9, 11), 步兵隊 (18, 5), 騎兵隊 (5, 3), 騎兵隊 (5, 11), 騎兵隊 (6, 4), 騎兵隊 (8, 9), 騎兵隊 (19, 7), 騎兵隊 (13, 7), 騎兵隊 (13, 9), 騎兵隊 (16, 7), 騎兵隊 (18, 7), 弓兵隊 (5, 7), 弓兵隊 (6, 13), 弓兵隊 (7, 12), 弓兵隊 (8, 4), 弓兵隊 (18, 4), 弓兵隊 (12, 5)
+  2139  09 load_map map=0x3031
+  213c  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x213d
+  213d  36 begin_battle
+  213e  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x213f
+  213f  38 play_music song=11
+  2141  30 set_objective text=0x2980
+            text │ 一、夏侯惇的撤退
+  2144  00 dialogue text=0x2993
+            text │ 夏侯惇: 劉備，你太得意了！我夏侯惇要讓你見識一下魏軍的真正實力．
+                 │ 諸葛亮: 主公，如果佔領宛城，洛陽就在眼前了．快進攻吧！
+  2147  38 play_music song=10
+  2149  ff end
+
+record 3 unit_at_cell(6) group 3* args 00040d050000 [(any unit)] -> code 0x214a
+  214a  21 if_flags unless set[] and clear[111] skip 2
+  214f  1b add_item item=0
+            item │ 遁甲天書
+  2151  14 set_flag flag=111 clear=0
+  2154  ff end
+
+record 4 unit_at_cell(6) group 3 args 00040c130000 [(any unit)] -> code 0x2155
+  2155  21 if_flags unless set[] and clear[112] skip 2
+  215a  1b add_item item=17
+            item │ 馬術指南書
+  215c  14 set_flag flag=112 clear=0
+  215f  ff end
+
+record 5 unit_at_cell(6) group 3 args 000403100000 [(any unit)] -> code 0x2160
+  2160  21 if_flags unless set[] and clear[113] skip 2
+  2165  1b add_item item=18
+            item │ 劍術指南書
+  2167  14 set_flag flag=113 clear=0
+  216a  ff end
+
+record 6 unit_at_cell(6) group 3 args 00040f0f0000 [(any unit)] -> code 0x216b
+  216b  21 if_flags unless set[] and clear[216] skip 13
+  2170  00 dialogue text=0x2a01
+            text │ 劉備: 好！降下吊橋！
+  2173  26 set_map_chip x=14 y=16 chip=2
+  2177  26 set_map_chip x=14 y=17 chip=2
+  217b  26 set_map_chip x=15 y=16 chip=2
+  217f  26 set_map_chip x=15 y=17 chip=2
+  2183  26 set_map_chip x=16 y=16 chip=2
+  2187  26 set_map_chip x=16 y=17 chip=2
+  218b  0b caption text=0x2a14
+            text │ 吊橋降下來了！
+  218e  00 dialogue text=0x2a23
+            text │ 徐晃: 什麼，吊橋被降下來了！？哼，于禁這傢伙真靠不住！唉！以後再跟你算帳，迎擊！
+  2191  1c set_ai person=297 mode=1 unused=0
+          person │ 騎兵隊
+  2197  1c set_ai person=298 mode=1 unused=0
+          person │ 騎兵隊
+  219d  1c set_ai person=299 mode=1 unused=0
+          person │ 騎兵隊
+  21a3  14 set_flag flag=216 clear=0
+  21a6  ff end
+
+record 7 unit_contact(4) group 3 args 02004e000000 [張飛] -> code 0x21a7
+  21a7  00 dialogue text=0x2a72
+            text │ 張飛: 徐晃！明年今日就是你的忌日！碰上我，你算完了！
+                 │ 徐晃: 放屁！你也想嘗嘗關羽一樣的下場嗎？
+                 │ 張飛: 放肆！不容你猖獗，看槍！
+  21aa  10 duel first=2 second=78
+           first │ 張飛
+          second │ 徐晃
+  21af  34 duel_begin
+  21b0  00 dialogue text=0x2ae5
+            text │ 張飛: 嗨！嗨！
+  21b3  35 duel_action person=2 action=1
+          person │ 張飛
+  21b7  35 duel_action person=2 action=0
+          person │ 張飛
+  21bb  35 duel_action person=2 action=1
+          person │ 張飛
+  21bf  00 dialogue text=0x2af2
+            text │ 徐晃: 啊！太，太強了！
+                 │ 張飛: 哼，你以為能贏我嗎？看槍！死吧！
+  21c2  35 duel_action person=2 action=1
+          person │ 張飛
+  21c6  00 dialogue text=0x2b2a
+            text │ 徐晃: 嗚……
+  21c9  35 duel_action person=78 action=3
+          person │ 徐晃
+  21cd  00 dialogue text=0x2b35
+            text │ 徐晃: 後，後悔莫及……
+  21d0  33 duel_end
+  21d1  39 add_levels person=2 levels=1
+          person │ 張飛
+  21d5  0b caption text=0x2b4a
+            text │ 張飛的等級上升！
+  21d8  18 remove_person person=78
+          person │ 徐晃
+  21db  ff end
+
+record 8 unit_in_area(11) group 3 args 00040b040d0f [(any unit)] -> code 0x21dc
+  21dc  21 if_flags unless set[] and clear[215] skip 7
+  21e1  00 dialogue text=0x2b5b
+            text │ 夏侯惇: 進城裡來了嗎，哈哈哈，按我的計謀上當了，也不想想，為什麼特意留一座橋，那裡進退不自如．機會來了！一口氣衝垮敵人！！
+  21e4  1c set_ai person=258 mode=4 p1=8 p2=14
+          person │ 步兵隊
+  21ea  1c set_ai person=261 mode=4 p1=8 p2=14
+          person │ 步兵隊
+  21f0  1c set_ai person=293 mode=4 p1=8 p2=14
+          person │ 騎兵隊
+  21f6  1c set_ai person=275 mode=4 p1=8 p2=14
+          person │ 弓兵隊
+  21fc  1c set_ai person=276 mode=4 p1=8 p2=14
+          person │ 弓兵隊
+  2202  14 set_flag flag=215 clear=0
+  2205  ff end
+
+record 9 unit_in_area(11) group 3 args 00040309050e [(any unit)] -> code 0x2206
+  2206  21 if_flags unless set[58] and clear[] skip 22
+  220b  38 play_music song=11
+  220d  00 dialogue text=0x2bd2
+            text │ 夏侯惇: 大膽劉備軍！竟敢來此！
+  2210  38 play_music song=12
+  2212  1a join_battle person=1
+          person │ 關羽
+  2215  00 dialogue text=0x2bed
+            text │ 關羽: 聽說兄長處境艱難，關羽特來參見！想要命的，離我遠點！
+                 │ 劉備: 噢……！我沒認錯吧！關羽，是你吧！
+                 │ 關羽: 夏侯惇，俺關羽特來會你！
+  2218  01 move_person person=1 x=12 y=2 dir=3
+          person │ 關羽
+  221e  00 dialogue text=0x2c66
+            text │ 夏侯惇: 你，你是關羽！你沒死！
+                 │ 關羽: 魏國不亡，我還不能死．我從閻王那裡又回來了．
+                 │ 夏侯惇: 那好，我再把你送回去！
+  2221  10 duel first=1 second=16
+           first │ 關羽
+          second │ 夏侯惇
+  2226  34 duel_begin
+  2227  00 dialogue text=0x2cc9
+            text │ 夏侯惇: 你這個死不了的，再宰死你．
+                 │ 關羽: 你這兩下子，不足為敵！
+  222a  35 duel_action person=1 action=1
+          person │ 關羽
+  222e  35 duel_action person=16 action=2
+          person │ 夏侯惇
+  2232  00 dialogue text=0x2d01
+            text │ 夏侯惇: 噢！
+                 │ 關羽: 夏侯惇！小心！
+  2235  35 duel_action person=1 action=0
+          person │ 關羽
+  2239  00 dialogue text=0x2d1b
+            text │ 夏侯惇: 哇！！
+  223c  35 duel_action person=16 action=3
+          person │ 夏侯惇
+  2240  00 dialogue text=0x2d26
+            text │ 關羽: 哼……夏侯惇，再見了……
+  2243  33 duel_end
+  2244  18 remove_person person=16
+          person │ 夏侯惇
+  2247  39 add_levels person=1 levels=1
+          person │ 關羽
+  224b  0b caption text=0x2d43
+            text │ 關羽的等級上升！
+  224e  13 leave_parallel
+  224f  ff end
+
+record 10 battle_won(7) group 3 args 000000000000 -> code 0x2250
+  2250  00 dialogue text=0x2d54
+            text │ 夏侯惇: 你，你們……我雖死，魏國也不會亡！嗷！嗷！
+  2253  13 leave_parallel
+  2254  ff end
+
+record 11 run(0) group 4 args 000000000000 -> code 0x2255
+  2255  38 play_music song=7
+  2257  2b data kind=2 value=1500
+  225b  0b caption text=0x2d83
+            text │ 得到黃金１５００！
+  225e  08 narration text=0x2d96
+            text │ 　劉備軍擊斃夏侯惇，佔領宛城．
+                 │ 　洛陽就在眼前，劉備兄弟的夢想，漢室再興也……
+  2261  11 battle_end next_map=0x1000
+  2264  ff end
+
+## scene 1 (message section at 0x2ded)
+
+### block 0 @0x0014
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0028
+  0028  20 enable_list reset_all=true [1, 4, 5, 6, 8, 9, 10, 11, 12, 13]
+  0034  38 play_music song=0
+  0036  0e chapter_title key=0x0000
+             key │ 第四章　中原決死戰
+        title_index │ 183
+  0039  0d title text=0x0013
+            text │ 第四章　中原決死戰
+  003c  07 show_picture picture=33 variant=0
+  003f  08 narration text=0x0026
+            text │ 　對魏國來說，宛城陷落無疑是巨大打擊，
+                 │ 　曹丕在許昌集結重兵，以防備蜀軍的進攻．
+  0042  2e reset_player_position target=12 x=0 y=0 dir=255
+  0048  09 load_map map=0x1000
+  004b  0a place_person person=212 x=41 y=2 dir=2
+          person │ 曹丕
+  0051  0a place_person person=241 x=14 y=19 dir=2
+          person │ 曹真
+  0057  38 play_music song=11
+  0059  05 show_screen
+  005a  00 dialogue text=0x0079
+            text │ 曹丕: 去許昌！在許昌迎擊敵軍！
+  005d  01 move_person person=212 x=44 y=20 dir=2
+          person │ 曹丕
+  0063  2e reset_player_position target=8 x=0 y=0 dir=255
+  0069  21 if_flags unless set[90] and clear[] skip 3
+  006e  38 play_music song=0
+  0070  07 show_picture picture=32 variant=1
+  0073  08 narration text=0x0096
+            text │ 　造成宛城陷落這樣的結果的重要原因，是蜀和吳同時對魏作戰．
+                 │ 　由於東吳進攻合淝，魏的兵力被分散．在合淝的張遼等人被牽制住，所以在宛城魏國不能集中充份的戰鬥力．
+  0076  21 if_flags unless set[] and clear[89] skip 8
+  007b  38 play_music song=11
+  007d  3b op_3b x=14 y=19
+  0080  3c op_3c person=241
+          person │ 曹真
+  0083  2e reset_player_position target=10 x=0 y=0 dir=255
+  0089  00 dialogue text=0x0137
+            text │ 曹真: 曹丕皇上危險！在洛陽頂住劉備軍！
+  008c  01 move_person person=241 x=30 y=16 dir=2
+          person │ 曹真
+  0092  2e reset_player_position target=11 x=0 y=0 dir=255
+  0098  0f goto_block block=4
+  009a  ff end
+
+### block 1 @0x009b
+
+record 0 run(0) group 0 args 000000000000 -> code 0x00cd
+  00cd  2e reset_player_position target=7 x=0 y=0 dir=255
+  00d3  09 load_map map=0x2004
+  00d6  1d set_previous_map map=0x0007 x=28 y=5
+  00db  2f set_graphic person=0 graphic=2
+          person │ 劉備
+  00df  0a place_person person=0 x=25 y=6 dir=2
+          person │ 劉備
+  00e5  0a place_person person=125 x=15 y=7 dir=1
+          person │ 諸葛亮
+  00eb  0a place_person person=174 x=22 y=12 dir=3
+          person │ 馬良
+  00f1  21 if_flags unless set[58] and clear[] skip 2
+  00f6  0a place_person person=1 x=19 y=9 dir=0
+          person │ 關羽
+  00fc  0a place_person person=2 x=11 y=9 dir=1
+          person │ 張飛
+  0102  38 play_music song=5
+  0104  05 show_screen
+  0105  0b caption text=0x015c
+            text │ 宛議事廳
+  0108  21 if_flags unless set[58] and clear[] skip 14
+  010d  24 set_allegiance person=1 army=0
+          person │ 關羽
+  0111  24 set_allegiance person=127 army=0
+          person │ 關平
+  0115  24 set_allegiance person=154 army=0
+          person │ 周倉
+  0119  24 set_allegiance person=38 army=0
+          person │ 趙累
+  011d  24 set_allegiance person=33 army=0
+          person │ 廖化
+  0121  24 set_allegiance person=37 army=0
+          person │ 王甫
+  0125  00 dialogue text=0x0165
+            text │ 關羽: 兄長，失了荊州，本無面目見人，聽說兄長在此廝殺，甘冒矢石來與您相見．
+                 │ 劉備: 瞧你說的，我只聽到你還活著就足夠了，荊州也奪回來了，沒什麼好惦記的，一起完成伐魏大業吧．
+                 │ 關羽: 啊！多謝兄長．
+  0128  01 move_person person=2 x=20 y=9 dir=2
+          person │ 張飛
+  012e  00 dialogue text=0x021a
+            text │ 張飛: 二哥，今日暢飲一番！來，舉杯！
+  0131  00 dialogue text=0x023d
+            text │ 關羽: 很久沒和你喝酒了，今日不醉不休！
+                 │ 張飛: 這樣對嘍，好吧，兄長，我等你．
+  0134  01 move_person person=2 x=3 y=17 dir=2
+          person │ 張飛
+  013a  01 move_person person=1 x=3 y=17 dir=2
+          person │ 關羽
+  0140  18 remove_person person=2
+          person │ 張飛
+  0143  18 remove_person person=1
+          person │ 關羽
+  0146  01 move_person person=174 x=22 y=12 dir=0
+          person │ 馬良
+  014c  00 dialogue text=0x0283
+            text │ 馬良: 主公，魏國丟掉這個宛城，肯定會驚惶失措．一口氣進攻吧．
+                 │ 諸葛亮: 此言極是，但是，現在還是等關中的奇襲隊吧，如果不與他們會合，很難戰勝魏軍精銳．
+  014f  21 if_flags unless set[] and clear[38] skip 1
+  0154  00 dialogue text=0x030f
+            text │ 劉備: 龐統他們不會出什麼事吧……
+  0157  21 if_flags unless set[38] and clear[] skip 1
+  015c  00 dialogue text=0x032e
+            text │ 劉備: 趙雲他們不會出什麼事吧……
+  015f  30 set_objective text=0x034d
+            text │ 談論今後的話．
+  0162  17 input_control value=0
+  0164  ff end
+
+record 1 talk(3) group 1* args ae0000000000 [馬良] -> code 0x0165
+  0165  00 dialogue text=0x035e
+            text │ 馬良: 奇襲隊早點到達才好．
+  0168  ff end
+
+record 2 talk(3) group 1 args 7d0000000000 [諸葛亮] -> code 0x0169
+  0169  00 dialogue text=0x0377
+            text │ 諸葛亮: 等奇襲隊吧．
+  016c  3d op_3d value=1
+  016e  17 input_control value=1
+  0170  13 leave_parallel
+  0171  ff end
+
+record 3 run(0) group 2 args 000000000000 -> code 0x0172
+  0172  2e reset_player_position target=13 x=0 y=0 dir=255
+  0178  09 load_map map=0x200e
+  017b  21 if_flags unless set[] and clear[38] skip 3
+  0180  0a place_person person=132 x=23 y=7 dir=2
+          person │ 龐統
+  0186  0a place_person person=53 x=15 y=8 dir=1
+          person │ 趙雲
+  018c  0a place_person person=189 x=21 y=11 dir=3
+          person │ 馬超
+  0192  21 if_flags unless set[38] and clear[] skip 3
+  0197  0a place_person person=53 x=23 y=7 dir=2
+          person │ 趙雲
+  019d  0a place_person person=189 x=15 y=8 dir=1
+          person │ 馬超
+  01a3  0a place_person person=126 x=21 y=11 dir=3
+          person │ 魏延
+  01a9  38 play_music song=12
+  01ab  05 show_screen
+  01ac  0b caption text=0x0388
+            text │ 陽平關帥帳
+  01af  08 narration text=0x0393
+            text │ 　話說兩頭，在漢中的陽平關，劉備軍奇襲隊已佈下陣勢．
+  01b2  21 if_flags unless set[] and clear[38] skip 3
+  01b7  00 dialogue text=0x03ca
+            text │ 龐統: 大概主力部隊正順利進攻洛陽，如果這樣下去，將在許昌決戰吧．
+                 │ 趙雲: 軍師，我們也別晚了，趕快去與主力部隊會合吧．
+                 │ 馬超: 是啊，已完成虛攻的任務，已沒有必要待在這裡了？
+                 │ 龐統: 可是，不能放著關中、長安魏軍不管，否則，主力部隊的背後就會遭到襲擊．能打擊多少就打擊多少吧．
+                 │ 趙雲: 那，趕快出擊吧．
+                 │ 龐統: 嗯，但是別太浪費時間，與主力部隊會合才是最重要的．
+                 │ 馬超: 是．
+  01ba  03 battle_setup turns=30 win=Some(242) lose=Some(132) other=00000000 units=10
+           units │ 龐統 (2, 13), 趙雲 (3, 13), 馬超 (3, 12), 魏延 (2, 10), 簡雍 (4, 11), 糜竺 (0, 13), 糜芳 (1, 12), 伊籍 (1, 11), 劉封 (5, 13), 法正 (1, 9)
+  02d4  24 set_allegiance person=132 army=0
+          person │ 龐統
+  02d8  21 if_flags unless set[38] and clear[] skip 2
+  02dd  00 dialogue text=0x0517
+            text │ 趙雲: 大概主力部隊正順利進攻洛陽，如果這樣下去，將在許昌決戰吧．
+                 │ 馬超: 趙將軍，我們也別晚了，趕快去與主力部隊會合吧．
+                 │ 魏延: 是啊，已完成虛攻的任務，已沒有必要待在這裡了？
+                 │ 趙雲: 可是，不能放著關中、長安魏軍不管，否則，主力部隊的背後就會遭到襲擊．能打擊多少就打擊多少吧．
+                 │ 馬超: 出擊吧．
+                 │ 趙雲: 嗯，但是別太浪費時間，與主力部隊會合才是最重要的．
+                 │ 魏延: 知道了．
+  02e0  03 battle_setup turns=30 win=Some(242) lose=Some(53) other=00000000 units=9
+           units │ 趙雲 (3, 13), 馬超 (3, 12), 魏延 (2, 10), 簡雍 (4, 11), 糜竺 (0, 13), 糜芳 (1, 12), 伊籍 (1, 11), 劉封 (5, 13), 法正 (1, 9)
+  03fa  24 set_allegiance person=53 army=0
+          person │ 趙雲
+  03fe  24 set_allegiance person=189 army=0
+          person │ 馬超
+  0402  24 set_allegiance person=126 army=0
+          person │ 魏延
+  0406  24 set_allegiance person=82 army=0
+          person │ 簡雍
+  040a  24 set_allegiance person=64 army=0
+          person │ 糜竺
+  040e  24 set_allegiance person=81 army=0
+          person │ 糜芳
+  0412  24 set_allegiance person=113 army=0
+          person │ 伊籍
+  0416  24 set_allegiance person=116 army=0
+          person │ 劉封
+  041a  24 set_allegiance person=187 army=0
+          person │ 法正
+  041e  09 load_map map=0x1000
+  0421  0a place_person person=53 x=5 y=31 dir=2
+          person │ 趙雲
+  0427  0a place_person person=242 x=9 y=21 dir=2
+          person │ 郝昭
+  042d  0a place_person person=241 x=14 y=19 dir=2
+          person │ 曹真
+  0433  38 play_music song=3
+  0435  05 show_screen
+  0436  01 move_person person=53 x=9 y=21 dir=2
+          person │ 趙雲
+  043c  2e reset_player_position target=9 x=0 y=0 dir=255
+  0442  ff end
+
+### block 2 @0x0443
+
+record 0 run(0) group 0 args 000000000000 -> code 0x04e3
+  04e3  22 battle_roster friendly=false units=25
+          unit 242 at (30, 9) class 2 lv 54 ai 2/0
+          unit 243 at (16, 10) class 8 lv 50 ai 4/3092
+          unit 235 at (14, 10) class 16 lv 49 ai 0/0
+          unit 234 at (15, 9) class 16 lv 48 ai 0/0
+          unit 236 at (15, 12) class 16 lv 48 ai 0/0
+          unit 332 at (14, 11) class 13 lv 45 ai 0/0
+          unit 256 at (5, 3) class 2 lv 45 ai 0/0
+          unit 257 at (17, 4) class 2 lv 44 ai 0/0
+          unit 258 at (4, 1) class 2 lv 45 ai 0/0
+          unit 259 at (13, 5) class 2 lv 45 ai 0/0
+          unit 260 at (14, 3) class 2 lv 44 ai 0/0
+          unit 261 at (24, 9) class 2 lv 44 ai 2/0
+          unit 262 at (28, 9) class 2 lv 44 ai 0/0
+          unit 292 at (29, 10) class 8 lv 48 ai 0/0
+          unit 293 at (20, 10) class 8 lv 47 ai 0/0
+          unit 294 at (21, 9) class 8 lv 48 ai 0/0
+          unit 295 at (19, 5) class 8 lv 47 ai 0/0
+          unit 296 at (20, 8) class 8 lv 47 ai 0/0
+          unit 297 at (29, 8) class 8 lv 46 ai 0/0
+          unit 274 at (5, 1) class 5 lv 45 ai 0/0
+          unit 275 at (10, 3) class 5 lv 46 ai 0/0
+          unit 276 at (18, 4) class 5 lv 46 ai 0/0
+          unit 277 at (24, 6) class 5 lv 47 ai 2/0
+          unit 278 at (24, 12) class 5 lv 47 ai 2/0
+          unit 279 at (25, 9) class 5 lv 47 ai 2/0
+           units │ 郝昭 (30, 9), 姜維 (16, 10), 張獲 (14, 10), 程德 (15, 9), 高蒼 (15, 12), 猛獸師 (14, 11), 步兵隊 (5, 3), 步兵隊 (17, 4), 步兵隊 (4, 1), 步兵隊 (13, 5), 步兵隊 (14, 3), 步兵隊 (24, 9), 步兵隊 (28, 9), 騎兵隊 (29, 10), 騎兵隊 (20, 10), 騎兵隊 (21, 9), 騎兵隊 (19, 5), 騎兵隊 (20, 8), 騎兵隊 (29, 8), 弓兵隊 (5, 1), 弓兵隊 (10, 3), 弓兵隊 (18, 4), 弓兵隊 (24, 6), 弓兵隊 (24, 12), 弓兵隊 (25, 9)
+  066b  09 load_map map=0x3034
+  066e  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x066f
+  066f  36 begin_battle
+  0670  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x0671
+  0671  38 play_music song=11
+  0673  30 set_objective text=0x0662
+            text │ 一、郝昭的結局
+  0676  00 dialogue text=0x0673
+            text │ 郝昭: 蜀軍終於攻來了，但是別想從陳倉這裡過去，有種的過來一戰！
+  0679  21 if_flags unless set[] and clear[38] skip 1
+  067e  00 dialogue text=0x06b0
+            text │ 龐統: 陳倉乃咽喉要地，別浪費時間！火速攻下！
+  0681  21 if_flags unless set[38] and clear[] skip 1
+  0686  00 dialogue text=0x06db
+            text │ 趙雲: 陳倉乃咽喉要地，別浪費時間！火速攻下！
+  0689  00 dialogue text=0x0706
+            text │ 姜維: 魏軍乃逆賊．我是不是助紂為虐了．
+  068c  38 play_music song=9
+  068e  ff end
+
+record 3 unit_contact(4) group 3* args 7e00f2000000 [魏延] -> code 0x068f
+  068f  00 dialogue text=0x072b
+            text │ 魏延: 來將可是敵方統帥．來得正好，單挑！
+                 │ 郝昭: 可惡……！讓你們打到這裡，只有決一勝負！
+  0692  10 duel first=126 second=242
+           first │ 魏延
+          second │ 郝昭
+  0697  34 duel_begin
+  0698  00 dialogue text=0x077d
+            text │ 魏延: 不愧是統帥！好厲害！
+                 │ 郝昭: 嘿……！
+  069b  34 duel_begin
+  069c  00 dialogue text=0x07a1
+            text │ 魏延: 哈、哈……
+                 │ 郝昭: 看招！
+                 │ 魏延: 啊！不好！
+  069f  35 duel_action person=242 action=0
+          person │ 郝昭
+  06a3  35 duel_action person=126 action=2
+          person │ 魏延
+  06a7  00 dialogue text=0x07c6
+            text │ 魏延: 哇啊！……，……，……？我還活著嗎？
+                 │ 郝昭: 啊！心，心臟……在這種……地方……犯老病……．
+                 │ 魏延: 怎麼回事？
+  06aa  35 duel_action person=242 action=3
+          person │ 郝昭
+  06ae  00 dialogue text=0x082d
+            text │ 郝昭: 不好……．因病……倒下……．
+                 │ 魏延: 好險啊！
+  06b1  33 duel_end
+  06b2  39 add_levels person=126 levels=1
+          person │ 魏延
+  06b6  0b caption text=0x0859
+            text │ 魏延的等級上升！
+  06b9  18 remove_person person=242
+          person │ 郝昭
+  06bc  38 play_music song=7
+  06be  08 narration text=0x086a
+            text │ 　劉備軍奇襲隊擊斃郝昭，
+                 │ 　佔領陳倉．
+  06c1  13 leave_parallel
+  06c2  ff end
+
+record 4 unit_at_cell(6) group 3 args 0004000e0000 [(any unit)] -> code 0x06c3
+  06c3  21 if_flags unless set[] and clear[115] skip 2
+  06c8  1b add_item item=60
+            item │ 六韜
+  06ca  14 set_flag flag=115 clear=0
+  06cd  ff end
+
+record 5 unit_at_cell(6) group 3 args 000403120000 [(any unit)] -> code 0x06ce
+  06ce  21 if_flags unless set[] and clear[116] skip 2
+  06d3  1b add_item item=16
+            item │ 弓術指南書
+  06d5  14 set_flag flag=116 clear=0
+  06d8  ff end
+
+record 6 unit_at_cell(6) group 3 args 0004061a0000 [(any unit)] -> code 0x06d9
+  06d9  21 if_flags unless set[] and clear[117] skip 2
+  06de  1b add_item item=61
+            item │ 三略
+  06e0  14 set_flag flag=117 clear=0
+  06e3  ff end
+
+record 7 unit_contact(4) group 3 args 0004f3000000 [(any unit)] -> code 0x06e4
+  06e4  21 if_flags unless set[] and clear[94] skip 6
+  06e9  38 play_music song=11
+  06eb  00 dialogue text=0x0893
+            text │ 姜維: 不能再待在魏軍了！我姜維現在加入蜀軍！
+  06ee  0b caption text=0x08be
+            text │ 姜維加入我方！
+  06f1  28 set_country person=243 country=0
+          person │ 姜維
+  06f5  14 set_flag flag=94 clear=0
+  06f8  38 play_music song=9
+  06fa  ff end
+
+record 8 unit_contact(4) group 3 args bd00eb000000 [馬超] -> code 0x06fb
+  06fb  21 if_flags unless set[] and clear[114] skip 10
+  0700  38 play_music song=11
+  0702  00 dialogue text=0x08cd
+            text │ 馬超: 你們可是羌族人？為何跟著魏軍，阻擋我軍前進！
+                 │ 張獲: 啊，您是馬超將軍！聽說您被魏軍殺害了，看來平安無事呀！
+                 │ 馬超: 當然，哪能那麼容易就死了．
+                 │ 張獲: 我們不打算與馬超將軍作對，現在我們羌族加入您那一方．
+  0705  28 set_country person=235 country=0
+          person │ 張獲
+  0709  28 set_country person=234 country=0
+          person │ 程德
+  070d  28 set_country person=236 country=0
+          person │ 高蒼
+  0711  0b caption text=0x098b
+            text │ 異民族羌族加入我方！
+  0714  14 set_flag flag=114 clear=0
+  0717  39 add_levels person=189 levels=1
+          person │ 馬超
+  071b  0b caption text=0x09a0
+            text │ 馬超的等級上升！
+  071e  38 play_music song=9
+  0720  ff end
+
+record 9 unit_contact(4) group 3 args bd00ea000000 [馬超] -> code 0x0721
+  0721  21 if_flags unless set[] and clear[114] skip 10
+  0726  38 play_music song=11
+  0728  00 dialogue text=0x09b1
+            text │ 馬超: 你們可是羌族人？為何跟著魏軍，阻擋我軍前進！
+                 │ 程德: 啊，您是馬超將軍！聽說您被魏軍殺害了，看來平安無事呀！
+                 │ 馬超: 當然，哪能那麼容易就死了．
+                 │ 程德: 我們不打算與馬超將軍作對，現在我們羌族加入您那一方．
+  072b  28 set_country person=235 country=0
+          person │ 張獲
+  072f  28 set_country person=234 country=0
+          person │ 程德
+  0733  28 set_country person=236 country=0
+          person │ 高蒼
+  0737  0b caption text=0x0a6f
+            text │ 異民族羌族加入我方！
+  073a  14 set_flag flag=114 clear=0
+  073d  39 add_levels person=189 levels=1
+          person │ 馬超
+  0741  0b caption text=0x0a84
+            text │ 馬超的等級上升！
+  0744  38 play_music song=9
+  0746  ff end
+
+record 10 unit_contact(4) group 3 args bd00ec000000 [馬超] -> code 0x0747
+  0747  21 if_flags unless set[] and clear[114] skip 10
+  074c  38 play_music song=11
+  074e  00 dialogue text=0x0a95
+            text │ 馬超: 你們可是羌族人？為何跟著魏軍，阻擋我軍前進！
+                 │ 高蒼: 啊，您是馬超將軍！聽說您被魏軍殺害了，看來平安無事呀！
+                 │ 馬超: 當然，哪能那麼容易就死了．
+                 │ 高蒼: 我們不打算與馬超將軍作對，現在我們羌族加入您那一方．
+  0751  28 set_country person=235 country=0
+          person │ 張獲
+  0755  28 set_country person=234 country=0
+          person │ 程德
+  0759  28 set_country person=236 country=0
+          person │ 高蒼
+  075d  0b caption text=0x0b53
+            text │ 異民族羌族加入我方！
+  0760  14 set_flag flag=114 clear=0
+  0763  39 add_levels person=189 levels=1
+          person │ 馬超
+  0767  0b caption text=0x0b68
+            text │ 馬超的等級上升！
+  076a  38 play_music song=9
+  076c  ff end
+
+record 11 turn(9) group 3 args 1e0000000000 -> code 0x076d
+  076d  38 play_music song=11
+  076f  21 if_flags unless set[] and clear[38] skip 1
+  0774  00 dialogue text=0x0b79
+            text │ 龐統: 不行，要趕不上決戰了！全軍，加速前進！
+  0777  21 if_flags unless set[38] and clear[] skip 1
+  077c  00 dialogue text=0x0ba4
+            text │ 趙雲: 不行，要趕不上決戰了！全軍，加速前進！
+  077f  11 battle_end next_map=0x1000
+  0782  14 set_flag flag=93 clear=0
+  0785  0f goto_block block=4
+  0787  ff end
+
+record 12 battle_lost(8) group 3 args 000000000000 -> code 0x0788
+  0788  38 play_music song=11
+  078a  21 if_flags unless set[] and clear[38] skip 1
+  078f  00 dialogue text=0x0bcf
+            text │ 龐統: 可惡！這樣趕不上決戰了！
+  0792  21 if_flags unless set[38] and clear[] skip 1
+  0797  00 dialogue text=0x0bec
+            text │ 趙雲: 可惡！這樣趕不上決戰了！
+  079a  11 battle_end next_map=0x1000
+  079d  14 set_flag flag=93 clear=0
+  07a0  0f goto_block block=4
+  07a2  ff end
+
+record 13 battle_won(7) group 3 args 000000000000 -> code 0x07a3
+  07a3  00 dialogue text=0x0c09
+            text │ 郝昭: 可惡．擋不住劉備軍，我與陣地共存亡．
+  07a6  38 play_music song=7
+  07a8  08 narration text=0x0c32
+            text │ 　劉備軍奇襲隊擊斃郝昭，
+                 │ 　佔領陳倉．
+  07ab  13 leave_parallel
+  07ac  ff end
+
+record 14 run(0) group 4 args 000000000000 -> code 0x07ad
+  07ad  2b data kind=2 value=1600
+  07b1  0b caption text=0x0c5b
+            text │ 得到黃金１６００！
+  07b4  21 if_flags unless set[] and clear[38] skip 1
+  07b9  00 dialogue text=0x0c6e
+            text │ 龐統: 好，快進攻長安！
+  07bc  21 if_flags unless set[38] and clear[] skip 1
+  07c1  00 dialogue text=0x0c83
+            text │ 趙雲: 好，快進攻長安！
+  07c4  11 battle_end next_map=0x1000
+  07c7  ff end
+
+### block 3 @0x07c8
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0836
+  0836  09 load_map map=0x1000
+  0839  0a place_person person=53 x=9 y=21 dir=2
+          person │ 趙雲
+  083f  0a place_person person=241 x=14 y=19 dir=2
+          person │ 曹真
+  0845  38 play_music song=3
+  0847  05 show_screen
+  0848  01 move_person person=53 x=14 y=19 dir=2
+          person │ 趙雲
+  084e  2e reset_player_position target=10 x=0 y=0 dir=255
+  0854  21 if_flags unless set[] and clear[38] skip 1
+  0859  03 battle_setup turns=60 win=Some(241) lose=Some(132) other=01000000 units=14
+           units │ (any unit) (1, 9), (any unit) (2, 8), (any unit) (4, 8), (any unit) (4, 10), (any unit) (2, 6), (any unit) (0, 7), (any unit) (3, 12), (any unit) (0, 11), (any unit) (2, 10), (any unit) (1, 13), (any unit) (3, 5), (any unit) (1, 5), (any unit) (1, 6), (any unit) (0, 9)
+  0973  21 if_flags unless set[38] and clear[] skip 1
+  0978  03 battle_setup turns=60 win=Some(241) lose=Some(53) other=01000000 units=14
+           units │ (any unit) (1, 9), (any unit) (2, 8), (any unit) (4, 8), (any unit) (4, 10), (any unit) (2, 6), (any unit) (0, 7), (any unit) (3, 12), (any unit) (0, 11), (any unit) (2, 10), (any unit) (1, 13), (any unit) (3, 5), (any unit) (1, 5), (any unit) (1, 6), (any unit) (0, 9)
+  0a92  22 battle_roster friendly=false units=25
+          unit 241 at (30, 8) class 2 lv 57 ai 2/0
+          unit 102 at (18, 3) class 8 lv 55 ai 2/0
+          unit 111 at (18, 13) class 15 lv 52 ai 2/0
+          unit 100 at (28, 8) class 5 lv 53 ai 2/0
+          unit 19 at (9, 8) class 2 lv 53 ai 2/0
+          unit 214 at (9, 9) class 2 lv 53 ai 2/0
+          unit 256 at (27, 6) class 2 lv 49 ai 2/0
+          unit 257 at (30, 11) class 2 lv 47 ai 2/0
+          unit 258 at (25, 8) class 2 lv 48 ai 2/0
+          unit 259 at (9, 7) class 2 lv 48 ai 2/0
+          unit 260 at (9, 10) class 2 lv 48 ai 2/0
+          unit 261 at (14, 4) class 2 lv 48 ai 2/0
+          unit 274 at (28, 9) class 5 lv 48 ai 2/0
+          unit 275 at (19, 3) class 5 lv 47 ai 2/0
+          unit 276 at (19, 13) class 5 lv 49 ai 2/0
+          unit 277 at (15, 5) class 5 lv 48 ai 2/0
+          unit 292 at (11, 7) class 8 lv 50 ai 0/0
+          unit 293 at (20, 5) class 8 lv 50 ai 2/0
+          unit 294 at (20, 11) class 8 lv 49 ai 2/0
+          unit 295 at (12, 7) class 8 lv 50 ai 0/0
+          unit 332 at (16, 13) class 13 lv 50 ai 2/0
+          unit 348 at (11, 8) class 18 lv 49 ai 0/0
+          unit 278 at (12, 12) class 5 lv 47 ai 4/2570
+          unit 336 at (23, 7) class 14 lv 48 ai 2/0
+          unit 337 at (23, 9) class 14 lv 47 ai 2/0
+           units │ 曹真 (30, 8), 張郃 (18, 3), 徐庶 (18, 13), 劉瞱 (28, 8), 曹洪 (9, 8), 曹休 (9, 9), 步兵隊 (27, 6), 步兵隊 (30, 11), 步兵隊 (25, 8), 步兵隊 (9, 7), 步兵隊 (9, 10), 步兵隊 (14, 4), 弓兵隊 (28, 9), 弓兵隊 (19, 3), 弓兵隊 (19, 13), 弓兵隊 (15, 5), 騎兵隊 (11, 7), 騎兵隊 (20, 5), 騎兵隊 (20, 11), 騎兵隊 (12, 7), 猛獸師 (16, 13), 運輸隊 (11, 8), 弓兵隊 (12, 12), 武術家 (23, 7), 武術家 (23, 9)
+  0c1a  09 load_map map=0x3035
+  0c1d  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0c1e
+  0c1e  36 begin_battle
+  0c1f  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x0c20
+  0c20  38 play_music song=11
+  0c22  30 set_objective text=0x0c98
+            text │ 一、曹真的結局
+  0c25  00 dialogue text=0x0ca9
+            text │ 曹真: 在這裡箝制住蜀軍！不能讓蜀軍再為所欲為了．
+  0c28  21 if_flags unless set[] and clear[38] skip 1
+  0c2d  00 dialogue text=0x0cd8
+            text │ 龐統: 越過長安，馬上就到洛陽了．大家再加把勁！
+  0c30  21 if_flags unless set[38] and clear[] skip 1
+  0c35  00 dialogue text=0x0d05
+            text │ 趙雲: 越過長安，馬上就到洛陽了．大家再加把勁！
+  0c38  00 dialogue text=0x0d32
+            text │ 徐庶: 當初玄德公的實力何其渺小，現在如此壯大……我的眼光果然沒錯．
+  0c3b  38 play_music song=17
+  0c3d  ff end
+
+record 3 unit_at_cell(6) group 3* args 0004021a0000 [(any unit)] -> code 0x0c3e
+  0c3e  21 if_flags unless set[] and clear[119] skip 2
+  0c43  1b add_item item=48
+            item │ 援軍書  
+  0c45  14 set_flag flag=119 clear=0
+  0c48  ff end
+
+record 4 unit_in_area(11) group 3 args 0004020a0d0e [(any unit)] -> code 0x0c49
+  0c49  21 if_flags unless set[] and clear[217] skip 9
+  0c4e  00 dialogue text=0x0d73
+            text │ 曹真: 已經打進城裡了！各軍要迎擊敵軍！！不惜一切要阻止敵軍去許昌與主力會合！
+  0c51  1c set_ai person=275 mode=1 unused=0
+          person │ 弓兵隊
+  0c57  1c set_ai person=276 mode=1 unused=0
+          person │ 弓兵隊
+  0c5d  1c set_ai person=277 mode=1 unused=0
+          person │ 弓兵隊
+  0c63  1c set_ai person=261 mode=1 unused=0
+          person │ 步兵隊
+  0c69  1c set_ai person=293 mode=1 unused=0
+          person │ 騎兵隊
+  0c6f  1c set_ai person=294 mode=1 unused=0
+          person │ 騎兵隊
+  0c75  1c set_ai person=332 mode=1 unused=0
+          person │ 猛獸師
+  0c7b  14 set_flag flag=217 clear=0
+  0c7e  ff end
+
+record 5 unit_contact(4) group 3 args 00046f000000 [(any unit)] -> code 0x0c7f
+  0c7f  21 if_flags unless set[] and clear[95] skip 6
+  0c84  38 play_music song=11
+  0c86  00 dialogue text=0x0dbe
+            text │ 徐庶: 且慢，不要打！我乃徐庶，現在回歸蜀軍．
+  0c89  0b caption text=0x0de9
+            text │ 徐庶加入我方！
+  0c8c  28 set_country person=111 country=0
+          person │ 徐庶
+  0c90  14 set_flag flag=95 clear=0
+  0c93  38 play_music song=17
+  0c95  ff end
+
+record 6 unit_contact(4) group 3 args 350066000000 [趙雲] -> code 0x0c96
+  0c96  00 dialogue text=0x0df8
+            text │ 趙雲: 那邊可是張郃！
+                 │ 張郃: 趙雲嗎？久違了，有何事指教？來勸降？別開這種玩笑．
+                 │ 趙雲: 張郃，乾脆投降吧！魏國亡定了．
+                 │ 張郃: 別逗了，我自棄袁紹效力曹公，絕不會再投降了．
+                 │ 趙雲: 那就打吧！
+  0c99  10 duel first=53 second=102
+           first │ 趙雲
+          second │ 張郃
+  0c9e  34 duel_begin
+  0c9f  00 dialogue text=0x0e9d
+            text │ 趙雲: 看招！
+  0ca2  35 duel_action person=53 action=1
+          person │ 趙雲
+  0ca6  00 dialogue text=0x0ea8
+            text │ 張郃: 啊！不愧……是……趙雲，我不行了！
+  0ca9  35 duel_action person=102 action=3
+          person │ 張郃
+  0cad  00 dialogue text=0x0ecf
+            text │ 趙雲: ……張郃，真乃義士．
+  0cb0  33 duel_end
+  0cb1  39 add_levels person=53 levels=1
+          person │ 趙雲
+  0cb5  0b caption text=0x0ee8
+            text │ 趙雲的等級上升！
+  0cb8  18 remove_person person=102
+          person │ 張郃
+  0cbb  ff end
+
+record 7 turn(9) group 3 args 3c0000000000 -> code 0x0cbc
+  0cbc  38 play_music song=11
+  0cbe  21 if_flags unless set[] and clear[38] skip 1
+  0cc3  00 dialogue text=0x0ef9
+            text │ 龐統: 不好，趕不上決戰了！全軍，加速前進！
+  0cc6  21 if_flags unless set[38] and clear[] skip 1
+  0ccb  00 dialogue text=0x0f22
+            text │ 趙雲: 不好，趕不上決戰了！全軍，加速前進！
+  0cce  11 battle_end next_map=0x1000
+  0cd1  14 set_flag flag=93 clear=0
+  0cd4  13 leave_parallel
+  0cd5  ff end
+
+record 8 battle_lost(8) group 3 args 000000000000 -> code 0x0cd6
+  0cd6  38 play_music song=11
+  0cd8  21 if_flags unless set[] and clear[38] skip 1
+  0cdd  00 dialogue text=0x0f4b
+            text │ 龐統: 糟了！這樣要趕不上決戰了．
+  0ce0  21 if_flags unless set[38] and clear[] skip 1
+  0ce5  00 dialogue text=0x0f6a
+            text │ 趙雲: 糟了！這樣要趕不上決戰了．
+  0ce8  11 battle_end next_map=0x1000
+  0ceb  14 set_flag flag=93 clear=0
+  0cee  13 leave_parallel
+  0cef  ff end
+
+record 9 battle_won(7) group 3 args 000000000000 -> code 0x0cf0
+  0cf0  00 dialogue text=0x0f89
+            text │ 曹真: 蜀軍太厲害了……！啊！
+  0cf3  38 play_music song=7
+  0cf5  08 narration text=0x0fa4
+            text │ 　劉備軍奇襲隊擊斃曹真，
+                 │ 　佔領長安．
+  0cf8  2b data kind=2 value=1600
+  0cfc  0b caption text=0x0fcd
+            text │ 得到黃金１６００！
+  0cff  11 battle_end next_map=0x1000
+  0d02  09 load_map map=0x1000
+  0d05  0a place_person person=53 x=14 y=19 dir=1
+          person │ 趙雲
+  0d0b  38 play_music song=3
+  0d0d  05 show_screen
+  0d0e  21 if_flags unless set[] and clear[38] skip 1
+  0d13  00 dialogue text=0x0fe0
+            text │ 龐統: 好，馬上進軍洛陽！
+  0d16  21 if_flags unless set[38] and clear[] skip 1
+  0d1b  00 dialogue text=0x0ff7
+            text │ 趙雲: 好，馬上進軍洛陽！
+  0d1e  01 move_person person=53 x=30 y=16 dir=1
+          person │ 趙雲
+  0d24  13 leave_parallel
+  0d25  ff end
+
+### block 4 @0x0d26
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0da8
+  0da8  2e reset_player_position target=7 x=0 y=0 dir=255
+  0dae  09 load_map map=0x2004
+  0db1  1d set_previous_map map=0x0007 x=26 y=5
+  0db6  0a place_person person=0 x=25 y=6 dir=2
+          person │ 劉備
+  0dbc  0a place_person person=125 x=22 y=6 dir=2
+          person │ 諸葛亮
+  0dc2  21 if_flags unless set[] and clear[38, 89] skip 1
+  0dc8  0a place_person person=132 x=26 y=8 dir=2
+          person │ 龐統
+  0dce  0a place_person person=169 x=7 y=11 dir=1
+          person │ 黃忠
+  0dd4  21 if_flags unless set[58] and clear[] skip 1
+  0dd9  0a place_person person=1 x=15 y=7 dir=1
+          person │ 關羽
+  0ddf  21 if_flags unless set[135] and clear[] skip 1
+  0de4  0a place_person person=2 x=22 y=12 dir=3
+          person │ 張飛
+  0dea  21 if_flags unless set[] and clear[89] skip 3
+  0def  0a place_person person=53 x=11 y=9 dir=1
+          person │ 趙雲
+  0df5  0a place_person person=189 x=18 y=14 dir=3
+          person │ 馬超
+  0dfb  0a place_person person=126 x=14 y=16 dir=3
+          person │ 魏延
+  0e01  38 play_music song=5
+  0e03  05 show_screen
+  0e04  0b caption text=0x100e
+            text │ 宛議事廳
+  0e07  08 narration text=0x1017
+            text │ 　劉備等人在宛城的議事廳召開會議，商議伐魏．
+  0e0a  0a place_person person=174 x=3 y=17 dir=0
+          person │ 馬良
+  0e10  01 move_person person=174 x=17 y=10 dir=0
+          person │ 馬良
+  0e16  21 if_flags unless set[] and clear[89] skip 1
+  0e1b  00 dialogue text=0x1046
+            text │ 馬良: 主公，關中的魏軍已移動到洛陽．
+                 │ 諸葛亮: 敵人要在洛陽防守．
+                 │ 劉備: 已經打到這裡，沒有可猶豫的，進軍洛陽！
+  0e1e  21 if_flags unless set[89, 93] and clear[] skip 1
+  0e24  00 dialogue text=0x10a7
+            text │ 馬良: 奇襲隊還沒任何消息，大概被魏軍絆住了．
+                 │ 諸葛亮: 如果再等奇襲隊來，只會給敵人時間加固設防．
+                 │ 劉備: 正是，很遺憾，但也別無他法．他們不久就會趕到，曹丕在許昌，我們先發兵許昌．
+  0e27  21 if_flags unless set[89] and clear[93] skip 1
+  0e2d  00 dialogue text=0x114c
+            text │ 馬良: 主公，剛接到報告，奇襲隊已達到洛陽．
+                 │ 諸葛亮: 好樣的，馬上與奇襲隊合兵一處，一口氣直攻許昌．
+                 │ 劉備: 好！全軍準備出征，直指許昌！
+  0e30  21 if_flags unless set[58] and clear[] skip 6
+  0e35  00 dialogue text=0x11c5
+            text │ 關羽: 現在正是雪荊州之恥的時候．
+                 │ 張飛: 抖擻精神準備出征吧！兄長，我們先準備！
+  0e38  01 move_person person=1 x=3 y=17 dir=2
+          person │ 關羽
+  0e3e  01 move_person person=2 x=3 y=17 dir=2
+          person │ 張飛
+  0e44  18 remove_person person=1
+          person │ 關羽
+  0e47  18 remove_person person=2
+          person │ 張飛
+  0e4a  24 set_allegiance person=1 army=0
+          person │ 關羽
+  0e4e  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0e4f
+  0e4f  21 if_flags unless set[89] and clear[] skip 16
+  0e54  24 set_allegiance person=132 army=14
+          person │ 龐統
+  0e58  24 set_allegiance person=53 army=14
+          person │ 趙雲
+  0e5c  24 set_allegiance person=189 army=14
+          person │ 馬超
+  0e60  24 set_allegiance person=126 army=14
+          person │ 魏延
+  0e64  24 set_allegiance person=82 army=14
+          person │ 簡雍
+  0e68  24 set_allegiance person=64 army=14
+          person │ 糜竺
+  0e6c  24 set_allegiance person=81 army=14
+          person │ 糜芳
+  0e70  24 set_allegiance person=113 army=14
+          person │ 伊籍
+  0e74  24 set_allegiance person=116 army=14
+          person │ 劉封
+  0e78  24 set_allegiance person=187 army=14
+          person │ 法正
+  0e7c  24 set_allegiance person=243 army=14
+          person │ 姜維
+  0e80  24 set_allegiance person=243 army=14
+          person │ 姜維
+  0e84  24 set_allegiance person=235 army=14
+          person │ 張獲
+  0e88  24 set_allegiance person=234 army=14
+          person │ 程德
+  0e8c  24 set_allegiance person=236 army=14
+          person │ 高蒼
+  0e90  24 set_allegiance person=111 army=14
+          person │ 徐庶
+  0e94  30 set_objective text=0x120d
+            text │ 進行出征準備．
+  0e97  17 input_control value=0
+  0e99  ff end
+
+record 2 talk(3) group 2* args 840000000000 [龐統] -> code 0x0e9a
+  0e9a  00 dialogue text=0x121e
+            text │ 龐統: 終於要與魏決戰了，請進行出征準備．
+  0e9d  ff end
+
+record 3 talk(3) group 2 args 010000000000 [關羽] -> code 0x0e9e
+  0e9e  00 dialogue text=0x1245
+            text │ 關羽: 兄長，終於要與魏決戰了．我等兄弟的夢想，就要實現了．
+  0ea1  ff end
+
+record 4 talk(3) group 2 args 020000000000 [張飛] -> code 0x0ea2
+  0ea2  00 dialogue text=0x127e
+            text │ 張飛: 大哥，派我吧！沒多久，我們的夢想就實現了．
+  0ea5  ff end
+
+record 5 talk(3) group 2 args 350000000000 [趙雲] -> code 0x0ea6
+  0ea6  00 dialogue text=0x12ad
+            text │ 趙雲: 完成伐魏大業吧．
+  0ea9  ff end
+
+record 6 talk(3) group 2 args bd0000000000 [馬超] -> code 0x0eaa
+  0eaa  00 dialogue text=0x12c2
+            text │ 馬超: 想早日報殺父之仇．
+  0ead  ff end
+
+record 7 talk(3) group 2 args a90000000000 [黃忠] -> code 0x0eae
+  0eae  00 dialogue text=0x12d9
+            text │ 黃忠: 我也想為主公拼了我這把老骨頭．
+  0eb1  ff end
+
+record 8 talk(3) group 2 args 7e0000000000 [魏延] -> code 0x0eb2
+  0eb2  00 dialogue text=0x12fc
+            text │ 魏延: 快點出征吧！
+  0eb5  ff end
+
+record 9 talk(3) group 2 args ae0000000000 [馬良] -> code 0x0eb6
+  0eb6  00 dialogue text=0x130d
+            text │ 馬良: 終於要與魏國決戰了．
+  0eb9  ff end
+
+record 10 talk(3) group 2 args 7d0000000000 [諸葛亮] -> code 0x0eba
+  0eba  00 dialogue text=0x1326
+            text │ 諸葛亮: 準備好了嗎？
+  0ebd  15 if_answer answer=0 skip=3
+  0ec0  3d op_3d value=0
+  0ec2  17 input_control value=1
+  0ec4  13 leave_parallel
+  0ec5  ff end
+
+record 11 run(0) group 3 args 000000000000 -> code 0x0ec6
+  0ec6  38 play_music song=12
+  0ec8  2f set_graphic person=0 graphic=3
+          person │ 劉備
+  0ecc  21 if_flags unless set[89] and clear[93] skip 16
+  0ed2  00 dialogue text=0x1337
+            text │ 諸葛亮: 順路去洛陽與奇襲隊會合，在那裡重新編排部隊吧．
+  0ed5  09 load_map map=0x1000
+  0ed8  0a place_person person=0 x=38 y=28 dir=2
+          person │ 劉備
+  0ede  0a place_person person=53 x=30 y=16 dir=2
+          person │ 趙雲
+  0ee4  0a place_person person=212 x=44 y=20 dir=2
+          person │ 曹丕
+  0eea  38 play_music song=3
+  0eec  05 show_screen
+  0eed  01 move_person person=0 x=30 y=16 dir=0
+          person │ 劉備
+  0ef3  2e reset_player_position target=11 x=0 y=0 dir=255
+  0ef9  01 move_person person=53 x=30 y=16 dir=1
+          person │ 趙雲
+  0eff  00 dialogue text=0x136a
+            text │ 劉備: 奇襲隊眾將士，辛苦了．想必大家很疲勞，但還得一口氣進攻許昌！
+  0f02  00 dialogue text=0x13ab
+            text │ 諸葛亮: 進兵許昌吧！
+  0f05  01 move_person person=0 x=44 y=20 dir=1
+          person │ 劉備
+  0f0b  01 move_person person=53 x=44 y=20 dir=1
+          person │ 趙雲
+  0f11  2e reset_player_position target=8 x=0 y=0 dir=255
+  0f17  0f goto_block block=7
+  0f19  21 if_flags unless set[89, 93] and clear[] skip 12
+  0f1f  00 dialogue text=0x13bc
+            text │ 諸葛亮: 請分派部隊．
+  0f22  03 battle_setup turns=40 win=Some(213) lose=Some(0) other=00000000 units=15
+           units │ 劉備 (12, 21), 諸葛亮 (11, 21), (any unit) (8, 23), (any unit) (10, 20), (any unit) (10, 23), (any unit) (11, 19), (any unit) (11, 22), (any unit) (12, 23), (any unit) (13, 22), (any unit) (14, 21), 龐統 (1, 3), 趙雲 (2, 2), 馬超 (2, 4), 魏延 (0, 2), 姜維 (0, 4)
+  103c  23 op_23
+  103d  09 load_map map=0x1000
+  1040  0a place_person person=0 x=38 y=28 dir=2
+          person │ 劉備
+  1046  0a place_person person=212 x=44 y=20 dir=2
+          person │ 曹丕
+  104c  38 play_music song=3
+  104e  05 show_screen
+  104f  00 dialogue text=0x13cd
+            text │ 諸葛亮: 進兵許昌吧！
+  1052  01 move_person person=0 x=44 y=20 dir=2
+          person │ 劉備
+  1058  2e reset_player_position target=8 x=0 y=0 dir=255
+  105e  0f goto_block block=6
+  1060  21 if_flags unless set[] and clear[89] skip 13
+  1065  00 dialogue text=0x13de
+            text │ 諸葛亮: 請分派部隊．
+  1068  03 battle_setup turns=40 win=Some(241) lose=Some(0) other=00000000 units=10
+           units │ 劉備 (29, 8), 諸葛亮 (29, 7), (any unit) (27, 7), (any unit) (27, 10), (any unit) (28, 9), (any unit) (28, 11), (any unit) (29, 11), (any unit) (30, 6), (any unit) (30, 10), (any unit) (31, 9)
+  1182  23 op_23
+  1183  09 load_map map=0x1000
+  1186  0a place_person person=0 x=38 y=28 dir=2
+          person │ 劉備
+  118c  0a place_person person=241 x=30 y=16 dir=2
+          person │ 曹真
+  1192  0a place_person person=212 x=44 y=20 dir=2
+          person │ 曹丕
+  1198  38 play_music song=3
+  119a  05 show_screen
+  119b  00 dialogue text=0x13ef
+            text │ 諸葛亮: 去洛陽吧．
+  119e  01 move_person person=0 x=30 y=16 dir=2
+          person │ 劉備
+  11a4  2e reset_player_position target=11 x=0 y=0 dir=255
+  11aa  0f goto_block block=5
+  11ac  ff end
+
+### block 5 @0x11ad
+
+record 0 run(0) group 0 args 000000000000 -> code 0x1211
+  1211  22 battle_roster friendly=false units=26
+          unit 241 at (1, 3) class 2 lv 60 ai 2/0
+          unit 102 at (5, 7) class 8 lv 57 ai 2/0
+          unit 111 at (4, 16) class 15 lv 54 ai 5/0
+          unit 100 at (9, 5) class 5 lv 54 ai 2/0
+          unit 19 at (19, 19) class 2 lv 56 ai 2/0
+          unit 214 at (6, 7) class 2 lv 55 ai 2/0
+          unit 256 at (2, 3) class 2 lv 53 ai 0/0
+          unit 257 at (1, 4) class 2 lv 53 ai 0/0
+          unit 258 at (11, 5) class 2 lv 52 ai 2/0
+          unit 295 at (16, 19) class 8 lv 54 ai 0/0
+          unit 296 at (14, 18) class 8 lv 54 ai 0/0
+          unit 297 at (15, 16) class 8 lv 53 ai 0/0
+          unit 292 at (20, 16) class 8 lv 54 ai 1/0
+          unit 293 at (21, 16) class 8 lv 53 ai 1/0
+          unit 294 at (22, 17) class 8 lv 52 ai 1/0
+          unit 274 at (11, 4) class 5 lv 54 ai 2/0
+          unit 336 at (14, 6) class 14 lv 50 ai 0/0
+          unit 337 at (15, 6) class 14 lv 48 ai 0/0
+          unit 338 at (16, 3) class 14 lv 48 ai 0/0
+          unit 339 at (16, 5) class 14 lv 47 ai 0/0
+          unit 275 at (11, 6) class 5 lv 54 ai 0/0
+          unit 276 at (3, 8) class 5 lv 52 ai 0/0
+          unit 277 at (8, 8) class 5 lv 52 ai 2/0
+          unit 278 at (3, 7) class 5 lv 52 ai 2/0
+          unit 298 at (5, 14) class 8 lv 53 ai 0/0
+          unit 299 at (7, 14) class 8 lv 53 ai 0/0
+           units │ 曹真 (1, 3), 張郃 (5, 7), 徐庶 (4, 16), 劉瞱 (9, 5), 曹洪 (19, 19), 曹休 (6, 7), 步兵隊 (2, 3), 步兵隊 (1, 4), 步兵隊 (11, 5), 騎兵隊 (16, 19), 騎兵隊 (14, 18), 騎兵隊 (15, 16), 騎兵隊 (20, 16), 騎兵隊 (21, 16), 騎兵隊 (22, 17), 弓兵隊 (11, 4), 武術家 (14, 6), 武術家 (15, 6), 武術家 (16, 3), 武術家 (16, 5), 弓兵隊 (11, 6), 弓兵隊 (3, 8), 弓兵隊 (8, 8), 弓兵隊 (3, 7), 騎兵隊 (5, 14), 騎兵隊 (7, 14)
+  1399  09 load_map map=0x3036
+  139c  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x139d
+  139d  36 begin_battle
+  139e  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x139f
+  139f  38 play_music song=11
+  13a1  30 set_objective text=0x13fe
+            text │ 一、曹真的結局
+  13a4  00 dialogue text=0x140f
+            text │ 曹真: 此戰關係到魏國的命運，決不能輸！
+                 │ 諸葛亮: 主公，聽說洛陽這裡的守將是曹真．
+                 │ 劉備: 嗯，可是以我軍實力，拿下這裡易如反掌．
+                 │ 諸葛亮: 大意不得呀，小心進攻吧．
+                 │ 徐庶: 當初玄德公的實力多麼渺小，現在如此壯大……我的眼光果然沒錯．
+  13a7  38 play_music song=17
+  13a9  ff end
+
+record 3 unit_at_cell(6) group 3* args 0004080a0000 [(any unit)] -> code 0x13aa
+  13aa  21 if_flags unless set[] and clear[120] skip 2
+  13af  1b add_item item=48
+            item │ 援軍書  
+  13b1  14 set_flag flag=120 clear=0
+  13b4  ff end
+
+record 4 unit_at_cell(6) group 3 args 00040a0e0000 [(any unit)] -> code 0x13b5
+  13b5  21 if_flags unless set[] and clear[121] skip 3
+  13ba  2b data kind=2 value=2000
+  13be  0b caption text=0x14da
+            text │ 得到黃金２０００！
+  13c1  14 set_flag flag=121 clear=0
+  13c4  ff end
+
+record 5 unit_contact(4) group 3 args 00046f000000 [(any unit)] -> code 0x13c5
+  13c5  21 if_flags unless set[] and clear[95] skip 6
+  13ca  38 play_music song=11
+  13cc  00 dialogue text=0x14ed
+            text │ 徐庶: 且慢，不要打！我乃徐庶，現在回歸蜀軍．
+  13cf  0b caption text=0x1518
+            text │ 徐庶加入我方！
+  13d2  28 set_country person=111 country=0
+          person │ 徐庶
+  13d6  14 set_flag flag=95 clear=0
+  13d9  38 play_music song=17
+  13db  ff end
+
+record 6 unit_contact(4) group 3 args 020066000000 [張飛] -> code 0x13dc
+  13dc  00 dialogue text=0x1527
+            text │ 張飛: 那邊可是張郃！
+                 │ 張郃: 張飛嗎，久違了，有何指教？來勸降嗎？別開這樣的玩笑．
+                 │ 張飛: 張郃，乾脆投降吧，魏國亡定了．
+                 │ 張郃: 別逗了，我自棄袁紹效力曹公，絕不會再投降了．
+                 │ 張飛: 既然如此，只有打了！
+  13df  10 duel first=2 second=102
+           first │ 張飛
+          second │ 張郃
+  13e4  34 duel_begin
+  13e5  00 dialogue text=0x15d8
+            text │ 張飛: 看招！
+  13e8  35 duel_action person=2 action=1
+          person │ 張飛
+  13ec  00 dialogue text=0x15e3
+            text │ 張郃: 啊！不愧……是……張飛，我不行了！
+  13ef  35 duel_action person=102 action=3
+          person │ 張郃
+  13f3  00 dialogue text=0x160a
+            text │ 張飛: ……真乃義士，令人敬佩．
+  13f6  33 duel_end
+  13f7  39 add_levels person=2 levels=1
+          person │ 張飛
+  13fb  0b caption text=0x1627
+            text │ 張飛的等級上升！
+  13fe  18 remove_person person=102
+          person │ 張郃
+  1401  ff end
+
+record 7 battle_won(7) group 3 args 000000000000 -> code 0x1402
+  1402  00 dialogue text=0x1638
+            text │ 曹真: 劉備軍如此強大……哎呀！
+  1405  38 play_music song=7
+  1407  08 narration text=0x1655
+            text │ 　劉備軍擊斃曹真，佔領洛陽．
+  140a  2b data kind=2 value=1600
+  140e  0b caption text=0x1674
+            text │ 得到黃金１６００！
+  1411  00 dialogue text=0x1687
+            text │ 諸葛亮: 主公，乘勢一鼓作氣進攻許昌吧！
+                 │ 劉備: 好，重新調兵遣將！
+  1414  11 battle_end next_map=0x1000
+  1417  09 load_map map=0x1000
+  141a  0a place_person person=0 x=30 y=16 dir=2
+          person │ 劉備
+  1420  0a place_person person=212 x=44 y=20 dir=2
+          person │ 曹丕
+  1426  38 play_music song=3
+  1428  05 show_screen
+  1429  13 leave_parallel
+  142a  ff end
+
+record 8 run(0) group 4 args 000000000000 -> code 0x142b
+  142b  3d op_3d value=1
+  142d  03 battle_setup turns=40 win=Some(213) lose=Some(0) other=00000000 units=10
+           units │ 劉備 (12, 21), 諸葛亮 (11, 21), (any unit) (8, 23), (any unit) (10, 20), (any unit) (10, 23), (any unit) (11, 19), (any unit) (11, 22), (any unit) (12, 23), (any unit) (13, 22), (any unit) (14, 21)
+  1547  23 op_23
+  1548  00 dialogue text=0x16bf
+            text │ 劉備: 全軍，進兵許昌．
+  154b  01 move_person person=0 x=44 y=20 dir=2
+          person │ 劉備
+  1551  2e reset_player_position target=8 x=0 y=0 dir=255
+  1557  ff end
+
+### block 6 @0x1558
+
+record 0 run(0) group 0 args 000000000000 -> code 0x15c6
+  15c6  21 if_flags unless set[] and clear[38] skip 1
+  15cb  24 set_allegiance person=132 army=0
+          person │ 龐統
+  15cf  24 set_allegiance person=53 army=0
+          person │ 趙雲
+  15d3  24 set_allegiance person=189 army=0
+          person │ 馬超
+  15d7  24 set_allegiance person=126 army=0
+          person │ 魏延
+  15db  24 set_allegiance person=82 army=0
+          person │ 簡雍
+  15df  24 set_allegiance person=64 army=0
+          person │ 糜竺
+  15e3  24 set_allegiance person=81 army=0
+          person │ 糜芳
+  15e7  24 set_allegiance person=113 army=0
+          person │ 伊籍
+  15eb  24 set_allegiance person=116 army=0
+          person │ 劉封
+  15ef  24 set_allegiance person=187 army=0
+          person │ 法正
+  15f3  21 if_flags unless set[94] and clear[] skip 1
+  15f8  24 set_allegiance person=243 army=0
+          person │ 姜維
+  15fc  21 if_flags unless set[118] and clear[] skip 3
+  1601  24 set_allegiance person=235 army=0
+          person │ 張獲
+  1605  24 set_allegiance person=234 army=0
+          person │ 程德
+  1609  24 set_allegiance person=236 army=0
+          person │ 高蒼
+  160d  21 if_flags unless set[95] and clear[] skip 1
+  1612  24 set_allegiance person=111 army=0
+          person │ 徐庶
+  1616  22 battle_roster friendly=false units=22
+          unit 213 at (21, 2) class 15 lv 61 ai 2/0
+          unit 239 at (20, 3) class 15 lv 58 ai 2/0
+          unit 240 at (22, 3) class 15 lv 58 ai 2/0
+          unit 211 at (20, 13) class 8 lv 57 ai 0/0
+          unit 238 at (20, 12) class 12 lv 56 ai 0/0
+          unit 67 at (15, 17) class 8 lv 58 ai 4/3083
+          unit 93 at (16, 16) class 18 lv 57 ai 4/3084
+          unit 79 at (4, 13) class 2 lv 58 ai 0/0
+          unit 217 at (3, 15) class 8 lv 57 ai 0/0
+          unit 115 at (2, 13) class 2 lv 57 ai 0/0
+          unit 256 at (5, 16) class 2 lv 55 ai 2/0
+          unit 257 at (14, 16) class 2 lv 53 ai 4/2827
+          unit 258 at (18, 13) class 2 lv 53 ai 4/2573
+          unit 297 at (19, 11) class 8 lv 54 ai 0/0
+          unit 298 at (21, 6) class 8 lv 54 ai 0/0
+          unit 292 at (19, 14) class 8 lv 54 ai 0/0
+          unit 293 at (19, 4) class 8 lv 55 ai 0/0
+          unit 294 at (22, 4) class 8 lv 54 ai 0/0
+          unit 274 at (5, 15) class 5 lv 53 ai 2/0
+          unit 275 at (17, 15) class 5 lv 54 ai 4/2829
+          unit 295 at (18, 12) class 8 lv 54 ai 0/0
+          unit 296 at (20, 7) class 8 lv 54 ai 0/0
+           units │ 司馬懿 (21, 2), 司馬師 (20, 3), 司馬昭 (22, 3), 曹彰 (20, 13), 曹植 (20, 12), 許褚 (15, 17), 賈詡 (16, 16), 張遼 (4, 13), 樂進 (3, 15), 李典 (2, 13), 步兵隊 (5, 16), 步兵隊 (14, 16), 步兵隊 (18, 13), 騎兵隊 (19, 11), 騎兵隊 (21, 6), 騎兵隊 (19, 14), 騎兵隊 (19, 4), 騎兵隊 (22, 4), 弓兵隊 (5, 15), 弓兵隊 (17, 15), 騎兵隊 (18, 12), 騎兵隊 (20, 7)
+  179e  09 load_map map=0x3032
+  17a1  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x17a2
+  17a2  36 begin_battle
+  17a3  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x17a4
+  17a4  38 play_music song=11
+  17a6  30 set_objective text=0x16d4
+            text │ 一、司馬懿的撤退
+  17a9  00 dialogue text=0x16e7
+            text │ 司馬懿: 蜀軍，別那麼得意，我司馬懿想讓你們嘗嘗魏軍的厲害．
+                 │ 諸葛亮: 主公，敵軍統帥司馬懿是個對手，不能大意．請多留神．
+  17ac  38 play_music song=9
+  17ae  ff end
+
+record 3 unit_contact(4) group 3* args 1d0043000000 [關興] -> code 0x17af
+  17af  21 if_flags unless set[] and clear[172] skip 18
+  17b4  00 dialogue text=0x1753
+            text │ 關興: 我乃關羽之子關興！有誰敢與我單挑？
+                 │ 許褚: 哦，關羽的兒子嗎？如此，打起來也帶勁．好吧！我許褚與你單挑．
+                 │ 關興: 成全你了！來吧！
+  17b7  10 duel first=29 second=67
+           first │ 關興
+          second │ 許褚
+  17bc  34 duel_begin
+  17bd  00 dialogue text=0x17cc
+            text │ 關興: 嘿，是許褚！有點真本事！
+                 │ 許褚: 哈哈哈！我許褚還不老，不會輕易敗陣！來吧！
+  17c0  35 duel_action person=67 action=1
+          person │ 許褚
+  17c4  35 duel_action person=67 action=0
+          person │ 許褚
+  17c8  35 duel_action person=67 action=1
+          person │ 許褚
+  17cc  35 duel_action person=67 action=0
+          person │ 許褚
+  17d0  00 dialogue text=0x1816
+            text │ 關興: 嘿嘿嘿……！這刀如何！
+  17d3  35 duel_action person=29 action=0
+          person │ 關興
+  17d7  35 duel_action person=29 action=1
+          person │ 關興
+  17db  35 duel_action person=29 action=0
+          person │ 關興
+  17df  00 dialogue text=0x1831
+            text │ 許褚: 喂，且住！哈哈，還是年輕人體力足……我得撤了．
+                 │ 關興: 想逃跑！留下首級！
+                 │ 許褚: 關興，以後再見！
+  17e2  35 duel_action person=67 action=4
+          person │ 許褚
+  17e6  33 duel_end
+  17e7  39 add_levels person=29 levels=1
+          person │ 關興
+  17eb  0b caption text=0x188c
+            text │ 關興的等級上升！
+  17ee  14 set_flag flag=172 clear=0
+  17f1  ff end
+
+record 4 unit_at_cell(6) group 3 args 00040c020000 [(any unit)] -> code 0x17f2
+  17f2  21 if_flags unless set[] and clear[122] skip 2
+  17f7  1b add_item item=16
+            item │ 弓術指南書
+  17f9  14 set_flag flag=122 clear=0
+  17fc  ff end
+
+record 5 unit_at_cell(6) group 3 args 000408180000 [(any unit)] -> code 0x17fd
+  17fd  21 if_flags unless set[] and clear[123] skip 2
+  1802  1b add_item item=18
+            item │ 劍術指南書
+  1804  14 set_flag flag=123 clear=0
+  1807  ff end
+
+record 6 turn(9) group 3 args 0c0000000000 -> code 0x1808
+  1808  38 play_music song=12
+  180a  21 if_flags unless set[89] and clear[38] skip 1
+  1810  1a join_battle person=132
+          person │ 龐統
+  1813  21 if_flags unless set[89] and clear[] skip 3
+  1818  1a join_battle person=53
+          person │ 趙雲
+  181b  1a join_battle person=189
+          person │ 馬超
+  181e  1a join_battle person=126
+          person │ 魏延
+  1821  21 if_flags unless set[94] and clear[] skip 1
+  1826  1a join_battle person=243
+          person │ 姜維
+  1829  21 if_flags unless set[89] and clear[] skip 1
+  182e  00 dialogue text=0x189d
+            text │ 馬超: 馬上趕去！還來得及參戰！
+                 │ 劉備: 什麼？敵人的援軍？
+                 │ 諸葛亮: 主公，奇襲隊總算及時趕到了．
+                 │ 劉備: 好，全軍總攻擊．
+  1831  14 set_flag flag=131 clear=0
+  1834  38 play_music song=9
+  1836  ff end
+
+record 7 unit_in_area(11) group 3 args 000400130418 [(any unit)] -> code 0x1837
+  1837  13 leave_parallel
+  1838  ff end
+
+record 8 battle_won(7) group 3 args 000000000000 -> code 0x1839
+  1839  13 leave_parallel
+  183a  ff end
+
+record 9 run(0) group 4 args 000000000000 -> code 0x183b
+  183b  00 dialogue text=0x1901
+            text │ 司馬懿: 蜀軍好厲害呀！全軍先退回城裡！在城內消滅敵軍！
+  183e  38 play_music song=7
+  1840  08 narration text=0x1934
+            text │ 　司馬懿率領魏軍向城內撤退了．
+  1843  2b data kind=2 value=1600
+  1847  0b caption text=0x1955
+            text │ 得到黃金１６００！
+  184a  11 battle_end next_map=0x1000
+  184d  09 load_map map=0x1000
+  1850  0a place_person person=0 x=44 y=20 dir=2
+          person │ 劉備
+  1856  38 play_music song=3
+  1858  05 show_screen
+  1859  21 if_flags unless set[89, 93] and clear[131] skip 4
+  1860  0a place_person person=53 x=30 y=16 dir=2
+          person │ 趙雲
+  1866  00 dialogue text=0x1968
+            text │ 諸葛亮: 大概魏軍要據守城池，怎麼辦？
+                 │ 劉備: 嗯，一口氣攻下這？孔明，那邊是？
+  1869  01 move_person person=53 x=44 y=20 dir=2
+          person │ 趙雲
+  186f  00 dialogue text=0x19ac
+            text │ 諸葛亮: 哦，主公，好像奇襲隊趕到了．
+                 │ 劉備: 如此甚好，全軍突擊許昌！
+  1872  21 if_flags unless set[89, 93, 131] and clear[] skip 1
+  1879  00 dialogue text=0x19e8
+            text │ 諸葛亮: 大概魏軍要據守城池，怎麼辦？
+                 │ 劉備: 好，全軍突擊許昌！
+  187c  21 if_flags unless set[] and clear[89] skip 1
+  1881  00 dialogue text=0x1a1e
+            text │ 諸葛亮: 大概魏軍要據守城池，怎麼辦？
+                 │ 劉備: 好，全軍突擊許昌！
+  1884  ff end
+
+### block 7 @0x1885
+
+record 0 run(0) group 0 args 000000000000 -> code 0x1911
+  1911  38 play_music song=12
+  1913  21 if_flags unless set[] and clear[38] skip 1
+  1918  24 set_allegiance person=132 army=0
+          person │ 龐統
+  191c  24 set_allegiance person=53 army=0
+          person │ 趙雲
+  1920  24 set_allegiance person=189 army=0
+          person │ 馬超
+  1924  24 set_allegiance person=126 army=0
+          person │ 魏延
+  1928  24 set_allegiance person=82 army=0
+          person │ 簡雍
+  192c  24 set_allegiance person=64 army=0
+          person │ 糜竺
+  1930  24 set_allegiance person=81 army=0
+          person │ 糜芳
+  1934  24 set_allegiance person=113 army=0
+          person │ 伊籍
+  1938  24 set_allegiance person=116 army=0
+          person │ 劉封
+  193c  24 set_allegiance person=187 army=0
+          person │ 法正
+  1940  21 if_flags unless set[94] and clear[] skip 1
+  1945  24 set_allegiance person=243 army=0
+          person │ 姜維
+  1949  21 if_flags unless set[118] and clear[] skip 3
+  194e  24 set_allegiance person=235 army=0
+          person │ 張獲
+  1952  24 set_allegiance person=234 army=0
+          person │ 程德
+  1956  24 set_allegiance person=236 army=0
+          person │ 高蒼
+  195a  21 if_flags unless set[95] and clear[] skip 1
+  195f  24 set_allegiance person=111 army=0
+          person │ 徐庶
+  1963  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x1964
+  1964  00 dialogue text=0x1a54
+            text │ 黃忠: 主公，請一定帶我去．讓您看看我這把老骨頭，還能上戰場廝殺．
+                 │ 嚴顏: 黃忠將軍，我也同去．主公，我倆去建奇功．
+                 │ 劉備: 嗯，如此甚好．
+                 │ 諸葛亮: 主公且慢．
+                 │ 劉備: 怎麼了，孔明？
+                 │ 諸葛亮: 他們有點意氣太高，萬一有個閃失，會傷害全軍的銳氣．
+                 │ 劉備: ……
+                 │ 黃忠: 軍師，瞧您說的．黃忠為了主公，萬死不辭．
+                 │ 嚴顏: 一定讓我們參戰吧．
+                 │ 劉備: 就如軍師所說．二位的心情我了解，這回還是多歇歇吧．
+                 │ 黃忠: 主公！……知道了，從命．
+  1967  3d op_3d value=1
+  1969  00 dialogue text=0x1bb9
+            text │ 諸葛亮: 請調兵遣將．
+  196c  24 set_allegiance person=169 army=14
+          person │ 黃忠
+  1970  24 set_allegiance person=202 army=14
+          person │ 嚴顏
+  1974  03 battle_setup turns=40 win=Some(213) lose=Some(0) other=00000000 units=15
+           units │ 劉備 (24, 18), 諸葛亮 (24, 17), (any unit) (2, 17), (any unit) (21, 19), (any unit) (2, 19), (any unit) (22, 18), (any unit) (3, 18), (any unit) (23, 19), (any unit) (4, 19), (any unit) (25, 17), (any unit) (5, 18), (any unit) (26, 18), (any unit) (5, 19), 黃忠 (8, 0), 嚴顏 (8, 1)
+  1a8e  23 op_23
+  1a8f  22 battle_roster friendly=false units=28
+          unit 213 at (13, 2) class 15 lv 65 ai 4/269
+          unit 212 at (13, 1) class 8 lv 62 ai 4/8
+          unit 239 at (12, 2) class 15 lv 61 ai 4/268
+          unit 240 at (14, 2) class 15 lv 61 ai 4/270
+          unit 211 at (13, 13) class 8 lv 60 ai 0/0
+          unit 238 at (13, 14) class 12 lv 60 ai 0/0
+          unit 67 at (20, 7) class 8 lv 62 ai 2/0
+          unit 93 at (27, 7) class 18 lv 61 ai 2/0
+          unit 79 at (6, 7) class 2 lv 62 ai 2/0
+          unit 217 at (0, 4) class 8 lv 61 ai 0/0
+          unit 115 at (7, 11) class 2 lv 61 ai 2/0
+          unit 256 at (1, 3) class 2 lv 57 ai 0/0
+          unit 257 at (20, 12) class 2 lv 57 ai 2/0
+          unit 258 at (26, 6) class 2 lv 56 ai 2/0
+          unit 292 at (11, 16) class 8 lv 59 ai 0/0
+          unit 293 at (15, 16) class 8 lv 59 ai 0/0
+          unit 274 at (4, 13) class 5 lv 57 ai 0/0
+          unit 275 at (6, 8) class 5 lv 57 ai 0/0
+          unit 276 at (9, 14) class 5 lv 56 ai 0/0
+          unit 277 at (9, 15) class 5 lv 56 ai 0/0
+          unit 278 at (17, 14) class 5 lv 55 ai 0/0
+          unit 279 at (17, 15) class 5 lv 55 ai 0/0
+          unit 280 at (20, 8) class 5 lv 55 ai 0/0
+          unit 281 at (22, 13) class 5 lv 57 ai 0/0
+          unit 282 at (24, 8) class 5 lv 56 ai 0/0
+          unit 283 at (12, 7) class 5 lv 55 ai 0/0
+          unit 284 at (13, 6) class 5 lv 55 ai 0/0
+          unit 285 at (14, 7) class 5 lv 52 ai 0/0
+           units │ 司馬懿 (13, 2), 曹丕 (13, 1), 司馬師 (12, 2), 司馬昭 (14, 2), 曹彰 (13, 13), 曹植 (13, 14), 許褚 (20, 7), 賈詡 (27, 7), 張遼 (6, 7), 樂進 (0, 4), 李典 (7, 11), 步兵隊 (1, 3), 步兵隊 (20, 12), 步兵隊 (26, 6), 騎兵隊 (11, 16), 騎兵隊 (15, 16), 弓兵隊 (4, 13), 弓兵隊 (6, 8), 弓兵隊 (9, 14), 弓兵隊 (9, 15), 弓兵隊 (17, 14), 弓兵隊 (17, 15), 弓兵隊 (20, 8), 弓兵隊 (22, 13), 弓兵隊 (24, 8), 弓兵隊 (12, 7), 弓兵隊 (13, 6), 弓兵隊 (14, 7)
+  1c17  09 load_map map=0x3033
+  1c1a  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x1c1b
+  1c1b  36 begin_battle
+  1c1c  ff end
+
+record 3 run(0) group 3 args 000000000000 -> code 0x1c1d
+  1c1d  38 play_music song=11
+  1c1f  30 set_objective text=0x1bca
+            text │ 一、我軍部隊到達內城城門．
+  1c22  00 dialogue text=0x1be7
+            text │ 曹丕: 劉備之流，與朕作對！朕身為大魏皇帝，這種態度，絕不容許！
+                 │ 司馬懿: 陛下，這座許昌城，不適合防守，請暫時撤退到鄴城吧．
+                 │ 曹丕: 司馬懿，朕如此狼狽，你要負責！
+                 │ 司馬懿: 真愧對陛下．可是，現在不是責臣的時候，請……
+                 │ 曹丕: 好吧，朕先去鄴城．司馬懿，你斷後，不要讓我見到蜀軍．
+                 │ 司馬懿: 哈哈……
+                 │ 諸葛亮: 許昌城很大，易於進攻．一鼓作氣拿下城中心！
+  1c25  14 set_flag flag=218 clear=0
+  1c28  38 play_music song=10
+  1c2a  ff end
+
+record 4 unit_contact(4) group 4* args 01004f000000 [關羽] -> code 0x1c2b
+  1c2b  21 if_flags unless set[173] and clear[] skip 8
+  1c30  00 dialogue text=0x1d18
+            text │ 關羽: 文遠，又見面了．
+                 │ 張遼: 關將軍，看來我好像跟錯主君了，董卓、呂布、還有……曹丕．曹丕哪像是曹操主公的兒子？竟然拋下臣子，簡直就像呂布……
+                 │ 關羽: 既然知錯，投降我們如何？
+                 │ 張遼: 什麼……？
+                 │ 關羽: 下邳之戰，我被曹軍圍困於土山，正在絕望之際，你來見我，陳說利害．要死很容易，但什麼也解決不了．眼光放長遠些吧．
+                 │ 張遼: ……
+                 │ 關羽: 當年我被你說的話打動，忍辱投降曹操．這次，我也用那話勸你．
+                 │ 張遼: ……
+                 │ 關羽: 文遠，……意下如何？
+                 │ 張遼: ……好吧，投降．
+  1c33  0b caption text=0x1eae
+            text │ 張遼加入我方！
+  1c36  00 dialogue text=0x1ebd
+            text │ 張遼: 可是，讓我稍微平靜一下心緒．現在不想打了．
+                 │ 關羽: 好吧，你先撤退．
+                 │ 張遼: 抱歉．
+  1c39  18 remove_person person=79
+          person │ 張遼
+  1c3c  14 set_flag flag=218 clear=1
+  1c3f  24 set_allegiance person=79 army=0
+          person │ 張遼
+  1c43  39 add_levels person=1 levels=1
+          person │ 關羽
+  1c47  0b caption text=0x1f08
+            text │ 關羽的等級上升！
+  1c4a  ff end
+
+record 5 unit_at_cell(6) group 4 args d40000080000 [曹丕] -> code 0x1c4b
+  1c4b  38 play_music song=11
+  1c4d  00 dialogue text=0x1f19
+            text │ 曹丕: 劉備，我會報此仇的！
+  1c50  18 remove_person person=212
+          person │ 曹丕
+  1c53  14 set_flag flag=173 clear=0
+  1c56  38 play_music song=10
+  1c58  ff end
+
+record 6 unit_at_cell(6) group 4 args 00040a0d0000 [(any unit)] -> code 0x1c59
+  1c59  00 dialogue text=0x1f32
+            text │ 劉備: 什麼？城門沒開？嗯，如何是好……
+  1c5c  38 play_music song=12
+  1c5e  1a join_battle person=169
+          person │ 黃忠
+  1c61  1a join_battle person=202
+          person │ 嚴顏
+  1c64  00 dialogue text=0x1f57
+            text │ 嚴顏: 黃忠老將軍，很容易就混進城了．
+                 │ 黃忠: 是呀，因為能看見魏軍從這裡逃走，我想說不定能混進來．可惜沒捉到魏軍大將．
+                 │ 嚴顏: 可惜．捉住魏兵了嗎？
+                 │ 黃忠: 嗯，盤問魏兵，讓他招出如何從城門內側開門．如果打開城門，就是首功．軍師也會對我等另眼相看．
+                 │ 嚴顏: 好，趕快去好嗎？
+                 │ 黃忠: 走，嚴老將軍！
+  1c67  01 move_person person=169 x=13 y=8 dir=1
+          person │ 黃忠
+  1c6d  01 move_person person=202 x=13 y=7 dir=1
+          person │ 嚴顏
+  1c73  26 set_map_chip x=13 y=9 chip=0
+  1c77  00 dialogue text=0x205d
+            text │ 嚴顏: 太好了，城門打開了！
+                 │ 黃忠: 主公，快請入城！
+                 │ 劉備: 黃忠！嚴顏！你們為何在此？
+                 │ 黃忠: 見到敵軍從城中逃走，從他們逃出的地方進城的．
+                 │ 嚴顏: 城門已打開，請進來吧！
+                 │ 劉備: 黃忠、嚴顏，你們幹得漂亮！
+                 │ 黃忠: 哈哈哈哈！人雖老了，但也不輸給年輕後生……！！
+  1c7a  38 play_music song=11
+  1c7c  1a join_battle person=283
+          person │ 弓兵隊
+  1c7f  1a join_battle person=284
+          person │ 弓兵隊
+  1c82  1a join_battle person=285
+          person │ 弓兵隊
+  1c85  00 dialogue text=0x213c
+            text │ 弓兵隊: 快射敵將！
+                 │ 黃忠: 啊，沒想……到！有……伏兵！
+                 │ 劉備: 黃忠！嚴顏！不要緊吧！
+                 │ 嚴顏: 不礙事．主公，快……
+                 │ 劉備: 好吧，別擔心！好好養傷！黃忠！嚴顏！來人，照看好二位老將軍！
+  1c88  18 remove_person person=169
+          person │ 黃忠
+  1c8b  18 remove_person person=202
+          person │ 嚴顏
+  1c8e  38 play_music song=10
+  1c90  30 set_objective text=0x21d9
+            text │ 一、司馬懿的撤退
+  1c93  13 leave_parallel
+  1c94  ff end
+
+record 7 unit_at_cell(6) group 4 args 0004110c0000 [(any unit)] -> code 0x1c95
+  1c95  21 if_flags unless set[] and clear[212] skip 2
+  1c9a  1b add_item item=8
+            item │ 玉璽
+  1c9c  14 set_flag flag=212 clear=0
+  1c9f  ff end
+
+record 8 battle_won(7) group 4 args 000000000000 -> code 0x1ca0
+  1ca0  08 narration text=0x21ec
+            text │ 此作戰勝利是測試遊戲用的．如果遊戲進行到此，是遊戲的錯誤．
+  1ca3  38 play_music song=7
+  1ca5  08 narration text=0x2229
+            text │ 　司馬懿撤退了，劉備軍佔領許昌．
+  1ca8  00 dialogue text=0x224c
+            text │ 諸葛亮: 主公，我們勝利了！
+                 │ 劉備: 嗯！黃忠！黃忠怎麼樣了？嚴顏呢？
+                 │ 諸葛亮: 還活著，不過……
+                 │ 劉備: 什麼！黃忠在哪？馬上去看黃忠！
+  1cab  0f goto_block block=8
+  1cad  ff end
+
+record 9 unit_contact(4) group 5* args 01004f000000 [關羽] -> code 0x1cae
+  1cae  21 if_flags unless set[173] and clear[] skip 8
+  1cb3  00 dialogue text=0x22ba
+            text │ 關羽: 文遠，又見面了．
+                 │ 張遼: 關將軍，看來我好像跟錯主君了，董卓、呂布、還有……曹丕．曹丕哪像是曹操主公的兒子？竟然拋下臣子，簡直就像呂布……
+                 │ 關羽: 既然知錯，投降我們如何？
+                 │ 張遼: 什麼……？
+                 │ 關羽: 下邳之戰，我被曹軍圍困於土山，正在絕望之際，你來見我，陳說利害．要死很容易，但什麼也解決不了．眼光放長遠些吧．
+                 │ 張遼: ……
+                 │ 關羽: 當年我被你說的話打動，忍辱投降曹操．這次，我也用那話勸你．
+                 │ 張遼: ……
+                 │ 關羽: 文遠，……意下如何？
+                 │ 張遼: ……好吧，投降．
+  1cb6  0b caption text=0x2450
+            text │ 張遼加入我方！
+  1cb9  00 dialogue text=0x245f
+            text │ 張遼: 可是，讓我稍微平靜一下心緒．現在不想打了．
+                 │ 關羽: 好吧，你先撤退．
+                 │ 張遼: 抱歉．
+  1cbc  18 remove_person person=79
+          person │ 張遼
+  1cbf  14 set_flag flag=218 clear=1
+  1cc2  24 set_allegiance person=79 army=0
+          person │ 張遼
+  1cc6  39 add_levels person=1 levels=1
+          person │ 關羽
+  1cca  0b caption text=0x24aa
+            text │ 關羽的等級上升！
+  1ccd  ff end
+
+record 10 unit_at_cell(6) group 5 args d40000080000 [曹丕] -> code 0x1cce
+  1cce  38 play_music song=11
+  1cd0  00 dialogue text=0x24bb
+            text │ 曹丕: 劉備，我會報此仇的！
+  1cd3  18 remove_person person=212
+          person │ 曹丕
+  1cd6  14 set_flag flag=173 clear=0
+  1cd9  38 play_music song=10
+  1cdb  ff end
+
+record 11 unit_at_cell(6) group 5 args 0004110c0000 [(any unit)] -> code 0x1cdc
+  1cdc  21 if_flags unless set[] and clear[212] skip 2
+  1ce1  1b add_item item=8
+            item │ 玉璽
+  1ce3  14 set_flag flag=212 clear=0
+  1ce6  ff end
+
+record 12 battle_won(7) group 5 args 000000000000 -> code 0x1ce7
+  1ce7  00 dialogue text=0x24d4
+            text │ 司馬懿: 啊！蜀軍如此厲害……向鄴城撤退！
+  1cea  38 play_music song=7
+  1cec  08 narration text=0x24f9
+            text │ 　司馬懿撤退了，劉備軍佔領許昌．
+  1cef  2b data kind=2 value=1600
+  1cf3  0b caption text=0x251c
+            text │ 得到黃金１６００！
+  1cf6  00 dialogue text=0x252f
+            text │ 諸葛亮: 主公，我們勝利了！
+                 │ 劉備: 嗯！黃忠！黃忠怎麼樣了？嚴顏呢？
+                 │ 諸葛亮: 還活著，不過……
+                 │ 劉備: 什麼！黃忠在哪？馬上去看黃忠！
+  1cf9  13 leave_parallel
+  1cfa  ff end
+
+### block 8 @0x1cfb
+
+record 0 run(0) group 0 args 000000000000 -> code 0x1d0f
+  1d0f  38 play_music song=4
+  1d11  08 narration text=0x259d
+            text │ 　劉備等人，收起了佔領許昌的欣喜，立刻趕到黃忠和嚴顏的身邊探視．
+                 │ 　黃忠和嚴顏，由於遭突襲而受重傷，危在旦夕．
+                 │ 　沒有生還的希望了……
+  1d14  00 dialogue text=0x2626
+            text │ 劉備: 黃忠！嚴顏！許昌攻下來了，多虧你二人之力！
+                 │ 嚴顏: 哦，主公，恭喜……
+                 │ 黃忠: 哦，曹丕……？殺了曹丕嗎？
+                 │ 劉備: 嗯……殺了．
+                 │ 諸葛亮: ……
+                 │ 黃忠: 哦，太好了……如此，我死也瞑目了．
+                 │ 劉備: 哪裡話！復興漢室的大業還沒完，以後還仰仗二位！打起精神！這點箭傷沒什麼大礙！
+                 │ 嚴顏: 主公……您能用我這老兵，太感謝您了．我們為主公盡力到最後，心中很寬慰．
+                 │ 黃忠: 怎麼樣……主公．和平的……沒有戰爭……盛世……
+                 │ 劉備: ……！黃忠！嚴顏！聽到我的聲音嗎？回答我！！
+  1d17  08 narration text=0x27ba
+            text │ 　劉備軍終於攻下許昌，但是為了勝利，也付出了巨大犧牲……
+                 │ 　然而，魏國還沒有被消滅．曹丕，還有司馬懿，正一步一步準備，欲與蜀國進行最後的決戰．
+  1d1a  11 battle_end next_map=0x1000
+  1d1d  ff end
+
+## scene 2 (message section at 0x5638)
+
+### block 0 @0x000e
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0022
+  0022  38 play_music song=0
+  0024  0e chapter_title key=0x0000
+             key │ 第四章　蜀魏最後決戰
+        title_index │ 183
+  0027  0d title text=0x0015
+            text │ 第四章　蜀魏最後決戰
+  002a  07 show_picture picture=27 variant=0
+  002d  08 narration text=0x002a
+            text │ 　曹丕丟掉許昌後，在魏國最後的堡壘－鄴城集結全部兵馬，決心在此與蜀一決雌雄．
+                 │ 　另一方面，劉備在許昌重新派兵點將，蜀魏的最後決戰終於展開了．
+  0030  09 load_map map=0x1000
+  0033  0a place_person person=212 x=41 y=2 dir=2
+          person │ 曹丕
+  0039  38 play_music song=11
+  003b  05 show_screen
+  003c  00 dialogue text=0x00b9
+            text │ 曹丕: 在鄴城決戰！全軍向鄴城集結！絕不把魏國交給劉備之流！
+  003f  ff end
+
+### block 1 @0x0040
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0072
+  0072  20 enable_list reset_all=true [1, 4, 5, 6, 9, 10, 11, 12, 13]
+  007d  2e reset_player_position target=8 x=0 y=0 dir=255
+  0083  09 load_map map=0x2001
+  0086  1d set_previous_map map=0x0008 x=24 y=3
+  008b  2f set_graphic person=0 graphic=2
+          person │ 劉備
+  008f  0a place_person person=0 x=23 y=7 dir=2
+          person │ 劉備
+  0095  0a place_person person=125 x=20 y=7 dir=2
+          person │ 諸葛亮
+  009b  21 if_flags unless set[] and clear[38] skip 1
+  00a0  0a place_person person=132 x=24 y=9 dir=2
+          person │ 龐統
+  00a6  21 if_flags unless set[58] and clear[] skip 1
+  00ab  0a place_person person=1 x=12 y=8 dir=1
+          person │ 關羽
+  00b1  21 if_flags unless set[135] and clear[] skip 1
+  00b6  0a place_person person=2 x=22 y=13 dir=3
+          person │ 張飛
+  00bc  0a place_person person=53 x=9 y=9 dir=1
+          person │ 趙雲
+  00c2  0a place_person person=189 x=19 y=14 dir=3
+          person │ 馬超
+  00c8  0a place_person person=126 x=16 y=16 dir=3
+          person │ 魏延
+  00ce  38 play_music song=12
+  00d0  05 show_screen
+  00d1  0b caption text=0x00f2
+            text │ 許昌皇宮
+  00d4  0a place_person person=174 x=3 y=17 dir=0
+          person │ 馬良
+  00da  01 move_person person=174 x=16 y=11 dir=0
+          person │ 馬良
+  00e0  00 dialogue text=0x00fb
+            text │ 馬良: 主公，向您報告．曹丕在鄴城集結了全部兵力，大概要與我軍決戰．
+                 │ 劉備: 嗯，這一時刻終於來了．
+  00e3  01 move_person person=126 x=16 y=16 dir=0
+          person │ 魏延
+  00e9  00 dialogue text=0x0155
+            text │ 魏延: 既然這樣，已經什麼都不想了，只等廝殺！
+  00ec  01 move_person person=189 x=19 y=14 dir=0
+          person │ 馬超
+  00f2  00 dialogue text=0x0180
+            text │ 馬超: 是的！重振漢王朝的威嚴．
+  00f5  01 move_person person=53 x=9 y=9 dir=0
+          person │ 趙雲
+  00fb  00 dialogue text=0x019d
+            text │ 趙雲: 復興漢室！平息戰亂！
+  00fe  21 if_flags unless set[135] and clear[] skip 2
+  0103  01 move_person person=2 x=22 y=13 dir=0
+          person │ 張飛
+  0109  00 dialogue text=0x01b6
+            text │ 張飛: 大哥，我們多年來的夢想就要實現了．
+  010c  21 if_flags unless set[58] and clear[] skip 2
+  0111  01 move_person person=1 x=12 y=8 dir=0
+          person │ 關羽
+  0117  00 dialogue text=0x01dd
+            text │ 關羽: 正如三弟所說，兄長，我等三人的夢想就要成真了．
+  011a  21 if_flags unless set[] and clear[38] skip 2
+  011f  01 move_person person=132 x=24 y=9 dir=3
+          person │ 龐統
+  0125  00 dialogue text=0x0210
+            text │ 龐統: 主公，請快下令出征吧！
+  0128  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0129
+  0129  01 move_person person=125 x=20 y=7 dir=1
+          person │ 諸葛亮
+  012f  00 dialogue text=0x022b
+            text │ 諸葛亮: 主公，現在眾將士氣高漲，正是出擊的絕好機會．
+                 │ 劉備: 嗯……往事不堪回首，一路苦難．我從平黃巾之亂起拯救亂世，與關、張二弟聯手，那時至今已歷多年．現在，終於到了結束這亂世的時候了．好不容易實現夙願．
+                 │ 諸葛亮: 主公，還不能鬆懈，為復興漢室，還有最後的大事．
+                 │ 劉備: 嗯……好！全體將士，開始準備出征．
+  0132  08 narration text=0x0345
+            text │ 噢！
+  0135  00 dialogue text=0x034c
+            text │ 馬良: 主公，再加把勁，討伐曹丕，復興漢室．
+  0138  01 move_person person=174 x=3 y=17 dir=2
+          person │ 馬良
+  013e  18 remove_person person=174
+          person │ 馬良
+  0141  00 dialogue text=0x0375
+            text │ 魏延: 多謝您能用我這樣新來乍到的人，以後也請您多提攜．
+  0144  01 move_person person=126 x=3 y=17 dir=2
+          person │ 魏延
+  014a  18 remove_person person=126
+          person │ 魏延
+  014d  00 dialogue text=0x03aa
+            text │ 馬超: 殺了曹丕，報亡父之仇，也為萬民報仇．願將其首級祭於亡父靈前．下命令吧！
+  0150  01 move_person person=189 x=3 y=17 dir=2
+          person │ 馬超
+  0156  18 remove_person person=189
+          person │ 馬超
+  0159  00 dialogue text=0x03f5
+            text │ 趙雲: 吾與主公患難相隨，今後也將榮辱與共．這最後一戰，願冒死當先．
+  015c  01 move_person person=53 x=3 y=17 dir=2
+          person │ 趙雲
+  0162  18 remove_person person=53
+          person │ 趙雲
+  0165  21 if_flags unless set[135] and clear[] skip 3
+  016a  00 dialogue text=0x0436
+            text │ 張飛: 大哥，關鍵時刻到了．怎麼身子有些發顫！
+                 │ 劉備: 怎麼了？還怕嗎？
+                 │ 張飛: 瞧您說的！我這是精神抖擻，讓我出征！
+  016d  01 move_person person=2 x=3 y=17 dir=2
+          person │ 張飛
+  0173  18 remove_person person=2
+          person │ 張飛
+  0176  21 if_flags unless set[58] and clear[] skip 3
+  017b  00 dialogue text=0x049b
+            text │ 關羽: 兄長，我等夙願就要實現了．
+                 │ 劉備: 是啊！說實話，當時聽說二弟你敗走荊州時，我以為你以不在了……現在真好！
+                 │ 關羽: 兄長說哪兒話，我等不是發誓寧願同死嗎？俺關羽絕不背棄誓言．兄長，我先準備準備．
+  017e  01 move_person person=1 x=3 y=17 dir=2
+          person │ 關羽
+  0184  18 remove_person person=1
+          person │ 關羽
+  0187  21 if_flags unless set[] and clear[38] skip 3
+  018c  00 dialogue text=0x0554
+            text │ 龐統: 主公，我也準備去了．
+                 │ 劉備: 龐統，若沒有你，有不會迎來今日，多謝了．
+                 │ 龐統: 哪裡哪裡，實不敢當．我也蒙受主公知遇之恩，欣喜異常．好吧，我先去準備出征．
+  018f  01 move_person person=132 x=3 y=17 dir=2
+          person │ 龐統
+  0195  18 remove_person person=132
+          person │ 龐統
+  0198  00 dialogue text=0x05e5
+            text │ 劉備: 太好了．我也該準備……？
+  019b  0a place_person person=202 x=6 y=11 dir=0
+          person │ 嚴顏
+  01a1  0a place_person person=169 x=7 y=11 dir=0
+          person │ 黃忠
+  01a7  00 dialogue text=0x0602
+            text │ 黃忠: 主公，就在此一戰了．
+                 │ 嚴顏: 我們隨時接應．
+                 │ 劉備: 黃忠！嚴顏！
+  01aa  01 move_person person=0 x=9 y=10 dir=2
+          person │ 劉備
+  01b0  01 move_person person=125 x=20 y=7 dir=2
+          person │ 諸葛亮
+  01b6  18 remove_person person=202
+          person │ 嚴顏
+  01b9  18 remove_person person=169
+          person │ 黃忠
+  01bc  00 dialogue text=0x063b
+            text │ 諸葛亮: ……？主公，怎麼了？
+                 │ 劉備: 嗨！……此時此刻，彷彿黃忠和嚴顏二位老將軍還在……
+                 │ 諸葛亮: ……．主公，請進去準備吧．
+  01bf  30 set_objective text=0x06a6
+            text │ 進行出征準備．
+  01c2  17 input_control value=0
+  01c4  ff end
+
+record 2 talk(3) group 2* args 7d0000000000 [諸葛亮] -> code 0x01c5
+  01c5  00 dialogue text=0x06b7
+            text │ 諸葛亮: 準備好了嗎？
+  01c8  15 if_answer answer=0 skip=3
+  01cb  3d op_3d value=0
+  01cd  17 input_control value=1
+  01cf  13 leave_parallel
+  01d0  ff end
+
+record 3 run(0) group 3 args 000000000000 -> code 0x01d1
+  01d1  00 dialogue text=0x06c8
+            text │ 諸葛亮: 請調兵派將．
+  01d4  03 battle_setup turns=40 win=Some(212) lose=Some(0) other=00000000 units=15
+           units │ 劉備 (19, 23), 諸葛亮 (20, 23), (any unit) (14, 23), (any unit) (16, 23), (any unit) (17, 22), (any unit) (18, 22), (any unit) (18, 23), (any unit) (19, 21), (any unit) (20, 22), (any unit) (21, 21), (any unit) (21, 22), (any unit) (22, 22), (any unit) (22, 23), (any unit) (23, 23), (any unit) (25, 23)
+  02ee  23 op_23
+  02ef  00 dialogue text=0x06d9
+            text │ 諸葛亮: 向鄴城進軍！
+  02f2  09 load_map map=0x1000
+  02f5  2f set_graphic person=0 graphic=3
+          person │ 劉備
+  02f9  0a place_person person=0 x=44 y=20 dir=2
+          person │ 劉備
+  02ff  0a place_person person=212 x=41 y=2 dir=2
+          person │ 曹丕
+  0305  38 play_music song=3
+  0307  05 show_screen
+  0308  01 move_person person=0 x=41 y=2 dir=2
+          person │ 劉備
+  030e  2e reset_player_position target=12 x=0 y=0 dir=255
+  0314  ff end
+
+### block 2 @0x0315
+
+record 0 run(0) group 0 args 000000000000 -> code 0x036f
+  036f  22 battle_roster friendly=false units=30
+          unit 212 at (18, 0) class 8 lv 65 ai 2/0
+          unit 211 at (17, 1) class 8 lv 62 ai 0/0
+          unit 238 at (17, 0) class 12 lv 61 ai 2/0
+          unit 67 at (13, 6) class 8 lv 62 ai 1/0
+          unit 93 at (17, 7) class 18 lv 61 ai 0/0
+          unit 79 at (18, 7) class 2 lv 62 ai 0/0 if flag 218
+          unit 217 at (22, 6) class 8 lv 61 ai 1/0
+          unit 115 at (31, 15) class 2 lv 61 ai 1/0
+          unit 19 at (17, 5) class 2 lv 61 ai 2/0
+          unit 214 at (18, 5) class 2 lv 60 ai 2/0
+          unit 278 at (14, 8) class 5 lv 55 ai 0/0
+          unit 256 at (5, 15) class 2 lv 58 ai 1/0
+          unit 257 at (29, 15) class 2 lv 57 ai 1/0
+          unit 258 at (7, 15) class 2 lv 58 ai 1/0
+          unit 259 at (16, 8) class 2 lv 57 ai 0/0
+          unit 260 at (19, 8) class 2 lv 57 ai 0/0
+          unit 279 at (21, 8) class 5 lv 55 ai 0/0
+          unit 274 at (13, 3) class 5 lv 55 ai 0/0
+          unit 275 at (12, 4) class 5 lv 55 ai 0/0
+          unit 276 at (22, 4) class 5 lv 55 ai 0/0
+          unit 277 at (21, 3) class 5 lv 55 ai 0/0
+          unit 213 at (18, 0) class 15 lv 65 ai 2/0
+          unit 292 at (7, 6) class 8 lv 58 ai 1/0
+          unit 293 at (8, 7) class 8 lv 58 ai 1/0
+          unit 294 at (9, 8) class 8 lv 57 ai 1/0
+          unit 295 at (10, 9) class 8 lv 57 ai 1/0
+          unit 296 at (28, 6) class 8 lv 58 ai 1/0
+          unit 297 at (27, 7) class 8 lv 58 ai 1/0
+          unit 298 at (26, 8) class 8 lv 57 ai 1/0
+          unit 299 at (25, 9) class 8 lv 57 ai 1/0
+           units │ 曹丕 (18, 0), 曹彰 (17, 1), 曹植 (17, 0), 許褚 (13, 6), 賈詡 (17, 7), 張遼 (18, 7), 樂進 (22, 6), 李典 (31, 15), 曹洪 (17, 5), 曹休 (18, 5), 弓兵隊 (14, 8), 步兵隊 (5, 15), 步兵隊 (29, 15), 步兵隊 (7, 15), 步兵隊 (16, 8), 步兵隊 (19, 8), 弓兵隊 (21, 8), 弓兵隊 (13, 3), 弓兵隊 (12, 4), 弓兵隊 (22, 4), 弓兵隊 (21, 3), 司馬懿 (18, 0), 騎兵隊 (7, 6), 騎兵隊 (8, 7), 騎兵隊 (9, 8), 騎兵隊 (10, 9), 騎兵隊 (28, 6), 騎兵隊 (27, 7), 騎兵隊 (26, 8), 騎兵隊 (25, 9)
+  04f7  09 load_map map=0x3037
+  04fa  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x04fb
+  04fb  36 begin_battle
+  04fc  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x04fd
+  04fd  38 play_music song=11
+  04ff  30 set_objective text=0x06ea
+            text │ 一、曹丕的結局
+  0502  00 dialogue text=0x06fb
+            text │ 曹丕: 你們這些東西，侵犯朕的領土．這個國家是父親傳給我的，比什麼都重要，不能交給任何人．
+                 │ 諸葛亮: 曹丕已來到城外決戰了，奮勇進攻吧！
+  0505  38 play_music song=16
+  0507  ff end
+
+record 3 unit_contact(4) group 3* args 2b00d3000000 [張苞] -> code 0x0508
+  0508  00 dialogue text=0x0777
+            text │ 張苞: 來將可是曹彰？喂，那個黃毛小子！速來與我決戰！
+                 │ 曹彰: 呸，少廢話，我曹彰可不是吃素的！
+  050b  10 duel first=43 second=211
+           first │ 張苞
+          second │ 曹彰
+  0510  34 duel_begin
+  0511  00 dialogue text=0x07cd
+            text │ 曹彰: 真是對手，看我一戟？
+  0514  35 duel_action person=211 action=1
+          person │ 曹彰
+  0518  35 duel_action person=211 action=0
+          person │ 曹彰
+  051c  35 duel_action person=211 action=1
+          person │ 曹彰
+  0520  00 dialogue text=0x07e6
+            text │ 張苞: 哦，這……
+                 │ 曹彰: 招傢伙！
+  0523  35 duel_action person=211 action=0
+          person │ 曹彰
+  0527  35 duel_action person=43 action=2
+          person │ 張苞
+  052b  00 dialogue text=0x0800
+            text │ 張苞: 好險！
+                 │ 曹彰: 好小子！躲過去了！
+                 │ 張苞: 該我的了．
+  052e  35 duel_action person=43 action=7
+          person │ 張苞
+  0532  00 dialogue text=0x082d
+            text │ 曹彰: 哎呀！可惜……
+  0535  35 duel_action person=211 action=3
+          person │ 曹彰
+  0539  35 duel_action person=43 action=9
+          person │ 張苞
+  053d  00 dialogue text=0x0840
+            text │ 張苞: 刺中了！幹掉這小子！
+  0540  33 duel_end
+  0541  39 add_levels person=43 levels=1
+          person │ 張苞
+  0545  0b caption text=0x0859
+            text │ 張苞的等級上升！
+  0548  18 remove_person person=211
+          person │ 曹彰
+  054b  ff end
+
+record 4 unit_contact(4) group 3 args 1d00ee000000 [關興] -> code 0x054c
+  054c  00 dialogue text=0x086a
+            text │ 關興: 曹氏兄弟也親自出征了，好吧，看我宰了你！曹植，小心了！
+                 │ 曹植: 啊……既然如此，不戰也不行了．
+  054f  10 duel first=29 second=238
+           first │ 關興
+          second │ 曹植
+  0554  00 dialogue text=0x08c6
+            text │ 關興: 我乃關羽之子關興，曹植，你死定了！
+                 │ 曹植: 打就打吧！
+  0557  35 duel_action person=29 action=8
+          person │ 關興
+  055b  00 dialogue text=0x08fa
+            text │ 曹植: 啊！
+  055e  35 duel_action person=238 action=3
+          person │ 曹植
+  0562  35 duel_action person=29 action=9
+          person │ 關興
+  0566  35 duel_action person=29 action=2
+          person │ 關興
+  056a  00 dialogue text=0x0903
+            text │ 關興: 曹植，宰你的是我關興！
+  056d  33 duel_end
+  056e  39 add_levels person=29 levels=1
+          person │ 關興
+  0572  0b caption text=0x091e
+            text │ 關興的等級上升！
+  0575  18 remove_person person=238
+          person │ 曹植
+  0578  ff end
+
+record 5 unit_at_cell(6) group 3 args 000402090000 [(any unit)] -> code 0x0579
+  0579  21 if_flags unless set[] and clear[124] skip 2
+  057e  1b add_item item=48
+            item │ 援軍書  
+  0580  14 set_flag flag=124 clear=0
+  0583  ff end
+
+record 6 unit_at_cell(6) group 3 args 0004021a0000 [(any unit)] -> code 0x0584
+  0584  21 if_flags unless set[] and clear[125] skip 2
+  0589  1b add_item item=59
+            item │ 霸王之劍
+  058b  14 set_flag flag=125 clear=0
+  058e  ff end
+
+record 7 battle_won(7) group 3 args 000000000000 -> code 0x058f
+  058f  38 play_music song=7
+  0591  00 dialogue text=0x092f
+            text │ 曹丕: 哎呀！你們要幹什麼？朕可是大魏皇帝！
+                 │ 劉備: 殺了你，拯救亂世！準備受死吧！
+                 │ 曹丕: 朕知道，可是朕還不想死！我投降！這總可以吧？
+                 │ 劉備: 這也是曹操的兒子嗎？可悲，可嘆……
+  0594  38 play_music song=11
+  0596  1a join_battle person=213
+          person │ 司馬懿
+  0599  00 dialogue text=0x09cd
+            text │ 曹丕: 哦，司馬懿！你去哪裡了？來，快殺了這群傢伙！
+                 │ 司馬懿: 是，如您所望，殺給你看……
+                 │ 曹丕: 嗯？司、司馬懿！你瘋了嗎？敵人在對面！為何以劍指朕？
+                 │ 劉備: 怎麼？發生了什麼事？
+                 │ 司馬懿: 你這不成器的傢伙，玷汙了曹操主公一世盛名！我替他老人家懲罰你！
+                 │ 曹丕: 喂！司馬懿！住手！哇啊！！
+  059c  0b caption text=0x0ac7
+            text │ 司馬懿手刃了曹丕！
+  059f  00 dialogue text=0x0ada
+            text │ 司馬懿: 劉備！曹丕雖死，但魏國不會滅亡，我將繼承曹操主公的意志！我在城內等你！
+  05a2  18 remove_person person=213
+          person │ 司馬懿
+  05a5  38 play_music song=3
+  05a7  00 dialogue text=0x0b25
+            text │ 劉備: 究竟怎麼回事？
+                 │ 諸葛亮: 不知道．能說的就是，大戰還沒結束．進攻城內吧！
+  05aa  13 leave_parallel
+  05ab  ff end
+
+### block 3 @0x05ac
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0638
+  0638  03 battle_setup turns=40 win=Some(213) lose=Some(0) other=01010000 units=15
+           units │ 劉備 (14, 19), 諸葛亮 (15, 19), (any unit) (6, 20), (any unit) (22, 20), (any unit) (5, 19), (any unit) (23, 20), (any unit) (13, 18), (any unit) (4, 18), (any unit) (24, 19), (any unit) (16, 18), (any unit) (4, 20), (any unit) (25, 18), (any unit) (17, 18), (any unit) (3, 18), (any unit) (25, 20)
+  0752  22 battle_roster friendly=false units=30
+          unit 213 at (14, 5) class 15 lv 67 ai 2/0
+          unit 239 at (10, 6) class 15 lv 64 ai 0/0
+          unit 240 at (17, 6) class 15 lv 64 ai 0/0
+          unit 67 at (15, 5) class 8 lv 64 ai 0/0
+          unit 93 at (25, 13) class 18 lv 63 ai 2/0
+          unit 79 at (13, 11) class 2 lv 64 ai 2/0 if flag 218
+          unit 217 at (13, 13) class 8 lv 63 ai 0/0
+          unit 115 at (14, 13) class 2 lv 63 ai 0/0
+          unit 256 at (12, 10) class 2 lv 60 ai 0/0
+          unit 257 at (14, 11) class 2 lv 59 ai 2/0
+          unit 292 at (6, 10) class 8 lv 62 ai 0/0
+          unit 293 at (4, 11) class 8 lv 62 ai 0/0
+          unit 294 at (4, 12) class 8 lv 60 ai 2/0
+          unit 295 at (25, 14) class 8 lv 60 ai 2/0
+          unit 296 at (19, 7) class 8 lv 59 ai 0/0
+          unit 297 at (23, 7) class 8 lv 60 ai 0/0
+          unit 274 at (12, 13) class 5 lv 58 ai 2/0
+          unit 275 at (14, 12) class 5 lv 58 ai 0/0
+          unit 276 at (18, 9) class 5 lv 58 ai 0/0
+          unit 277 at (5, 11) class 5 lv 58 ai 2/0
+          unit 278 at (5, 13) class 5 lv 58 ai 0/0
+          unit 279 at (13, 10) class 5 lv 58 ai 2/0
+          unit 280 at (14, 10) class 5 lv 58 ai 0/0
+          unit 281 at (22, 11) class 5 lv 58 ai 0/0
+          unit 282 at (7, 8) class 5 lv 58 ai 2/0
+          unit 8 at (14, 2) class 8 lv 77 ai 2/0
+          unit 258 at (18, 5) class 2 lv 60 ai 0/0
+          unit 259 at (18, 6) class 2 lv 59 ai 0/0
+          unit 298 at (9, 5) class 8 lv 60 ai 0/0
+          unit 299 at (9, 6) class 8 lv 59 ai 0/0
+           units │ 司馬懿 (14, 5), 司馬師 (10, 6), 司馬昭 (17, 6), 許褚 (15, 5), 賈詡 (25, 13), 張遼 (13, 11), 樂進 (13, 13), 李典 (14, 13), 步兵隊 (12, 10), 步兵隊 (14, 11), 騎兵隊 (6, 10), 騎兵隊 (4, 11), 騎兵隊 (4, 12), 騎兵隊 (25, 14), 騎兵隊 (19, 7), 騎兵隊 (23, 7), 弓兵隊 (12, 13), 弓兵隊 (14, 12), 弓兵隊 (18, 9), 弓兵隊 (5, 11), 弓兵隊 (5, 13), 弓兵隊 (13, 10), 弓兵隊 (14, 10), 弓兵隊 (22, 11), 弓兵隊 (7, 8), 曹操 (14, 2), 步兵隊 (18, 5), 步兵隊 (18, 6), 騎兵隊 (9, 5), 騎兵隊 (9, 6)
+  08da  11 battle_end next_map=0x3038
+  08dd  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x08de
+  08de  36 begin_battle
+  08df  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x08e0
+  08e0  38 play_music song=11
+  08e2  30 set_objective text=0x0b69
+            text │ 一、司馬懿的結局
+  08e5  00 dialogue text=0x0b7c
+            text │ 司馬懿: 哈哈！如此魏國不會滅亡了！蜀軍，來受死吧！
+  08e8  27 screen_effect x=6 y=15 effect=0
+  08ec  27 screen_effect x=6 y=12 effect=0
+  08f0  27 screen_effect x=6 y=13 effect=0
+  08f4  27 screen_effect x=6 y=14 effect=0
+  08f8  27 screen_effect x=6 y=15 effect=0
+  08fc  27 screen_effect x=7 y=15 effect=0
+  0900  27 screen_effect x=7 y=16 effect=0
+  0904  27 screen_effect x=7 y=17 effect=0
+  0908  27 screen_effect x=7 y=18 effect=0
+  090c  27 screen_effect x=8 y=18 effect=0
+  0910  27 screen_effect x=9 y=18 effect=0
+  0914  27 screen_effect x=10 y=18 effect=0
+  0918  27 screen_effect x=11 y=18 effect=0
+  091c  27 screen_effect x=12 y=18 effect=0
+  0920  27 screen_effect x=18 y=18 effect=0
+  0924  27 screen_effect x=19 y=18 effect=0
+  0928  27 screen_effect x=20 y=18 effect=0
+  092c  27 screen_effect x=21 y=18 effect=0
+  0930  27 screen_effect x=22 y=18 effect=0
+  0934  27 screen_effect x=22 y=17 effect=0
+  0938  27 screen_effect x=22 y=16 effect=0
+  093c  27 screen_effect x=22 y=15 effect=0
+  0940  2d halve a=1 b=1
+  0943  2d halve a=0 b=1
+  0946  00 dialogue text=0x0bab
+            text │ 劉備: 哦，怎麼？在自家城裡放火！
+                 │ 諸葛亮: 敵人好像孤注一擲了，要麼徹底勝利，要麼寧為玉碎．
+                 │ 劉備: 什麼？自家軍隊被火燒，也是預料之中？
+                 │ 諸葛亮: 是的，這座城也保不住了，如果不撤退……啊！城門！
+  0949  26 set_map_chip x=22 y=23 chip=1
+  094d  00 dialogue text=0x0c57
+            text │ 劉備: 可惡！怎麼連退路都沒有！
+                 │ 司馬懿: 哈哈哈！燒死才好！曹操主公，來世再追隨您！
+                 │ 諸葛亮: 主公，只有衝了．司馬懿肯定準備好了逃跑的路．
+                 │ 劉備: 好，全體將士，捉住司馬懿！
+  0950  38 play_music song=9
+  0952  ff end
+
+record 3 unit_at_cell(6) group 3* args 00040b000000 [(any unit)] -> code 0x0953
+  0953  21 if_flags unless set[] and clear[126] skip 2
+  0958  1b add_item item=48
+            item │ 援軍書  
+  095a  14 set_flag flag=126 clear=0
+  095d  ff end
+
+record 4 unit_at_cell(6) group 3 args 00040a0b0000 [(any unit)] -> code 0x095e
+  095e  21 if_flags unless set[] and clear[127] skip 2
+  0963  1b add_item item=48
+            item │ 援軍書  
+  0965  14 set_flag flag=127 clear=0
+  0968  ff end
+
+record 5 unit_at_cell(6) group 3 args 00040d170000 [(any unit)] -> code 0x0969
+  0969  21 if_flags unless set[] and clear[128] skip 2
+  096e  1b add_item item=51
+            item │ 勇氣書  
+  0970  14 set_flag flag=128 clear=0
+  0973  ff end
+
+record 6 unit_at_cell(6) group 3 args 000405060000 [(any unit)] -> code 0x0974
+  0974  21 if_flags unless set[] and clear[129] skip 2
+  0979  1b add_item item=51
+            item │ 勇氣書  
+  097b  14 set_flag flag=129 clear=0
+  097e  ff end
+
+record 7 turn(9) group 3 args 080000000000 -> code 0x097f
+  097f  38 play_music song=11
+  0981  00 dialogue text=0x0ced
+            text │ 諸葛亮: 主公，危險！請趕快吧！
+  0984  27 screen_effect x=0 y=11 effect=0
+  0988  38 play_music song=9
+  098a  ff end
+
+record 8 turn(9) group 3 args 100000000000 -> code 0x098b
+  098b  38 play_music song=11
+  098d  00 dialogue text=0x0d08
+            text │ 諸葛亮: 主公，請趕快！
+  0990  27 screen_effect x=23 y=13 effect=0
+  0994  38 play_music song=9
+  0996  ff end
+
+record 9 turn(9) group 3 args 140000000000 -> code 0x0997
+  0997  38 play_music song=11
+  0999  00 dialogue text=0x0d1b
+            text │ 諸葛亮: 主公，趕快！
+  099c  27 screen_effect x=11 y=10 effect=0
+  09a0  27 screen_effect x=6 y=5 effect=0
+  09a4  38 play_music song=9
+  09a6  ff end
+
+record 10 turn(9) group 3 args 180000000000 -> code 0x09a7
+  09a7  38 play_music song=11
+  09a9  00 dialogue text=0x0d2c
+            text │ 諸葛亮: 主公，請趕快！城牆已不堅固了，危險！
+  09ac  27 screen_effect x=5 y=9 effect=0
+  09b0  27 screen_effect x=6 y=9 effect=0
+  09b4  27 screen_effect x=7 y=9 effect=0
+  09b8  27 screen_effect x=8 y=9 effect=0
+  09bc  27 screen_effect x=9 y=9 effect=0
+  09c0  27 screen_effect x=13 y=10 effect=0
+  09c4  27 screen_effect x=14 y=10 effect=0
+  09c8  27 screen_effect x=15 y=10 effect=0
+  09cc  27 screen_effect x=19 y=7 effect=0
+  09d0  27 screen_effect x=20 y=7 effect=0
+  09d4  27 screen_effect x=21 y=7 effect=0
+  09d8  27 screen_effect x=22 y=7 effect=0
+  09dc  27 screen_effect x=23 y=7 effect=0
+  09e0  38 play_music song=9
+  09e2  ff end
+
+record 11 turn(9) group 3 args 1c0000000000 -> code 0x09e3
+  09e3  38 play_music song=11
+  09e5  00 dialogue text=0x0d55
+            text │ 司馬懿: 時候到了．劉備，再見了．和鄴城一起毀滅吧．
+                 │ 諸葛亮: 主公，城崩塌了．
+                 │ 劉備: 什麼！啊！
+  09e8  08 narration text=0x0da4
+            text │ 　鄴城被燒毀．
+                 │ 　劉備軍中了司馬懿的火計，全軍覆沒．
+  09eb  29 game_over
+  09ec  ff end
+
+record 12 battle_won(7) group 3 args 000000000000 -> code 0x09ed
+  09ed  38 play_music song=7
+  09ef  00 dialogue text=0x0ddb
+            text │ 司馬懿: 可惡……即使竭我之力，也無法遏制蜀軍……
+                 │ 劉備: 司馬懿，等死吧！
+                 │ 司馬懿: 呀！
+  09f2  38 play_music song=11
+  09f4  08 narration text=0x0e22
+            text │ 　司馬懿再堅持一下．
+  09f7  00 dialogue text=0x0e39
+            text │ 劉備: 嗯？什麼聲音？
+                 │ 司馬懿: 此聲……呀，但是，絕不……
+  09fa  08 narration text=0x0e69
+            text │ 　司馬懿還要堅持．只要有我在……
+  09fd  38 play_music song=10
+  09ff  1a join_battle person=8
+          person │ 曹操
+  0a02  00 dialogue text=0x0e8c
+            text │ 曹操: 司馬懿，還沒結束！
+                 │ 司馬懿: 哦，曹操主公！
+                 │ 劉備: 什麼！是曹操！為何曹操……
+                 │ 曹操: 劉備，你把魏國折騰得夠苦，也就到此為止了．我正在此等著你，你運氣還可以．但是，打到我這裡……哈哈哈！
+  0a05  01 move_person person=8 x=10 y=0 dir=3
+          person │ 曹操
+  0a0b  18 remove_person person=8
+          person │ 曹操
+  0a0e  38 play_music song=3
+  0a10  00 dialogue text=0x0f38
+            text │ 司馬懿: 曹操主公，請稍等！
+                 │ 劉備: 怎麼回事？難道曹操沒死？
+                 │ 諸葛亮: 我也不知，可是……
+                 │ 劉備: 可是什麼？
+                 │ 諸葛亮: 現在看到的，也不是在夢裡吧？
+                 │ 劉備: 嗯……說曹操進去了，走，除了到裡面瞧瞧．也別無他法．
+  0a13  00 dialogue text=0x0fe2
+            text │ 諸葛亮: 是，那我們進去吧．
+  0a16  13 leave_parallel
+  0a17  ff end
+
+### block 4 @0x0a18
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0afe
+  0afe  03 battle_setup turns=50 win=Some(8) lose=Some(0) other=01010000 units=15
+           units │ 劉備 (24, 21), 諸葛亮 (25, 21), (any unit) (13, 23), (any unit) (8, 23), (any unit) (23, 22), (any unit) (9, 21), (any unit) (14, 23), (any unit) (25, 23), (any unit) (10, 22), (any unit) (22, 21), (any unit) (26, 22), (any unit) (12, 22), (any unit) (11, 22), (any unit) (12, 23), (any unit) (15, 22)
+  0c18  22 battle_roster friendly=false units=30
+          unit 8 at (19, 1) class 8 lv 77 ai 2/0
+          unit 213 at (19, 3) class 15 lv 70 ai 2/0
+          unit 239 at (18, 3) class 15 lv 65 ai 2/0
+          unit 240 at (20, 3) class 15 lv 65 ai 2/0
+          unit 68 at (30, 8) class 15 lv 64 ai 0/0
+          unit 76 at (35, 14) class 15 lv 64 ai 0/0
+          unit 67 at (31, 9) class 8 lv 65 ai 2/0
+          unit 93 at (34, 16) class 18 lv 64 ai 2/0
+          unit 79 at (10, 9) class 2 lv 65 ai 2/0 if flag 218
+          unit 217 at (4, 8) class 8 lv 63 ai 0/0
+          unit 115 at (23, 16) class 2 lv 63 ai 0/0
+          unit 274 at (2, 17) class 5 lv 61 ai 2/0
+          unit 275 at (11, 11) class 5 lv 61 ai 2/0
+          unit 276 at (18, 17) class 5 lv 60 ai 2/0
+          unit 277 at (32, 9) class 5 lv 60 ai 2/0
+          unit 278 at (35, 16) class 5 lv 59 ai 2/0
+          unit 256 at (6, 16) class 2 lv 61 ai 0/0
+          unit 257 at (8, 11) class 2 lv 61 ai 2/0
+          unit 258 at (23, 15) class 2 lv 60 ai 0/0
+          unit 259 at (32, 5) class 2 lv 60 ai 0/0
+          unit 260 at (30, 15) class 2 lv 59 ai 0/0
+          unit 292 at (6, 17) class 8 lv 62 ai 0/0
+          unit 293 at (16, 11) class 8 lv 62 ai 0/0
+          unit 294 at (16, 10) class 8 lv 62 ai 0/0
+          unit 295 at (35, 17) class 8 lv 61 ai 2/0
+          unit 296 at (34, 17) class 8 lv 61 ai 2/0
+          unit 297 at (32, 6) class 8 lv 61 ai 0/0
+          unit 261 at (17, 15) class 2 lv 61 ai 2/0
+          unit 262 at (17, 16) class 2 lv 60 ai 2/0
+          unit 298 at (3, 8) class 8 lv 61 ai 0/0
+           units │ 曹操 (19, 1), 司馬懿 (19, 3), 司馬師 (18, 3), 司馬昭 (20, 3), 荀彧 (30, 8), 荀攸 (35, 14), 許褚 (31, 9), 賈詡 (34, 16), 張遼 (10, 9), 樂進 (4, 8), 李典 (23, 16), 弓兵隊 (2, 17), 弓兵隊 (11, 11), 弓兵隊 (18, 17), 弓兵隊 (32, 9), 弓兵隊 (35, 16), 步兵隊 (6, 16), 步兵隊 (8, 11), 步兵隊 (23, 15), 步兵隊 (32, 5), 步兵隊 (30, 15), 騎兵隊 (6, 17), 騎兵隊 (16, 11), 騎兵隊 (16, 10), 騎兵隊 (35, 17), 騎兵隊 (34, 17), 騎兵隊 (32, 6), 步兵隊 (17, 15), 步兵隊 (17, 16), 騎兵隊 (3, 8)
+  0da0  11 battle_end next_map=0x3039
+  0da3  ff end
+
+record 1 run(0) group 1 args 000000000000 -> code 0x0da4
+  0da4  36 begin_battle
+  0da5  ff end
+
+record 2 run(0) group 2 args 000000000000 -> code 0x0da6
+  0da6  38 play_music song=11
+  0da8  30 set_objective text=0x0ff9
+            text │ 一、曹操的滅亡
+  0dab  00 dialogue text=0x100a
+            text │ 劉備: 曹操，沒想到吧！你不是就要完了嗎！
+                 │ 曹操: 連曹丕、司馬懿等人都被騙了，你一定不知道，好吧，我為你解釋一下．
+                 │ 曹操: 魏、蜀、吳這三國，關係微妙，勢均力敵，互相牽制．如果這種狀況持續下去，我無法統一天下．所以，我決定詐死．
+                 │ 劉備: 詐死？
+                 │ 曹操: 正是．如果我死了，料想三國的平衡就打破了．接著，我播下了禍種，先殺了關羽，把責任推給東吳，想讓吳蜀相爭．
+  0dae  00 dialogue text=0x1153
+            text │ 諸葛亮: 什麼！如此說，吳、蜀相爭竟是曹操的圈套．
+                 │ 曹操: 正是．那時我已不在了，東吳可以安心與蜀作戰．就是那麼想的，可真沒想到蜀吳會結成同盟．劉備，你能容忍東吳，我萬沒想到．
+                 │ 劉備: ……
+                 │ 曹操: 蜀吳兩敗俱傷，不論哪家滅亡了，剩下的另一家都已元氣大傷．那時再出擊，可輕易取勝，於是，魏國就可統一天下．這正是我的如意算盤，……沒想到我錯了．
+                 │ 曹操: 而且，將國家交給曹丕等人也是大錯，這個國家輕易地毀在那傢伙手裡．這座美麗的城市，也如此狼狽．
+                 │ 劉備: ……
+                 │ 曹操: 但是，還不會就這麼結束！打敗你，合併魏、蜀兩國，再統一天下．劉備，不要妨礙我的夢想的實現．
+                 │ 劉備: 曹操，你那樣的想法製造了世上的戰亂，是萬民塗炭的元兇！董卓、呂布、袁紹、袁術……，這些人，都只顧自己．曹操，你也和他們一樣．
+                 │ 曹操: 什麼！說我與董卓之流一樣！混蛋……！
+                 │ 劉備: 曹操，天下人已容不下你！亂國害君，你不死無以謝天下．
+  0db1  38 play_music song=10
+  0db3  ff end
+
+record 3 unit_contact(4) group 3* args 020043000000 [張飛] -> code 0x0db4
+  0db4  00 dialogue text=0x142f
+            text │ 張飛: 來將可是許褚．張飛在此，特來送你見閻王，許褚，一決勝負．
+                 │ 許褚: 呸！張飛，過來受死！
+  0db7  10 duel first=2 second=67
+           first │ 張飛
+          second │ 許褚
+  0dbc  00 dialogue text=0x1483
+            text │ 張飛: 呀！
+  0dbf  34 duel_begin
+  0dc0  00 dialogue text=0x148c
+            text │ 許褚: 哦，果然有兩下子！
+  0dc3  34 duel_begin
+  0dc4  00 dialogue text=0x14a3
+            text │ 張飛: 看不出，你還有兩手！呀！
+  0dc7  34 duel_begin
+  0dc8  00 dialogue text=0x14c0
+            text │ 許褚: 難決勝負．張飛，這刀結束你算了．
+                 │ 張飛: 來呀！
+                 │ 許褚: 看招！
+  0dcb  35 duel_action person=67 action=1
+          person │ 許褚
+  0dcf  00 dialogue text=0x14f7
+            text │ 張飛: 不過如此！
+  0dd2  35 duel_action person=2 action=0
+          person │ 張飛
+  0dd6  35 duel_action person=67 action=2
+          person │ 許褚
+  0dda  00 dialogue text=0x1506
+            text │ 張飛: 真可惜．
+                 │ 許褚: 殺了我吧．
+                 │ 張飛: 死吧！
+  0ddd  35 duel_action person=2 action=6
+          person │ 張飛
+  0de1  00 dialogue text=0x1529
+            text │ 許褚: 啊……！
+  0de4  35 duel_action person=67 action=3
+          person │ 許褚
+  0de8  35 duel_action person=2 action=9
+          person │ 張飛
+  0dec  35 duel_action person=2 action=5
+          person │ 張飛
+  0df0  00 dialogue text=0x1536
+            text │ 張飛: ……剛才真驚險．
+  0df3  33 duel_end
+  0df4  39 add_levels person=2 levels=1
+          person │ 張飛
+  0df8  0b caption text=0x154b
+            text │ 張飛的等級上升！
+  0dfb  18 remove_person person=67
+          person │ 許褚
+  0dfe  ff end
+
+record 4 unit_contact(4) group 3 args 01004f000000 [關羽] -> code 0x0dff
+  0dff  21 if_flags unless set[218] and clear[] skip 16
+  0e04  00 dialogue text=0x155c
+            text │ 關羽: 張遼……
+                 │ 張遼: 關羽……
+                 │ 關羽: 張遼，我和你勢必一戰……
+                 │ 張遼: 什麼也別說了．來吧，亮武器吧！
+                 │ 關羽: ……
+  0e07  10 duel first=1 second=79
+           first │ 關羽
+          second │ 張遼
+  0e0c  34 duel_begin
+  0e0d  00 dialogue text=0x15b7
+            text │ 張遼: 關羽！別愣著！好好打！不然，會被我殺了！來吧！
+  0e10  35 duel_action person=79 action=1
+          person │ 張遼
+  0e14  35 duel_action person=79 action=0
+          person │ 張遼
+  0e18  35 duel_action person=79 action=1
+          person │ 張遼
+  0e1c  00 dialogue text=0x15ea
+            text │ 張遼: 哈哈……
+                 │ 關羽: 張遼，死定了！
+  0e1f  35 duel_action person=1 action=7
+          person │ 關羽
+  0e23  00 dialogue text=0x1608
+            text │ 張遼: 哎呀！！不好！
+  0e26  35 duel_action person=79 action=3
+          person │ 張遼
+  0e2a  00 dialogue text=0x161b
+            text │ 關羽: 張遼……
+                 │ 張遼: 別那麼傷心．現在，我感覺很清爽，為了我所效忠的君主……而死．士為知己者死，這是我的夢想……沒想到現在實現了．
+                 │ 關羽: 可是，我……發生了這樣的結果……
+                 │ 張遼: 關羽，如果當年在下邳沒有你，也到不了今日．有……禮了，多……謝了！
+                 │ 關羽: 張遼……為什麼？注定要如此悲慘的結局！嗚！！
+  0e2d  33 duel_end
+  0e2e  39 add_levels person=1 levels=1
+          person │ 關羽
+  0e32  0b caption text=0x172e
+            text │ 關羽的等級上升了！
+  0e35  18 remove_person person=79
+          person │ 張遼
+  0e38  ff end
+
+record 5 unit_contact(4) group 3 args 350073000000 [趙雲] -> code 0x0e39
+  0e39  00 dialogue text=0x1741
+            text │ 趙雲: 李典！與我決一死戰！
+                 │ 李典: 既然如此，我也無計可施．趙雲，放馬過來！
+  0e3c  10 duel first=53 second=115
+           first │ 趙雲
+          second │ 李典
+  0e41  00 dialogue text=0x1785
+            text │ 李典: 啊！
+  0e44  35 duel_action person=53 action=8
+          person │ 趙雲
+  0e48  35 duel_action person=53 action=5
+          person │ 趙雲
+  0e4c  35 duel_action person=115 action=3
+          person │ 李典
+  0e50  00 dialogue text=0x178e
+            text │ 李典: 啊，魏國也要亡了……
+  0e53  33 duel_end
+  0e54  39 add_levels person=53 levels=1
+          person │ 趙雲
+  0e58  0b caption text=0x17a7
+            text │ 趙雲的等級上升了！
+  0e5b  18 remove_person person=115
+          person │ 李典
+  0e5e  ff end
+
+record 6 unit_contact(4) group 3 args bd00d9000000 [馬超] -> code 0x0e5f
+  0e5f  00 dialogue text=0x17ba
+            text │ 馬超: 樂進！在渭水多蒙你”關照”！現在在此，我要報仇雪恨！看招！
+                 │ 樂進: 嘿！
+  0e62  10 duel first=189 second=217
+           first │ 馬超
+          second │ 樂進
+  0e67  34 duel_begin
+  0e68  00 dialogue text=0x1800
+            text │ 馬超: 呀！
+  0e6b  35 duel_action person=189 action=1
+          person │ 馬超
+  0e6f  35 duel_action person=189 action=0
+          person │ 馬超
+  0e73  35 duel_action person=189 action=1
+          person │ 馬超
+  0e77  00 dialogue text=0x1809
+            text │ 樂進: 哇！
+                 │ 馬超: 嘿！
+  0e7a  35 duel_action person=189 action=7
+          person │ 馬超
+  0e7e  00 dialogue text=0x1819
+            text │ 樂進: 啊！
+  0e81  35 duel_action person=217 action=3
+          person │ 樂進
+  0e85  35 duel_action person=189 action=9
+          person │ 馬超
+  0e89  35 duel_action person=189 action=2
+          person │ 馬超
+  0e8d  00 dialogue text=0x1822
+            text │ 馬超: 哼！渭水之恨，稍稍得雪！
+  0e90  33 duel_end
+  0e91  39 add_levels person=189 levels=1
+          person │ 馬超
+  0e95  0b caption text=0x183f
+            text │ 馬超的等級上升了！
+  0e98  18 remove_person person=217
+          person │ 樂進
+  0e9b  ff end
+
+record 7 turn(9) group 3 args 040000000000 -> code 0x0e9c
+  0e9c  38 play_music song=11
+  0e9e  00 dialogue text=0x1852
+            text │ 曹操: 我要出征了．
+  0ea1  27 screen_effect x=0 y=16 effect=0
+  0ea5  27 screen_effect x=0 y=17 effect=0
+  0ea9  27 screen_effect x=0 y=18 effect=0
+  0ead  0b caption text=0x1863
+            text │ 城內起火了！
+  0eb0  00 dialogue text=0x1870
+            text │ 曹操: 太好了，哈哈哈……劉備，沒想到我預先在城中做了手腳．啊，火啊，著得好！用火打斷劉備軍！
+  0eb3  38 play_music song=10
+  0eb5  ff end
+
+record 8 turn(9) group 3 args 060000000000 -> code 0x0eb6
+  0eb6  27 screen_effect x=1 y=18 effect=0
+  0eba  27 screen_effect x=2 y=18 effect=0
+  0ebe  ff end
+
+record 9 turn(9) group 3 args 080000000000 -> code 0x0ebf
+  0ebf  38 play_music song=11
+  0ec1  27 screen_effect x=2 y=17 effect=0
+  0ec5  27 screen_effect x=3 y=17 effect=0
+  0ec9  27 screen_effect x=4 y=17 effect=0
+  0ecd  27 screen_effect x=3 y=18 effect=0
+  0ed1  27 screen_effect x=3 y=19 effect=0
+  0ed5  27 screen_effect x=2 y=20 effect=0
+  0ed9  27 screen_effect x=3 y=20 effect=0
+  0edd  27 screen_effect x=4 y=20 effect=0
+  0ee1  27 screen_effect x=4 y=18 effect=0
+  0ee5  00 dialogue text=0x18cb
+            text │ 諸葛亮: 哦，主公，前面路上！
+                 │ 劉備: 什麼事……
+                 │ 曹操: 哈哈哈！燒吧，燒吧！用火攻，將你們打斷！
+  0ee8  38 play_music song=10
+  0eea  ff end
+
+record 10 turn(9) group 3 args 0a0000000000 -> code 0x0eeb
+  0eeb  27 screen_effect x=6 y=18 effect=0
+  0eef  27 screen_effect x=8 y=18 effect=0
+  0ef3  ff end
+
+record 11 turn(9) group 3 args 0c0000000000 -> code 0x0ef4
+  0ef4  27 screen_effect x=10 y=18 effect=0
+  0ef8  27 screen_effect x=12 y=18 effect=0
+  0efc  ff end
+
+record 12 turn(9) group 3 args 0e0000000000 -> code 0x0efd
+  0efd  27 screen_effect x=14 y=18 effect=0
+  0f01  27 screen_effect x=16 y=18 effect=0
+  0f05  ff end
+
+record 13 turn(9) group 3 args 100000000000 -> code 0x0f06
+  0f06  27 screen_effect x=18 y=18 effect=0
+  0f0a  27 screen_effect x=19 y=17 effect=0
+  0f0e  27 screen_effect x=20 y=18 effect=0
+  0f12  ff end
+
+record 14 turn(9) group 3 args 120000000000 -> code 0x0f13
+  0f13  38 play_music song=11
+  0f15  27 screen_effect x=18 y=15 effect=0
+  0f19  27 screen_effect x=18 y=16 effect=0
+  0f1d  27 screen_effect x=18 y=17 effect=0
+  0f21  27 screen_effect x=19 y=16 effect=0
+  0f25  27 screen_effect x=20 y=15 effect=0
+  0f29  27 screen_effect x=20 y=16 effect=0
+  0f2d  27 screen_effect x=20 y=17 effect=0
+  0f31  27 screen_effect x=19 y=15 effect=0
+  0f35  27 screen_effect x=22 y=18 effect=0
+  0f39  27 screen_effect x=24 y=18 effect=0
+  0f3d  00 dialogue text=0x191c
+            text │ 劉備: 啊！還有火！
+                 │ 司馬懿: 別管城中之事了！打敗你們這些人，天下就盡歸曹公了！劉備！孔明！為了曹公，一定消滅你們！
+                 │ 曹操: 正是如此，司馬懿，這是最後決戰，在這裡只許勝不准敗．
+  0f40  38 play_music song=10
+  0f42  ff end
+
+record 15 turn(9) group 3 args 140000000000 -> code 0x0f43
+  0f43  27 screen_effect x=19 y=14 effect=0
+  0f47  27 screen_effect x=19 y=12 effect=0
+  0f4b  27 screen_effect x=25 y=17 effect=0
+  0f4f  27 screen_effect x=25 y=15 effect=0
+  0f53  ff end
+
+record 16 turn(9) group 3 args 160000000000 -> code 0x0f54
+  0f54  27 screen_effect x=17 y=12 effect=0
+  0f58  27 screen_effect x=15 y=12 effect=0
+  0f5c  27 screen_effect x=25 y=13 effect=0
+  0f60  27 screen_effect x=25 y=11 effect=0
+  0f64  ff end
+
+record 17 turn(9) group 3 args 180000000000 -> code 0x0f65
+  0f65  27 screen_effect x=13 y=12 effect=0
+  0f69  27 screen_effect x=11 y=12 effect=0
+  0f6d  27 screen_effect x=25 y=9 effect=0
+  0f71  27 screen_effect x=26 y=10 effect=0
+  0f75  ff end
+
+record 18 turn(9) group 3 args 1a0000000000 -> code 0x0f76
+  0f76  27 screen_effect x=9 y=12 effect=0
+  0f7a  27 screen_effect x=7 y=12 effect=0
+  0f7e  27 screen_effect x=25 y=7 effect=0
+  0f82  27 screen_effect x=28 y=10 effect=0
+  0f86  ff end
+
+record 19 turn(9) group 3 args 1c0000000000 -> code 0x0f87
+  0f87  38 play_music song=11
+  0f89  27 screen_effect x=6 y=10 effect=0
+  0f8d  27 screen_effect x=6 y=11 effect=0
+  0f91  27 screen_effect x=7 y=11 effect=0
+  0f95  27 screen_effect x=8 y=10 effect=0
+  0f99  27 screen_effect x=8 y=11 effect=0
+  0f9d  27 screen_effect x=7 y=9 effect=0
+  0fa1  27 screen_effect x=28 y=9 effect=0
+  0fa5  27 screen_effect x=28 y=8 effect=0
+  0fa9  27 screen_effect x=29 y=7 effect=0
+  0fad  27 screen_effect x=30 y=7 effect=0
+  0fb1  00 dialogue text=0x19bd
+            text │ 曹操: 劉備，當年，在許昌的花園煮酒論英雄，那時的話還記得嗎？當時說到最後，只有兩個英雄，就是你我二人……我的眼力還是沒有錯．
+                 │ 曹操: 如果你不背叛我，與我同舟共濟的話，我也許走的是另一條路吧．或者還是……嗨，現在說這些都晚了．
+                 │ 曹操: 劉備，不管怎麼說，我二人相爭已是天命，現在就是決定命運的時候，你來得正好！
+  0fb4  38 play_music song=10
+  0fb6  ff end
+
+record 20 turn(9) group 3 args 220000000000 -> code 0x0fb7
+  0fb7  27 screen_effect x=25 y=6 effect=0
+  0fbb  27 screen_effect x=25 y=5 effect=0
+  0fbf  27 screen_effect x=30 y=6 effect=0
+  0fc3  27 screen_effect x=30 y=5 effect=0
+  0fc7  ff end
+
+record 21 battle_won(7) group 3 args 000000000000 -> code 0x0fc8
+  0fc8  38 play_music song=11
+  0fca  00 dialogue text=0x1ae4
+            text │ 曹操: 哼！劉、劉備……！你把我的夢想……都攪亂了……！啊！！
+  0fcd  38 play_music song=7
+  0fcf  08 narration text=0x1b1f
+            text │ 　劉備打敗了曹操，率軍佔領了鄴城．
+  0fd2  00 dialogue text=0x1b44
+            text │ 劉備: 成功了，終於打敗曹操！
+                 │ 諸葛亮: 主公，大功告成了．
+  0fd5  21 if_flags unless set[58] and clear[] skip 1
+  0fda  00 dialogue text=0x1b74
+            text │ 關羽: 大哥，恭喜您了，實現了多年的願望，真不容易．
+                 │ 張飛: 啊，等太久了．
+  0fdd  00 dialogue text=0x1bb6
+            text │ 趙雲: 去迎接聖上吧！
+                 │ 劉備: 好！高奏凱歌回洛陽！
+  0fe0  13 leave_parallel
+  0fe1  ff end
+
+### block 5 @0x0fe2
+
+record 0 run(0) group 0 args 000000000000 -> code 0x0ff6
+  0ff6  11 battle_end next_map=0x1000
+  0ff9  09 load_map map=0x1000
+  0ffc  0a place_person person=0 x=41 y=2 dir=2
+          person │ 劉備
+  1002  38 play_music song=12
+  1004  05 show_screen
+  1005  08 narration text=0x1be0
+            text │ 　曹操的夢想破滅了．
+                 │ 　在這裡，隨著曹操的滅亡……
+                 │ 　結了魏、蜀、吳三國時代．
+  1008  01 move_person person=0 x=30 y=16 dir=2
+          person │ 劉備
+  100e  2e reset_player_position target=11 x=0 y=0 dir=255
+  1014  09 load_map map=0x2000
+  1017  0a place_person person=382 x=18 y=10 dir=0
+          person │ 獻帝
+  101d  0a place_person person=0 x=17 y=9 dir=1
+          person │ 劉備
+  1023  0a place_person person=125 x=15 y=8 dir=1
+          person │ 諸葛亮
+  1029  21 if_flags unless set[] and clear[38] skip 1
+  102e  0a place_person person=132 x=21 y=11 dir=3
+          person │ 龐統
+  1034  21 if_flags unless set[58] and clear[] skip 1
+  1039  0a place_person person=1 x=12 y=10 dir=1
+          person │ 關羽
+  103f  21 if_flags unless set[135] and clear[] skip 1
+  1044  0a place_person person=2 x=18 y=13 dir=3
+          person │ 張飛
+  104a  0a place_person person=53 x=9 y=11 dir=1
+          person │ 趙雲
+  1050  0a place_person person=189 x=15 y=14 dir=3
+          person │ 馬超
+  1056  0a place_person person=174 x=11 y=12 dir=0
+          person │ 馬良
+  105c  0a place_person person=126 x=13 y=13 dir=0
+          person │ 魏延
+  1062  38 play_music song=5
+  1064  05 show_screen
+  1065  0b caption text=0x1c31
+            text │ 洛陽宮殿
+  1068  08 narration text=0x1c3a
+            text │ 　在鄴城取得勝利、凱旋回洛陽的劉備等人，再次迎回被逐出京都的獻帝．
+  106b  00 dialogue text=0x1c7f
+            text │ 獻帝: 沒想到真的又能回到這裡了，這一切都多虧了皇叔，謝皇叔．
+                 │ 劉備: 哪裡，臣來遲了，萬望恕罪．陛下，請登寶座．
+                 │ 獻帝: 好．
+  106e  01 move_person person=382 x=25 y=6 dir=2
+          person │ 獻帝
+  1074  01 move_person person=0 x=19 y=9 dir=0
+          person │ 劉備
+  107a  01 move_person person=125 x=15 y=8 dir=0
+          person │ 諸葛亮
+  1080  21 if_flags unless set[] and clear[38] skip 1
+  1085  01 move_person person=132 x=21 y=11 dir=0
+          person │ 龐統
+  108b  21 if_flags unless set[58] and clear[] skip 1
+  1090  01 move_person person=1 x=12 y=10 dir=0
+          person │ 關羽
+  1096  21 if_flags unless set[135] and clear[] skip 1
+  109b  01 move_person person=2 x=18 y=13 dir=0
+          person │ 張飛
+  10a1  01 move_person person=53 x=9 y=11 dir=0
+          person │ 趙雲
+  10a7  01 move_person person=189 x=15 y=14 dir=0
+          person │ 馬超
+  10ad  00 dialogue text=0x1cee
+            text │ 獻帝: 今後還望大家為了天下萬民，更加努力為朝廷效力．
+                 │ 劉備: 是．
+  10b0  38 play_music song=7
+  10b2  08 narration text=0x1d28
+            text │ 　劉備終於成就復興漢室的大業，時年２２４年，從聯盟討董卓，至今歷時３４年．
+  10b5  3d op_3d value=1
+  10b7  21 if_flags unless set[] and clear[58, 135] skip 1
+  10bd  2a ending ending=2
+  10bf  21 if_flags unless set[135] and clear[58] skip 1
+  10c5  2a ending ending=1
+  10c7  21 if_flags unless set[58, 135] and clear[] skip 1
+  10cd  2a ending ending=0
+  10cf  ff end
