@@ -337,6 +337,39 @@ await step('演示流程（不配图）：两场战斗用占位画法，第二�
   assert.match(await page.textContent('#screen .card'), /演示 完/);
 });
 
+await step('战斗特写（演示演员，正常速度）：攻方逐帧出手，到命中帧守方才播受击', async () => {
+  await page.goto(`${BASE}/?demo&seed=1`);
+  await page.waitForSelector('#screen button');
+  await page.click('button:has-text("开始新游戏")');
+  await settle();
+  await page.click('button:has-text("出阵")');
+  await settle();
+  const b = await state();
+  const [hero, dummy] = [b.units[0], b.units.find((u) => u.slot === 15)];
+  // 每 16 毫秒记一次特写里左右两个演员正在显示的帧号
+  await page.evaluate(() => {
+    window.__seen = [];
+    window.__rec = setInterval(() => {
+      const box = window.__yjz.scene.children.list.find((o) => o.type === 'Container');
+      if (box) window.__seen.push(box.list.filter((o) => o.type === 'Sprite').map((sp) => Number(sp.frame.name)));
+    }, 16);
+  });
+  await clickCell(hero.x, hero.y);
+  await clickCell(hero.x, hero.y);
+  await menu('攻击');
+  await clickCell(dummy.x, dummy.y);
+  await page.waitForFunction(() => window.__seen.length > 0);
+  await page.waitForTimeout(380);
+  await shot('17-cutin');
+  await settle();
+  const seen = await page.evaluate(() => (clearInterval(window.__rec), window.__seen));
+  const [att, def] = [seen.map((f) => f[0]), seen.map((f) => f[1])];
+  for (const f of [0, 1, 2, 3, 4]) assert.ok(att.includes(f), `攻方应显示过第 ${f} 帧`);
+  assert.ok(def.includes(5), '守方应播受击帧');
+  assert.ok(def.indexOf(5) >= att.indexOf(4), '守方的受击不应早于攻方的命中帧');
+  assert.equal((await state()).stage, 'won');
+});
+
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');
 console.log(`\n全部 ${steps.length} 项通过，截图在 docs/screenshots/`);
 await browser.close();

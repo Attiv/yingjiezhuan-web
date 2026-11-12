@@ -17,6 +17,16 @@ const [INK, CINNABAR, GREEN, GOLD, PURPLE] = [0x000000, 0xef6500, 0x00ba75, 0xff
 /** 画面素材清单 public/assets/manifest.json：每一关用哪张地图、哪张棋子图（相对 assets/）。 */
 export interface Manifest {
   levels?: Record<string, { map?: string; tokens?: string }>;
+  /** 战斗特写：攻击时盖在战场上的一条横幅，左攻右守，各一个按帧表播放的演员。不写就没有特写。 */
+  cutin?: { background?: string; actors: Record<string, Actor> }; // 演员按部队名字、`cls兵种号`、`*` 的顺序找
+}
+/** 特写里的一个演员：一张等宽等高的帧图集（图本身朝右），加三个动作各自的帧序列。 */
+export interface Actor {
+  sheet: string; // 图集文件（相对 assets/）
+  frameWidth: number;
+  frameHeight: number;
+  scale?: number; // 显示倍数；不写就放大到横幅高度的八成
+  anims: Record<'idle' | 'attack' | 'hurt', { frames: number[]; fps: number; impact?: number }>; // impact：attack 的第几帧算命中，不写 = 最后一帧
 }
 /** 清单里没有图的关卡用占位画法，这是各地形码的底色（平原、树林、山地、河流、桥梁、城墙…）。 */
 const TERRAIN_TINT = ['#cdbb8a', '#5f8f4e', '#9a7b55', '#4f86c6', '#b08a5a', '#77777f', '#b9b4a8', '#a9c078', '#d9a05a', '#6d5a48',
@@ -34,6 +44,8 @@ export class BattleScene extends Phaser.Scene {
   onHover: (x: number, y: number) => void = () => {};
   onCancel: () => void = () => {};
   private tokens = new Map<number, Phaser.GameObjects.Image>();
+  manifest: Manifest = {};
+  private ready = new Map<Actor, string>(); // 图集已装好、帧表查过的演员 → 贴图键
   private map?: Phaser.GameObjects.Image;
   private mirror = true; // 棋子图本身朝右，朝左靠镜像；占位棋子上写着字，不镜像
   private hp = new Map<number, number>(); // 画面上显示的兵力：事件一条条播，数字跟着一步步变
@@ -51,6 +63,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   create() {
+    this.manifest = this.cache.json.get('manifest') ?? {};
     this.marks = this.add.graphics().setDepth(1);
     this.cursor = this.add.graphics().setDepth(1.5);
     this.keys = this.input.keyboard!.createCursorKeys();
@@ -80,12 +93,18 @@ export class BattleScene extends Phaser.Scene {
     this.b = b;
     this.tweens.killAll();
     const [mapKey, tokKey] = [`map:${b.level}`, `tokens:${b.level}`];
-    const art = (this.cache.json.get('manifest') as Manifest | undefined)?.levels?.[b.level];
-    const want = [art?.map && !this.textures.exists(mapKey), art?.tokens && !this.textures.exists(tokKey)];
-    if (want[0]) this.load.image(mapKey, `assets/${art!.map}`);
-    if (want[1]) this.load.spritesheet(tokKey, `assets/${art!.tokens}`, { frameWidth: CELL, frameHeight: CELL });
-    if (want[0] || want[1]) await new Promise<void>((done) => (this.load.once('complete', () => done()), this.load.start()));
+    const art = this.manifest.levels?.[b.level];
+    const actors = [...new Set(b.units.map((u) => this.actorOf(u)))].filter((ac): ac is Actor => !!ac && !this.ready.has(ac));
+    const bg = this.manifest.cutin?.background;
+    let loading = false;
+    const want = (key: string, queue: () => void) => this.textures.exists(key) || (queue(), (loading = true));
+    if (art?.map) want(mapKey, () => this.load.image(mapKey, `assets/${art.map}`));
+    if (art?.tokens) want(tokKey, () => this.load.spritesheet(tokKey, `assets/${art.tokens}`, { frameWidth: CELL, frameHeight: CELL }));
+    if (bg) want('cutin:bg', () => this.load.image('cutin:bg', `assets/${bg}`));
+    for (const ac of actors) want(`actor:${ac.sheet}`, () => this.load.spritesheet(`actor:${ac.sheet}`, `assets/${ac.sheet}`, { frameWidth: ac.frameWidth, frameHeight: ac.frameHeight }));
+    if (loading) await new Promise<void>((done) => (this.load.once('complete', () => done()), this.load.start()));
     if (this.b !== b) return; // 装载期间又换了一场
+    actors.forEach((ac) => this.prepare(ac));
     this.mirror = this.textures.exists(tokKey);
     this.placeholders(b, mapKey, tokKey);
     this.map?.destroy();
@@ -133,6 +152,64 @@ export class BattleScene extends Phaser.Scene {
       }));
       t.refresh();
     }
+  }
+
+  private actorOf(u: Unit): Actor | undefined {
+    const all = this.manifest.cutin?.actors;
+    return all?.[u.name] ?? all?.[`cls${u.cls}`] ?? all?.['*'];
+  }
+  /** 清单是外来的数据：帧表里的帧号都得在图集里，查过了才登记动画；不对就报错并退回没有特写的演法。 */
+  private prepare(ac: Actor) {
+    const key = `actor:${ac.sheet}`;
+    const total = this.textures.exists(key) ? this.textures.get(key).frameTotal - 1 : 0; // 不算整图那一帧
+    for (const name of ['idle', 'attack', 'hurt'] as const) {
+      const an = ac.anims?.[name];
+      if (!an?.frames?.length || !(an.fps > 0) || an.frames.some((f) => !Number.isInteger(f) || f < 0 || f >= total))
+        return console.error(`战斗特写：图集 ${ac.sheet}（共 ${total} 帧）的 ${name} 动作帧表不对`);
+    }
+    for (const name of ['idle', 'attack', 'hurt'] as const) {
+      const an = ac.anims[name];
+      if (!this.anims.exists(`${key}:${name}`))
+        this.anims.create({ key: `${key}:${name}`, frames: this.anims.generateFrameNumbers(key, { frames: an.frames }), frameRate: an.fps, repeat: name === 'idle' ? -1 : 0 });
+    }
+    this.ready.set(ac, key);
+  }
+  /** 这两支部队交手时有没有特写可播。 */
+  hasCutin = (a: Unit, d: Unit) => [a, d].every((u) => this.ready.has(this.actorOf(u)!));
+
+  /** 战斗特写：横幅盖在战场上，左攻右守。攻方播 attack，到命中帧时回调并让守方播 hurt，然后各自回到 idle。 */
+  private async cutin(a: Unit, d: Unit, onImpact?: () => void) {
+    const [top, h] = [88 * RES, 160 * RES];
+    const box = this.add.container(0, top).setDepth(20);
+    box.add(this.textures.exists('cutin:bg') ? this.add.image(0, 0, 'cutin:bg').setOrigin(0).setDisplaySize(VW, h) : this.add.rectangle(0, 0, VW, h, 0x10141c, 0.94).setOrigin(0));
+    const actor = (u: Unit, left: boolean) => {
+      const ac = this.actorOf(u)!;
+      const key = this.ready.get(ac)!;
+      const s = this.add.sprite(VW * (left ? 0.3 : 0.7), h - 6 * RES, key).setOrigin(0.5, 1).setScale(ac.scale ?? Math.floor((h * 0.8) / ac.frameHeight)).setFlipX(!left);
+      s.anims.timeScale = 1 / this.speed;
+      s.play(`${key}:idle`);
+      box.add(s);
+      return { s, key, ac };
+    };
+    const [att, def] = [actor(a, true), actor(d, false)];
+    box.setScrollFactor(0, 0, true); // 钉在画面上，不跟地图卷动
+    await this.wait(180);
+    await new Promise<void>((done) => {
+      const at = att.ac.anims.attack.impact ?? att.ac.anims.attack.frames.length - 1;
+      let hit = false;
+      const impact = () => {
+        if (hit) return;
+        hit = true;
+        onImpact?.();
+        def.s.play(`${def.key}:hurt`).chain(`${def.key}:idle`);
+      };
+      att.s.on('animationupdate', (_an: unknown, frame: Phaser.Animations.AnimationFrame) => frame.index - 1 >= at && impact());
+      att.s.once('animationcomplete', () => (impact(), att.s.play(`${att.key}:idle`), done()));
+      att.s.play(`${att.key}:attack`);
+      if (at <= 0) impact();
+    });
+    await this.wait(460);
+    box.destroy();
   }
 
   private tk(slot: number) {
@@ -281,8 +358,9 @@ export class BattleScene extends Phaser.Scene {
         const [a, d] = [unit(ev.a), unit(ev.d)];
         this.hp.set(d.slot, this.hpOf(d.slot) - ev.dmg);
         await this.focus(d.x, d.y);
-        if (this.speed) await this.strike(a, d, onImpact);
-        else onImpact?.();
+        if (!this.speed) onImpact?.();
+        else if (this.hasCutin(a, d)) await this.cutin(a, d, onImpact);
+        else await this.strike(a, d, onImpact);
         await this.float(d, `-${ev.dmg}`, '#ffcf55');
         break;
       }

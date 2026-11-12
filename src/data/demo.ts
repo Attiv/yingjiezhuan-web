@@ -1,4 +1,5 @@
 import type { Level } from '../rules/turn';
+import type { Actor } from '../scene';
 import type { Script } from '../story';
 
 /**
@@ -43,3 +44,27 @@ export const DEMO: Script = {
     { t: 'text', text: '演示结束。' },
   ],
 };
+
+/** 演示用的特写演员：6 帧，每帧 64×64。0–1 待机，2–4 出手（第 4 帧命中），5 受击。 */
+export const DEMO_ACTOR: Actor = {
+  sheet: 'demo-actor', frameWidth: 64, frameHeight: 64,
+  anims: { idle: { frames: [0, 1], fps: 3 }, attack: { frames: [2, 3, 4], fps: 8, impact: 2 }, hurt: { frames: [5, 0], fps: 6 } },
+};
+/** 把上面那 6 帧画出来：一个圆头方身的小人举着一根长杆，朝右。只是为了看得出帧在变。 */
+export function drawDemoActor(g: CanvasRenderingContext2D) {
+  const pole = [-1.2, -1.05, -1.5, -0.6, 0, -1.2]; // 各帧长杆的角度（弧度，0 = 平举向右）
+  pole.forEach((angle, i) => {
+    g.save();
+    g.translate(i * 64 + 26, 40 + (i === 1 ? 2 : 0));
+    if (i === 5) g.rotate(-0.35); // 受击：向后仰
+    g.fillStyle = i === 5 ? '#d8562e' : '#d9d2c0';
+    g.fillRect(-9, -8, 18, 28);
+    g.beginPath();
+    g.arc(0, -18, 9, 0, Math.PI * 2);
+    g.fill();
+    g.rotate(angle);
+    g.fillStyle = '#3a3a3a';
+    g.fillRect(0, -2, 34 + (i === 4 ? 4 : 0), 4);
+    g.restore();
+  });
+}

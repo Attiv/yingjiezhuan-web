@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import './style.css';
 import { CAMPAIGN as MAIN } from './data/campaign';
-import { DEMO, DEMO_LEVELS } from './data/demo';
+import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
 import { SISHUI } from './data/sishui';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
@@ -140,7 +140,7 @@ async function clash(ev: Extract<Ev, { t: 'hit' }>) {
   duel.innerHTML = '<img class="scene" src="/assets/battle/scene.png" alt="">' +
     `<img class="fighter l" src="/assets/battle/unit-${idx(a)}.png" alt="">` +
     `<img class="fighter r" src="/assets/battle/unit-${idx(d)}.png" alt="">`;
-  duel.hidden = false;
+  duel.hidden = scene.hasCutin(a, d); // 清单里给这两支部队配了帧动画特写时由场景来播，不盖这张静态图
   await scene.play(ev, () => {
     const after = before - ev.dmg;
     (el.querySelector('.r .bar i') as HTMLElement).style.width = `${Math.round((100 * after) / maxHp(d.cls, d.level))}%`;
@@ -524,6 +524,14 @@ game.events.once('ready', () => {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
       Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene } });
+    }
+    if (demo) {
+      // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用
+      const t = scene.textures.createCanvas(`actor:${DEMO_ACTOR.sheet}`, 6 * DEMO_ACTOR.frameWidth, DEMO_ACTOR.frameHeight)!;
+      drawDemoActor(t.getContext());
+      for (let i = 0; i < 6; i++) t.add(i, 0, i * DEMO_ACTOR.frameWidth, 0, DEMO_ACTOR.frameWidth, DEMO_ACTOR.frameHeight);
+      t.refresh();
+      scene.manifest = { cutin: { actors: { '*': DEMO_ACTOR } } };
     }
     b = newBattle(levelById(CAMPAIGN.steps.find((s) => s.t === 'battle')!.level)!, 1).b; // 标题画面背后的静态战场：流程里的第一关
     void scene.setBattle(b);
