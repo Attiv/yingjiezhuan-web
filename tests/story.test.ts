@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { CAMPAIGN } from '../src/data/campaign';
+import { DEMO, DEMO_LEVELS } from '../src/data/demo';
 import { SISHUI } from '../src/data/sishui';
-import { harvest, levelById, newBattle, registerLevel } from '../src/rules/turn';
+import { doAttack, harvest, levelById, newBattle, registerLevel } from '../src/rules/turn';
 import { checkScript, currentStep, nextStep, startStory, type Script, type Story } from '../src/story';
 
 registerLevel(SISHUI);
@@ -89,6 +90,19 @@ describe('多关卡与队伍继承', () => {
     expect(g.hp).toBeGreaterThan(newBattle(SISHUI, 2).b.units.find((u) => u.name === '关羽')!.hp); // 满兵力按新等级算
     expect(second.units.find((u) => u.name === '公孙瓒')!.level).toBe(4);
     expect(second.units.find((u) => u.name === '华雄')!.level).toBe(5);
+  });
+
+  it('演示流程：两场战斗各一击取胜，第二场带着第一场的等级和道具', () => {
+    DEMO_LEVELS.forEach(registerLevel);
+    expect(() => checkScript(DEMO, known)).not.toThrow();
+    const one = newBattle(DEMO_LEVELS[0], 1).b;
+    doAttack(one, 0, 15);
+    expect(one.stage).toBe('won');
+    const two = newBattle(DEMO_LEVELS[1], 1, harvest(one)).b;
+    expect(two.units[0].level).toBeGreaterThanOrEqual(30);
+    expect(two.units[0].items).toEqual([27]);
+    doAttack(two, 0, 15);
+    expect(two.stage).toBe('won');
   });
 
   it('登记关卡时查出坏数据', () => {

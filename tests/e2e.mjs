@@ -308,6 +308,35 @@ await step('正常速度（带动画）下的一次移动与攻击', async () =>
   assert.equal((await state()).round, 2);
 });
 
+await step('演示流程（不配图）：两场战斗用占位画法，第二场带着第一场的成长', async () => {
+  await page.goto(`${BASE}/?demo&fast&seed=1`);
+  await page.waitForSelector('#screen button');
+  await page.click('button:has-text("开始新游戏")');
+  for (const level of ['demo1', 'demo2']) {
+    await settle();
+    await page.click('button:has-text("出阵")');
+    await settle();
+    const b = await state();
+    assert.equal(b.level, level);
+    assert.ok(await page.evaluate((l) => window.__yjz.scene.textures.get(`map:${l}`).source[0].isCanvas, level), '没有配图的关卡应使用占位地图');
+    const [hero, dummy] = [b.units[0], b.units.find((u) => u.slot === 15)];
+    if (level === 'demo2') {
+      assert.ok(hero.level >= 30, '第二场应带着第一场的等级');
+      assert.deepEqual(hero.items, [27]);
+      await shot('16-placeholder-level');
+    }
+    await clickCell(hero.x, hero.y);
+    await clickCell(hero.x, hero.y); // 再点自己 = 原地下令
+    await menu('攻击');
+    await clickCell(dummy.x, dummy.y);
+    await settle();
+    assert.equal((await state()).stage, 'won');
+    await page.click('button:has-text("继续")');
+  }
+  await settle();
+  assert.match(await page.textContent('#screen .card'), /演示 完/);
+});
+
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');
 console.log(`\n全部 ${steps.length} 项通过，截图在 docs/screenshots/`);
 await browser.close();

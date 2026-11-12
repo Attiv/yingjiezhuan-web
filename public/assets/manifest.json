@@ -1,0 +1,5 @@
+{
+  "levels": {
+    "sishui": { "map": "sishui.png", "tokens": "tokens.png" }
+  }
+}

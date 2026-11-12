@@ -14,6 +14,14 @@ const FX = ['slash_03', 'scratch_01', 'trace_06', 'flame_05', 'flame_06', 'smoke
 /** 原版 MAIN.EXE 的 16 色 VGA 调色板（slot 1）：黑、橙、绿、金、亮蓝。特效贴图是白色剪影，运行时染成这几种原版色。 */
 const [INK, CINNABAR, GREEN, GOLD, PURPLE] = [0x000000, 0xef6500, 0x00ba75, 0xffcf55, 0x8acfff];
 
+/** 画面素材清单 public/assets/manifest.json：每一关用哪张地图、哪张棋子图（相对 assets/）。 */
+export interface Manifest {
+  levels?: Record<string, { map?: string; tokens?: string }>;
+}
+/** 清单里没有图的关卡用占位画法，这是各地形码的底色（平原、树林、山地、河流、桥梁、城墙…）。 */
+const TERRAIN_TINT = ['#cdbb8a', '#5f8f4e', '#9a7b55', '#4f86c6', '#b08a5a', '#77777f', '#b9b4a8', '#a9c078', '#d9a05a', '#6d5a48',
+  '#8f8f99', '#c2a878', '#a58a5c', '#8a6f48', '#c9b38a', '#d6b95a', '#e0c040', '#c8a070', '#d8562e', '#3f6fb0'];
+
 /** 我军 0、友军 1、敌军 2。 */
 export const sideOf = (u: Unit) => (u.slot >= 15 ? 2 : u.mode === 7 ? 0 : 1);
 const mid = (c: number) => c * CELL + CELL / 2;
@@ -26,6 +34,8 @@ export class BattleScene extends Phaser.Scene {
   onHover: (x: number, y: number) => void = () => {};
   onCancel: () => void = () => {};
   private tokens = new Map<number, Phaser.GameObjects.Image>();
+  private map?: Phaser.GameObjects.Image;
+  private mirror = true; // 棋子图本身朝右，朝左靠镜像；占位棋子上写着字，不镜像
   private hp = new Map<number, number>(); // 画面上显示的兵力：事件一条条播，数字跟着一步步变
   private marks!: Phaser.GameObjects.Graphics;
   private cursor!: Phaser.GameObjects.Graphics;
@@ -36,13 +46,11 @@ export class BattleScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('map', 'assets/sishui.png'); // 原版汜水关：896×512 的 16px 图块拼图，3 倍整数放大
-    this.load.spritesheet('tokens', 'assets/tokens.png', { frameWidth: CELL, frameHeight: CELL }); // 原版 HEXZCHR 兵种图标；一支部队一帧，第二行是本回合已行动
+    this.load.json('manifest', 'assets/manifest.json');
     for (const key of FX) this.load.image(key, `assets/fx/${key}.png`);
   }
 
   create() {
-    this.add.image(0, 0, 'map').setOrigin(0); // 整张战场是一幅预先拼好的图
     this.marks = this.add.graphics().setDepth(1);
     this.cursor = this.add.graphics().setDepth(1.5);
     this.keys = this.input.keyboard!.createCursorKeys();
@@ -64,16 +72,67 @@ export class BattleScene extends Phaser.Scene {
     if (this.keys.down.isDown) cam.scrollY += step;
   }
 
-  /** 换一场战斗（开局或读档）：重摆全部棋子。 */
-  setBattle(b: Battle) {
+  /**
+   * 换一场战斗（开局或读档）：按清单装载这一关的图，重摆全部棋子。
+   * 地图是一整张图，拉伸到 w×h 格；棋子图每格 CELL 见方，一支部队一帧（顺序同关卡数据），第二行是本回合已行动的样子。
+   */
+  async setBattle(b: Battle) {
     this.b = b;
     this.tweens.killAll();
+    const [mapKey, tokKey] = [`map:${b.level}`, `tokens:${b.level}`];
+    const art = (this.cache.json.get('manifest') as Manifest | undefined)?.levels?.[b.level];
+    const want = [art?.map && !this.textures.exists(mapKey), art?.tokens && !this.textures.exists(tokKey)];
+    if (want[0]) this.load.image(mapKey, `assets/${art!.map}`);
+    if (want[1]) this.load.spritesheet(tokKey, `assets/${art!.tokens}`, { frameWidth: CELL, frameHeight: CELL });
+    if (want[0] || want[1]) await new Promise<void>((done) => (this.load.once('complete', () => done()), this.load.start()));
+    if (this.b !== b) return; // 装载期间又换了一场
+    this.mirror = this.textures.exists(tokKey);
+    this.placeholders(b, mapKey, tokKey);
+    this.map?.destroy();
+    this.map = this.add.image(0, 0, mapKey).setOrigin(0).setDisplaySize(b.w * CELL, b.h * CELL);
     this.tokens.forEach((s) => s.destroy());
     this.tokens.clear();
     this.marks.clear();
-    b.units.forEach((u, i) => this.tokens.set(u.slot, this.add.image(0, 0, 'tokens', i)));
+    b.units.forEach((u, i) => this.tokens.set(u.slot, this.add.image(0, 0, tokKey, i)));
     this.cameras.main.setBounds(0, 0, b.w * CELL, b.h * CELL);
     this.sync();
+  }
+
+  /** 清单里没有图（或图没装上）的关卡：地图按地形涂色并写上地形名的头一个字，棋子是阵营色圆片加名字的头一个字。 */
+  private placeholders(b: Battle, mapKey: string, tokKey: string) {
+    if (!this.textures.exists(mapKey)) {
+      const t = this.textures.createCanvas(mapKey, b.w * 32, b.h * 32)!;
+      const g = t.getContext();
+      Object.assign(g, { font: '15px sans-serif', textAlign: 'center', textBaseline: 'middle' });
+      b.terrain.forEach((code, i) => {
+        const [x, y] = [(i % b.w) * 32, Math.floor(i / b.w) * 32];
+        g.fillStyle = TERRAIN_TINT[code] ?? '#888888';
+        g.fillRect(x, y, 32, 32);
+        g.strokeStyle = 'rgba(0, 0, 0, 0.18)';
+        g.strokeRect(x + 0.5, y + 0.5, 31, 31);
+        g.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        if (code) g.fillText((TB.terrainNames[code] ?? '?')[0], x + 16, y + 17);
+      });
+      t.refresh();
+    }
+    if (!this.textures.exists(tokKey)) {
+      const n = b.units.length;
+      const t = this.textures.createCanvas(tokKey, n * CELL, 2 * CELL)!;
+      const g = t.getContext();
+      Object.assign(g, { font: `${CELL * 0.44}px sans-serif`, textAlign: 'center', textBaseline: 'middle', lineWidth: 5, strokeStyle: '#151515' });
+      b.units.forEach((u, i) => [0, 1].forEach((row) => {
+        const [cx, cy] = [i * CELL + CELL / 2, row * CELL + CELL / 2];
+        g.fillStyle = row ? '#8c8c8c' : ['#2f6fd0', '#2f9a5a', '#c8442e'][sideOf(u)];
+        g.beginPath();
+        g.arc(cx, cy, CELL * 0.42, 0, Math.PI * 2);
+        g.fill();
+        g.stroke();
+        g.fillStyle = '#ffffff';
+        g.fillText(u.name[0], cx, cy + 3);
+        t.add(i + row * n, 0, i * CELL, row * CELL, CELL, CELL);
+      }));
+      t.refresh();
+    }
   }
 
   private tk(slot: number) {
@@ -86,7 +145,7 @@ export class BattleScene extends Phaser.Scene {
     this.b.units.forEach((u, i) => {
       const done = u.acted && this.b.stage === 'player' && u.mode === 7;
       const s = this.tk(u.slot).setFrame(done ? i + n : i).setPosition(mid(u.x), mid(u.y)).setDepth(2 + u.y / 100).setVisible(u.on).setAlpha(1).setScale(1);
-      s.setAngle(u.confused ? -16 : 0).setFlipX(facesLeft(this.b, u)).setTintMode(Phaser.TintModes.MULTIPLY);
+      s.setAngle(u.confused ? -16 : 0).setFlipX(this.mirror && facesLeft(this.b, u)).setTintMode(Phaser.TintModes.MULTIPLY);
       if (u.confused) s.setTint(0x8acfff);
       else s.clearTint();
       this.hp.set(u.slot, u.hp);
@@ -166,7 +225,7 @@ export class BattleScene extends Phaser.Scene {
     const [sa, sd] = [this.tk(a.slot), this.tk(d.slot)];
     const [dx, dy] = [sd.x - sa.x, sd.y - sa.y];
     const len = Math.hypot(dx, dy) || 1;
-    if (dx) { sa.setFlipX(dx < 0); sd.setFlipX(dx > 0); } // 出手瞬间双方转身面对面，之后由 sync() 复位
+    if (dx && this.mirror) { sa.setFlipX(dx < 0); sd.setFlipX(dx > 0); } // 出手瞬间双方转身面对面，之后由 sync() 复位
     const [ux, uy] = [dx / len, dy / len];
     const angle = Phaser.Math.RadToDeg(Math.atan2(dy, dx));
     const ranged = TB.range[a.cls] >= 2 && TB.range[a.cls] !== 255;
@@ -209,11 +268,11 @@ export class BattleScene extends Phaser.Scene {
         s.setDepth(7); // 走子时提起来，压在别的棋子上面
         // 按第一步的横向位移转身，不会倒退着移动；纯上下移动保持面向敌方
         const dx = ev.path.length > 1 ? ev.path[1][0] - ev.path[0][0] : 0;
-        s.setFlipX(dx < 0 ? true : dx > 0 ? false : facesLeft(b, u));
+        s.setFlipX(this.mirror && (dx < 0 ? true : dx > 0 ? false : facesLeft(b, u)));
         await this.tween({ targets: s, scale: 1.1, duration: 70 });
         for (const [x, y] of ev.path.slice(1)) await this.tween({ targets: s, x: mid(x), y: mid(y), duration: 105, ease: 'Linear' });
         await this.tween({ targets: s, scale: 1, duration: 90, ease: 'Bounce.easeOut' });
-        s.setFlipX(facesLeft(b, u)); // 站定后转回面向敌方（棋子图本身朝右，朝左靠镜像）
+        s.setFlipX(this.mirror && facesLeft(b, u)); // 站定后转回面向敌方（棋子图本身朝右，朝左靠镜像）
         s.setDepth(2 + ev.path[ev.path.length - 1][1] / 100);
         this.cameras.main.stopFollow();
         break;

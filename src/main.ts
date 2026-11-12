@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import './style.css';
-import { CAMPAIGN } from './data/campaign';
+import { CAMPAIGN as MAIN } from './data/campaign';
+import { DEMO, DEMO_LEVELS } from './data/demo';
 import { SISHUI } from './data/sishui';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
@@ -11,7 +12,10 @@ import { checkScript, currentStep, nextStep, startStory, type Shown, type Story 
 
 const SAVE_KEY = 'yjz.save.v2'; // 流程进度 + 战斗状态
 registerLevel(SISHUI);
-checkScript(CAMPAIGN, (id) => !!levelById(id));
+/** 仅开发模式：?demo 换成不带任何图的演示流程，用来验证框架本身。 */
+const demo = import.meta.env.DEV && new URLSearchParams(location.search).has('demo');
+if (demo) DEMO_LEVELS.forEach(registerLevel);
+const CAMPAIGN = checkScript(demo ? DEMO : MAIN, (id) => !!levelById(id));
 /** 头像文件：原版 FACEDAT.R3 里各武将的 64×80 像素像；杂兵没有武将记录，用原版兵种图代替。 */
 const PORTRAITS: Record<string, string> = {
   刘备: 'liu_bei', 关羽: 'guan_yu', 张飞: 'zhang_fei', 公孙瓒: 'gongsun_zan', 陶谦: 'tao_qian',
@@ -448,14 +452,12 @@ function begin(d: Battle | null) {
   if (d) b = d;
   else ({ b, evs } = newBattle(levelById((currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }>).level)!, Number(params.get('seed')) || Date.now(), story.roster));
   const lv = levelOf(b);
-  scene.setBattle(b);
   shown = sel = pick = null;
   mode = 'busy';
   renderUnit(null);
   renderTile(0, 0);
   const lord = bySlot(b, lv.lord)!;
-  void scene.focus(lord.x, lord.y, true);
-  void present(evs).then(() => {
+  void scene.setBattle(b).then(() => (void scene.focus(lord.x, lord.y, true), present(evs))).then(() => {
     mode = 'idle';
     renderTurn();
     if (!d) log(`目标：${lv.goal}。`);
@@ -523,8 +525,8 @@ game.events.once('ready', () => {
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
       Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene } });
     }
-    b = newBattle(SISHUI, 1).b; // 标题画面背后的静态战场
-    scene.setBattle(b);
+    b = newBattle(levelById(CAMPAIGN.steps.find((s) => s.t === 'battle')!.level)!, 1).b; // 标题画面背后的静态战场：流程里的第一关
+    void scene.setBattle(b);
     renderUnit(null);
     fit();
     void document.fonts.load('12px Pixel').then(() => showTitle());
