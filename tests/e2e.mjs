@@ -253,14 +253,14 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   assert.equal(cells.length, 3, '本关有 3 个出兵位');
   const at = (c) => `.deploy .cell[data-cell="${c}"]`;
   // 点格子放人，再点一次收回
-  await page.click(at(cells[2]));
+  await page.click(at(cells[1]));
   assert.equal(await page.$$eval('.deploy .cell.on', (els) => els.length), 1, '摆下一个部队');
-  assert.equal(await page.$eval('.deploy .cell.on', (el) => el.dataset.cell), cells[2]);
-  await page.click(at(cells[2])); // 再点一次收回
+  assert.equal(await page.$eval('.deploy .cell.on', (el) => el.dataset.cell), cells[1]);
+  await page.click(at(cells[1])); // 再点一次收回
   assert.equal(await page.$$eval('.deploy .cell.on', (els) => els.length), 0);
   assert.equal(await page.isDisabled('[data-go="battle"]'), true);
-  // 依次摆到第三、第一、第二个格：出征顺序是关羽、张飞、刘备
-  for (const c of [cells[2], cells[0], cells[1]]) await page.click(at(c));
+  // 依次摆到第二、第一、第三个格：出征顺序是关羽、张飞、刘备
+  for (const c of [cells[1], cells[0], cells[2]]) await page.click(at(c));
   assert.match(await page.textContent('#screen .card'), /全軍配置完畢/);
   assert.equal(await page.isDisabled('[data-go="battle"]'), false);
   await shot('23-deploy');
@@ -275,7 +275,7 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   assert.match(b.objective, /華雄/);
   assert.match(await page.textContent('#turn'), /第1回合/);
   const g = b.units.find((u) => u.name === '關羽');
-  assert.deepEqual([g.x, g.y], cells[2].split(',').map(Number), '关羽应站在布阵时指定的格子');
+  assert.deepEqual([g.x, g.y], cells[1].split(',').map(Number), '关羽应站在布阵时指定的格子');
   await shot('03-battle-start');
 });
 
