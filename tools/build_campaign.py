@@ -504,6 +504,58 @@ def load_maps() -> dict[str, dict]:
     return out
 
 
+# ---------------------------------------------------------------- 道具 ----
+# 原版包里不标价的道具（武器、铠甲、马、宝物、转职书）价格被填成 3820，这里当作「不出售」。
+NO_PRICE = 3000
+
+
+def item_specs() -> dict:
+    """道具表与兵种转职表：把 pack 的 items.toml / classes.toml 转成引擎编号下的数值。
+
+    原版的 atk_pct / def_pct 是百分比整数（120 = 攻击力 ×1.20），这里换成增量（+20），
+    和 tables.json 里 weapons 的 value 一致；价格、回复量、转职条件都照抄，不做改动。
+    """
+    items = tomllib.loads((PACK / "rules" / "items.toml").read_text(encoding="utf-8"))["item"]
+    classes = tomllib.loads((PACK / "rules" / "classes.toml").read_text(encoding="utf-8"))["class"]
+    out: dict[str, dict] = {}
+    for it in items:
+        num = ITEM.get(it["id"])
+        if num is None:
+            continue
+        effects = it.get("effects") or []
+        heal = max([e.get("power", 0) for e in effects if e.get("type") == "heal"] or [0])
+        morale = max([e.get("amount", 0) for e in effects if e.get("type") == "morale"] or [0])
+        promote = any(e.get("type") == "promote" for e in effects)
+        to = next((CLASS.get(e.get("to")) for e in effects if e.get("type") == "change_class"), None)
+        price = it.get("price", NO_PRICE)
+        out[str(num)] = {
+            "key": it["id"],
+            "name": it.get("hanja") or clean(it.get("name", "")),
+            "kind": it.get("kind", "consumable"),
+            # 武器是攻击力百分比、铠甲（兵书）是防御力百分比、马是移动力格数
+            "atk": (it.get("atk_pct") or 100) - 100,
+            "def": (it.get("def_pct") or 100) - 100,
+            "move": it.get("move_bonus", 0),
+            "regenHp": it.get("regen_hp", 0),
+            "regenMorale": it.get("regen_morale", 0),
+            "price": None if price >= NO_PRICE else price,
+            "battle": bool(it.get("battle_use")),
+            "heal": heal,
+            "morale": morale,
+            "promote": promote,
+            "to": to,
+            "strategy": it.get("strategy"),
+        }
+    promote: dict[str, dict] = {}
+    for c in classes:
+        p = c.get("promote") or {}
+        if p:
+            promote[str(CLASS[c["id"]])] = {
+                "to": CLASS[p["to"]], "level": p.get("level", 1), "item": ITEM.get(p.get("item")),
+            }
+    return {"items": out, "promote": promote}
+
+
 # ---------------------------------------------------------------- 主流程 ----
 def main() -> None:
     officers_toml = tomllib.loads((PACK / "officers.toml").read_text(encoding="utf-8"))["officer"]
@@ -581,6 +633,11 @@ def main() -> None:
     }
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "game.json").write_text(json.dumps(game, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+
+    specs = item_specs()
+    (OUT / "items.json").write_text(json.dumps(specs, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    sold = sum(1 for s in specs["items"].values() if s["price"] is not None)
+    print(f"道具 {len(specs['items'])} 件（商店有价的 {sold} 件）、兵种转职 {len(specs['promote'])} 条")
 
     print(f"流程步骤 {len(steps)}（标签 {sum(1 for s in steps if s['t'] == 'label')}）")
     print(f"剧本 {len(scenes)} 幕、战斗 {len(battles)} 场、地图 {len(maps)} 张、武将 {len(officers)}、人物 {len(persons)}")

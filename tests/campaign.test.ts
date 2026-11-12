@@ -105,8 +105,7 @@ describe('整部剧本的数据', () => {
     for (const id of seen) expect(all.has(id)).toBe(true);
   });
 
-  it('70 场战斗都能按关卡数据开打：出征名单不空、槽位不撞、地形对得上', () => {
-    const roster: Roster = {};
+  it('70 场战斗都能按关卡数据开打：出征名单不空、槽位不撞、地形对得上', () => {    const roster: Roster = {};
     for (const [id, o] of Object.entries(officers)) roster[id] = { level: o.level, exp: 0, items: [] };
     const battles = SCRIPT.steps.filter((s): s is Extract<Step, { t: 'battle' }> => s.t === 'battle').map((s) => s.level);
     battles.forEach((id, n) => {
@@ -121,6 +120,16 @@ describe('整部剧本的数据', () => {
       for (const u of b.units) expect(b.terrain[u.y * b.w + u.x], `${id} ${u.name} 站在界内`).toBeDefined();
       expect(b.objective.length, `${id} 胜利条件`).toBeGreaterThan(0);
     });
+  });
+
+  it('布阵：玩家指定的格子优先，没指定的按关卡自带的出兵位', () => {
+    const lv = level('c0_s0_b5')!;
+    const [ax, ay] = lv.deploy!.slots[0];
+    const { b } = newBattle(lv, 1, {}, { deploy: ['guan_yu', 'zhang_fei'], slots: { guan_yu: [ax + 1, ay + 1] } });
+    const guan = b.units.find((u) => u.key === 'guan_yu')!;
+    expect([guan.x, guan.y]).toEqual([ax + 1, ay + 1]);
+    const zhang = b.units.find((u) => u.key === 'zhang_fei')!;
+    expect([zhang.x, zhang.y]).toEqual(lv.deploy!.slots[1]);
   });
 });
 

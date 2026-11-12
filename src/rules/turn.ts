@@ -1,5 +1,6 @@
 import { aiOrder, decide, executionTarget } from './ai';
-import { castAttack, conditionRecovery, physicalAttack, strategyUsable, upkeep, useRecoverItem } from './combat';
+import { castAttack, conditionRecovery, physicalAttack, strategyUsable, upkeep, useItem } from './combat';
+import { specOf } from '../data/items';
 import { TB, attackTargets, bySlot, foes, friendly, itemName, knownStrategies, maxHp, maxMp, moveCost, rand, rangeCells, unitAt } from './core';
 import { canStop, reachField, route, type Field } from './move';
 import type { Battle, Flag, Roster, Unit } from './types';
@@ -169,6 +170,8 @@ function need(ok: unknown, msg: string): asserts ok {
 
 export interface BattleOpts {
   deploy?: string[]; // 出征名单（officer id），按顺序占槽位
+  /** 玩家在布阵画面亲手摆的位置：officer id → 格坐标。没给的按关卡自带的出兵位顺序摆。 */
+  slots?: Record<string, [number, number]>;
   flags?: Record<string, Flag>; // 从流程带进来的脚本标志
 }
 
@@ -214,7 +217,7 @@ export function newBattle(level: Level, seed: number, roster: Roster = {}, opts:
   const picked = (opts.deploy ?? []).slice(0, level.deploy?.max ?? 0);
   picked.forEach((key, i) => {
     const t = level.candidates?.[key];
-    const at = level.deploy?.slots[i];
+    const at = opts.slots?.[key] ?? level.deploy?.slots[i];
     if (!t || !at) return;
     units.push(mk({ ...t, slot: i, key, x: at[0], y: at[1], mode: 7 }));
   });
@@ -549,25 +552,31 @@ function castAt(b: Battle, u: Unit, id: number, d: Unit | undefined, evs: Ev[]):
 }
 export const doCast = (b: Battle, slot: number, id: number, target: number) => castAt(b, manual(b, slot), id, bySlot(b, target), []);
 
-/** 回复道具的规格：[等级, 种类]，种类 1 兵力、2 士气。豆麦米 = 30–32，酒系 = 27–29。 */
-const recoverSpec = (id: number): [number, number] | null => (id >= 27 && id <= 32 ? [id % 3, id >= 30 ? 1 : 2] : null);
+/** 回复道具的使用范围：自己 + 周围一圈；档位高的多一圈（原版豆/麦/米、酒三档、伤药三类）。
+ * 返回 null 表示这件道具在战场上用不了（武器、兵书、转职书）。 */
+function recoverSpec(id: number): { tier: number; heal: boolean; morale: boolean } | null {
+  const s = specOf(id);
+  if (!s || !s.battle || (!s.heal && !s.morale)) return null;
+  const tier = id >= 27 && id <= 32 ? id % 3 : id >= 52 && id <= 54 ? id - 52 : 0;
+  return { tier, heal: !!s.heal, morale: !!s.morale };
+}
 
-/** 道具可用对象：自己和周围 8 格内、确实有东西可回复的我方部队。 */
+/** 道具可用对象：自己和周围、确实有东西可回复的我方部队。 */
 export function itemTargets(b: Battle, u: Unit, id: number): Unit[] {
   const spec = recoverSpec(id);
   if (!spec || !u.items.includes(id)) return [];
-  const cells: [number, number][] = [[u.x, u.y], ...rangeCells(b, u.x, u.y, spec[0] | 0x80)];
+  const cells: [number, number][] = [[u.x, u.y], ...rangeCells(b, u.x, u.y, spec.tier | 0x80)];
   return cells
     .map(([x, y]) => unitAt(b, x, y))
-    .filter((d): d is Unit => !!d && !foes(u, d) && (spec[1] === 1 ? d.hp < maxHp(d.cls, d.level) : d.morale < 100 || d.confused));
+    .filter((d): d is Unit => !!d && !foes(u, d) &&
+      ((spec.heal && d.hp < maxHp(d.cls, d.level)) || (spec.morale && (d.morale < 100 || d.confused))));
 }
 export function doItem(b: Battle, slot: number, id: number, target: number): Ev[] {
   const u = manual(b, slot);
   const d = bySlot(b, target);
   need(d && itemTargets(b, u, id).includes(d), '不能对该目标使用这个道具');
   const evs: Ev[] = [];
-  const [tier, kind] = recoverSpec(id)!;
-  useRecoverItem(b, d, tier, kind, evs);
+  useItem(b, d, specOf(id)!, evs);
   u.items.splice(u.items.indexOf(id), 1);
   return done(b, u, evs);
 }

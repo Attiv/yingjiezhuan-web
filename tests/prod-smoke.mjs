@@ -20,13 +20,17 @@ for (let i = 0; i < 400; i++) {
 }
 assert.match(await page.textContent('#screen .card'), /汜水關 — 出兵準備/);
 assert.match(await page.textContent('#screen .card'), /軍資 600 金/);
-await page.click('[data-buy="30"]'); // 买一袋豆，看看商店与军资
-assert.match(await page.textContent('#screen .card'), /軍資 570 金/);
+await page.click('[data-buy="30"]'); // 买一袋豆（原版 100 金），看看商店与军资
+assert.match(await page.textContent('#screen .card'), /軍資 500 金/);
 await page.click('[data-go="camp-go"]');
 
-await page.waitForSelector('[data-go="new"]');
+await page.waitForSelector('[data-go="deploy"]');
 assert.match(await page.textContent('#screen .card'), /汜水關之戰/);
-await page.click('[data-go="new"]');
+await page.click('[data-go="deploy"]');
+await page.waitForSelector('[data-go="battle"]');
+assert.match(await page.textContent('#screen .card'), /部隊配置/);
+await page.click('[data-go="auto"]'); // 按原版出兵位摆好
+await page.click('[data-go="battle"]');
 // 开场插剧要点几下
 for (let i = 0; i < 300; i++) {
   if (await page.$('#talk .ask')) { await page.click('#talk .ask button:first-child'); continue; }

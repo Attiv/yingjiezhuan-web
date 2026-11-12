@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import './style.css';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
 import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
+import { PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './data/items';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doItem, doMove, doWait, endPhase, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
@@ -100,6 +101,7 @@ function renderUnit(u: Unit | null = shown) {
     u.confused ? '混乱中' : '',
     u.acted && u.mode === 7 ? '本回合已行动' : '',
     u.items.length ? `道具：${u.items.map(itemName).join('、')}` : '',
+    u.items.filter(isEquipment).length ? `装备：${u.items.filter(isEquipment).map(itemEffect).join('、')}` : '',
     knownStrategies(u).length ? `策略：${knownStrategies(u).map((id) => TB.strategyNames[id]).join('、')}` : '',
   ].filter(Boolean);
   $('unit').innerHTML =
@@ -431,8 +433,7 @@ function afterBattle() {
 }
 
 // ---------------------------------------------------------------- 营地 ----
-/** 商店价格：原版道具表没有标价，这里按道具档次自定一份。 */
-const PRICE: Record<number, number> = { 27: 60, 28: 120, 29: 200, 30: 30, 31: 80, 32: 150, 52: 200, 54: 120 };
+/** 商店价格来自原版道具表（items.json），不卖的道具按 100 金兜底。 */
 const SEED = () => Number(params.get('seed')) || Date.now();
 
 /** 出兵准备：编成、买道具、给武将配道具。出发时把名单记进流程。 */
@@ -445,13 +446,15 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
   const forbidden = lv.deploy?.forbidden ?? [];
   const max = lv.deploy?.max ?? party.length;
   let pick = party[0] ?? '';
+  const rosterOf = (id: string) => (story.roster[id] ??= blank(id));
+  const clsOf = (id: string) => rosterOf(id).cls ?? officers[id].cls;
   const el = $('screen');
   const rows = () => party.map((id) => {
     const o = officers[id];
     const out = story.deploy.includes(id);
     const locked = required.includes(id);
     return `<div class="row${pick === id ? ' on' : ''}"><button class="btn name" data-pick="${id}">` +
-      `<b>${esc(o.name)}</b><span>Lv${story.roster[id]?.level ?? o.level}　${TB.classNames[story.roster[id]?.cls ?? o.cls]}</span>` +
+      `<b>${esc(o.name)}</b><span>Lv${story.roster[id]?.level ?? o.level}　${TB.classNames[clsOf(id)]}</span>` +
       `<i>${out ? '出陣' : '待命'}${locked ? '（必須）' : ''}</i></button>` +
       `<button class="btn tog" data-toggle="${id}"${locked || forbidden.includes(id) ? ' disabled' : ''}>${out ? '待命' : '出陣'}</button></div>`;
   }).join('');
@@ -459,20 +462,44 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
     const counts = new Map<number, number>();
     for (const id of story.bag) counts.set(id, (counts.get(id) ?? 0) + 1);
     if (!counts.size) return '<p class="note">包袱里沒有道具。</p>';
-    return [...counts].map(([id, n]) => `<button class="btn item" data-bag="${id}">${esc(itemName(id))}×${n}</button>`).join('');
+    return [...counts].map(([id, n]) => `<button class="btn item" data-bag="${id}" title="${esc(itemEffect(id))}">${esc(itemName(id))}×${n}</button>`).join('');
   };
+  /** 选中武将随身带的道具：点名字放回包袱；能转职的道具旁边多一个按钮。 */
   const carried = () => {
-    const items = story.roster[pick]?.items ?? officers[pick]?.items ?? [];
-    return items.length ? items.map((id, i) => `<button class="btn item" data-drop="${i}">${esc(itemName(id))}</button>`).join('') : '<span class="note">空手</span>';
+    const items = rosterOf(pick).items;
+    if (!items.length) return '<span class="note">空手</span>';
+    const cls = clsOf(pick);
+    const level = rosterOf(pick).level;
+    return items.map((id, i) => {
+      const to = classUse(cls, level, id);
+      const p = PROMOTE[String(cls)];
+      const need = p && p.item === id ? p.level : 0;
+      const up = to !== null
+        ? `<button class="btn up" data-up="${i}">轉${esc(TB.classNames[to])}</button>`
+        : need > level ? `<span class="need">Lv${need}</span>` : '';
+      return `<span class="held" title="${esc(itemEffect(id))}"><button class="btn item" data-drop="${i}">${esc(itemName(id))}</button>${up}</span>`;
+    }).join('');
   };
-  const shop = step.shop.map((id) => `<div class="buy"><span>${esc(itemName(id))}</span><button class="btn" data-buy="${id}"${story.gold < (PRICE[id] ?? 100) ? ' disabled' : ''}>${PRICE[id] ?? 100} 金</button></div>`).join('');
+  /** 武將情報：能力、兵种、随身道具的一行摘要。 */
+  const info = () => {
+    const o = officers[pick];
+    if (!o) return '';
+    const r = rosterOf(pick);
+    const equips = r.items.filter(isEquipment).map(itemName);
+    return `<h2>情報・${esc(o.name)}</h2><div class="info"><div><span>武力</span>${o.str}</div>` +
+      `<div><span>統御</span>${o.lead}</div><div><span>智力</span>${o.int}</div>` +
+      `<div><span>等級</span>${r.level}</div><div><span>兵種</span>${esc(TB.classNames[clsOf(pick)])}</div>` +
+      `<div><span>裝備</span>${equips.length ? esc(equips.join('、')) : '—'}</div></div>`;
+  };
+  const shop = step.shop.map((id) => `<div class="buy"><span>${esc(itemName(id))}<em>${esc(itemEffect(id))}</em></span>` +
+    `<button class="btn" data-buy="${id}"${story.gold < (priceOf(id) ?? 100) ? ' disabled' : ''}>${priceOf(id) ?? 100} 金</button></div>`).join('');
   const render = () => {
     el.className = '';
     el.innerHTML = `<div class="card camp"><h1 style="font-size:24px;line-height:30px">${esc(step.title)}</h1>` +
       `<p class="sub">軍資 ${story.gold} 金　出征 ${story.deploy.length}/${max} 名</p>` +
       `<div class="camp-cols"><section><h2>編成</h2>${rows()}</section>` +
       `<section><h2>道具・${esc(officers[pick]?.name ?? '')}</h2><div class="items">${carried()}</div><h2>包袱</h2><div class="items">${bag()}</div>` +
-      `<h2>商店</h2>${shop}</section></div>` +
+      `${info()}<h2>商店</h2>${shop}</section></div>` +
       `<div class="row end"><button class="btn" data-go="camp-save">存檔</button>` +
       `<button class="btn" data-go="camp-go"${story.deploy.length ? '' : ' disabled'}>出陣</button></div>`;
     el.hidden = false;
@@ -487,6 +514,7 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
       const buy = t.closest<HTMLElement>('[data-buy]')?.dataset.buy;
       const bagId = t.closest<HTMLElement>('[data-bag]')?.dataset.bag;
       const drop = t.closest<HTMLElement>('[data-drop]')?.dataset.drop;
+      const up = t.closest<HTMLElement>('[data-up]')?.dataset.up;
       const go = t.closest<HTMLElement>('[data-go]')?.dataset.go;
       if (pickId) pick = pickId;
       if (toggle) {
@@ -496,7 +524,7 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
       }
       if (buy) {
         const id = Number(buy);
-        const price = PRICE[id] ?? 100;
+        const price = priceOf(id) ?? 100;
         if (story.gold >= price) {
           story.gold -= price;
           story.bag.push(id);
@@ -504,17 +532,25 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
       }
       if (bagId) {
         const id = Number(bagId);
-        const cur = { ...(story.roster[pick] ?? { level: officers[pick]?.level ?? 1, exp: 0, items: [] }) };
-        cur.items ??= [];
+        const cur = rosterOf(pick);
         if (cur.items.length < 8) {
           cur.items.push(id);
-          story.roster[pick] = cur;
           story.bag.splice(story.bag.indexOf(id), 1);
         }
       }
       if (drop !== undefined) {
-        const cur = story.roster[pick];
-        if (cur?.items?.[Number(drop)] !== undefined) story.bag.push(cur.items.splice(Number(drop), 1)[0]);
+        const cur = rosterOf(pick);
+        if (cur.items[Number(drop)] !== undefined) story.bag.push(cur.items.splice(Number(drop), 1)[0]);
+      }
+      if (up !== undefined) {
+        const cur = rosterOf(pick);
+        const id = cur.items[Number(up)];
+        const to = id === undefined ? null : classUse(clsOf(pick), cur.level, id);
+        if (to !== null) {
+          cur.cls = to;
+          cur.items.splice(Number(up), 1);
+          log(`${officers[pick].name} 轉職為${TB.classNames[to]}。`);
+        }
       }
       if (go === 'camp-go') {
         el.onclick = null;
@@ -600,7 +636,7 @@ function openCommand() {
         const ts = castTargets(b, u, id);
         return { label: `${TB.strategyNames[id]}　${TB.strategyMp[id]}`, on: ts.length ? () => aim(ts, 'attack', (t) => doCast(b, u.slot, id, t.slot)) : undefined };
       }), u, true) : undefined },
-    { label: '道具', on: u.items.length ? () => openMenu(u.items.map((id) => {
+    { label: '道具', on: u.items.some((id) => specOf(id)?.battle) ? () => openMenu(u.items.filter((id) => specOf(id)?.battle).map((id) => {
         const ts = itemTargets(b, u, id);
         return { label: itemName(id), on: ts.length ? () => aim(ts, 'aid', (t) => doItem(b, u.slot, id, t.slot)) : undefined };
       }), u, true) : undefined },
@@ -755,6 +791,10 @@ $('screen').addEventListener('click', (e) => {
     void playStory(nextStep(CAMPAIGN, story, 0, API));
   }
   if (go === 'new') ($('screen').hidden = true), begin(null);
+  if (go === 'deploy') {
+    const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
+    if (step) showDeploy(step.level);
+  }
   if (go === 'next') afterBattle();
   if (go === 'load') ($('screen').hidden = !!readSave()), load() || showTitle('没有可用的存档。');
   if (go === 'title') showTitle();
@@ -782,7 +822,78 @@ function showBrief(levelId: string) {
     `<h1 style="font-size:24px;line-height:28px">${esc(lv.name)}</h1>` +
     `<ul><li>勝利：${esc(lv.goal || '擊破敵軍主將')}</li><li>失敗：${esc(lose)}</li><li>出征：${esc(who)}</li></ul>` +
     '<p class="sub" style="margin:0">左键选择部队、移动、下令；右键或 Esc 取消；方向键卷动地图；回车结束回合。</p>' +
-    '<div class="row"><button class="btn" data-go="new">出陣</button></div>');
+    '<div class="row"><button class="btn" data-go="deploy">部隊配置</button></div>');
+}
+
+/** 布阵：把出征的各部队亲手摆进出兵位（原版的「部隊配置」），摆完才开战。
+ * 地图比舞台大（最大 40×24 格），这里取一块装得下所有出兵位的视野，按整格显示。 */
+function showDeploy(levelId: string) {
+  mode = 'over';
+  const lv = lvOf(levelId)!;
+  const order = [...(story.deploy.length ? story.deploy : defaultDeploy(levelId, story.party))];
+  const slots = lv.deploy?.slots ?? [];
+  const placed: Record<string, [number, number]> = {};
+  const el = $('screen');
+  const at = (x: number, y: number) => Object.keys(placed).find((k) => placed[k][0] === x && placed[k][1] === y);
+  const next = () => order.find((k) => !placed[k]);
+  const UNIT = CELL / RES; // 一格 32px
+  const xs = slots.length ? slots.map(([x]) => x) : [Math.floor(lv.w / 2)];
+  const ys = slots.length ? slots.map(([, y]) => y) : [Math.floor(lv.h / 2)];
+  const [minX, maxX] = [Math.min(...xs), Math.max(...xs)];
+  const [minY, maxY] = [Math.min(...ys), Math.max(...ys)];
+  // 视野：至少 13×12 格；出兵位铺得更开就取到装得下为止
+  const vw = Math.min(lv.w, Math.max(13, maxX - minX + 1));
+  const vh = Math.min(lv.h, Math.max(12, maxY - minY + 1));
+  const x0 = Math.max(0, Math.min(lv.w - vw, Math.round((minX + maxX + 1) / 2 - vw / 2)));
+  const y0 = Math.max(0, Math.min(lv.h - vh, Math.round((minY + maxY + 1) / 2 - vh / 2)));
+  const s = Math.min(416 / (vw * UNIT), 384 / (vh * UNIT));
+  const size = UNIT * s;
+  const [bgx, bgy] = [208 - (x0 + vw / 2) * size, 192 - (y0 + vh / 2) * size];
+  const px = (x: number) => Number((x * size + bgx).toFixed(2));
+  const py = (y: number) => Number((y * size + bgy).toFixed(2));
+  const render = () => {
+    el.className = '';
+    const marks = slots.map(([x, y]) => {
+      const who = at(x, y);
+      return `<button class="cell${who ? ' on' : ''}" data-cell="${x},${y}" style="left:${px(x)}px;top:${py(y)}px;width:${size}px;height:${size}px">` +
+        `${who ? `<b>${esc(officers[who]?.name ?? who)}</b>` : ''}</button>`;
+    }).join('');
+    const left = next();
+    el.innerHTML = `<div class="card deploy"><h1 style="font-size:18px;line-height:22px">${esc(lv.name)}・部隊配置</h1>` +
+      `<p class="sub">${left ? `點藍色格擺放「${esc(officers[left]?.name ?? left)}」，點已擺好的部隊收回。` : '全軍配置完畢。'}　${Object.keys(placed).length}/${order.length}</p>` +
+      `<div class="deploy-body"><div class="grid" style="background-image:url(/assets/${lv.map});background-size:${lv.w * size}px ${lv.h * size}px;background-position:${bgx}px ${bgy}px">${marks}</div>` +
+      `<div class="queue">${order.map((id) => `<div class="row${placed[id] ? ' on' : ''}"><span>${esc(officers[id]?.name ?? id)}</span>` +
+        `<i>${placed[id] ? `${placed[id][0]},${placed[id][1]}` : '未配置'}</i></div>`).join('')}</div></div>` +
+      `<div class="row end"><button class="btn" data-go="auto">自動配置</button>` +
+      `<button class="btn" data-go="battle"${Object.keys(placed).length === order.length ? '' : ' disabled'}>開始</button></div>`;
+    el.hidden = false;
+    (el.querySelector('[data-go="battle"]') as HTMLElement | null)?.focus();
+  };
+  render();
+  el.onclick = (e) => {
+    const t = e.target as HTMLElement;
+    const cell = t.closest<HTMLElement>('[data-cell]')?.dataset.cell;
+    const go = t.closest<HTMLElement>('[data-go]')?.dataset.go;
+    if (cell) {
+      const [x, y] = cell.split(',').map(Number);
+      const who = at(x, y);
+      if (who) delete placed[who];
+      else {
+        const k = next();
+        if (k) placed[k] = [x, y];
+      }
+    }
+    if (go === 'auto') {
+      for (const k of Object.keys(placed)) delete placed[k];
+      order.forEach((k, i) => { const s = slots[i]; if (s) placed[k] = s; });
+    }
+    if (go === 'battle') {
+      el.onclick = null;
+      el.hidden = true;
+      return begin(null, placed);
+    }
+    render();
+  };
 }
 function showResult() {
   mode = 'over';
@@ -805,8 +916,8 @@ function showEnding(text: string) {
     '<div class="row"><button class="btn" data-go="title">回到標題</button></div>');
 }
 
-/** 开始一场战斗：d 为读档数据；null 表示新开流程当前停着的那一关，带上此前的成长。 */
-function begin(d: Battle | null) {
+/** 开始一场战斗：d 为读档数据；null 表示新开流程当前停着的那一关，带上此前的成长与布阵。 */
+function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
   $('log').replaceChildren();
   let evs: Ev[] = [];
   const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
@@ -815,7 +926,7 @@ function begin(d: Battle | null) {
     if (!step) throw new Error('流程没有停在战斗上');
     const lv = lvOf(step.level)!;
     const deploy = story.deploy.length ? story.deploy : defaultDeploy(step.level, story.party);
-    ({ b, evs } = newBattle(lv, SEED(), story.roster, { deploy, flags: story.flags }));
+    ({ b, evs } = newBattle(lv, SEED(), story.roster, { deploy, flags: story.flags, slots }));
   }
   const lv = levelOf(b);
   shown = sel = pick = null;

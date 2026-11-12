@@ -1,0 +1,154 @@
+import { describe, expect, it } from 'vitest';
+import { ITEM_SPEC, PROMOTE, classChange, classUse, itemEffect, priceOf, promotion, specOf } from '../src/data/items';
+import { upkeep } from '../src/rules/combat';
+import { atk, bySlot, def, maxHp, moveBudget } from '../src/rules/core';
+import { doItem, itemTargets, newBattle, type Level, type UnitInit } from '../src/rules/turn';
+import type { Battle } from '../src/rules/types';
+
+/** 道具表来自原版的 items.toml：价格、回复量、装备加成、转职条件都得对得上。 */
+
+const unit = (slot: number, cls: number, level: number, x: number, y: number, extra: Partial<UnitInit> = {}): UnitInit => ({
+  slot, name: `u${slot}`, face: '', cls, level, lead: 50, str: 50, int: 50, x, y, mode: slot < 15 ? 7 : 3, ...extra,
+});
+function level(units: UnitInit[], o: Partial<Level> = {}): Level {
+  const w = o.w ?? 6;
+  const h = o.h ?? 2;
+  return {
+    id: 'test', name: '测试', goal: '', turnLimit: 30, w, h, terrain: new Array(w * h).fill(0),
+    units, lord: 0, boss: 15, reward: 0, triggers: [], ...o,
+  };
+}
+const start = (units: UnitInit[], seed = 7) => newBattle(level(units), seed).b;
+
+describe('道具表（对照原版 items.toml）', () => {
+  it('63 件道具都有名字与类别', () => {
+    expect(Object.keys(ITEM_SPEC)).toHaveLength(63);
+    for (const [id, s] of Object.entries(ITEM_SPEC)) {
+      expect(s.name, `道具 ${id}`).toBeTruthy();
+      expect(['weapon', 'armor', 'accessory', 'consumable']).toContain(s.kind);
+    }
+  });
+
+  it('商店价格照原版：豆 100、酒 120、麦 250、伤药 300、特级酒 400、米 600、中药 700、老酒 800、茶 1200', () => {
+    const table: [number, number][] = [[30, 100], [27, 120], [31, 250], [52, 300], [28, 400], [32, 600], [53, 700], [29, 800], [54, 1200]];
+    for (const [id, price] of table) expect(priceOf(id), specOf(id)!.name).toBe(price);
+  });
+
+  it('武器、铠甲、马、宝物原版不出售', () => {
+    for (const id of [9, 10, 58, 60, 5, 7, 8]) expect(priceOf(id), specOf(id)!.name).toBeNull();
+  });
+
+  it('装备说明写清加成', () => {
+    expect(itemEffect(10)).toBe('攻擊 +20%');
+    expect(itemEffect(60)).toBe('防禦 +15%');
+    expect(itemEffect(7)).toBe('移動 +3');
+    expect(itemEffect(8)).toBe('每回合兵力 +10　每回合士氣 +10');
+    expect(itemEffect(54)).toBe('兵力 +1800　士氣 +50');
+  });
+});
+
+describe('装备效果', () => {
+  const b = (items: number[]): Battle => start([unit(0, 6, 1, 0, 0, { str: 98, items }), unit(15, 0, 1, 5, 1)]);
+  const plain = () => start([unit(0, 6, 1, 0, 0, { str: 98, items: [] }), unit(15, 0, 1, 5, 1)]);
+
+  it('青釭剑 +20% 攻击、六韬 +15% 防御、赤兔马 +3 移动', () => {
+    const base = plain();
+    const a0 = atk(bySlot(base, 0)!);
+    expect(atk(bySlot(b([10]), 0)!)).toBe(a0 + Math.trunc((a0 * 20) / 100));
+    const d0 = def(bySlot(base, 0)!);
+    expect(def(bySlot(b([60]), 0)!)).toBe(d0 + Math.trunc((d0 * 15) / 100));
+    expect(moveBudget(bySlot(b([7]), 0)!)).toBe(moveBudget(bySlot(base, 0)!) + 3);
+  });
+
+  it('同类宝物只取最高的一件，不叠加', () => {
+    const one = atk(bySlot(b([10]), 0)!);
+    expect(atk(bySlot(b([10, 11, 12]), 0)!)).toBe(one);
+  });
+
+  it('每回合恢复：玉玺 +10 兵力 +10 士气，勅命书只回士气', () => {
+    const battle = start([unit(0, 0, 5, 0, 0, { items: [8] }), unit(15, 0, 1, 5, 1)]);
+    const u = bySlot(battle, 0)!;
+    u.hp -= 100;
+    u.morale = 50;
+    const evs: Parameters<typeof upkeep>[2] = [];
+    upkeep(battle, 0, evs);
+    expect(u.hp).toBe(maxHp(0, 5) - 90);
+    expect(u.morale).toBe(60);
+    expect(evs.some((e) => e.t === 'recover')).toBe(true);
+  });
+});
+
+describe('战场上用道具', () => {
+  const hurt = (items: number[], damage = 1000) => {
+    const battle = start([unit(0, 0, 5, 0, 0, { items }), unit(15, 0, 1, 5, 1)]);
+    const u = bySlot(battle, 0)!;
+    u.hp = Math.max(1, maxHp(0, 5) - damage);
+    u.morale = 40;
+    return { battle, u };
+  };
+
+  it('伤药回 600 兵力 + 30 士气（原版数值，最多一成浮动）', () => {
+    const { battle, u } = hurt([52]);
+    const before = u.hp;
+    doItem(battle, 0, 52, 0);
+    expect(u.hp - before).toBeGreaterThanOrEqual(600);
+    expect(u.hp - before).toBeLessThanOrEqual(660);
+    expect(u.morale - 40).toBeGreaterThanOrEqual(30);
+    expect(u.morale - 40).toBeLessThanOrEqual(33);
+    expect(u.items).not.toContain(52);
+  });
+
+  it('中药 800+35、茶 1800+50、豆只回兵力', () => {
+    for (const [id, heal, morale] of [[53, 800, 35], [54, 1800, 50], [30, 600, 0]] as const) {
+      const { battle, u } = hurt([id]);
+      const [hp0, m0] = [u.hp, u.morale];
+      doItem(battle, 0, id, 0);
+      expect(u.hp - hp0, `道具 ${id} 兵力`).toBeGreaterThanOrEqual(Math.min(heal, maxHp(0, 5) - hp0));
+      expect(u.hp - hp0).toBeLessThanOrEqual(Math.min(heal + Math.trunc(heal / 10), maxHp(0, 5) - hp0));
+      if (morale) {
+        expect(u.morale - m0).toBeGreaterThanOrEqual(morale);
+        expect(u.morale - m0).toBeLessThanOrEqual(morale + Math.trunc(morale / 10));
+      } else expect(u.morale).toBe(m0);
+    }
+  });
+
+  it('兵满、士气满的部队不能再用回复道具', () => {
+    const { battle, u } = hurt([30], 0);
+    u.morale = 100;
+    expect(itemTargets(battle, u, 30)).toHaveLength(0);
+  });
+
+  it('武器、转职书不能在战场上使用', () => {
+    const { battle, u } = hurt([10, 19, 2]);
+    expect(itemTargets(battle, u, 10)).toHaveLength(0);
+    expect(itemTargets(battle, u, 19)).toHaveLength(0);
+    expect(itemTargets(battle, u, 2)).toHaveLength(0);
+  });
+});
+
+describe('兵种转职', () => {
+  it('短兵 Lv15 + 长枪 → 长兵；等级不够或兵种不对都不行', () => {
+    expect(promotion(0, 15, 19)).toBe(1);
+    expect(promotion(0, 14, 19)).toBeNull();
+    expect(promotion(3, 15, 19)).toBeNull();
+    expect(promotion(1, 30, 20)).toBe(2);
+    expect(promotion(6, 30, 20)).toBeNull();
+  });
+
+  it('8 条升级链都在表里，所需道具存在', () => {
+    expect(Object.keys(PROMOTE)).toHaveLength(8);
+    for (const [cls, p] of Object.entries(PROMOTE)) {
+      expect(p.item, `兵种 ${cls}`).not.toBeNull();
+      expect(specOf(p.item!)!.promote, `兵种 ${cls} 的道具`).toBe(true);
+      expect(p.to).not.toBe(Number(cls));
+    }
+  });
+
+  it('转职书直接指定兵种：鼓吹具 → 军乐队、遁甲天书 → 妖术师、弓术指针书 → 弓兵', () => {
+    expect(classChange(2)).toBe(12);
+    expect(classChange(0)).toBe(15);
+    expect(classChange(16)).toBe(3);
+    expect(classChange(30)).toBeNull();
+    expect(classUse(9, 20, 2)).toBe(12);
+  });
+});

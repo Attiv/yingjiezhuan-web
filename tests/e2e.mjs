@@ -22,7 +22,8 @@ const seen = () => page.evaluate(() => ({
   ask: !!document.querySelector('#talk:not([hidden]) .ask'),
   chapter: document.querySelector('#screen .chapter')?.textContent ?? '',
   camp: !!document.querySelector('[data-go="camp-go"]'),
-  brief: !!document.querySelector('[data-go="new"]'),
+  brief: !!document.querySelector('[data-go="deploy"]'),
+  deploy: !!document.querySelector('[data-go="battle"]'),
   card: document.querySelector('#screen:not([hidden]) .card')?.textContent ?? '',
 }));
 
@@ -143,6 +144,16 @@ async function endTurn() {
   await settle();
 }
 
+/** 战前说明 → 部队配置 → 开战（配置画面点「自動配置」按原版出兵位摆好）。 */
+async function startBattle(auto = true) {
+  if (await page.$('[data-go="deploy"]')) {
+    await page.click('[data-go="deploy"]');
+    await page.waitForSelector('[data-go="battle"]');
+    if (auto) await page.click('[data-go="auto"]');
+    await page.click('[data-go="battle"]');
+  } else if (await page.$('[data-go="new"]')) await page.click('[data-go="new"]');
+}
+
 /** 从标题开新游戏，一路点到战场待命。fast 时对话自动过，只点章节、营地和战前说明。 */
 async function start(seed, fast = true) {
   await page.goto(`${BASE}/?seed=${seed}${fast ? '&fast' : ''}`);
@@ -151,10 +162,10 @@ async function start(seed, fast = true) {
   let s = await advance();
   if (s.camp) {
     await page.click('[data-go="camp-go"]');
-    await page.waitForSelector('[data-go="new"]');
+    await page.waitForSelector('[data-go="deploy"]');
     s = await seen();
   }
-  if (s.brief) await page.click('[data-go="new"]');
+  if (s.brief || s.deploy) await startBattle();
   await page.waitForFunction(() => window.__yjz?.mode === 'idle', null, { timeout: 60000 });
 }
 
@@ -207,8 +218,12 @@ await step('营地：600 金、三人编成（关张必带）、买豆装给刘�
   assert.match(card, /出征 3\/3 名/);
   assert.match(card, /關羽[\s\S]*必須/);
   await page.click('[data-pick="liu_bei"]');
-  await page.click('[data-buy="30"]'); // 豆 30 金
-  assert.equal((await storyNow()).gold, 570);
+  // 商店价格照原版道具表：豆 100、酒 120、伤药 300
+  const shop = await page.textContent('#screen .card');
+  assert.match(shop, /豆[\s\S]{0,12}兵力 \+600/);
+  assert.match(shop, /傷藥[\s\S]{0,24}300 金/);
+  await page.click('[data-buy="30"]');
+  assert.equal((await storyNow()).gold, 500);
   assert.deepEqual((await storyNow()).bag, [30]);
   await page.click('[data-bag="30"]'); // 豆装进刘备的包袱
   const st = await storyNow();
@@ -217,20 +232,39 @@ await step('营地：600 金、三人编成（关张必带）、买豆装给刘�
   await page.click('[data-go="camp-save"]');
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.save.v3')));
   assert.equal(saved.battle, undefined, '营地存档只存流程，不存战斗');
-  assert.equal(saved.story.gold, 570);
+  assert.equal(saved.story.gold, 500);
   await shot('02-camp');
   await page.click('[data-go="camp-go"]');
 });
 
-await step('战前说明 → 战场：原版地图、12 支部队、第 1 回合', async () => {
-  await page.waitForSelector('[data-go="new"]');
+await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位置开战', async () => {
+  await page.waitForSelector('[data-go="deploy"]');
   const brief = await page.textContent('#screen .card');
   assert.match(brief, /汜水關之戰/);
   assert.match(brief, /勝利：一、殲滅華雄/);
   assert.match(brief, /失敗：主將撤退/);
   assert.match(brief, /出征：關羽、張飛、劉備/);
   await shot('17-brief');
-  await page.click('[data-go="new"]');
+  await page.click('[data-go="deploy"]');
+  await page.waitForSelector('[data-go="battle"]');
+  assert.match(await page.textContent('#screen .card'), /汜水關之戰・部隊配置/);
+  assert.equal(await page.isDisabled('[data-go="battle"]'), true, '还没摆人时不能开战');
+  const cells = await page.$$eval('.deploy .cell', (els) => els.map((e) => e.dataset.cell));
+  assert.equal(cells.length, 3, '本关有 3 个出兵位');
+  const at = (c) => `.deploy .cell[data-cell="${c}"]`;
+  // 点格子放人，再点一次收回
+  await page.click(at(cells[2]));
+  assert.equal(await page.$$eval('.deploy .cell.on', (els) => els.length), 1, '摆下一个部队');
+  assert.equal(await page.$eval('.deploy .cell.on', (el) => el.dataset.cell), cells[2]);
+  await page.click(at(cells[2])); // 再点一次收回
+  assert.equal(await page.$$eval('.deploy .cell.on', (els) => els.length), 0);
+  assert.equal(await page.isDisabled('[data-go="battle"]'), true);
+  // 依次摆到第三、第一、第二个格：出征顺序是关羽、张飞、刘备
+  for (const c of [cells[2], cells[0], cells[1]]) await page.click(at(c));
+  assert.match(await page.textContent('#screen .card'), /全軍配置完畢/);
+  assert.equal(await page.isDisabled('[data-go="battle"]'), false);
+  await shot('23-deploy');
+  await page.click('[data-go="battle"]');
   await settle(); // 开场的战场插剧要点几下
   await page.waitForFunction(() => window.__yjz?.mode === 'idle');
   const b = await state();
@@ -240,6 +274,8 @@ await step('战前说明 → 战场：原版地图、12 支部队、第 1 回合
   assert.equal(b.units.length, 12);
   assert.match(b.objective, /華雄/);
   assert.match(await page.textContent('#turn'), /第1回合/);
+  const g = b.units.find((u) => u.name === '關羽');
+  assert.deepEqual([g.x, g.y], cells[2].split(',').map(Number), '关羽应站在布阵时指定的格子');
   await shot('03-battle-start');
 });
 
@@ -464,8 +500,8 @@ await step('系统性失败：全军撤退判负 → 重新開始回到这一关
   assert.match(await page.textContent('#screen .card'), /敗北/);
   await shot('22-defeat');
   await page.click('[data-go="next"]'); // 重新開始：这一关没有失败分支，退回战前说明
-  await page.waitForSelector('[data-go="new"]', { timeout: 60000 });
-  await page.click('[data-go="new"]');
+  await page.waitForSelector('[data-go="deploy"]', { timeout: 60000 });
+  await startBattle();
   await page.waitForFunction(() => window.__yjz?.mode === 'idle', null, { timeout: 60000 });
   const again = await state();
   assert.deepEqual([again.round, again.stage], [1, 'player'], '重新开始应回到第 1 回合');

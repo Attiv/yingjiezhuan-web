@@ -1,4 +1,5 @@
 import { TB, atk, bySlot, def, friendly, idiv, isRain, knownStrategies, maxHp, rand, terrainAt, terrainDef } from './core';
+import { specOf, type ItemSpec } from '../data/items';
 import type { Battle, Ev, Unit } from './types';
 
 /** 兵种相克：兵种 ID÷3 的前三组（步兵 0、弓兵 1、骑兵 2）循环相克，0 克 1、1 克 2、2 克 0。 */
@@ -134,25 +135,38 @@ export function castAttack(b: Battle, a: Unit, d: Unit, id: number): Ev[] {
   return evs;
 }
 
-/** 回合开始的地形恢复：村庄、鹿砦回兵力和士气，兵营只回兵力。两次随机数无论是否在场都会消耗。 */
+/** 回合开始的地形恢复：村庄、鹿砦回兵力和士气，兵营只回兵力。两次随机数无论是否在场都会消耗。
+ * 携带的宝物（玉玺、援军报告、勅命书）每回合另回一点，和站在什么地形上无关。 */
 export function upkeep(b: Battle, slot: number, evs: Ev[]): void {
   const troopRoll = rand(b, 11);
   const moraleRoll = rand(b, 5);
   const u = bySlot(b, slot);
   if (!u || !u.on) return;
+  const max = maxHp(u.cls, u.level);
+  let hpGain = 0;
+  let moraleGain = 0;
+  for (const id of u.items) {
+    const s = specOf(id);
+    if (s) (hpGain += s.regenHp), (moraleGain += s.regenMorale);
+  }
   const terrain = terrainAt(b, u.x, u.y);
   const flags = terrain === 8 || terrain === 13 ? 3 : terrain === 14 ? 1 : 0;
-  if (!flags) return;
-  const max = maxHp(u.cls, u.level);
-  let hpGain = (troopRoll + 15) * 10;
-  let moraleGain = idiv(u.lead, 10) + moraleRoll + 1;
-  // 回完只差不到 10 就直接补满
-  if (max > u.hp + hpGain && u.hp + hpGain + 10 > max) hpGain = max - u.hp;
-  if (u.morale + moraleGain < 100 && u.morale + moraleGain + 10 > 100) moraleGain = 100 - u.morale;
+  if (flags & 1) {
+    let gain = (troopRoll + 15) * 10;
+    // 回完只差不到 10 就直接补满
+    if (max > u.hp + gain && u.hp + gain + 10 > max) gain = max - u.hp;
+    hpGain += gain;
+  }
+  if (flags & 2) {
+    let gain = idiv(u.lead, 10) + moraleRoll + 1;
+    if (u.morale + gain < 100 && u.morale + gain + 10 > 100) gain = 100 - u.morale;
+    moraleGain += gain;
+  }
+  if (!hpGain && !moraleGain) return;
   const hp0 = u.hp;
   const m0 = u.morale;
-  if (flags & 1) u.hp = Math.min(max, u.hp + hpGain);
-  if (flags & 2) setMorale(b, u, u.morale + moraleGain, evs);
+  if (hpGain) u.hp = Math.min(max, u.hp + hpGain);
+  if (moraleGain) setMorale(b, u, u.morale + moraleGain, evs);
   if (u.hp !== hp0 || u.morale !== m0) evs.push({ t: 'recover', slot, hp: u.hp - hp0, morale: u.morale - m0 });
 }
 
@@ -166,18 +180,17 @@ export function conditionRecovery(b: Battle, slot: number, evs: Ev[]): void {
   }
 }
 
-/** 回复类道具（豆/麦/米 回兵力，酒系回士气）：没有施计者加成，基础值加一成以内的随机数。 */
-export function useRecoverItem(b: Battle, d: Unit, tier: number, kind: number, evs: Ev[]): void {
+/** 回复道具：数值照原版道具表（豆 600、麦 1200、米 1800、酒 30 / 特级酒 40、伤药 600+30…），
+ * 没有施计者加成，另加一成以内的随机数。 */
+export function useItem(b: Battle, d: Unit, spec: ItemSpec, evs: Ev[]): void {
   const hp0 = d.hp;
   const m0 = d.morale;
-  if (kind & 1) {
-    const base = (tier + 1) * 600;
+  if (spec.heal) {
     const max = maxHp(d.cls, d.level);
-    d.hp = Math.min(max, d.hp + Math.min(base + rand(b, idiv(base, 10)), max - d.hp));
+    d.hp = Math.min(max, d.hp + Math.min(spec.heal + rand(b, idiv(spec.heal, 10)), max - d.hp));
   }
-  if (kind & 2) {
-    const base = (tier + 3) * 10;
-    setMorale(b, d, d.morale + Math.min(100 - d.morale, base + rand(b, idiv(base, 10))), evs);
+  if (spec.morale) {
+    setMorale(b, d, d.morale + Math.min(100 - d.morale, spec.morale + rand(b, idiv(spec.morale, 10))), evs);
   }
   evs.push({ t: 'recover', slot: d.slot, hp: d.hp - hp0, morale: d.morale - m0 });
 }

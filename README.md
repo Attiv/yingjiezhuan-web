@@ -1,11 +1,12 @@
 # 三國志英傑傳 · 網頁版
 
 《三國志英傑傳》（KOEI，1995，PC DOS 繁體中文版）的网页版复刻，非官方。
-**整部游戏**：从序章「群雄起兵討伐董卓」开始的全部剧情、70 场战斗、营地编成与商店、单挑演出、
-原版 BGM，一直到结局。纯前端，本地存档，无后端。
+**整部游戏**：从序章「群雄起兵討伐董卓」开始的全部剧情、70 场战斗、营地编成与商店、部队配置（布阵）、
+装备与转职、单挑演出、原版 BGM，一直到结局。纯前端，本地存档，无后端。
 
 内容全部是数据，格式见 [docs/framework.md](docs/framework.md)：5491 步流程、610 幕插剧、
-70 场战斗、58 张战场地图、129 名武将，由 `tools/build_campaign.py` 从原版盘转出。
+70 场战斗、58 张战场地图、129 名武将、63 件道具（价格、回复量、装备加成、8 条转职链），
+由 `tools/build_campaign.py` 从原版盘转出。
 规则数据直接读自原版文件，核心规则在原版程序里反汇编核对过；证据、状态和已知差异都在
 [docs/rules.md](docs/rules.md)。**可玩不等于已对齐原版**：两个状态分开写在那份文档的开头。
 
@@ -21,7 +22,7 @@ npm run preview -- --port 5274  # 预览生产构建 http://127.0.0.1:5274
 node tests/e2e.mjs              # 浏览器实操验证（需要开发服务器在 5273）
 node tests/prod-smoke.mjs       # 生产构建冒烟（需要预览服务器在 5274）
 
-python3 tools/build_campaign.py                            # 原版剧本/战斗/武将 → src/data/game.json
+python3 tools/build_campaign.py                            # 原版剧本/战斗/武将/道具 → src/data/*.json
 python3 tools/make_full_assets.py <EXTRACT> <PACK>          # 原版图与音乐 → public/assets/**
 python3 tools/extract.py "<原版目录>"                       # 单关数据与数值表（早期工具）
 python3 tools/make_original_assets.py <EXTRACT> <PACK>     # 单关素材（早期工具）
@@ -33,8 +34,10 @@ python3 tools/make_assets.py <四样素材的路径>               # 旧版：�
 ## 操作
 
 - 剧情里点对话框或按回车、空格翻到下一句；章节横幅点一下继续；遇到选择必须点其中一项。
-- 出兵准备（营地）：左边编成（必带的人锁定，点「出陣／待命」切换），右边道具（包袱 ↔ 武将 8 格）
-  与商店（点价钱买），底部「存檔」「出陣」。
+- 出兵准备（营地）：左边编成（必带的人锁定，点「出陣／待命」切换），右边道具（包袱 ↔ 武将 8 格，
+  能转职的道具旁有「轉○○」）、武将情报与商店（原版定价，点价钱买），底部「存檔」「出陣」。
+- 出陣后是**部隊配置**：点蓝色出兵格依次摆人，点已摆好的收回，「自動配置」按关卡出兵位摆好，
+  全摆完才能「開始」。
 - 左键点我军部队：选中并显示移动范围。再点范围内的格子移动，点部队自己则原地下令。
 - 移动后弹出指令菜单：攻击、策略、道具、待命。没有可选目标的指令是灰的。
 - 右键或 Esc：取消。在指令菜单里取消会退回原位，移动作废。
@@ -49,8 +52,9 @@ python3 tools/make_assets.py <四样素材的路径>               # 旧版：�
 
 ```
 src/rules/     战斗规则，纯 TypeScript，不依赖画面：数值、移动、结算、回合、AI
-src/data/      原版数据：game.json（整部剧本 + 70 关 + 武将/道具）、game.ts（装配成关卡）、
-               tables.json 数值表；sishui.*/campaign.ts 是早期单关演示，测试仍在用
+src/data/      原版数据：game.json（整部剧本 + 70 关 + 武将）、items.json（道具与转职表）、
+               game.ts（装配成关卡）、items.ts（道具查询）、tables.json 数值表；
+               sishui.*/campaign.ts 是早期单关演示，测试仍在用
 src/story.ts   流程脚本解释器：对话、选择、标志、战斗的先后，纯 TypeScript
 src/facing.ts  棋子朝向：面向敌方
 src/scene.ts   Phaser 场景：画地图和棋子、播放规则层给出的事件、战斗特写帧动画
