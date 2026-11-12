@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { facesLeft } from './facing';
 import { TB, bySlot } from './rules/core';
 import type { Battle, Ev, Unit } from './rules/types';
 
@@ -16,9 +17,6 @@ const [INK, CINNABAR, GREEN, GOLD, PURPLE] = [0x000000, 0xef6500, 0x00ba75, 0xff
 /** 我军 0、友军 1、敌军 2。 */
 export const sideOf = (u: Unit) => (u.slot >= 15 ? 2 : u.mode === 7 ? 0 : 1);
 const mid = (c: number) => c * CELL + CELL / 2;
-/** 原版 HEXZCHR 只存了一个朝向（骑兵一律马头朝右），反方向由引擎左右镜像生成。
-    我军/友军朝右，敌军朝左，两军才是对峙而不是背对。 */
-const faceLeft = (u: Unit) => sideOf(u) === 2;
 
 /** 战场画面：只负责画地图、棋子和播放规则层给出的事件，不做任何结算。 */
 export class BattleScene extends Phaser.Scene {
@@ -88,7 +86,7 @@ export class BattleScene extends Phaser.Scene {
     this.b.units.forEach((u, i) => {
       const done = u.acted && this.b.stage === 'player' && u.mode === 7;
       const s = this.tk(u.slot).setFrame(done ? i + n : i).setPosition(mid(u.x), mid(u.y)).setDepth(2 + u.y / 100).setVisible(u.on).setAlpha(1).setScale(1);
-      s.setAngle(u.confused ? -16 : 0).setFlipX(faceLeft(u)).setTintMode(Phaser.TintModes.MULTIPLY);
+      s.setAngle(u.confused ? -16 : 0).setFlipX(facesLeft(this.b, u)).setTintMode(Phaser.TintModes.MULTIPLY);
       if (u.confused) s.setTint(0x8acfff);
       else s.clearTint();
       this.hp.set(u.slot, u.hp);
@@ -209,13 +207,13 @@ export class BattleScene extends Phaser.Scene {
         await this.focus(ev.path[0][0], ev.path[0][1]);
         this.cameras.main.startFollow(s, false, 0.2, 0.2);
         s.setDepth(7); // 走子时提起来，压在别的棋子上面
-        // 按第一步的横向位移转身，向左走就镜像成朝左，不会倒退着移动；纯上下移动保持阵营朝向
+        // 按第一步的横向位移转身，不会倒退着移动；纯上下移动保持面向敌方
         const dx = ev.path.length > 1 ? ev.path[1][0] - ev.path[0][0] : 0;
-        s.setFlipX(dx < 0 ? true : dx > 0 ? false : faceLeft(u));
+        s.setFlipX(dx < 0 ? true : dx > 0 ? false : facesLeft(b, u));
         await this.tween({ targets: s, scale: 1.1, duration: 70 });
         for (const [x, y] of ev.path.slice(1)) await this.tween({ targets: s, x: mid(x), y: mid(y), duration: 105, ease: 'Linear' });
         await this.tween({ targets: s, scale: 1, duration: 90, ease: 'Bounce.easeOut' });
-        s.setFlipX(faceLeft(u)); // 站定后转回阵营朝向
+        s.setFlipX(facesLeft(b, u)); // 站定后转回面向敌方（棋子图本身朝右，朝左靠镜像）
         s.setDepth(2 + ev.path[ev.path.length - 1][1] / 100);
         this.cameras.main.stopFollow();
         break;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SISHUI } from '../src/data/sishui';
+import { facesLeft } from '../src/facing';
 import { TB, atk, def, moveCost } from '../src/rules/core';
 import { field } from '../src/rules/move';
 import { aiStep, autoPhase, doAttack, doItem, doMove, doWait, endPhase, itemTargets, newBattle } from '../src/rules/turn';
@@ -10,6 +11,21 @@ const start = (seed = 1) => newBattle(SISHUI, seed).b;
 const named = (b: Battle, name: string) => b.units.find((u) => u.name === name)!;
 const at = (x: number, y: number) => y * SISHUI.w + x;
 const cell = (reward: 'gold' | 'item') => SISHUI.triggers.find((t) => t.at && (reward === 'gold') === (t.flag === 'cell6,7'))!.at!;
+
+describe('棋子朝向', () => {
+  it('开局两军对峙：我军和友军在东，朝左；敌军在西，朝右', () => {
+    const b = start();
+    for (const u of b.units) expect(facesLeft(b, u), u.name).toBe(u.slot < 15);
+  });
+  it('绕到敌军身后就转过身来；敌方全部离场后按阵营', () => {
+    const b = start();
+    const zhang = named(b, '张飞');
+    zhang.x = 0;
+    expect(facesLeft(b, zhang)).toBe(false);
+    for (const u of b.units) if (u.slot >= 15) u.on = false;
+    expect(facesLeft(b, zhang)).toBe(false);
+  });
+});
 
 describe('汜水关关卡数据（原版文件提取；对照：情报总汇 #2 楼）', () => {
   it('28×16 格，12 支部队，各自站在本兵种能进入的地形上且互不重叠', () => {
