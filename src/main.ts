@@ -134,13 +134,16 @@ async function clash(ev: Extract<Ev, { t: 'hit' }>) {
   const el = $('clash');
   el.innerHTML = side(a, scene.hpOf(a.slot), 'l') + `<em>${ev.counter ? '反击' : '攻击'}</em>` + side(d, before, 'r');
   el.hidden = false;
-  // 原版攻击时会切到战斗特写：这里用原版的天空/地面条带和双方兵种大图盖在战场上
+  // 旧的静态特写图：清单给这一关写了 static 才用，而且给双方配了帧动画演员时让位
+  const art = scene.manifest.levels?.[b.level]?.static;
   const idx = (u: Unit) => b.units.findIndex((v) => v.slot === u.slot);
   const duel = $('duel');
-  duel.innerHTML = '<img class="scene" src="/assets/battle/scene.png" alt="">' +
-    `<img class="fighter l" src="/assets/battle/unit-${idx(a)}.png" alt="">` +
-    `<img class="fighter r" src="/assets/battle/unit-${idx(d)}.png" alt="">`;
-  duel.hidden = scene.hasCutin(a, d); // 清单里给这两支部队配了帧动画特写时由场景来播，不盖这张静态图
+  if (art) {
+    duel.innerHTML = `<img class="scene" src="/assets/${art}/scene.png" alt="">` +
+      `<img class="fighter l" src="/assets/${art}/unit-${idx(a)}.png" alt="">` +
+      `<img class="fighter r" src="/assets/${art}/unit-${idx(d)}.png" alt="">`;
+  }
+  duel.hidden = !art || scene.hasCutin(a, d);
   await scene.play(ev, () => {
     const after = before - ev.dmg;
     (el.querySelector('.r .bar i') as HTMLElement).style.width = `${Math.round((100 * after) / maxHp(d.cls, d.level))}%`;

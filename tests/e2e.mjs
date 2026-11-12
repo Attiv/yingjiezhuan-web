@@ -299,6 +299,10 @@ await step('回合上限：30 回合内未取胜判负（全程只按回合结�
 
 await step('正常速度（带动画）下的一次移动与攻击', async () => {
   await start(20261111, false);
+  // 汜水关用到 3 个兵种（短兵 0、弓兵 3、轻骑兵 6）：清单里的原版帧表都该验过并登记
+  const actors = await page.evaluate(() => [...window.__yjz.scene.ready.values()]);
+  assert.equal(actors.length, 3, '三个兵种都应有特写演员');
+  assert.ok(actors.every((k) => k.startsWith('actor:cutin/')), '演员应来自原版帧图集');
   await command('关羽', 'duel');
   await command('张飞', 'hunt');
   // 友军第一回合就会打到前排步兵：对阵条出现时截一张

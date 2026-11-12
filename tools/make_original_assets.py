@@ -240,6 +240,84 @@ def make_duel(ex: Path, units: list[dict]) -> None:
         im.save(d / f"unit-{i}.png")
 
 
+# ---------------------------------------------------------------- 战斗特写帧表 ----
+# 每个兵种在 HEXBCHR 里的连续帧（分组见 FORMATS.md §8.3）：
+# (兵种号, 文件名, 起始帧, 输出帧数, 待机帧数, 命中帧的局部号)
+# 原版每组排法一致：开头 1–2 帧站定，接着是出手，带爆发的帧算命中，最后一帧是后仰受击。
+# 兵种号即 tables.json 的 classNames 下标，与 HEXBCHR 的分组顺序一一对应。
+CUTIN_CLASSES = [
+    (0, "sword", 0, 8, 2, 6),
+    (1, "spear", 8, 8, 1, 5),
+    (2, "chariot", 16, 8, 2, 6),
+    (3, "archer", 24, 6, 1, 4),
+    (4, "crossbow", 30, 6, 1, 4),
+    (5, "catapult", 36, 5, 1, 3),        # 机器与乘员分两帧存，这里合成一帧
+    (6, "light-cavalry", 46, 10, 2, 8),
+    (7, "heavy-cavalry", 56, 10, 2, 8),
+    (8, "guard-cavalry", 66, 10, 2, 8),
+    (9, "bandit", 76, 8, 2, 6),
+    (10, "brigand", 84, 8, 2, 6),
+    (11, "outlaw", 92, 8, 2, 6),
+    (12, "band", 100, 9, 2, 7),
+    (13, "beast", 109, 6, 1, 4),
+    (14, "martial", 115, 8, 2, 6),
+    (15, "sorcerer", 123, 11, 2, 9),
+    (16, "barbarian", 134, 8, 2, 6),
+    (18, "transport", 145, 9, 2, 7),
+]
+# 17 民众只有 3 帧走路的样子，没有攻击动作，不给演员（特写退回棋子前冲的演法）
+
+
+def cutin_sheet(ex: Path, start: int, n: int, pair: bool) -> Image.Image:
+    """把一组原版帧拼成一行的图集。pair = 机器/乘员两帧合成一帧（投石车）。"""
+    h = ex / "gfx/original/hexbchr"
+    if pair:
+        w, fh = 96, 64
+        sheet = Image.new("RGBA", (w * n, fh), (0, 0, 0, 0))
+        for i in range(n):
+            frame = Image.new("RGBA", (w, fh), (0, 0, 0, 0))
+            frame.alpha_composite(rgba(h / f"{start + i * 2:03d}.png"), (0, 0))            # 机器
+            frame.alpha_composite(rgba(h / f"{start + i * 2 + 1:03d}.png"), (52, 16))      # 乘员站在机器右侧
+            sheet.paste(frame, (i * w, 0))
+        return sheet
+    w, fh = rgba(h / f"{start:03d}.png").size
+    sheet = Image.new("RGBA", (w * n, fh), (0, 0, 0, 0))
+    for i in range(n):
+        sheet.paste(rgba(h / f"{start + i:03d}.png"), (i * w, 0))
+    return sheet
+
+
+def make_cutin(ex: Path) -> dict:
+    """每个兵种一张帧图集，并生成清单里 cutin.actors 的帧表。"""
+    d = ensure_dir(OUT / "cutin")
+    actors = {}
+    for cls, slug, start, n, idle, impact in CUTIN_CLASSES:
+        sheet = cutin_sheet(ex, start, n, pair=slug == "catapult")
+        sheet.save(d / f"{slug}.png")
+        actor = {
+            "sheet": f"cutin/{slug}.png",
+            "frameWidth": sheet.width // n,
+            "frameHeight": sheet.height,
+            "anims": {
+                "idle": {"frames": list(range(idle)), "fps": 3},
+                "attack": {"frames": list(range(idle, impact + 1)), "fps": 10, "impact": impact - idle},
+                "hurt": {"frames": [n - 1, 0], "fps": 6},
+            },
+        }
+        if slug == "catapult":
+            actor["scale"] = 5       # 96 宽的机器加乘员，放大窄一点才不跟对面撞上
+        actors[f"cls{cls}"] = actor
+    return actors
+
+
+def write_manifest(actors: dict) -> None:
+    """把特写帧表写进素材清单；levels 一段是手写内容，原样保留。"""
+    p = OUT / "manifest.json"
+    m = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    m["cutin"] = {"background": "battle/scene.png", "actors": actors}
+    p.write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> None:
     if len(sys.argv) != 3:
         sys.exit(__doc__)
@@ -255,6 +333,8 @@ def main() -> None:
     info = make_ui(pack)
     make_fx(ex)
     make_duel(ex, units)
+    actors = make_cutin(ex)
+    write_manifest(actors)
 
     palettes = json.loads((ex / "gfx/original/palettes.json").read_text(encoding="utf-8"))
     (OUT / "palette.json").write_text(json.dumps({
@@ -268,6 +348,7 @@ def main() -> None:
     print(f"  战场 {info['map'][0]}×{info['map'][1]} → {info['map'][0]*RES}×{info['map'][1]*RES}（{RES} 倍整数放大）")
     print(f"  棋子 {len(units)} 支部队 × 2 行，帧 {FRAME}×{FRAME}；头像 {len(PORTRAIT)} 张 64×80")
     print(f"  UI 框 {info['frame']}、特效 {len(FX_NAMES)} 张、战斗特写 {len(units)} 帧")
+    print(f"  战斗特写帧表：{len(actors)} 个兵种（{len(CUTIN_CLASSES)} 组动作）→ {'/'.join(['cutin'])}/")
 
 
 if __name__ == "__main__":

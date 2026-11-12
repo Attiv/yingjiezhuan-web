@@ -16,7 +16,8 @@ const [INK, CINNABAR, GREEN, GOLD, PURPLE] = [0x000000, 0xef6500, 0x00ba75, 0xff
 
 /** 画面素材清单 public/assets/manifest.json：每一关用哪张地图、哪张棋子图（相对 assets/）。 */
 export interface Manifest {
-  levels?: Record<string, { map?: string; tokens?: string }>;
+  /** static：这一关的静态特写图目录（scene.png + unit-N.png），配好帧动画演员时不会显示。 */
+  levels?: Record<string, { map?: string; tokens?: string; static?: string }>;
   /** 战斗特写：攻击时盖在战场上的一条横幅，左攻右守，各一个按帧表播放的演员。不写就没有特写。 */
   cutin?: { background?: string; actors: Record<string, Actor> }; // 演员按部队名字、`cls兵种号`、`*` 的顺序找
 }

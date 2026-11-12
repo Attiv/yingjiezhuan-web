@@ -45,6 +45,10 @@
   战场/兵种用 slot 1，头像/界面用 slot 0。
 - **朝向**：`HEXZCHR` 只存了一个方向（骑兵马头一律朝右），游戏运行时靠左右镜像生成反方向。
   网页版在 `src/scene.ts` 里按阵营和移动方向做 `setFlipX`，所以原始 PNG 不要预先翻转。
+- **战斗帧分组**：`hexbchr` 按兵种连续排列，顺序同 `src/data/tables.json` 的 `classNames`
+  （短兵 0–7、长兵 8–15、战车 16–23…运输队 145–153），每组排法一致：开头 1–2 帧待机、中间出手、
+  带爆发帧算命中、末帧后仰受击。发石车是机器/乘员两帧交替存，用前要合成。
+  网页版用到的切帧表在 `tools/make_original_assets.py` 的 `CUTIN_CLASSES`。
 - 完整规格见参考项目 `docs/reverse-engineering/FORMATS.md`（本仓库未附带，见下方链接）。
 
 ## 重新生成
