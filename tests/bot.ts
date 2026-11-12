@@ -36,14 +36,16 @@ function threat(b: Battle, u: Unit, x: number, y: number): number {
  * 打法：刘备躲远；关羽、张飞稳着打——优先能击破的，其次伤害高的，少挨打，残血回村庄或鹿砦；
  * 关羽只要走得到华雄身边就直接贴上去（触发单挑）；张飞不碰华雄，把单挑留给关羽。
  */
-export function plan(b: Battle, name: string): Plan {
-  const u = b.units.find((v) => v.name === name)!;
+export function plan(b: Battle, who: string): Plan {
+  // who 可以是武将 id（guan_yu）或名字（關羽），两种剧本数据都用得上
+  const find = (k: string) => b.units.find((v) => v.key === k || v.name === k);
+  const u = find(who)!;
   const at = (x: number, y: number) => y * b.w + x;
-  const boss = bySlot(b, 15)!;
-  const guan = b.units.find((v) => v.name === '关羽')!;
+  const boss = b.units.find((v) => v.on && v.slot >= 15 && v.commander) ?? bySlot(b, 15)!;
+  const guan = find('guan_yu') ?? find('关羽');
   const enemies = b.units.filter((v) => v.on && foes(v, u));
-  const leaveBoss = guan.on && enemies.length > 1 ? enemies.filter((v) => v !== boss) : enemies;
-  const prey = name === '关羽' ? leaveBoss : name === '张飞' ? leaveBoss : [];
+  const leaveBoss = guan?.on && enemies.length > 1 ? enemies.filter((v) => v !== boss) : enemies;
+  const prey = u.key === 'guan_yu' || u.name === '关羽' || u.key === 'zhang_fei' || u.name === '张飞' ? leaveBoss : [];
   const walkTo = (t: { x: number; y: number }) => field(b, u, t.x, t.y, 255, -1, true).dist;
   const toFoes = enemies.map(walkTo);
   const f = reachField(b, u);
@@ -51,7 +53,7 @@ export function plan(b: Battle, name: string): Plan {
   for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) if (canStop(b, u, f, x, y)) cells.push([x, y]);
   const nearest = (x: number, y: number) => Math.min(...toFoes.map((d) => d[at(x, y)]));
 
-  if (name === '关羽' && boss.on) {
+  if ((u.key === 'guan_yu' || u.name === '关羽') && boss.on) {
     const beside = cells.find(([x, y]) => Math.abs(x - boss.x) + Math.abs(y - boss.y) === 1);
     if (beside) return { to: beside, target: null };
   }
@@ -78,7 +80,7 @@ export function plan(b: Battle, name: string): Plan {
     const danger = threat(b, u, x, y);
     const hit = prey.length && !weak ? best(x, y) : null;
     let score = -danger * 1.5 - (danger >= u.hp ? 5000 : 0);
-    if (name === '刘备') score += nearest(x, y) * 4;
+    if (u.key === 'liu_bei' || u.name === '刘备') score += nearest(x, y) * 4;
     else if (weak) score -= Math.min(...toHeal.map((d) => d[at(x, y)])) * 30 - (heal.includes(b.terrain[at(x, y)]) ? 200 : 0);
     else score += (hit?.gain ?? 0) - nearest(x, y) * 6;
     if (!pick || score > pick.score) pick = { cell: [x, y], score, target: hit?.t ?? null };
@@ -87,4 +89,4 @@ export function plan(b: Battle, name: string): Plan {
 }
 
 /** 我军的行动顺序：张飞先清路，关羽随后，刘备最后。 */
-export const ORDER = ['张飞', '关羽', '刘备'];
+export const ORDER = ['zhang_fei', 'guan_yu', 'liu_bei'];

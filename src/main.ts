@@ -1,32 +1,30 @@
 import * as Phaser from 'phaser';
 import './style.css';
-import { CAMPAIGN as MAIN } from './data/campaign';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
-import { SISHUI } from './data/sishui';
+import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doItem, doMove, doWait, endPhase, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
-import type { Battle, Ev, Unit } from './rules/types';
+import type { Battle, Ev, Flag, Unit } from './rules/types';
 import { BattleScene, CELL, RES, VIEW_H, VIEW_W, sideOf } from './scene';
-import { checkScript, currentStep, nextStep, startStory, type Shown, type Story } from './story';
+import { checkScript, currentStep, nextStep, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
 
-const SAVE_KEY = 'yjz.save.v2'; // 流程进度 + 战斗状态
-registerLevel(SISHUI);
+const SAVE_KEY = 'yjz.save.v3'; // 流程进度 + 战斗状态
 /** 仅开发模式：?demo 换成不带任何图的演示流程，用来验证框架本身。 */
 const demo = import.meta.env.DEV && new URLSearchParams(location.search).has('demo');
 if (demo) DEMO_LEVELS.forEach(registerLevel);
-const CAMPAIGN = checkScript(demo ? DEMO : MAIN, (id) => !!levelById(id));
-/** 头像文件：原版 FACEDAT.R3 里各武将的 64×80 像素像；杂兵没有武将记录，用原版兵种图代替。 */
-const PORTRAITS: Record<string, string> = {
-  刘备: 'liu_bei', 关羽: 'guan_yu', 张飞: 'zhang_fei', 公孙瓒: 'gongsun_zan', 陶谦: 'tao_qian',
-  华雄: 'hua_xiong', 李肃: 'li_su', 胡轸: 'hu_zhen', 赵岑: 'zhao_cen',
-};
+export const CAMPAIGN = checkScript(demo ? DEMO : SCRIPT, demo ? (id) => !!levelById(id) : hasLevel);
+const lvOf = (id: string) => (demo ? levelById(id) : level(id));
+
 const SIDE = [['player', '我军'], ['ally', '友军'], ['enemy', '敌军']] as const;
+/** 原版开局就在队里的三人。其余武将按剧本里的「加入」逐步入队。 */
+const START_PARTY = ['liu_bei', 'guan_yu', 'zhang_fei'];
 const params = new URLSearchParams(location.search);
 
 const $ = (id: string) => document.getElementById(id)!;
 const esc = (s: unknown) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
-const faceStyle = (key: string) => `background-image:url(/assets/portraits/${PORTRAITS[key] ?? '_unknown'}.png)`;
+/** 头像路径；杂兵没有武将头像（face 是 clsN），用一张通用像。 */
+const faceStyle = (face?: string) => `background-image:url(/assets/${!face || face.startsWith('cls') ? 'portraits/_unknown' : face}.png)`;
 
 let b: Battle;
 let story: Story = startStory(CAMPAIGN);
@@ -39,6 +37,48 @@ let pick: { targets: Unit[]; run: (t: Unit) => Ev[] } | null = null;
 let answer: ((i: number) => void) | null = null; // 对话框等待中的回调
 let onEsc = 0; // 按 Esc 时回答的选项序号；-1 = 必须自己选
 let autoTalk = false; // 仅开发模式的 ?fast：对话不等点击
+
+/** 武将的初始成长：等级取原版数据，其余空白。 */
+const blank = (id: string) => ({ level: officers[id]?.level ?? 1, exp: 0, items: [] as number[] });
+
+/** 剧情要改队伍时的落地：加入、离队、升级、得道具、转职。 */
+const API: StoryApi = {
+  join(st, id) {
+    if (!officers[id]) return log(`剧本里的人 ${id} 在武将表里没有，加入这一步略过。`);
+    if (!st.party.includes(id)) st.party.push(id);
+    st.roster[id] ??= blank(id);
+    log(`${nameOf(id)} 加入。`);
+  },
+  away(st, id) {
+    st.party = st.party.filter((x) => x !== id);
+    st.deploy = st.deploy.filter((x) => x !== id);
+    log(`${nameOf(id)} 离队。`);
+  },
+  level(st, id, n) {
+    const r = (st.roster[id] ??= blank(id));
+    r.level = Math.max(1, r.level + n);
+    log(`${nameOf(id)} 升到 ${r.level} 级。`);
+  },
+  item(st, id) {
+    const n = itemId(id);
+    if (n !== undefined) st.bag.push(n);
+  },
+  cls(st, id, cls) {
+    (st.roster[id] ??= blank(id)).cls = cls;
+  },
+};
+
+// ---------------------------------------------------------------- 音乐 ----
+const audio = new Audio();
+audio.loop = true;
+let bgmKey = '';
+function playBgm(key: string, force = false) {
+  if (!key || (key === bgmKey && !force)) return;
+  bgmKey = key;
+  audio.src = `/assets/bgm/${key}.mp3`;
+  audio.volume = 0.55;
+  void audio.play().catch(() => {}); // 浏览器不允许自动播放时静音进行
+}
 
 // ---------------------------------------------------------------- 画面各栏 ----
 function renderTurn() {
@@ -98,8 +138,11 @@ function describe(ev: Ev): string {
     case 'exp': return name(ev.slot) + [ev.gain ? `经验 +${ev.gain}` : '', ev.levels ? `升到 ${bySlot(b, ev.slot)!.level} 级` : ''].filter(Boolean).join('，') +
       (ev.learned.length ? `，学会「${ev.learned.map((id) => TB.strategyNames[id]).join('、')}」` : '');
     case 'recover': return `${name(ev.slot)}休整：${[ev.hp ? `兵力 +${ev.hp}` : '', ev.morale ? `士气 +${ev.morale}` : ''].filter(Boolean).join('，')}`;
+    case 'hp': return `${name(ev.slot)}兵力 ${ev.delta}`;
     case 'confuse': return ev.on ? `${name(ev.slot)}陷入混乱！` : `${name(ev.slot)}恢复了秩序。`;
     case 'retreat': return `${name(ev.slot)}撤退。`;
+    case 'spawn': return '敌军增援赶到！';
+    case 'objective': return `胜利条件：${ev.text}`;
     case 'gain': return `${name(ev.slot)}${ev.text}`;
     case 'end': return ev.text;
     default: return '';
@@ -112,7 +155,8 @@ async function present(evs: Ev[]) {
     const text = describe(ev);
     if (text) log(text);
     if (ev.t === 'round' || ev.t === 'stage') renderTurn();
-    if (ev.t === 'talk') await talk(ev.who, ev.text);
+    if (ev.t === 'drama') await playScene(ev.scene);
+    else if (ev.t === 'talk') await talk(ev.who, ev.text);
     else if (ev.t === 'hit' && scene.speed) await clash(ev);
     else await scene.play(ev);
   }
@@ -134,7 +178,6 @@ async function clash(ev: Extract<Ev, { t: 'hit' }>) {
   const el = $('clash');
   el.innerHTML = side(a, scene.hpOf(a.slot), 'l') + `<em>${ev.counter ? '反击' : '攻击'}</em>` + side(d, before, 'r');
   el.hidden = false;
-  // 旧的静态特写图：清单给这一关写了 static 才用，而且给双方配了帧动画演员时让位
   const art = scene.manifest.levels?.[b.level]?.static;
   const idx = (u: Unit) => b.units.findIndex((v) => v.slot === u.slot);
   const duel = $('duel');
@@ -155,9 +198,9 @@ async function clash(ev: Extract<Ev, { t: 'hit' }>) {
 
 // ---------------------------------------------------------------- 对话与询问 ----
 /** 对话框。who 为空是旁白；给了 options 就得点其中一项，返回它的序号，没给就点任意处继续。 */
-function talk(who: string, text: string, options: string[] = [], esc_ = options.length ? -1 : 0): Promise<number> {
+function talk(who: string, text: string, options: string[] = [], face = '', esc_ = options.length ? -1 : 0): Promise<number> {
   const el = $('talk');
-  el.innerHTML = (who ? `<div class="face" style="${faceStyle(who)}"></div>` : '') + `<div>${who ? `<h3>${esc(who)}</h3>` : ''}<p>${esc(text)}</p>` +
+  el.innerHTML = (who ? `<div class="face" style="${faceStyle(face)}"></div>` : '') + `<div>${who ? `<h3>${esc(who)}</h3>` : ''}<p>${esc(text)}</p>` +
     (options.length ? `<div class="ask">${options.map((o, i) => `<button class="btn" data-i="${i}">${esc(o)}</button>`).join('')}</div>` : '') + '</div>';
   el.hidden = false;
   onEsc = esc_;
@@ -172,36 +215,316 @@ $('talk').addEventListener('click', (e) => {
   if ($('talk').querySelector('.ask') && !btn) return; // 有选项时必须点按钮
   answer?.(Number(btn?.dataset.i ?? 0));
 });
-const confirmBox = (text: string) => talk('刘备', text, ['是', '否'], 1).then((i) => i === 0);
+const say = (who: string, text: string) => talk(nameOf(who), text, [], faceOf(who) ?? '');
+const confirmBox = (text: string) => talk('刘备', text, ['是', '否'], 'faces/038', 1).then((i) => i === 0);
+
+// ---------------------------------------------------------------- 单挑演出 ----
+/** 单挑用的两匹马：有专属图集的用专属，其余用原版的通用武将。 */
+const DUEL_SHEETS = new Set(['guan_yu', 'zhang_fei', 'lu_bu']);
+const DUEL_TERRAIN: Record<number, string> = {
+  0: 'plain', 1: 'forest', 2: 'mountain', 3: 'river', 4: 'bridge', 5: 'wall', 6: 'castle', 7: 'grass',
+  8: 'village', 9: 'cliff', 10: 'gate', 11: 'wasteland', 12: 'wall', 13: 'fort', 14: 'barracks',
+  15: 'granary', 16: 'treasury', 17: 'house',
+};
+const frameCache = new Map<string, HTMLImageElement>();
+function duelImage(key: string): Promise<HTMLImageElement> {
+  const cached = frameCache.get(key);
+  if (cached) return Promise.resolve(cached);
+  return new Promise((done) => {
+    const im = new Image();
+    im.onload = () => (frameCache.set(key, im), done(im));
+    im.onerror = () => done(im);
+    im.src = `/assets/duel/${key}.png`;
+  });
+}
+const DFRAME = 96;
+const DSCALE = 3;
+
+interface DuelAct { side: 'left' | 'right' | string; act: string; n?: number }
+
+/** 单挑：整屏上两骑对冲，按剧本里的 act 表（charge / strike / fall / back）逐帧演。 */
+async function playDuel(aId: string, bId: string, acts: DuelAct[]) {
+  const el = $('duelplay');
+  const [aKey, bKey] = [DUEL_SHEETS.has(aId) ? aId : 'left', DUEL_SHEETS.has(bId) ? bId : 'right'];
+  const [ia, ib] = await Promise.all([duelImage(aKey), duelImage(bKey)]);
+  const terrain = DUEL_TERRAIN[terrainAt(b, Math.floor(b.w / 2), Math.floor(b.h / 2))] ?? 'plain';
+  el.innerHTML = `<div class="terrain" style="background-image:url(/assets/duel/terrain_${terrain}.png)"></div>` +
+    `<canvas class="left" width="${DFRAME * DSCALE}" height="${DFRAME * DSCALE}"></canvas>` +
+    `<canvas class="right" width="${DFRAME * DSCALE}" height="${DFRAME * DSCALE}"></canvas>` +
+    `<div class="versus"><b>${esc(bySlot(b, 0) ? nameOf(aId) : aId)}</b><em>單騎決鬥</em><b>${esc(nameOf(bId))}</b></div>`;
+  el.hidden = false;
+  const ctx = (sel: string) => (el.querySelector(sel) as HTMLCanvasElement).getContext('2d')!;
+  const [ca, cb] = [ctx('.left'), ctx('.right')];
+  const draw = (c: CanvasRenderingContext2D, im: HTMLImageElement, frame: number) => {
+    c.clearRect(0, 0, DFRAME * DSCALE, DFRAME * DSCALE);
+    c.imageSmoothingEnabled = false;
+    c.drawImage(im, frame * DFRAME, 0, DFRAME, DFRAME, 0, 0, DFRAME * DSCALE, DFRAME * DSCALE);
+  };
+  const wait = (ms: number) => new Promise<void>((done) => setTimeout(done, Math.max(1, ms * (scene.speed || 1))));
+  const show = (side: 'left' | 'right', frame: number) => {
+    if (side === 'left') draw(ca, ia, frame);
+    else draw(cb, ib, frame);
+  };
+  const play = async (side: 'left' | 'right', frames: number[], step: number, hold = false) => {
+    for (const f of frames) {
+      show(side, f);
+      await wait(step);
+    }
+    if (!hold) show(side, 0);
+  };
+  draw(ca, ia, 0);
+  draw(cb, ib, 0);
+  await wait(700);
+  for (const act of acts) {
+    const side = act.side === 'right' ? 'right' : 'left';
+    if (act.act === 'charge') await play(side, [2, 3, 4], 90);
+    else if (act.act === 'strike') {
+      const n = Math.min(3, Math.max(1, Math.round((act.n ?? 3) / 3)));
+      for (let i = 0; i < n; i++) {
+        await play(side, [5, 6, 7, 8, 9, 10], 65);
+        await wait(60);
+      }
+    } else if (act.act === 'fall') {
+      show(side, 11);
+      await wait(180);
+      show(side, 12);
+      await wait(220);
+      show(side, 14);
+      await wait(320);
+    } else if (act.act === 'back') await play(side, [4, 3, 2, 1], 80);
+  }
+  await wait(500);
+  el.hidden = true;
+}
 
 // ---------------------------------------------------------------- 剧情 ----
+/** 剧情背景：原版事件插画（224×144）按 2 倍摆进舞台中央。 */
+function showPicture(key: string) {
+  const el = $('screen');
+  el.className = 'story';
+  el.hidden = false;
+  el.innerHTML = key ? `<img class="pic" src="/assets/pictures/${key}.png" alt="">` : '';
+}
+function storyFrame() {
+  showPicture(story.picture);
+  playBgm(story.bgm);
+  $('stage').classList.add('story');
+}
+/** 章节标题：居中的一条横幅，点一下或按回车继续。 */
+function chapter(text: string): Promise<void> {
+  const el = $('screen');
+  el.className = 'story';
+  el.hidden = false;
+  const box = document.createElement('div');
+  box.className = 'chapter';
+  box.textContent = text;
+  el.append(box);
+  return new Promise((done) => {
+    const end = () => {
+      box.remove();
+      document.removeEventListener('keydown', key);
+      el.removeEventListener('click', end);
+      done();
+    };
+    const key = (e: KeyboardEvent) => (e.key === 'Enter' || e.key === ' ') && end();
+    document.addEventListener('keydown', key);
+    el.addEventListener('click', end);
+    setTimeout(() => autoTalk && end(), 50);
+  });
+}
+function hideStoryFrame() {
+  $('screen').hidden = true;
+  $('screen').innerHTML = '';
+  $('stage').classList.remove('story');
+}
+
+/** 战场里插播的一幕：演出、单挑、选项，演完回战场。
+ * 这一幕里的标志先读战场变量（b.vars），再读流程标志；set 写进战场变量，战后并回流程。 */
+async function playScene(id: string) {
+  const steps = gameScene(id);
+  if (!steps.length) return;
+  const labels = new Map<string, number>();
+  steps.forEach((s, i) => s.t === 'label' && labels.set(s.name, i));
+  const flags = () => ({ ...story.flags, ...b.vars });
+  const el = $('screen');
+  el.className = 'story';
+  el.hidden = false;
+  el.innerHTML = '';
+  $('stage').classList.add('story');
+  let pc = 0;
+  try {
+    for (let guard = 0; guard < 4000 && pc >= 0 && pc < steps.length; guard++) {
+      const st = steps[pc] as Step;
+      // 跳到某个标签；没给标签（或找不到）就是往下走一步
+      const to = (label?: string) => { const at = label === undefined ? undefined : labels.get(label); pc = at ?? pc + 1; };
+      if (st.t === 'end') break;
+      else if (st.t === 'label') { pc++; continue; }
+      else if (st.t === 'picture') { st.key ? (el.innerHTML = `<img class="pic" src="/assets/pictures/${st.key}.png" alt="">`) : (el.innerHTML = ''); pc++; }
+      else if (st.t === 'bgm') { playBgm(st.key); pc++; }
+      else if (st.t === 'text') { await talk('', st.text); pc++; }
+      else if (st.t === 'title') { await chapter(st.text); pc++; }
+      else if (st.t === 'say') { await say(st.who, st.text); pc++; }
+      else if (st.t === 'choice') {
+        const i = await talk(st.who ? nameOf(st.who) : '', st.text, st.options.map((o) => o.label));
+        const o = st.options[i];
+        for (const [k, v] of Object.entries(o?.set ?? {})) b.vars[k] = v;
+        to(o?.goto);
+      } else if (st.t === 'goto') to(st.label);
+      else if (st.t === 'if') to(testFlag(flags(), st.flag, st.is, st.cmp) ? st.goto : undefined);
+      else if (st.t === 'set') { b.vars[st.flag] = st.value; pc++; }
+      else if (st.t === 'gold') { story.gold += st.n; pc++; }
+      else if (st.t === 'join') { API.join?.(story, st.id); pc++; }
+      else if (st.t === 'away') { API.away?.(story, st.id); pc++; }
+      else if (st.t === 'level') { API.level?.(story, st.id, st.n); pc++; }
+      else if (st.t === 'item') { API.item?.(story, st.id); pc++; }
+      else if (st.t === 'class') { API.cls?.(story, st.id, st.cls); pc++; }
+      else if (st.t === 'duel') { await playDuel(st.a, st.b, st.acts); pc++; }
+      else pc++; // bg / hide：这一幕没有场上人物，不用处理
+    }
+  } finally {
+    el.hidden = true;
+    el.className = '';
+    el.innerHTML = '';
+    $('stage').classList.remove('story');
+  }
+}
+
 /** 从某一步起把流程演下去：对话、旁白、选择在这里处理；遇到战斗先出战前说明，全部演完回标题。 */
 async function playStory(step: Shown | null) {
   mode = 'busy'; // 剧情期间战场不接受操作
-  $('stage').classList.add('story');
-  while (step && step.t !== 'battle') {
-    const el = $('screen');
-    el.className = 'story';
-    el.replaceChildren();
-    el.style.backgroundImage = story.bg ? `url(/assets/${encodeURIComponent(story.bg)}.png)` : '';
-    el.hidden = false;
-    const picked = step.t === 'choice' ? await talk(step.who ?? '', step.text, step.options.map((o) => o.label)) : await talk(step.t === 'say' ? step.who : '', step.text);
-    step = nextStep(CAMPAIGN, story, picked);
+  storyFrame();
+  while (step) {
+    switch (step.t) {
+      case 'say': await say(step.who, step.text); break;
+      case 'text': await talk('', step.text); break;
+      case 'title': await chapter(step.text); break;
+      case 'choice': {
+        const i = await talk(step.who ? nameOf(step.who) : '', step.text, step.options.map((o) => o.label));
+        storyFrame();
+        step = nextStep(CAMPAIGN, story, i, API);
+        continue;
+      }
+      case 'duel': await playDuel(step.a, step.b, step.acts); break;
+      case 'camp': await camp(step); storyFrame(); step = nextStep(CAMPAIGN, story, 0, API); continue;
+      case 'ending': return showEnding(step.text);
+      case 'battle': hideStoryFrame(); return showBrief(step.level);
+    }
+    storyFrame();
+    step = nextStep(CAMPAIGN, story, 0, API);
   }
-  $('stage').classList.remove('story');
-  if (step) return showBrief();
+  hideStoryFrame();
   mode = 'over';
-  screen(`<h1>${esc(CAMPAIGN.title)} 完</h1><div class="row"><button class="btn" data-go="title">回到标题</button></div>`);
+  showEnding('');
 }
-/** 战斗打完，把结果带回流程：胜了记下成长、军资和战斗里触发过的事件，再接着往下演。 */
+
+/** 战斗打完，把结果带回流程：胜了记下成长、军资和战斗里的事件，再接着往下演。 */
 function afterBattle() {
   const won = b.stage === 'won';
   if (won) {
     Object.assign(story.roster, harvest(b));
     story.gold += b.gold;
-    for (const f of b.flags) story.flags[`${b.level}.${f}`] = true;
   }
-  void playStory(nextStep(CAMPAIGN, story, won ? 0 : 1));
+  for (const [k, v] of Object.entries(b.vars)) if (!k.startsWith('__')) story.flags[k] = v as Flag;
+  story.flags[`${b.level}.${won ? 'won' : 'lost'}`] = true;
+  story.deploy = [];
+  void playStory(nextStep(CAMPAIGN, story, won ? 0 : 1, API));
+}
+
+// ---------------------------------------------------------------- 营地 ----
+/** 商店价格：原版道具表没有标价，这里按道具档次自定一份。 */
+const PRICE: Record<number, number> = { 27: 60, 28: 120, 29: 200, 30: 30, 31: 80, 32: 150, 52: 200, 54: 120 };
+const SEED = () => Number(params.get('seed')) || Date.now();
+
+/** 出兵准备：编成、买道具、给武将配道具。出发时把名单记进流程。 */
+function camp(step: Extract<Shown, { t: 'camp' }>) {
+  const lv = lvOf(step.battle);
+  if (!lv) throw new Error(`营地指向的关卡 ${step.battle} 没有数据`);
+  const party = story.party.filter((id) => officers[id]);
+  if (!story.deploy.length) story.deploy = defaultDeploy(step.battle, party);
+  const required = lv.deploy?.required ?? [];
+  const forbidden = lv.deploy?.forbidden ?? [];
+  const max = lv.deploy?.max ?? party.length;
+  let pick = party[0] ?? '';
+  const el = $('screen');
+  const rows = () => party.map((id) => {
+    const o = officers[id];
+    const out = story.deploy.includes(id);
+    const locked = required.includes(id);
+    return `<div class="row${pick === id ? ' on' : ''}"><button class="btn name" data-pick="${id}">` +
+      `<b>${esc(o.name)}</b><span>Lv${story.roster[id]?.level ?? o.level}　${TB.classNames[story.roster[id]?.cls ?? o.cls]}</span>` +
+      `<i>${out ? '出陣' : '待命'}${locked ? '（必須）' : ''}</i></button>` +
+      `<button class="btn tog" data-toggle="${id}"${locked || forbidden.includes(id) ? ' disabled' : ''}>${out ? '待命' : '出陣'}</button></div>`;
+  }).join('');
+  const bag = () => {
+    const counts = new Map<number, number>();
+    for (const id of story.bag) counts.set(id, (counts.get(id) ?? 0) + 1);
+    if (!counts.size) return '<p class="note">包袱里沒有道具。</p>';
+    return [...counts].map(([id, n]) => `<button class="btn item" data-bag="${id}">${esc(itemName(id))}×${n}</button>`).join('');
+  };
+  const carried = () => {
+    const items = story.roster[pick]?.items ?? officers[pick]?.items ?? [];
+    return items.length ? items.map((id, i) => `<button class="btn item" data-drop="${i}">${esc(itemName(id))}</button>`).join('') : '<span class="note">空手</span>';
+  };
+  const shop = step.shop.map((id) => `<div class="buy"><span>${esc(itemName(id))}</span><button class="btn" data-buy="${id}"${story.gold < (PRICE[id] ?? 100) ? ' disabled' : ''}>${PRICE[id] ?? 100} 金</button></div>`).join('');
+  const render = () => {
+    el.className = '';
+    el.innerHTML = `<div class="card camp"><h1 style="font-size:24px;line-height:30px">${esc(step.title)}</h1>` +
+      `<p class="sub">軍資 ${story.gold} 金　出征 ${story.deploy.length}/${max} 名</p>` +
+      `<div class="camp-cols"><section><h2>編成</h2>${rows()}</section>` +
+      `<section><h2>道具・${esc(officers[pick]?.name ?? '')}</h2><div class="items">${carried()}</div><h2>包袱</h2><div class="items">${bag()}</div>` +
+      `<h2>商店</h2>${shop}</section></div>` +
+      `<div class="row end"><button class="btn" data-go="camp-save">存檔</button>` +
+      `<button class="btn" data-go="camp-go"${story.deploy.length ? '' : ' disabled'}>出陣</button></div>`;
+    el.hidden = false;
+    (el.querySelector('[data-go="camp-go"]') as HTMLElement | null)?.focus();
+  };
+  render();
+  return new Promise<void>((done) => {
+    el.onclick = (e) => {
+      const t = e.target as HTMLElement;
+      const pickId = t.closest<HTMLElement>('[data-pick]')?.dataset.pick;
+      const toggle = t.closest<HTMLElement>('[data-toggle]')?.dataset.toggle;
+      const buy = t.closest<HTMLElement>('[data-buy]')?.dataset.buy;
+      const bagId = t.closest<HTMLElement>('[data-bag]')?.dataset.bag;
+      const drop = t.closest<HTMLElement>('[data-drop]')?.dataset.drop;
+      const go = t.closest<HTMLElement>('[data-go]')?.dataset.go;
+      if (pickId) pick = pickId;
+      if (toggle) {
+        const out = story.deploy.includes(toggle);
+        if (out && !required.includes(toggle)) story.deploy = story.deploy.filter((x) => x !== toggle);
+        else if (!out && story.deploy.length < max) story.deploy.push(toggle);
+      }
+      if (buy) {
+        const id = Number(buy);
+        const price = PRICE[id] ?? 100;
+        if (story.gold >= price) {
+          story.gold -= price;
+          story.bag.push(id);
+        }
+      }
+      if (bagId) {
+        const id = Number(bagId);
+        const cur = { ...(story.roster[pick] ?? { level: officers[pick]?.level ?? 1, exp: 0, items: [] }) };
+        cur.items ??= [];
+        if (cur.items.length < 8) {
+          cur.items.push(id);
+          story.roster[pick] = cur;
+          story.bag.splice(story.bag.indexOf(id), 1);
+        }
+      }
+      if (drop !== undefined) {
+        const cur = story.roster[pick];
+        if (cur?.items?.[Number(drop)] !== undefined) story.bag.push(cur.items.splice(Number(drop), 1)[0]);
+      }
+      if (go === 'camp-go') {
+        el.onclick = null;
+        el.hidden = true;
+        return done();
+      }
+      if (go === 'camp-save') saveCamp();
+      render();
+    };
+  });
 }
 
 // ---------------------------------------------------------------- 指令菜单 ----
@@ -367,6 +690,14 @@ async function onCell(x: number, y: number) {
 }
 
 // ---------------------------------------------------------------- 存档 ----
+function saveCamp() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ story }));
+    log('已存档。');
+  } catch {
+    log('存档失败：浏览器不允许写入本地存储。');
+  }
+}
 function save() {
   if (mode !== 'idle' || b.stage !== 'player' || b.undo) return;
   try {
@@ -376,16 +707,18 @@ function save() {
     log('存档失败：浏览器不允许写入本地存储。');
   }
 }
-function readSave(): { story: Story; battle: Battle } | null {
+interface SaveData { story: Story; battle?: Battle }
+function readSave(): SaveData | null {
   try {
-    let d = JSON.parse(localStorage.getItem(SAVE_KEY) ?? 'null');
-    // 旧版存档只有战斗本身：补一份停在这一关的流程进度，旧档还能接着打
-    const old = !d && JSON.parse(localStorage.getItem('yjz.sishui.save.v1') ?? 'null');
-    if (old) d = { story: { ...startStory(CAMPAIGN), pc: CAMPAIGN.steps.findIndex((s) => s.t === 'battle' && s.level === old.level) }, battle: old };
-    const bt = d?.battle;
-    const step = CAMPAIGN.steps[d?.story?.pc];
-    const ok = bt && d.story.script === CAMPAIGN.id && step?.t === 'battle' && step.level === bt.level && levelById(bt.level) &&
-      Array.isArray(bt.units) && Array.isArray(bt.terrain) && bt.terrain.length === bt.w * bt.h && typeof bt.rng === 'number' && bt.stage === 'player';
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY) ?? 'null') as SaveData | null;
+    const st = d?.story;
+    if (!st || st.script !== CAMPAIGN.id || !Array.isArray(st.party)) return null;
+    const bt = d.battle;
+    if (!bt) return d;
+    const step = CAMPAIGN.steps[st.pc];
+    const ok = step?.t === 'battle' && step.level === bt.level && lvOf(bt.level) &&
+      Array.isArray(bt.units) && Array.isArray(bt.terrain) && bt.terrain.length === bt.w * bt.h &&
+      typeof bt.rng === 'number' && bt.stage === 'player' && !!bt.vars;
     return ok ? d : null;
   } catch {
     return null;
@@ -395,8 +728,13 @@ function load() {
   const d = readSave();
   if (!d) return log('没有可用的存档。'), false;
   story = d.story;
-  begin(d.battle);
-  log('已读档。');
+  if (d.battle) {
+    begin(d.battle);
+    log('已读档。');
+  } else {
+    $('screen').hidden = true;
+    void playStory(currentStep(CAMPAIGN, story));
+  }
   return true;
 }
 
@@ -411,7 +749,11 @@ function screen(html: string, veil = false) {
 }
 $('screen').addEventListener('click', (e) => {
   const go = (e.target as HTMLElement).closest('button')?.dataset.go;
-  if (go === 'start') (story = startStory(CAMPAIGN)), void playStory(nextStep(CAMPAIGN, story));
+  if (go === 'start') {
+    story = startStory(CAMPAIGN, { party: [...START_PARTY] });
+    story.gold = 100;
+    void playStory(nextStep(CAMPAIGN, story, 0, API));
+  }
   if (go === 'new') ($('screen').hidden = true), begin(null);
   if (go === 'next') afterBattle();
   if (go === 'load') ($('screen').hidden = !!readSave()), load() || showTitle('没有可用的存档。');
@@ -420,57 +762,78 @@ $('screen').addEventListener('click', (e) => {
 
 function showTitle(note = '') {
   mode = 'over';
+  audio.pause();
+  bgmKey = '';
   screen(
-    '<div class="seal">非官方<br>复刻</div><h1>汜水关之战</h1>' +
-    '<p class="sub">《三国志英杰传》PC DOS 版 序章第一战</p>' +
-    '<p class="credit">画面取自原版《三国志英杰传》DOS 版的战场、兵种、头像与界面，逐像素还原。详见 docs/assets.md。</p>' +
-    `<div class="row"><button class="btn" data-go="start">开始新游戏</button><button class="btn" data-go="load"${readSave() ? '' : ' disabled'}>读取存档</button></div>` +
+    '<div class="seal">非官方<br>復刻</div><h1>三國志英傑傳</h1>' +
+    '<p class="sub">PC DOS 繁體中文版 全流程復刻</p>' +
+    '<p class="credit">畫面、劇本、地圖、兵種、頭像與音樂均取自原版《三國志英傑傳》DOS 版，逐像素還原。詳見 docs/assets.md。</p>' +
+    `<div class="row"><button class="btn" data-go="start">開始新遊戲</button><button class="btn" data-go="load"${readSave() ? '' : ' disabled'}>讀取存檔</button></div>` +
     (note ? `<p class="sub" style="margin:10px 0 0">${esc(note)}</p>` : ''));
 }
-/** 战前说明：流程停在一个战斗步骤上时，按那一关的数据列出胜败条件。 */
-function showBrief() {
+/** 战前说明：列出这一关的胜利条件、失败条件与出征名单。 */
+function showBrief(levelId: string) {
   mode = 'over';
-  const lv = levelById((currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }>).level)!;
+  const lv = lvOf(levelId)!;
+  const deploy = story.deploy.length ? story.deploy : defaultDeploy(levelId, story.party);
+  const who = deploy.map((id) => officers[id]?.name ?? id).join('、') || '—';
+  const lose = '主將撤退，或超過回合上限';
   screen(
     `<h1 style="font-size:24px;line-height:28px">${esc(lv.name)}</h1>` +
-    `<ul><li>胜利：${esc(lv.goal)}</li><li>失败：${esc(lv.units.find((u) => u.slot === lv.lord)!.name)}撤退，或 ${lv.turnLimit} 回合内未能取胜</li></ul>` +
+    `<ul><li>勝利：${esc(lv.goal || '擊破敵軍主將')}</li><li>失敗：${esc(lose)}</li><li>出征：${esc(who)}</li></ul>` +
     '<p class="sub" style="margin:0">左键选择部队、移动、下令；右键或 Esc 取消；方向键卷动地图；回车结束回合。</p>' +
-    '<div class="row"><button class="btn" data-go="new">出阵</button></div>');
+    '<div class="row"><button class="btn" data-go="new">出陣</button></div>');
 }
 function showResult() {
   mode = 'over';
   renderTurn();
   const won = b.stage === 'won';
+  const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
   screen(
-    `<h1 class="${won ? '' : 'lost'}">${won ? '胜利' : '败北'}</h1><p class="sub">${esc(b.reason)}</p>` +
+    `<h1 class="${won ? '' : 'lost'}">${won ? '勝利' : '敗北'}</h1><p class="sub">${esc(b.reason)}</p>` +
     `<p>历时 ${Math.min(b.round, levelOf(b).turnLimit)} 回合${won ? `，所得军资 ${b.gold} 金` : ''}。</p>` +
-    `<div class="row"><button class="btn" data-go="next">${won || (currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }>).lose !== undefined ? '继续' : '重新开始'}</button>` +
-    (won ? '' : '<button class="btn" data-go="title">回到标题</button>') + '</div>', true);
+    `<div class="row"><button class="btn" data-go="next">${won || step?.lose !== undefined ? '續' : '重新開始'}</button>` +
+    (won ? '' : '<button class="btn" data-go="title">回標題</button>') + '</div>', true);
+}
+function showEnding(text: string) {
+  mode = 'over';
+  hideStoryFrame();
+  playBgm('ending');
+  screen(
+    `<h1>${esc(TITLE)} 完</h1><p class="sub">${esc(text || '全劇終。')}</p>` +
+    `<p>歷時 ${story.gold} 金軍資，${story.party.length} 名武將。</p>` +
+    '<div class="row"><button class="btn" data-go="title">回到標題</button></div>');
 }
 
 /** 开始一场战斗：d 为读档数据；null 表示新开流程当前停着的那一关，带上此前的成长。 */
 function begin(d: Battle | null) {
   $('log').replaceChildren();
   let evs: Ev[] = [];
+  const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
   if (d) b = d;
-  else ({ b, evs } = newBattle(levelById((currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }>).level)!, Number(params.get('seed')) || Date.now(), story.roster));
+  else {
+    if (!step) throw new Error('流程没有停在战斗上');
+    const lv = lvOf(step.level)!;
+    const deploy = story.deploy.length ? story.deploy : defaultDeploy(step.level, story.party);
+    ({ b, evs } = newBattle(lv, SEED(), story.roster, { deploy, flags: story.flags }));
+  }
   const lv = levelOf(b);
   shown = sel = pick = null;
   mode = 'busy';
   renderUnit(null);
   renderTile(0, 0);
-  const lord = bySlot(b, lv.lord)!;
+  const lord = bySlot(b, lv.lord ?? -1) ?? b.units.find((u) => u.mode === 7) ?? b.units[0];
   void scene.setBattle(b).then(() => (void scene.focus(lord.x, lord.y, true), present(evs))).then(() => {
     mode = 'idle';
     renderTurn();
-    if (!d) log(`目标：${lv.goal}。`);
+    if (!d) log(`目标：${b.objective}`);
   });
 }
 
 // ---------------------------------------------------------------- 启动 ----
 const sysButtons: [string, string, () => void][] = [
   ['回合结束', 'wide', () => void endTurn()],
-  ['胜利条件', '', () => void talk('', `胜利：${levelOf(b).goal}。失败：${bySlot(b, levelOf(b).lord)!.name}撤退，或 ${levelOf(b).turnLimit} 回合内未能取胜。`)],
+  ['胜利条件', '', () => void talk('', `胜利：${b.objective}。失败：主将撤退，或 ${levelOf(b).turnLimit} 回合内未能取胜。`)],
   ['全军撤退', '', async () => {
     if (mode !== 'idle') return;
     mode = 'busy';
@@ -526,7 +889,7 @@ game.events.once('ready', () => {
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
-      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene } });
+      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene, level: lvOf } });
     }
     if (demo) {
       // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用
@@ -536,7 +899,10 @@ game.events.once('ready', () => {
       t.refresh();
       scene.manifest = { cutin: { actors: { '*': DEMO_ACTOR } } };
     }
-    b = newBattle(levelById(CAMPAIGN.steps.find((s) => s.t === 'battle')!.level)!, 1).b; // 标题画面背后的静态战场：流程里的第一关
+    // 开局先找到第一场战斗，把它的地图摆在标题画面背后
+    const first = CAMPAIGN.steps.find((s) => s.t === 'battle') as Extract<Step, { t: 'battle' }>;
+    const lv = lvOf(first.level)!;
+    b = newBattle(lv, 1).b;
     void scene.setBattle(b);
     renderUnit(null);
     fit();

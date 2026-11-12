@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import { facesLeft } from './facing';
 import { TB, bySlot } from './rules/core';
+import { levelOf } from './rules/turn';
 import type { Battle, Ev, Unit } from './rules/types';
 
 /** 画布像素与舞台单位之比：战场按 3 倍分辨率画，再缩回舞台里的 416×384，放大后仍然清晰。 */
@@ -49,6 +50,8 @@ export class BattleScene extends Phaser.Scene {
   private ready = new Map<Actor, string>(); // 图集已装好、帧表查过的演员 → 贴图键
   private map?: Phaser.GameObjects.Image;
   private mirror = true; // 棋子图本身朝右，朝左靠镜像；占位棋子上写着字，不镜像
+  private perUnit = false; // 占位棋子按部队序号取帧；原版棋子图按兵种与阵营取帧
+  private static readonly TOKENS = 39; // tokens.png 每行 39 帧：兵种×2 + 阵营，第二行是已行动的样子
   private hp = new Map<number, number>(); // 画面上显示的兵力：事件一条条播，数字跟着一步步变
   private marks!: Phaser.GameObjects.Graphics;
   private cursor!: Phaser.GameObjects.Graphics;
@@ -95,25 +98,29 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.killAll();
     const [mapKey, tokKey] = [`map:${b.level}`, `tokens:${b.level}`];
     const art = this.manifest.levels?.[b.level];
+    const lv = levelOf(b);
+    const mapPath = art?.map ?? lv?.map;
+    const tokPath = art?.tokens ?? lv?.tokens;
     const actors = [...new Set(b.units.map((u) => this.actorOf(u)))].filter((ac): ac is Actor => !!ac && !this.ready.has(ac));
     const bg = this.manifest.cutin?.background;
     let loading = false;
     const want = (key: string, queue: () => void) => this.textures.exists(key) || (queue(), (loading = true));
-    if (art?.map) want(mapKey, () => this.load.image(mapKey, `assets/${art.map}`));
-    if (art?.tokens) want(tokKey, () => this.load.spritesheet(tokKey, `assets/${art.tokens}`, { frameWidth: CELL, frameHeight: CELL }));
+    if (mapPath) want(mapKey, () => this.load.image(mapKey, `assets/${mapPath}`));
+    if (tokPath) want(tokKey, () => this.load.spritesheet(tokKey, `assets/${tokPath}`, { frameWidth: CELL, frameHeight: CELL }));
     if (bg) want('cutin:bg', () => this.load.image('cutin:bg', `assets/${bg}`));
     for (const ac of actors) want(`actor:${ac.sheet}`, () => this.load.spritesheet(`actor:${ac.sheet}`, `assets/${ac.sheet}`, { frameWidth: ac.frameWidth, frameHeight: ac.frameHeight }));
     if (loading) await new Promise<void>((done) => (this.load.once('complete', () => done()), this.load.start()));
     if (this.b !== b) return; // 装载期间又换了一场
     actors.forEach((ac) => this.prepare(ac));
     this.mirror = this.textures.exists(tokKey);
+    this.perUnit = !this.mirror;
     this.placeholders(b, mapKey, tokKey);
     this.map?.destroy();
     this.map = this.add.image(0, 0, mapKey).setOrigin(0).setDisplaySize(b.w * CELL, b.h * CELL);
     this.tokens.forEach((s) => s.destroy());
     this.tokens.clear();
     this.marks.clear();
-    b.units.forEach((u, i) => this.tokens.set(u.slot, this.add.image(0, 0, tokKey, i)));
+    b.units.forEach((u) => this.tokens.set(u.slot, this.add.image(0, 0, tokKey, this.frameOf(u, false))));
     this.cameras.main.setBounds(0, 0, b.w * CELL, b.h * CELL);
     this.sync();
   }
@@ -186,7 +193,7 @@ export class BattleScene extends Phaser.Scene {
     const actor = (u: Unit, left: boolean) => {
       const ac = this.actorOf(u)!;
       const key = this.ready.get(ac)!;
-      const s = this.add.sprite(VW * (left ? 0.3 : 0.7), h - 6 * RES, key).setOrigin(0.5, 1).setScale(ac.scale ?? Math.floor((h * 0.8) / ac.frameHeight)).setFlipX(!left);
+      const s = this.add.sprite(VW * (left ? 0.28 : 0.72), h - 4 * RES, key).setOrigin(0.5, 1).setScale(ac.scale ?? Math.max(2, Math.round((h * 1.05) / ac.frameHeight))).setFlipX(!left);
       s.anims.timeScale = 1 / this.speed;
       s.play(`${key}:idle`);
       box.add(s);
@@ -194,7 +201,8 @@ export class BattleScene extends Phaser.Scene {
     };
     const [att, def] = [actor(a, true), actor(d, false)];
     box.setScrollFactor(0, 0, true); // 钉在画面上，不跟地图卷动
-    await this.wait(180);
+    // 待机：两个演员都在喘气（60 帧循环），让玩家先看清双方的架势
+    await this.wait(900);
     await new Promise<void>((done) => {
       const at = att.ac.anims.attack.impact ?? att.ac.anims.attack.frames.length - 1;
       let hit = false;
@@ -209,7 +217,8 @@ export class BattleScene extends Phaser.Scene {
       att.s.play(`${att.key}:attack`);
       if (at <= 0) impact();
     });
-    await this.wait(460);
+    // 收招后回到待机，继续呼吸一会儿再收起横幅
+    await this.wait(620);
     box.destroy();
   }
 
@@ -217,12 +226,17 @@ export class BattleScene extends Phaser.Scene {
     return this.tokens.get(slot)!;
   }
 
+  /** 棋子帧号：原版棋子图按「兵种×2+阵营」排，第二行是已行动的去饱和版。 */
+  private frameOf(u: Unit, acted: boolean) {
+    if (this.perUnit) return this.b.units.findIndex((v) => v.slot === u.slot) + (acted ? this.b.units.length : 0);
+    return (acted ? BattleScene.TOKENS : 0) + u.cls * 2 + (u.slot >= 15 ? 1 : 0);
+  }
+
   /** 把棋子对齐到当前状态：位置、是否在场；我军已行动的换成灰色那一帧，混乱的歪倒并发紫。 */
   sync() {
-    const n = this.b.units.length;
-    this.b.units.forEach((u, i) => {
+    this.b.units.forEach((u) => {
       const done = u.acted && this.b.stage === 'player' && u.mode === 7;
-      const s = this.tk(u.slot).setFrame(done ? i + n : i).setPosition(mid(u.x), mid(u.y)).setDepth(2 + u.y / 100).setVisible(u.on).setAlpha(1).setScale(1);
+      const s = this.tk(u.slot).setFrame(this.frameOf(u, done)).setPosition(mid(u.x), mid(u.y)).setDepth(2 + u.y / 100).setVisible(u.on).setAlpha(1).setScale(1);
       s.setAngle(u.confused ? -16 : 0).setFlipX(this.mirror && facesLeft(this.b, u)).setTintMode(Phaser.TintModes.MULTIPLY);
       if (u.confused) s.setTint(0x8acfff);
       else s.clearTint();
@@ -409,9 +423,30 @@ export class BattleScene extends Phaser.Scene {
       case 'gain':
         await this.float(unit(ev.slot), '获得', '#ffcf55');
         break;
+      case 'hp': {
+        this.hp.set(ev.slot, Math.max(0, this.hpOf(ev.slot) + ev.delta));
+        await this.float(unit(ev.slot), String(ev.delta), '#ef6500');
+        break;
+      }
+      case 'spawn': {
+        this.sync();
+        await Promise.all(ev.slots.map((slot) => {
+          const s = this.tk(slot);
+          return this.puff('circle_05', s.x, s.y, CINNABAR, { scale: 0.2, alpha: 0.9 }, { scale: 0.9, alpha: 0 }, 480);
+        }));
+        break;
+      }
+      case 'terrain': {
+        // 地形被改：在原图上盖一块同尺寸的色块，标出火烧/水攻改过的格子
+        const t = this.add.rectangle(ev.x * CELL, ev.y * CELL, CELL, CELL, 0xef6500, 0.45).setOrigin(0).setDepth(0.5);
+        await this.tween({ targets: t, alpha: 0.18, duration: 400 });
+        break;
+      }
       case 'stage':
         await this.wait(260);
         break;
+      default:
+        break; // objective / drama / talk 由界面层处理
     }
   }
 }

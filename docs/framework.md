@@ -1,116 +1,172 @@
-# 流程与关卡框架
+# 整部游戏的流程与关卡框架
 
-引擎和内容是分开的：引擎读下面三种数据，内容怎么填由数据决定。仓库里的示例内容只有一条流程
-（`src/data/campaign.ts`，文字自撰）和一关（`src/data/sishui.ts`）。
+游戏内容全部是数据：引擎读 `src/data/game.json`，那是从自己持有的原版盘里转出来的
+**整部《三國志英傑傳》**——5491 步流程、610 幕插剧、70 场战斗、58 张战场地图、129 名武将。
+下面说这份数据长什么样、引擎怎么消费它。
 
-## 1. 流程脚本（剧情 + 战斗的先后）
+```
+原版盘 ──hero-tools original extract/pack──▶ original/{extract,pack}
+                                              │
+                     tools/build_campaign.py  │  剧本 / 战斗 / 武将 / 道具 → JSON
+                                              ▼
+                                    src/data/game.json  （1.4 MB，前端直接 import）
+                                              │
+                        src/data/game.ts      │  装配成 Level / Script
+                                              ▼
+                    src/rules/*（规则）   src/story.ts（流程）   src/main.ts（界面）
+```
 
-一份脚本从头演到尾，对话、旁白、选择、战斗都只是其中一步。类型定义在 `src/story.ts`。
+重新生成：
+
+```bash
+python3 tools/build_campaign.py                    # → src/data/game.json
+python3 tools/make_full_assets.py <EXTRACT> <PACK> # → public/assets/**（图、音乐）
+```
+
+生成脚本只做格式转换（繁中原样保留，只清掉参考包里混进来的韩文模板字），不改台词、不改数值；
+输出末尾会自检「缺失标签 / 缺失关卡 / 缺失地图」，都应为 0。
+
+## 1. 流程脚本
+
+一份脚本从头演到尾，对话、旁白、选择、营地、单挑、战斗、结局都只是其中的一步（`src/story.ts`）。
 
 | 步骤 | 写法 | 作用 |
 |---|---|---|
-| 背景 | `{ t: 'bg', key: 'title' }` | 换背景图，界面按 `public/assets/<key>.png` 找；空串 = 不用背景 |
-| 对话 | `{ t: 'say', who: '刘备', text: '…' }` | 头像按说话人名字找，等玩家点一下 |
-| 旁白 | `{ t: 'text', text: '…' }` | 没有头像，等玩家点一下 |
-| 选择 | `{ t: 'choice', who?, text, options: [{ label, set?, goto? }] }` | 必须点一项；`set` 设标志，`goto` 跳到标签 |
-| 设标志 | `{ t: 'set', flag, value }` | 值可以是字符串、数字、布尔 |
-| 条件跳转 | `{ t: 'if', flag, is?, goto }` | 标志等于 `is` 就跳；不写 `is` = 标志为真就跳 |
-| 标签 / 跳转 | `{ t: 'label', name }`、`{ t: 'goto', label }` | |
-| 战斗 | `{ t: 'battle', level: 'sishui', win?, lose? }` | 先出战前说明再开战；胜/败后跳到对应标签。不写 `lose` = 败了重打这一关 |
-| 结束 | `{ t: 'end' }` | 走到脚本末尾也算结束 |
+| 对话 | `{ t: 'say', who, text }` | 头像按 `who` 查 `faces` 表，等玩家点一下 |
+| 旁白 | `{ t: 'text', text }` | 没有头像 |
+| 章节 | `{ t: 'title', text }` | 居中横幅（「序章　群雄起兵討伐董卓」） |
+| 插画 | `{ t: 'picture', key }` | 原版事件插画 448×288 摆在舞台中央；空串 = 收起 |
+| 音乐 | `{ t: 'bgm', key }` | 换 BGM（`public/assets/bgm/<key>.mp3`） |
+| 选择 | `{ t: 'choice', who?, text, options: [{ label, set?, goto? }] }` | 必须点一项；`set` 设标志，`goto` 跳标签 |
+| 标志 | `{ t: 'set', flag, value }` / `{ t: 'if', flag, is?, cmp?, goto }` | 没设过的标志按原版当 0 |
+| 标签 / 跳转 | `{ t: 'label', name }` / `{ t: 'goto', label }` | |
+| 队伍 | `{ t: 'join', id }`、`{ t: 'away', id }`、`{ t: 'level', id, n }`、`{ t: 'class', id, cls }`、`{ t: 'item', id }`、`{ t: 'gold', n }` | 加入、离队、剧情升级、转职、得道具、得金 |
+| 单挑 | `{ t: 'duel', a, b, acts }` | 整屏两骑对冲，`acts` 是 `charge / strike / fall / back` 的序列 |
+| 营地 | `{ t: 'camp', battle, title, shop }` | 出兵准备：编成、道具、商店、存档 |
+| 战斗 | `{ t: 'battle', level, win?, lose? }` | 先出战前说明再开战；胜/败后跳到对应标签。不写 `lose` = 败了重打这一关 |
+| 结局 | `{ t: 'ending', text }` | |
 
-- 进度 `Story` 是一个纯数据对象：`{ script, pc, bg, flags, roster, gold }`，存档时原样写入。
-- 战斗胜利后，这一战触发过的事件会以 `关卡id.事件名` 记进 `flags`（例如 `sishui.duel`），战后剧情可以用 `if` 分支。
-- 装载时 `checkScript()` 会查：标签重复、跳转目标不存在、选择没有选项、战斗引用了没登记的关卡。错了直接报第几步。
-- 跳转成环、一直没有等玩家的步骤，`nextStep()` 会报错而不是卡死。
+- 进度 `Story` 是纯数据：`{ script, pc, bg, picture, bgm, cast, flags, roster, party, bag, deploy, gold }`，
+  存档原样写入。`pc` 指向正在等玩家的那一步。
+- **每幕的标签只在幕内有效**。610 幕拼成一条线后重名极多（`won_1` 出现 40 次），
+  `build_campaign.py` 给标签和跳转目标都加上 `幕名~第几次出现:` 前缀（如 `c1_s2_story2~0:ask_1`）。
+- 原版剧本里的 `@end`（本幕到此为止）会被转成 `goto 幕末#end` 空标签，接上后面的流程节点。
+  早期版本这里漏了转换，进军目标的循环菜单会永远跳不出去。
+- 装载时 `checkScript()` 查：标签重复、跳转目标不存在、选择没有选项、战斗/营地引用了没登记的关卡。
+  跳转成环、一直不等玩家的脚本，`nextStep()` 报错而不是卡死。
 
 ## 2. 关卡
 
-`Level`（`src/rules/turn.ts`）现在全部是数据，没有函数：
+```ts
+{ id, name, goal, turnLimit, w, h, terrain: number[], units: UnitInit[], reward,
+  map?, tokens?,                       // 素材键（相对 assets/）
+
+  // 旧接口：单主将、单敌将、踩格得金，保留给测试里手写的小关卡
+  lord?, boss?, triggers: Trigger[],
+
+  // 整部游戏用这一套
+  deploy?: { max, required, forbidden, slots: [x, y][] },
+  candidates?: Record<officerId, UnitInit>,  // 可出征的武将模板
+  victory?: Victory[], defeat?: Defeat[],
+  events?: BattleEvent[], treasures?: Treasure[] }
+```
+
+- 槽位沿用原版：0–14 我方（我军 `mode: 7` 由玩家指挥，其余是友军），15–44 敌军。
+  友军占 0–14 的高位、出征的我军占 0 起的低位；两拨增援夹在中间，互不撞槽。
+- 胜利条件 `commander / all / unit / reach`，任一满足即胜；失败条件 `unit / turn`。
+  主将撤退按 `key === 'liu_bei'` 认，其次是关卡数据里的 `lord`。
+- 宝物 `treasures`：踩上去就归踩的那支部队（原版只有我方会捡）。
+- `registerLevel()` 登记时检查：地形格数、槽位重复、两队同格、站在地图外、兵种不存在、
+  引用了不存在的槽位、触发记录重名、出征位不足。
+
+## 3. 战场事件
+
+一场战斗的剧本就是一张 `BattleEvent[]`，全部是数据：
 
 ```ts
-{ id, name, goal, turnLimit, w, h, terrain: number[],   // 地形码逐格，长度 w×h
-  units: [{ slot, name, face, cls, level, lead, str, int, x, y, mode, items? }],
-  lord, boss, reward,                                   // 撤退即败的槽位、击破即胜的槽位、胜利军资
-  triggers: [{ flag, who, at? | next?, effects: [...] }] }
+{ stage?, once?, trigger: { type, … }, actions: BAction[] }
 ```
 
-- 槽位 0–14 是我方（`mode: 7` 由玩家指挥，其余是友军），15–44 是敌军。
-- 触发条件两种：`at: [x, y]` 部队到达某格；`next: '名字'` 行动后与某部队相邻。`who` 是行动部队的名字，`null` = 任意我方部队。每条只触发一次。
-- 效果 `effects` 依次执行：`gold`（得金）、`item`（道具给触发的部队）、`talk`（对话）、`duel`（单挑演出）、`levels`（剧情升级）、`retreat`（部队离场）。
-- 胜败：`boss` 离场或敌军全灭即胜；`lord` 离场或超过 `turnLimit` 回合即败。
-- `registerLevel()` 登记时检查：地形格数、槽位重复、两队同格、站在地图外、兵种不存在、引用了不存在的槽位、触发记录重名。
+| 触发 | 字段 | 何时查 |
+|---|---|---|
+| `turn_start` | `turn`、`side` | 回合开始（我方阶段） |
+| `adjacent` | `a`、`b` | 某部队**行动结束**时，二者四邻相接 |
+| `reach` | `who`、`pos`、`radius` | 某部队行动结束时站在目标格（或其半径内） |
+| `unit_defeated` | `target` | 某部队被击破 |
 
-加一关：做出一个 `Level` 对象，在 `src/main.ts` 开头 `registerLevel()`，再在流程脚本里写一步 `battle`。
+| 动作 | 作用 |
+|---|---|
+| `drama` | 播一幕插剧（对话、插画、单挑、选择，见 §1 的步骤） |
+| `flag` | 写战场变量 `b.vars`，战后并回流程 `story.flags` |
+| `ai` | 改某部队的 AI 指令、目标格、优先目标 |
+| `retreat` / `level` / `item` / `gold` | 撤退、剧情升级、给道具、得金 |
+| `halve` | 某一阵营全员兵力减半（原版的火计、伏兵） |
+| `spawn` | 增援组登场（就近找空格） |
+| `terrain` | 改一格地形（火、水攻、落石） |
+| `objective` | 改当前胜利条件并提示 |
+| `victory` / `defeat` | 立即判胜/判负 |
+| `when` | 先判断若干 `Cond`（读 `b.vars`），成立才执行内层动作 |
+| `stage` | 原版用来切换行动方，本作由回合流程控制，保留但不生效 |
 
-## 3. 队伍继承
+`once` 默认 true，触发过就记进 `b.flags` 的 `event:<序号>`。所有事件在**部队行动结束**（含待命）
+时统一判定——纯移动不触发，这与原版「行动终了时查脚本」一致。
 
-- 战斗胜利后，玩家指挥的部队（含中途撤退的）按名字记下等级、经验、道具，存在 `Story.roster`；军资累加到 `Story.gold`。
-- 下一战开始时，同名的玩家部队带着这些出场，兵力和策略值按新等级回满。友军和敌军始终用关卡数据。
-- 这一套是框架自己的约定。原版两战之间保留什么、兵力是否回满，**没有核对过**，不算在规则忠实度里。
+## 4. 出兵准备（营地）
 
-## 4. 存档
+`camp` 步骤给出这一关的关卡、标题和商店货单（道具号），界面把它渲染成两栏：
 
-一个栏位，键 `yjz.save.v2`，内容 `{ story, battle }`。只能在战斗中、我军阶段存；读档回到那一刻，流程进度一并恢复。
-旧版只存战斗的档（`yjz.sishui.save.v1`）仍能读，读入时补一份停在该关的流程进度。
+- 左栏**编成**：队伍全员列出，`required`（必带）锁定，`forbidden`（不能出战）禁用，
+  出征人数上限取 `deploy.max`；
+- 右栏**道具**：选中的武将的 8 格包袱 ↔ 公共包袱互转；下面是可以买的道具与价钱；
+- 底部**存檔**（只存流程）和**出陣**（把名单写进 `story.deploy`，然后进战前说明）。
 
-## 5. 画面素材清单与占位画法
+商店价钱原版道具表里没有，`src/main.ts` 的 `PRICE` 按道具档次自定了一份。
 
-`public/assets/manifest.json` 说明每一关用哪两张图（路径相对 `public/assets/`）：
+## 5. 队伍继承
 
-```json
-{ "levels": { "sishui": { "map": "sishui.png", "tokens": "tokens.png", "static": "battle" } } }
-```
+- 战斗胜利后，`harvest()` 把玩家指挥过的部队按武将 id 记下等级、经验、道具、兵种，存在 `Story.roster`；
+  军资累加进 `Story.gold`。
+- 下一战开始时，`deploy` 名单里的武将带着这些出场（兵力和策略值按等级回满）；友军和敌军始终用关卡数据。
+- 剧情里的 `join / away / level / class / item` 由 `main.ts` 的 `StoryApi` 落到 `party / roster / bag` 上。
+  129 名武将里在剧本中登场的那批就是靠这一套逐章入队的。
 
-- `map`：整张战场图，任意分辨率，场景把它拉伸到 w×h 格。
-- `tokens`：棋子图，每格 96×96；第一行一支部队一帧，顺序同关卡数据里的 `units`，第二行是「本回合已行动」的样子。棋子图本身朝右，朝左由引擎镜像。
-- `static`（可选）：这一关旧式的静态特写图目录，里面是 `scene.png` 与 `unit-N.png`。
-  给双方配好帧动画演员（见下一节）之后它不会显示；不写就没有静态特写，直接走棋子前冲的演法。
-- 清单里没有的关卡用占位画法：地图按地形涂色并写上地形名的头一个字，棋子是阵营色圆片加名字的头一个字。所以新关卡先填数据就能打，图可以后补。
+## 6. 存档
 
-开发模式下网址加 `?demo` 会换成一条不配任何图的演示流程（`src/data/demo.ts`，两场小战斗加一段对话，内容自撰），
-用来验证多关卡、队伍继承、占位画法和下面的战斗特写；生产构建里没有这个入口。
+一个栏位，键 `yjz.save.v3`，内容 `{ story, battle? }`：
 
-## 6. 战斗特写（帧动画）
+- 营地里存 = 只存流程；战斗中、我军阶段存 = 连战斗状态（含随机数种子、回合、行动标记、已触发事件）一起存。
+- 读档时校验脚本 id、关卡、地形格数、`stage === 'player'`，不合格就当没有存档。
+- 旧键 `yjz.save.v2` / `yjz.sishui.save.v1` 不再识别。
 
-清单里加一段 `cutin`，攻击时就会在战场上盖一条横幅，左攻右守，各放一个按帧表播放的演员：
+## 7. 画面
 
-```json
-{
-  "cutin": {
-    "background": "某张横幅背景.png",
-    "actors": {
-      "cls0": {
-        "sheet": "某张帧图集.png", "frameWidth": 64, "frameHeight": 64, "scale": 6,
-        "anims": {
-          "idle":   { "frames": [0, 1], "fps": 3 },
-          "attack": { "frames": [2, 3, 4], "fps": 8, "impact": 2 },
-          "hurt":   { "frames": [5, 0], "fps": 6 }
-        }
-      }
-    }
-  }
-}
-```
+- **地图**：`public/assets/maps/<map>.png`，原版 896×512 三倍放大成 2688×1536；地形被事件改变时
+  用同目录的地形补丁图叠上去。清单 `manifest.json` 的 `levels` 只有汜水关一条旧记录，
+  其余关卡直接由 `Level.map` 指定。
+- **棋子**：`tokens.png`，一格 96×96。第一行按「兵种×2+阵营」排（19 兵种 × 2 + 刘备旗步兵 = 39 帧），
+  第二行是同帧的去饱和版（本回合已行动）。棋子图本身朝右，朝左由引擎镜像。
+- **头像**：`faces/*.png`（240 张，原版 64×80）；杂兵用 `portraits/_unknown.png`。
+- **事件插画**：`pictures/*.png`（31 张，原版 224×144，按 2 倍摆进舞台）。
+- **战斗特写**：`cutin/<兵种>.png`，每个兵种 150 帧 × 80×80：0–59 待机（呼吸）、60–119 出手（60fps）、
+  120–149 受击。见 `docs/assets.md`。
+- **单挑**：`duel/`——关羽、张飞、吕布三张专属图集（15 帧 96×96），其余用 `left.png`/`right.png`；
+  背景按战场中点地形取 `terrain_*.png`（10 张）。
+- **音乐**：`bgm/` 10 首原版曲目转成 mp3，`bgm` 步骤切换，标题/战斗/结局各有曲目。
 
-- `actors` 的键按这个顺序找：部队名字 → `cls兵种号` → `*`（兜底）。攻守双方都找得到演员才播特写，否则还是棋子前冲那套演法。
-- `sheet` 是一张等宽等高的帧图集，帧号从左到右、从上到下数，从 0 开始。图本身朝右，右边的演员由引擎镜像。
-- 三个动作都要写。`idle` 循环播；`attack` 播一遍，播到第 `impact` 帧（从 0 数，不写 = 最后一帧）算命中：
-  这一刻兵力条掉下去，守方开始播 `hurt`，播完回到 `idle`。
-- `background` 可以不写，不写是一条深色底。`scale` 不写时放大到横幅高度的八成。
-- 装载时会查帧表：缺动作、帧率不是正数、帧号超出图集，都会在控制台报出是哪张图集的哪个动作，并退回没有特写的演法。
-- `src/main.ts` 的 `clash()` 里也还有一张静态特写图（`#duel`），只在清单给这一关写了 `static` 时才会用到；
-  给双方配了演员之后它会自动让位，不会两个一起出现。
+## 8. 测试与验证
 
-播放器在 `src/scene.ts` 的 `cutin()`。演示流程里的演员是 `src/data/demo.ts` 现画的 6 帧小人，`tests/e2e.mjs` 最后一项
-逐帧记录了它：攻方显示过 0–4 帧，守方的受击帧不早于攻方的命中帧。
+| 检查 | 内容 |
+|---|---|
+| `npx vitest run`（73 项） | 规则公式与原版对照、汜水关整场模拟、剧情脚本、**整部剧本数据**（装载检查、70 关都能开打、120 遍随机走查不卡死、战场事件触发） |
+| `npm run typecheck` / `npm run build` | 类型与生产构建 |
+| `node tests/e2e.mjs`（12 项） | 真实鼠标键盘：标题 → 序章 → 营地（买豆、装道具、存档）→ 战前说明 → 战场 → 战斗特写逐帧 → 存档读档 → 单挑斩华雄 → 胜利 → 战后剧情 → 下一关 → 刷新读档 → 败北重开 |
+| `node tests/prod-smoke.mjs` | 生产构建里跑一遍「标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合」 |
 
-原版素材已经接进来了：`public/assets/cutin/` 下是 18 个兵种的帧图集（`HEXBCHR` 的兵种帧组），
-`cutin.actors` 以 `cls兵种号` 为键，帧表由 `tools/make_original_assets.py` 的 `CUTIN_CLASSES` 生成。
-新关卡沿用同一批兵种号就自动有特写，不用再配图；只有想给某个武将单独换形象时才需要按人名加演员。
-切帧规律与各兵种的起止帧见 [assets.md](assets.md#战斗特写的帧表)。
+## 9. 已知差异 / 还没做
 
-## 还没做
-
-- 战前自由选将和布阵：出场部队目前完全由关卡数据决定。
-- 剧情中途存档、多栏位存档、商店、换装备、兵种升级。
+- 我军的**布阵**还不能自选格子：出征名单可选，站位用关卡数据里的出兵位按顺序分配。
+- 道具指令只有「使用」，没有「给予 / 丢弃」；策略只实现了攻击系单体。
+- 战场上的部队只用站立帧，靠位移表现移动（原版有逐帧行走动画）。
+- 单挑的招式映射是按 `acts` 表驱动的固定演出，不是原版逐帧脚本。
+- 音乐是整曲循环，没有按战场形势切换。
+- 没有实机运行过原版做逐帧对比（规则依据见 `docs/rules.md` §4）。

@@ -5,10 +5,11 @@ import { TB, atk, def, moveCost } from '../src/rules/core';
 import { field } from '../src/rules/move';
 import { aiStep, autoPhase, doAttack, doItem, doMove, doWait, endPhase, itemTargets, newBattle } from '../src/rules/turn';
 import type { Battle, Unit } from '../src/rules/types';
-import { ORDER, plan } from './bot';
+import { plan } from './bot';
 
 const start = (seed = 1) => newBattle(SISHUI, seed).b;
-const named = (b: Battle, name: string) => b.units.find((u) => u.name === name)!;
+/** 按武将 id 或显示名找部队（关卡数据里两种都有）。 */
+const named = (b: Battle, name: string) => b.units.find((u) => u.key === name || u.name === name)!;
 const at = (x: number, y: number) => y * SISHUI.w + x;
 const cell = (reward: 'gold' | 'item') => SISHUI.triggers.find((t) => t.at && (reward === 'gold') === (t.flag === 'cell6,7'))!.at!;
 
@@ -145,6 +146,9 @@ describe('汜水关事件（以下为改动局面后的专项测试，不是正�
     expect(z.hp).toBe(500); // 600 以上的恢复量被兵力上限截住
   });
 });
+
+/** 这一关我军的行动顺序：张飞先清路，关羽随后，刘备最后（这份数据里只有中文名）。 */
+const ORDER = ['张飞', '关羽', '刘备'];
 
 /** 用 tests/bot.ts 的代打策略在规则层里打完一整场。 */
 function autoplay(b: Battle, maxRounds = 30) {

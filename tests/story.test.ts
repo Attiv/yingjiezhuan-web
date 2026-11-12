@@ -12,7 +12,7 @@ function run(s: Script, st: Story, pick: number, answer = 0) {
   const seen: string[] = [];
   for (let step = nextStep(s, st, answer); step; step = nextStep(s, st, step.t === 'choice' ? pick : 0)) {
     if (step.t === 'battle') return { seen, battle: step.level };
-    seen.push(step.text);
+    if ('text' in step) seen.push(step.text);
   }
   return { seen, battle: null };
 }

@@ -5,23 +5,44 @@ import { open } from '../tools/browser.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5274';
 const { browser, page, errors } = await open(`${BASE}/?seed=3`);
-await page.waitForSelector('#screen button');
+await page.waitForSelector('[data-go="start"]');
 assert.equal(await page.evaluate(() => typeof window.__yjz), 'undefined', '生产包不应带调试钩子');
-await page.click('button:has-text("开始新游戏")');
-// 点完开场剧情：有选项点第一项，没有就点对话框，直到出现战前说明
-while (!(await page.$('button:has-text("出阵")'))) await page.click((await page.$('#talk .ask button')) ? '#talk .ask button:first-child' : '#talk');
-await page.click('button:has-text("出阵")');
-await page.waitForFunction(() => document.getElementById('log').textContent.includes('目标'));
+assert.match(await page.textContent('#screen h1'), /三國志英傑傳/);
+
+await page.click('[data-go="start"]');
+// 点完开场：章节横幅、对白一路点掉，直到出兵准备
+for (let i = 0; i < 400; i++) {
+  if (await page.$('#screen .chapter')) { await page.click('#screen'); continue; }
+  if (await page.$('[data-go="camp-go"]')) break;
+  if (await page.$('#talk .ask')) { await page.click('#talk .ask button:first-child'); continue; }
+  if (await page.$('#talk:not([hidden])')) { await page.click('#talk'); continue; }
+  await page.waitForTimeout(20);
+}
+assert.match(await page.textContent('#screen .card'), /汜水關 — 出兵準備/);
+assert.match(await page.textContent('#screen .card'), /軍資 600 金/);
+await page.click('[data-buy="30"]'); // 买一袋豆，看看商店与军资
+assert.match(await page.textContent('#screen .card'), /軍資 570 金/);
+await page.click('[data-go="camp-go"]');
+
+await page.waitForSelector('[data-go="new"]');
+assert.match(await page.textContent('#screen .card'), /汜水關之戰/);
+await page.click('[data-go="new"]');
+// 开场插剧要点几下
+for (let i = 0; i < 300; i++) {
+  if (await page.$('#talk .ask')) { await page.click('#talk .ask button:first-child'); continue; }
+  if (await page.$('#talk:not([hidden])')) { await page.click('#talk'); continue; }
+  if ((await page.textContent('#log')).includes('目标')) break;
+  await page.waitForTimeout(20);
+}
 assert.match(await page.textContent('#turn'), /第1回合/);
-// 点击刘备所在格：开局镜头尽量以他为中心，地图东缘卡住后他落在视窗 (240,192) 处
-const r = await page.evaluate(() => { const c = document.querySelector('#map canvas').getBoundingClientRect(); return { x: c.left + (c.width * 240) / 416, y: c.top + c.height / 2 }; });
-await page.mouse.click(r.x, r.y);
-await page.waitForFunction(() => document.getElementById('unit').textContent.includes('刘备'));
-await page.keyboard.press('Escape');
+assert.match(await page.textContent('#log'), /目标：一、殲滅華雄/);
+
+// 结束回合：先确认（还有部队没行动），敌军行动完进入第 2 回合
 await page.click('#sys button:has-text("回合结束")');
-await page.click('#talk .ask button:first-child');
-await page.waitForFunction(() => document.getElementById('turn').textContent.includes('第2回合'), null, { timeout: 60000 });
+if (await page.$('#talk .ask')) await page.click('#talk .ask button:first-child');
+await page.waitForFunction(() => document.getElementById('turn').textContent.includes('第2回合'), null, { timeout: 90000 });
 await page.screenshot({ path: new URL('../docs/screenshots/13-production-build.png', import.meta.url).pathname });
+
 assert.deepEqual(errors, []);
-console.log('生产构建冒烟通过：进入战斗、选中刘备、结束回合后进入第 2 回合，控制台无报错');
+console.log('生产构建冒烟通过：标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合，控制台无报错');
 await browser.close();

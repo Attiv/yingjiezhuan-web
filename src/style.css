@@ -111,9 +111,42 @@ img { image-rendering: pixelated; }
 #screen.scroll { background: url('/assets/title.png') center / cover no-repeat; }
 #screen.scroll .card { background: rgba(12, 20, 48, 0.94); }
 #screen.veil { background: rgba(5, 7, 15, 0.86); }
-/* 剧情：整屏只有背景，对话框挪到舞台下方正中、盖在背景上面 */
-#screen.story { background: var(--navy) center / cover no-repeat; }
+/* 剧情：整屏背景（原版事件插画）盖住战场，对话框挪到舞台下方正中 */
+#screen.story { background: var(--navy) center / cover no-repeat; display: grid; place-items: center; }
+#screen.story .pic { width: 448px; height: 288px; object-fit: contain; image-rendering: pixelated; border: 3px solid var(--gold); background: #000; }
+#screen .chapter { position: absolute; left: 0; right: 0; top: 176px; padding: 18px 0; text-align: center; font-size: 24px; line-height: 30px;
+  color: var(--gold); background: rgba(12, 20, 48, 0.92); border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); }
 #stage.story #talk { z-index: 11; left: 136px; top: 356px; }
+
+/* 单挑：整屏两骑对冲，底部地形，上方对阵名 */
+#duelplay { position: absolute; inset: 0; z-index: 12; background: #05070f; overflow: hidden; }
+#duelplay[hidden] { display: none; }
+#duelplay .terrain { position: absolute; left: 0; top: 190px; width: 640px; height: 208px; background-size: 640px 208px; image-rendering: pixelated; }
+#duelplay canvas { position: absolute; top: 96px; width: 288px; height: 288px; image-rendering: pixelated; }
+#duelplay .left { left: 40px; }
+#duelplay .right { right: 40px; transform: scaleX(-1); }
+#duelplay .versus { position: absolute; left: 0; right: 0; top: 18px; display: flex; justify-content: center; gap: 20px; align-items: baseline; color: var(--gold); }
+#duelplay .versus b { font-size: 20px; font-weight: normal; }
+#duelplay .versus em { font-style: normal; color: var(--orange); }
+
+/* 营地：编成 + 商店 */
+.card.camp { width: 604px; max-height: 452px; overflow: auto; }
+.camp h2 { margin: 10px 0 4px; font-size: 16px; line-height: 20px; font-weight: normal; color: var(--gold); }
+.camp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.camp .row { display: flex; gap: 4px; margin: 2px 0; }
+.camp .row .name { flex: 1; display: flex; gap: 6px; align-items: baseline; }
+.camp .row .name b { font-weight: normal; }
+.camp .row .name span { color: var(--dim); }
+.camp .row .name i { margin-left: auto; font-style: normal; color: var(--blue-hi); }
+.camp .row.on .name i { color: var(--gold); }
+.camp .row .tog { width: 56px; flex: none; text-align: center; }
+.camp .items { display: flex; flex-wrap: wrap; gap: 4px; }
+.camp .items .btn, .camp .item { width: auto; padding: 2px 8px; }
+.camp .buy { display: flex; justify-content: space-between; align-items: center; margin: 2px 0; }
+.camp .buy .btn { width: auto; padding: 1px 8px; }
+.camp .note { color: var(--dim); margin: 2px 0; }
+.camp .end { justify-content: flex-end; margin-top: 12px; }
+.camp .end .btn { width: auto; padding: 4px 16px; }
 .card { width: 400px; padding: 20px 24px; }
 .card h1 { margin: 0; font-size: 36px; line-height: 44px; font-weight: normal; color: var(--gold); letter-spacing: 2px; }
 .card h1.lost { color: var(--orange); }
