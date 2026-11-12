@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { SCRIPT, hasLevel, level, officers, scene } from '../src/data/game';
+import { SCRIPT, defaultDeploy, hasLevel, level, officers, scene } from '../src/data/game';
 import type { Battle, Roster } from '../src/rules/types';
-import { doWait, newBattle } from '../src/rules/turn';
+import { aiStep, doWait, endPhase, newBattle } from '../src/rules/turn';
 import { checkScript, nextStep, startStory, testFlag, type Shown, type StoryApi, type Step } from '../src/story';
 
 /**
@@ -221,5 +221,24 @@ describe('首战：汜水關', () => {
     const duel = evs.find((e) => e.trigger.type === 'adjacent')!;
     expect(duel.actions.map((a) => a.op)).toContain('drama');
     expect(duel.actions.some((a) => a.op === 'victory')).toBe(true);
+  });
+});
+
+describe('AI 接管有军师的关卡', () => {
+  it('军乐队 / 运输队出场时，自动行动也能在回合上限内结束，不会卡死', () => {
+    const roster: Roster = {};
+    for (const [id, o] of Object.entries(officers)) roster[id] = { level: o.level, exp: 0, items: [] };
+    for (const id of ['c1_s0_b6', 'c1_s0_b11', 'c1_s1_b5']) {
+      const lv = level(id)!;
+      const deploy = defaultDeploy(id, Object.keys(roster).filter((k) => lv.candidates?.[k]));
+      const { b } = newBattle(lv, 7, roster, { deploy });
+      let n = 0;
+      while (b.stage !== 'won' && b.stage !== 'lost' && n++ < 1200) {
+        if (b.stage === 'player') endPhase(b);
+        else aiStep(b);
+      }
+      expect(['won', 'lost'], `${id} 应该在回合上限内结束`).toContain(b.stage);
+      expect(n, `${id} 行动步数`).toBeLessThan(1200);
+    }
   });
 });

@@ -508,6 +508,32 @@ await step('系统性失败：全军撤退判负 → 重新開始回到这一关
   assert.equal(again.units.every((u) => !u.acted), true);
 });
 
+await step('策略：等级够时列出可用的回复策略，群体大援助直接施放', async () => {
+  // 把关羽临时改成 30 级妖术师，好用上后期才会学到的补助策略（只改这一场的内存数据）
+  await page.evaluate(() => {
+    const g = window.__yjz.b.units.find((u) => u.on && u.key === 'guan_yu');
+    Object.assign(g, { cls: 15, level: 30, int: 90, mp: 90, hp: 100, acted: false, moved: false, confused: false });
+  });
+  const g = await unit('關羽');
+  await clickCell(g.x, g.y);
+  await clickCell(g.x, g.y);
+  assert.equal(await mode(), 'menu');
+  await menu('策略');
+  const list = await page.textContent('#menu');
+  assert.match(list, /大援助/);
+  assert.match(list, /大補給/);
+  assert.doesNotMatch(list, /焦熱/, '射程内没有敌人时，攻击策略不该占菜单');
+  await shot('24-strategy-menu');
+  const before = await unit('關羽');
+  await menu('大援助');
+  await settle();
+  const after = await unit('關羽');
+  assert.ok(after.hp > before.hp, '群体补给给自己回了兵');
+  assert.equal(after.mp, before.mp - 24, '大援助扣 24 点策略值');
+  assert.equal(after.acted, true);
+  assert.match(await page.textContent('#log'), /大援助/);
+});
+
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');
 console.log(`\n全部 ${steps.length} 项通过，截图在 docs/screenshots/`);
 await browser.close();

@@ -3,9 +3,10 @@ import './style.css';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
 import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
 import { PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './data/items';
+import { strategyName, strategySpec } from './data/strategies';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
-import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doItem, doMove, doWait, endPhase, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
+import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doItem, doItemAll, doMove, doWait, endPhase, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
 import type { Battle, Ev, Flag, Unit } from './rules/types';
 import { BattleScene, CELL, RES, VIEW_H, VIEW_W, sideOf } from './scene';
 import { checkScript, currentStep, nextStep, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
@@ -102,7 +103,7 @@ function renderUnit(u: Unit | null = shown) {
     u.acted && u.mode === 7 ? '本回合已行动' : '',
     u.items.length ? `道具：${u.items.map(itemName).join('、')}` : '',
     u.items.filter(isEquipment).length ? `装备：${u.items.filter(isEquipment).map(itemEffect).join('、')}` : '',
-    knownStrategies(u).length ? `策略：${knownStrategies(u).map((id) => TB.strategyNames[id]).join('、')}` : '',
+    knownStrategies(u).length ? `策略：${knownStrategies(u).map(strategyName).join('、')}` : '',
   ].filter(Boolean);
   $('unit').innerHTML =
     `<div class="head"><div class="face" style="${faceStyle(u.face)}"></div><div>` +
@@ -135,10 +136,13 @@ function describe(ev: Ev): string {
     case 'stage': return ev.stage === 'ally' ? '友军行动。' : ev.stage === 'enemy' ? '敌军行动。' : '';
     case 'hit': return `${name(ev.a)}${ev.counter ? '反击' : '攻击'}${name(ev.d)}：兵力 -${ev.dmg}${ev.morale ? `，士气 -${ev.morale}` : ''}`;
     case 'cast': return ev.ok
-      ? `${name(ev.a)}使出「${TB.strategyNames[ev.id]}」：${name(ev.d)}兵力 -${ev.dmg}`
-      : `${name(ev.a)}的「${TB.strategyNames[ev.id]}」被${name(ev.d)}识破`;
+      ? `${name(ev.a)}使出「${strategyName(ev.id)}」：${name(ev.d)}兵力 -${ev.dmg}`
+      : `${name(ev.a)}的「${strategyName(ev.id)}」被${name(ev.d)}识破`;
+    case 'aid': return ev.ok
+      ? `${name(ev.a)}使出「${strategyName(ev.id)}」：${name(ev.d)}${[ev.hp ? `兵力 +${ev.hp}` : '', ev.morale ? `士气 ${ev.morale > 0 ? '+' : ''}${ev.morale}` : ''].filter(Boolean).join('，') || '毫无变化'}`
+      : `${name(ev.a)}的「${strategyName(ev.id)}」被${name(ev.d)}识破`;
     case 'exp': return name(ev.slot) + [ev.gain ? `经验 +${ev.gain}` : '', ev.levels ? `升到 ${bySlot(b, ev.slot)!.level} 级` : ''].filter(Boolean).join('，') +
-      (ev.learned.length ? `，学会「${ev.learned.map((id) => TB.strategyNames[id]).join('、')}」` : '');
+      (ev.learned.length ? `，学会「${ev.learned.map(strategyName).join('、')}」` : '');
     case 'recover': return `${name(ev.slot)}休整：${[ev.hp ? `兵力 +${ev.hp}` : '', ev.morale ? `士气 +${ev.morale}` : ''].filter(Boolean).join('，')}`;
     case 'hp': return `${name(ev.slot)}兵力 ${ev.delta}`;
     case 'confuse': return ev.on ? `${name(ev.slot)}陷入混乱！` : `${name(ev.slot)}恢复了秩序。`;
@@ -621,7 +625,8 @@ function select(u: Unit) {
   renderTurn();
 }
 
-/** 指令菜单：攻击 / 策略 / 道具 / 待命。没有可选目标的指令置灰。 */
+/** 指令菜单：攻击 / 策略 / 道具 / 待命。只在菜单里列出现在真能用的东西，
+ * 目标离开了范围或策略值不够的条目就不占地方（武将栏里仍能看到已学会的全部策略）。 */
 function openCommand() {
   const u = sel!;
   mode = 'menu';
@@ -629,17 +634,29 @@ function openCommand() {
   scene.unmark();
   renderTurn();
   const foes = attackTargets(b, u);
-  const strategies = knownStrategies(u);
+  const casts = knownStrategies(u).flatMap((id) => {
+    const ts = castTargets(b, u, id);
+    if (!ts.length) return [];
+    const spec = strategySpec(id);
+    // 群体策略不用选目标，直接对周围友军施放
+    const run = spec?.area === 'all_in_range'
+      ? () => act(doCastAll(b, u.slot, id))
+      : () => aim(ts, spec?.target === 'ally' ? 'aid' : 'attack', (t) => doCast(b, u.slot, id, t.slot));
+    return [{ label: `${strategyName(id)}　${spec?.mp ?? 0}`, on: run }];
+  });
+  const bag = u.items.filter((id) => specOf(id)?.battle).flatMap((id) => {
+    const ts = itemTargets(b, u, id);
+    if (!ts.length) return [];
+    const st = strategySpec(specOf(id)!.strategyId ?? -1);
+    const run = st?.area === 'all_in_range'
+      ? () => act(doItemAll(b, u.slot, id))
+      : () => aim(ts, st?.target === 'ally' ? 'aid' : 'attack', (t) => doItem(b, u.slot, id, t.slot));
+    return [{ label: st ? `${itemName(id)}・${st.name}` : itemName(id), on: run }];
+  });
   openMenu([
     { label: '攻击', on: foes.length ? () => aim(foes, 'attack', (t) => doAttack(b, u.slot, t.slot)) : undefined },
-    { label: '策略', on: strategies.length ? () => openMenu(strategies.map((id) => {
-        const ts = castTargets(b, u, id);
-        return { label: `${TB.strategyNames[id]}　${TB.strategyMp[id]}`, on: ts.length ? () => aim(ts, 'attack', (t) => doCast(b, u.slot, id, t.slot)) : undefined };
-      }), u, true) : undefined },
-    { label: '道具', on: u.items.some((id) => specOf(id)?.battle) ? () => openMenu(u.items.filter((id) => specOf(id)?.battle).map((id) => {
-        const ts = itemTargets(b, u, id);
-        return { label: itemName(id), on: ts.length ? () => aim(ts, 'aid', (t) => doItem(b, u.slot, id, t.slot)) : undefined };
-      }), u, true) : undefined },
+    { label: '策略', on: casts.length ? () => openMenu(casts, u, true) : undefined },
+    { label: '道具', on: bag.length ? () => openMenu(bag, u, true) : undefined },
     { label: '待命', on: () => act(doWait(b, u.slot)) },
   ], u);
 }

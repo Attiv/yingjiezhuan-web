@@ -411,6 +411,17 @@ export class BattleScene extends Phaser.Scene {
         this.hp.set(ev.slot, this.hpOf(ev.slot) + ev.hp);
         await Promise.all([this.sparkle(unit(ev.slot), GREEN), this.float(unit(ev.slot), ev.hp ? `+${ev.hp}` : `士气+${ev.morale}`, '#00ba75')]);
         break;
+      case 'aid': {
+        // 策略补给：成功时飘回复量，被识破时飘「识破」
+        const d = unit(ev.d);
+        if (ev.ok) {
+          this.hp.set(d.slot, this.hpOf(d.slot) + ev.hp);
+          const label = ev.hp ? `+${ev.hp}` : ev.morale ? `士气${ev.morale > 0 ? '+' : ''}${ev.morale}` : '回復';
+          const bright = ev.hp > 0 || ev.morale > 0;
+          await Promise.all([this.sparkle(d, bright ? GREEN : PURPLE), this.float(d, label, bright ? '#00ba75' : '#8acfff')]);
+        } else await this.float(d, '识破', '#8acfff');
+        break;
+      }
       case 'confuse': {
         const s = this.tk(ev.slot);
         if (ev.on) void this.puff('twirl_01', s.x, s.y - 30, PURPLE, { scale: 0.3 }, { angle: 360, alpha: 0 }, 700);

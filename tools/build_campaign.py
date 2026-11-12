@@ -504,6 +504,74 @@ def load_maps() -> dict[str, dict]:
     return out
 
 
+# ---------------------------------------------------------------- 策略 ----
+# tables.json 里 strategyNames 的顺序就是 DOS 的策略编号 0–35。这里按同一顺序列出
+# pack 的 strategy id 与繁体显示名（原版中文版的实际写法，和 pack 的韩文汉名略有出入，
+# 例如「業火」在原版中文里叫「猛火」、「應援」叫「支援」）。
+STRATEGY_KEYS = [
+    "scorch", "fire_dragon", "hellfire", "great_scorch", "great_fire_dragon",
+    "whirlpool", "torrent", "tsunami", "great_whirlpool", "great_torrent",
+    "rockfall", "landslide", "mudflow", "great_rockfall", "great_landslide",
+    "false_report", "false_troops", "disguise",
+    "harass", "provoke", "intimidate",
+    "encourage", "cheer", "inspire",
+    "aid", "resupply", "relief", "nurse", "cure", "revive",
+    "great_encourage", "great_cheer", "great_inspire", "great_aid", "great_resupply", "great_relief",
+]
+STRATEGY_NAMES = [
+    "焦熱", "火龍", "猛火", "大焦熱", "大火龍",
+    "漩渦", "濁流", "海嘯", "大漩渦", "大濁流",
+    "落石", "山崩", "山洪", "大落石", "大山崩",
+    "假情報", "偽兵", "偽裝",
+    "牽制", "挑撥", "欺壓",
+    "激勵", "支援", "鼓舞",
+    "援助", "補給", "救濟", "看護", "治癒", "救命",
+    "大激勵", "大支援", "大鼓舞", "大援助", "大補給", "大救濟",
+]
+BLAST_ID = 36  # 爆彈專用策略：不在学习表里，只有道具能用
+
+
+def strategy_specs() -> dict:
+    """策略表：把 pack 的 strategies.toml 转成 DOS 编号下的规格。
+
+    威力 / 士气 / 混乱效果照抄原版；射程用 tables.json 的 strategyCategory
+    （原版程序里的范围码，群体策略是 3，比单体最远的 2 还大一圈）。
+    """
+    src = tomllib.loads((PACK / "rules" / "strategies.toml").read_text(encoding="utf-8"))["strategy"]
+    by_key = {s["id"]: s for s in src}
+    cats = json.loads((OUT / "tables.json").read_text(encoding="utf-8"))["strategyCategory"]
+
+    def convert(s: dict, rng: int) -> dict:
+        effects = []
+        for e in s.get("effects") or []:
+            eff = {"type": e["type"]}
+            for k in ("power", "amount", "status", "turns"):
+                if k in e:
+                    eff[k] = e[k]
+            effects.append(eff)
+        return {
+            "key": s["id"],
+            "name": s.get("hanja") or s.get("name", s["id"]),
+            "kind": s.get("kind", "attack"),
+            "mp": s.get("mp", 0),
+            "range": rng,
+            "area": s.get("area", "single"),
+            "target": s.get("target", "enemy"),
+            "effects": effects,
+        }
+
+    out: dict[str, dict] = {}
+    for i, key in enumerate(STRATEGY_KEYS):
+        out[str(i)] = convert(by_key[key], cats[i])
+        out[str(i)]["name"] = STRATEGY_NAMES[i]
+    out[str(BLAST_ID)] = convert(by_key["blast"], 1)
+    out[str(BLAST_ID)]["name"] = "爆發"
+    return {"strategies": out, "byKey": {k: i for i, k in enumerate(STRATEGY_KEYS)} | {"blast": BLAST_ID}}
+
+
+STRATEGY_ID = {key: i for i, key in enumerate(STRATEGY_KEYS)} | {"blast": BLAST_ID}
+
+
 # ---------------------------------------------------------------- 道具 ----
 # 原版包里不标价的道具（武器、铠甲、马、宝物、转职书）价格被填成 3820，这里当作「不出售」。
 NO_PRICE = 3000
@@ -545,6 +613,7 @@ def item_specs() -> dict:
             "promote": promote,
             "to": to,
             "strategy": it.get("strategy"),
+            "strategyId": STRATEGY_ID.get(it.get("strategy") or ""),
         }
     promote: dict[str, dict] = {}
     for c in classes:
@@ -638,6 +707,10 @@ def main() -> None:
     (OUT / "items.json").write_text(json.dumps(specs, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     sold = sum(1 for s in specs["items"].values() if s["price"] is not None)
     print(f"道具 {len(specs['items'])} 件（商店有价的 {sold} 件）、兵种转职 {len(specs['promote'])} 条")
+
+    strats = strategy_specs()
+    (OUT / "strategies.json").write_text(json.dumps(strats, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"策略 {len(strats['strategies'])} 条（可学 36、爆彈 1）")
 
     print(f"流程步骤 {len(steps)}（标签 {sum(1 for s in steps if s['t'] == 'label')}）")
     print(f"剧本 {len(scenes)} 幕、战斗 {len(battles)} 场、地图 {len(maps)} 张、武将 {len(officers)}、人物 {len(persons)}")

@@ -1,4 +1,5 @@
 import raw from './items.json';
+import { strategyName } from './strategies';
 
 /**
  * 原版道具表（items.json 由 tools/build_campaign.py 从原版的 items.toml 转出）。
@@ -33,6 +34,8 @@ export interface ItemSpec {
   /** 转职道具：用掉后直接变成这个兵种 */
   to: number | null;
   strategy: string | null;
+  /** 策略书的策略编号（strategies.json）；普通道具为 null 或缺失 */
+  strategyId?: number | null;
 }
 
 interface Data {
@@ -71,6 +74,7 @@ export function itemEffect(id: number): string {
   if (s.morale) out.push(`士氣 +${s.morale}`);
   if (s.promote) out.push('兵種升級');
   if (s.to !== null) out.push('轉職');
+  if (s.strategyId != null) out.push(`使用「${strategyName(s.strategyId)}」`);
   return out.join('　');
 }
 

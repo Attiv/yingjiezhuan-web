@@ -1,6 +1,7 @@
 import { aiOrder, decide, executionTarget } from './ai';
-import { castAttack, conditionRecovery, physicalAttack, strategyUsable, upkeep, useItem } from './combat';
+import { castAttack, castSupport, conditionRecovery, physicalAttack, strategyUsable, upkeep, useItem } from './combat';
 import { specOf } from '../data/items';
+import { strategySpec } from '../data/strategies';
 import { TB, attackTargets, bySlot, foes, friendly, itemName, knownStrategies, maxHp, maxMp, moveCost, rand, rangeCells, unitAt } from './core';
 import { canStop, reachField, route, type Field } from './move';
 import type { Battle, Flag, Roster, Unit } from './types';
@@ -537,20 +538,57 @@ export const doAttack = (b: Battle, slot: number, target: number) => attackUnit(
 /** 待命不改变士气。 */
 export const doWait = (b: Battle, slot: number) => done(b, manual(b, slot), []);
 
-/** 策略能打到的敌军（范围、地形、天气都合格）。 */
-export function castTargets(b: Battle, u: Unit, id: number): Unit[] {
-  if (!knownStrategies(u).includes(id) || u.mp < TB.strategyMp[id]) return [];
-  return rangeCells(b, u.x, u.y, TB.strategyCategory[id] | 0x80)
-    .map(([x, y]) => unitAt(b, x, y))
-    .filter((d): d is Unit => !!d && foes(u, d) && strategyUsable(b, id, d));
+/** 策略能选的目标：攻击系要过地形/天气，回复系要确实有东西可回复；
+ * 群体策略（大援助、大激励…）只要范围内有友军就能放，哪怕都已经满员。
+ * free = true 给策略书 / 爆彈用：不检查是否学会、也不扣策略值。 */
+export function castTargets(b: Battle, u: Unit, id: number, free = false): Unit[] {
+  const spec = strategySpec(id);
+  if (!spec) return [];
+  if (!free && (!knownStrategies(u).includes(id) || u.mp < spec.mp)) return [];
+  const cells: [number, number][] = spec.area === 'all_in_range'
+    ? [[u.x, u.y], ...rangeCells(b, u.x, u.y, spec.range | 0x80)]
+    : rangeCells(b, u.x, u.y, spec.range | 0x80);
+  const inRange = cells.map(([x, y]) => unitAt(b, x, y)).filter((d): d is Unit => !!d?.on);
+  if (spec.target === 'enemy') {
+    return inRange.filter((d) => foes(u, d) && (spec.kind !== 'attack' || strategyUsable(b, id, d)));
+  }
+  return inRange.filter((d) => !foes(u, d) && (spec.area === 'all_in_range' || supportNeeded(d, spec)));
 }
-function castAt(b: Battle, u: Unit, id: number, d: Unit | undefined, evs: Ev[]): Ev[] {
-  need(d && castTargets(b, u, id).includes(d), '不能对该目标使用这个策略');
-  evs.push(...castAttack(b, u, d, id));
-  defeated(b, evs);
-  return done(b, u, evs);
+
+/** 单体回复 / 激励的对象是否还有东西可回：兵力没满、士气没满或处于混乱。 */
+function supportNeeded(d: Unit, spec: ReturnType<typeof strategySpec>): boolean {
+  if (!spec) return false;
+  const heal = spec.effects.some((e) => e.type === 'heal') && d.hp < maxHp(d.cls, d.level);
+  const morale = spec.effects.some((e) => e.type === 'morale' && (e.amount ?? 0) > 0) && (d.morale < 100 || d.confused);
+  const status = spec.effects.some((e) => e.type === 'status');
+  return heal || morale || status;
+}
+
+/** 结算一条策略（不校验目标、不记已行动），攻击系走 castAttack，其余走 castSupport。 */
+function castInto(b: Battle, u: Unit, id: number, d: Unit | undefined, evs: Ev[], free: boolean): Ev[] {
+  const spec = strategySpec(id)!;
+  if (spec.kind === 'attack') {
+    evs.push(...castAttack(b, u, d!, id));
+    defeated(b, evs);
+  } else {
+    evs.push(...castSupport(b, u, d, id));
+  }
+  if (!free) u.mp = (u.mp - spec.mp) & 0xff;
+  return evs;
+}
+function castAt(b: Battle, u: Unit, id: number, d: Unit | undefined, evs: Ev[], free = false): Ev[] {
+  need(d && castTargets(b, u, id, free).includes(d), '不能对该目标使用这个策略');
+  return done(b, u, castInto(b, u, id, d, evs, free));
 }
 export const doCast = (b: Battle, slot: number, id: number, target: number) => castAt(b, manual(b, slot), id, bySlot(b, target), []);
+
+/** 群体策略：不用选目标，对自己周围的所有友军一起施放。 */
+export function doCastAll(b: Battle, slot: number, id: number): Ev[] {
+  const u = manual(b, slot);
+  const spec = strategySpec(id);
+  need(spec?.area === 'all_in_range' && castTargets(b, u, id).length, '现在不能使用这个策略');
+  return done(b, u, castInto(b, u, id, undefined, [], false));
+}
 
 /** 回复道具的使用范围：自己 + 周围一圈；档位高的多一圈（原版豆/麦/米、酒三档、伤药三类）。
  * 返回 null 表示这件道具在战场上用不了（武器、兵书、转职书）。 */
@@ -561,10 +599,13 @@ function recoverSpec(id: number): { tier: number; heal: boolean; morale: boolean
   return { tier, heal: !!s.heal, morale: !!s.morale };
 }
 
-/** 道具可用对象：自己和周围、确实有东西可回复的我方部队。 */
+/** 道具可用对象：策略书按策略的范围选目标，回复道具按自己 + 周围的范围选有东西可回的我方部队。 */
 export function itemTargets(b: Battle, u: Unit, id: number): Unit[] {
+  const it = specOf(id);
+  if (!it || !u.items.includes(id)) return [];
+  if (it.strategyId != null) return castTargets(b, u, it.strategyId, true);
   const spec = recoverSpec(id);
-  if (!spec || !u.items.includes(id)) return [];
+  if (!spec) return [];
   const cells: [number, number][] = [[u.x, u.y], ...rangeCells(b, u.x, u.y, spec.tier | 0x80)];
   return cells
     .map(([x, y]) => unitAt(b, x, y))
@@ -575,8 +616,23 @@ export function doItem(b: Battle, slot: number, id: number, target: number): Ev[
   const u = manual(b, slot);
   const d = bySlot(b, target);
   need(d && itemTargets(b, u, id).includes(d), '不能对该目标使用这个道具');
+  const it = specOf(id)!;
   const evs: Ev[] = [];
-  useItem(b, d, specOf(id)!, evs);
+  // 火龍書、援隊書这类「用一次策略」的道具：不扣策略值，也不算学会
+  if (it.strategyId != null) castInto(b, u, it.strategyId, d, evs, true);
+  else useItem(b, d!, it, evs);
+  u.items.splice(u.items.indexOf(id), 1);
+  return done(b, u, evs);
+}
+
+/** 群体策略书（援隊書、大激勵書…）：不用选目标，直接施放。 */
+export function doItemAll(b: Battle, slot: number, id: number): Ev[] {
+  const u = manual(b, slot);
+  const it = specOf(id);
+  const sid = it?.strategyId;
+  need(sid != null && u.items.includes(id) && strategySpec(sid)?.area === 'all_in_range' && castTargets(b, u, sid, true).length, '现在不能使用这个道具');
+  const evs: Ev[] = [];
+  castInto(b, u, sid!, undefined, evs, true);
   u.items.splice(u.items.indexOf(id), 1);
   return done(b, u, evs);
 }
@@ -594,6 +650,46 @@ export function endPhase(b: Battle): Ev[] {
   return evs;
 }
 
+/** AI 的补给 / 干扰判断：有伤得较重或士气低落的友军（含自己）时先用回复策略；
+ * 智力够高的军师会远远地对智力最低的敌军放混乱 / 士气策略。
+ * 只原地施放，不参与走位评估。 */
+function aiSupport(b: Battle, u: Unit): Ev[] | null {
+  if (u.confused) return null;
+  const ids = knownStrategies(u).filter((id) => {
+    const s = strategySpec(id);
+    return !!s && s.target === 'ally' && s.kind !== 'attack' && u.mp >= s.mp;
+  });
+  let best: { id: number; target: Unit | null; score: number } | null = null;
+  for (const id of ids) {
+    const spec = strategySpec(id)!;
+    for (const t of castTargets(b, u, id)) {
+      const missing = 1 - t.hp / maxHp(t.cls, t.level);
+      const score = missing * 100 + (100 - t.morale) * 0.5;
+      if (score < 35) continue;
+      if (!best || score > best.score) best = { id, target: spec.area === 'all_in_range' ? null : t, score };
+    }
+  }
+  if (best) return best.target ? castAt(b, u, best.id, best.target, []) : done(b, u, castInto(b, u, best.id, undefined, [], false));
+
+  // 军师（智力 65 以上）优先用混乱 / 降士气策略，而不是上去肉搏
+  if (u.int < 65) return null;
+  let bad: { id: number; target: Unit; score: number } | null = null;
+  for (const id of knownStrategies(u)) {
+    const spec = strategySpec(id);
+    if (!spec || spec.target !== 'enemy' || spec.kind !== 'support' || u.mp < spec.mp) continue;
+    for (const t of castTargets(b, u, id)) {
+      const status = spec.effects.some((e) => e.type === 'status');
+      if (status && t.confused) continue;
+      const drop = spec.effects.some((e) => e.type === 'morale' && (e.amount ?? 0) < 0);
+      if (drop && t.morale === 0) continue;
+      const score = (100 - t.int) * 0.6 + (drop ? t.morale * 0.3 : 0);
+      if (score < 30) continue;
+      if (!bad || score > bad.score) bad = { id, target: t, score };
+    }
+  }
+  return bad ? castAt(b, u, bad.id, bad.target, []) : null;
+}
+
 /** 推进一步自动行动：一支 AI 部队行动一次，或切换到下一阶段 / 下一回合。 */
 export function aiStep(b: Battle): Ev[] {
   need(b.stage === 'ally' || b.stage === 'enemy', '现在没有自动行动');
@@ -601,6 +697,8 @@ export function aiStep(b: Battle): Ev[] {
   while (b.queue.length) {
     const u = bySlot(b, b.queue.shift()!);
     if (!u || !u.on || u.mode === 7 || u.acted) continue;
+    const healed = aiSupport(b, u);
+    if (healed) return healed;
     const d = decide(b, u);
     if (d.dest !== u.y * b.w + u.x) evs.push(...step(b, u, d.field, d.dest % b.w, Math.floor(d.dest / b.w)));
     u.mode = d.mode;

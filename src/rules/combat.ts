@@ -1,5 +1,6 @@
-import { TB, atk, bySlot, def, friendly, idiv, isRain, knownStrategies, maxHp, rand, terrainAt, terrainDef } from './core';
+import { TB, atk, bySlot, def, foes, friendly, idiv, isRain, knownStrategies, maxHp, rand, rangeCells, terrainAt, terrainDef, unitAt } from './core';
 import { specOf, type ItemSpec } from '../data/items';
+import { strategySpec } from '../data/strategies';
 import type { Battle, Ev, Unit } from './types';
 
 /** 兵种相克：兵种 ID÷3 的前三组（步兵 0、弓兵 1、骑兵 2）循环相克，0 克 1、1 克 2、2 克 0。 */
@@ -99,20 +100,59 @@ export function physicalAttack(b: Battle, a: Unit, d: Unit): Ev[] {
   return evs;
 }
 
-/** 策略能否对该格的敌军使用：攻击系（0–14）受地形限制，火系雨天不可用。 */
+const BLAST = 36; // 爆彈专用策略（strategies.json 里的「爆發」）
+
+/** 策略能否对该格的敌军使用：攻击系（0–14）受地形限制，火系雨天不可用；爆彈不看地形天气。 */
 export function strategyUsable(b: Battle, id: number, d: Unit): boolean {
-  if (id > 14) return false; // 本关只可能出现攻击系单体策略
+  if (id === BLAST) return true;
+  if (id > 14) return false; // 混乱/士气/回复系不受地形限制
   const family = idiv(id, 5);
   if (family === 0 && isRain(b.weather)) return false;
   return TB.strategyTerrain[family].includes(terrainAt(b, d.x, d.y));
 }
 
+/** 策略的作用范围：单体只有目标，十字是目标 + 上下左右，群体是自己周围一圈。 */
+export function strategyArea(b: Battle, a: Unit, id: number, center?: Unit): Unit[] {
+  const spec = strategySpec(id);
+  if (!spec) return [];
+  const side = (u: Unit) => (spec.target === 'ally' ? !foes(a, u) : foes(a, u));
+  let cells: [number, number][];
+  if (spec.area === 'single') cells = center ? [[center.x, center.y]] : [];
+  else if (spec.area === 'cross') {
+    cells = center ? [[center.x, center.y], ...TB.cardinal.map(([dx, dy]) => [center.x + dx, center.y + dy] as [number, number])] : [];
+  } else cells = [[a.x, a.y], ...rangeCells(b, a.x, a.y, spec.range | 0x80)];
+  const out: Unit[] = [];
+  for (const [x, y] of cells) {
+    const u = unitAt(b, x, y);
+    if (u?.on && side(u) && !out.includes(u)) out.push(u);
+  }
+  return out;
+}
+
+/** 计谋的成功判定：rand((攻方智力修正−1)×2) ≥ 守方智力修正，失败率约为守方÷(攻方×2)。 */
+function resist(b: Battle, a: Unit, d: Unit): boolean {
+  const v1 = a.int + idiv(a.level * a.int, 100);
+  const v2 = d.int + idiv(d.level * d.int, 100);
+  return rand(b, Math.max(1, (v1 - 1) * 2)) >= v2;
+}
+
 /**
- * 攻击系单体策略的结算：成功判定 rand(施计方策略力) > 受计方策略力÷4（军乐队、妖术师、运输队加倍并伤害减半），
+ * 攻击系策略的单次结算：成功判定 rand(施计方策略力) > 受计方策略力÷4（军乐队、妖术师、运输队加倍并伤害减半），
  * 伤害 = 基础威力 + 2×(智 + 等级×智÷50) − (对方智 + 对方等级×对方智÷50)，树林里的火计、雨天的水计 +25%，再加 0..伤害÷50 的随机值。
  */
-export function castAttack(b: Battle, a: Unit, d: Unit, id: number): Ev[] {
-  const evs: Ev[] = [];
+function attackOne(b: Battle, a: Unit, d: Unit, id: number, evs: Ev[]): void {
+  if (id === BLAST) {
+    // 火药：不看智力、地形、天气，固定威力，必定命中
+    const amount = Math.min(d.hp, 1500 + rand(b, 30));
+    const lethal = amount === d.hp;
+    const morale = lethal ? 0 : Math.min(d.morale, 30);
+    d.hp -= amount;
+    evs.push({ t: 'cast', a: a.slot, d: d.slot, id, ok: true, dmg: amount, morale });
+    if (!lethal) setMorale(b, d, d.morale - morale, evs);
+    addExp(a, expGain(a, d, amount), evs);
+    retire(b, d, evs);
+    return;
+  }
   const family = idiv(id, 5);
   const tier = TB.strategyCategory[id];
   const bound = a.int + idiv(a.level * a.int, 100);
@@ -131,7 +171,64 @@ export function castAttack(b: Battle, a: Unit, d: Unit, id: number): Ev[] {
   if (ok && !lethal) setMorale(b, d, d.morale - morale, evs);
   addExp(a, gain, evs);
   retire(b, d, evs);
-  a.mp = (a.mp - TB.strategyMp[id]) & 0xff;
+}
+
+/** 攻击系策略：按范围（单体 / 十字）依次结算。策略值由调用方扣，道具施放不扣。 */
+export function castAttack(b: Battle, a: Unit, d: Unit, id: number): Ev[] {
+  const evs: Ev[] = [];
+  for (const t of strategyArea(b, a, id, d)) attackOne(b, a, t, id, evs);
+  return evs;
+}
+
+/** 回复量：基本威力 + 智力×等级÷20，再加 0–10% 的随机值（原版攻略实测公式）。 */
+const healPower = (b: Battle, a: Unit, base: number) => {
+  const v = base + idiv(a.int * a.level, 20);
+  return v + rand(b, Math.max(1, idiv(v, 10)));
+};
+
+/** 士气回复量：基本威力 + 等级÷10，再加 0–10% 的随机值；下降时同样按这个量算。 */
+const moralePower = (b: Battle, a: Unit, base: number) => {
+  const v = base + idiv(a.level, 10);
+  return v + rand(b, Math.max(1, idiv(v, 10)));
+};
+
+/**
+ * 回复 / 混乱 / 士气系的结算。
+ * - 我方：回复兵力、士气（士气上升可能解除混乱），不需要判定；
+ * - 敌方：先按混乱类公式判定，失败则「识破」，士气与混乱都不生效；
+ * - 十字与群体策略对范围内每个部队各判定一次。
+ * 单体回复系在没有东西可回复时不能选它（由 castTargets 过滤），群体策略则随时可放。
+ */
+export function castSupport(b: Battle, a: Unit, d: Unit | undefined, id: number): Ev[] {
+  const spec = strategySpec(id);
+  const evs: Ev[] = [];
+  if (!spec) return evs;
+  const targets = strategyArea(b, a, id, d);
+  for (const t of targets) {
+    const enemy = foes(a, t);
+    const needsRoll = enemy && spec.effects.some((e) => e.type === 'status' || (e.type === 'morale' && (e.amount ?? 0) < 0));
+    const ok = !needsRoll || resist(b, a, t);
+    const hp0 = t.hp;
+    const m0 = t.morale;
+    if (ok) {
+      for (const e of spec.effects) {
+        if (e.type === 'heal') {
+          if (t.hp < maxHp(t.cls, t.level)) t.hp = Math.min(maxHp(t.cls, t.level), t.hp + healPower(b, a, e.power ?? 0));
+        } else if (e.type === 'morale') {
+          const amount = e.amount ?? 0;
+          const delta = moralePower(b, a, Math.abs(amount));
+          setMorale(b, t, t.morale + (amount < 0 ? -delta : delta), evs);
+        } else if (e.type === 'status' && e.status === 'confused' && !t.confused) {
+          t.confused = true;
+          evs.push({ t: 'confuse', slot: t.slot, on: true });
+        }
+      }
+    }
+    evs.push({ t: 'aid', a: a.slot, d: t.slot, id, ok, hp: t.hp - hp0, morale: t.morale - m0 });
+  }
+  // 补给系经验：单体 8 点，军乐队 / 运输队 12 点；群体一律 8 点。对敌的混乱 / 士气系命中后也算 8 点。
+  const touched = targets.some((t) => !foes(a, t)) || evs.some((e) => e.t === 'aid' && e.ok);
+  if (touched && friendly(a.slot)) addExp(a, spec.area === 'single' && [12, 18].includes(a.cls) ? 12 : 8, evs);
   return evs;
 }
 

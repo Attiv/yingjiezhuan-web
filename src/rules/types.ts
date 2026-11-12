@@ -62,6 +62,7 @@ export type Ev =
   | { t: 'move'; slot: number; path: [number, number][] }
   | { t: 'hit'; a: number; d: number; dmg: number; morale: number; counter: boolean }
   | { t: 'cast'; a: number; d: number; id: number; ok: boolean; dmg: number; morale: number }
+  | { t: 'aid'; a: number; d: number; id: number; ok: boolean; hp: number; morale: number }
   | { t: 'exp'; slot: number; gain: number; levels: number; learned: number[] }
   | { t: 'recover'; slot: number; hp: number; morale: number }
   | { t: 'hp'; slot: number; delta: number }
