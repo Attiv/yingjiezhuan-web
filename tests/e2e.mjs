@@ -22,9 +22,9 @@ async function settle(answerYes = true) {
       mode: window.__yjz.mode,
       talk: !document.getElementById('talk').hidden,
       ask: !!document.querySelector('#talk:not([hidden]) .ask'),
-      screen: !document.getElementById('screen').hidden,
+      screen: !!document.querySelector('#screen:not([hidden]) .card'), // 整屏卡片（标题、战前说明、胜败）；剧情背景不算
     }));
-    if (s.ask) await page.click(answerYes ? '#talk [data-yes]' : '#talk .ask button:not([data-yes])');
+    if (s.ask) await page.click(answerYes ? '#talk .ask button:first-child' : '#talk .ask button:last-child');
     else if (s.talk) await page.click('#talk');
     else if (s.screen || s.mode !== 'busy') return s;
     await page.waitForTimeout(15);
@@ -113,7 +113,8 @@ async function endTurn() {
 async function start(seed, fast = true) {
   await page.goto(`${BASE}/?seed=${seed}${fast ? '&fast' : ''}`);
   await page.waitForSelector('#screen button');
-  await page.click('button:has-text("开始新战斗")');
+  await page.click('button:has-text("开始新游戏")');
+  await settle(); // 点完开场剧情（选择一律选第一项），停在战前说明
   await page.click('button:has-text("出阵")');
   await settle();
 }
@@ -128,16 +129,17 @@ const step = async (title, fn) => {
 const { browser, page: p, errors } = await open(`${BASE}/`);
 page = p;
 
-await step('标题 → 战前说明 → 进入战斗', async () => {
+await step('标题 → 开场剧情 → 战前说明 → 进入战斗', async () => {
   await page.waitForSelector('#screen button');
   await shot('01-title');
-  await page.click('button:has-text("开始新战斗")');
-  await shot('02-brief');
-  await page.goto(`${BASE}/?seed=20261111`);
-  await page.waitForSelector('#screen button');
-  await page.click('button:has-text("开始新战斗")');
-  await page.click('button:has-text("出阵")');
+  await page.click('button:has-text("开始新游戏")');
+  await page.waitForSelector('#talk:not([hidden])');
+  await shot('15-story');
+  await page.keyboard.press('Enter'); // 键盘也能翻对话
   await settle();
+  assert.equal((await page.evaluate(() => window.__yjz.story.flags.briefed)), true, '选择「听」应记下标志');
+  await shot('02-brief');
+  await start(20261111);
   const b = await state();
   assert.equal(b.round, 1);
   assert.equal(b.stage, 'player');
@@ -193,7 +195,7 @@ await step('存档 → 继续打两回合 → 读档，状态与存档时完全�
 });
 
 await step('刷新页面后从标题读取存档', async () => {
-  const saved = JSON.parse(await page.evaluate(() => localStorage.getItem('yjz.sishui.save.v1')));
+  const saved = JSON.parse(await page.evaluate(() => localStorage.getItem('yjz.save.v2'))).battle;
   await page.reload();
   await page.waitForSelector('#screen button');
   await page.click('button:has-text("读取存档")');
@@ -241,16 +243,21 @@ await step('正常游玩通关：关羽贴近华雄触发单挑', async () => {
   console.log(`  通关：第 ${b.round} 回合，${b.reason}，军资 ${b.gold}`);
 });
 
-await step('胜利后重新开始，回到第 1 回合的初始状态', async () => {
-  await page.click('button:has-text("重新开始")');
+await step('胜利后继续：成长、军资和战斗里的事件带回流程，战后剧情演完回到标题', async () => {
+  await page.click('button:has-text("继续")');
   await settle();
-  const b = await state();
-  assert.deepEqual([b.round, b.stage, b.gold, b.flags.length], [1, 'player', 0, 0]);
-  assert.ok(b.units.every((u) => u.on && u.morale === 100));
+  const st = await page.evaluate(() => JSON.parse(JSON.stringify(window.__yjz.story)));
+  assert.equal(st.roster['关羽'].level, 2);
+  assert.ok(st.gold >= 100);
+  assert.equal(st.flags['sishui.duel'], true);
+  assert.match(await page.textContent('#screen .card'), /序章 完/);
+  await page.click('button:has-text("回到标题")');
+  await page.waitForSelector('button:has-text("开始新游戏")');
 });
 
 await step('正常游玩失败：刘备孤军深入被击破', async () => {
   await start(42);
+  assert.equal((await unit('关羽')).level, 1, '新游戏不带上一局的成长');
   for (let turn = 0; turn < 30 && (await state()).stage === 'player'; turn++) {
     await command('刘备', 'hunt');
     if ((await state()).stage === 'player') await endTurn();
@@ -261,15 +268,21 @@ await step('正常游玩失败：刘备孤军深入被击破', async () => {
   await shot('11-defeat');
   console.log(`  失败：第 ${b.round} 回合，${b.reason}`);
   await page.click('button:has-text("回到标题")');
-  await page.waitForSelector('button:has-text("开始新战斗")');
+  await page.waitForSelector('button:has-text("开始新游戏")');
 });
 
-await step('系统指令「全军撤退」：询问后判负', async () => {
+await step('系统指令「全军撤退」：询问后判负；败了重新开始，回到这一关第 1 回合的初始状态', async () => {
   await start(5);
   await sys('全军撤退');
   await settle(true);
   assert.equal((await state()).stage, 'lost');
   await shot('12-retreat');
+  await page.click('button:has-text("重新开始")');
+  await page.click('button:has-text("出阵")');
+  await settle();
+  const b = await state();
+  assert.deepEqual([b.round, b.stage, b.gold, b.flags.length], [1, 'player', 0, 0]);
+  assert.ok(b.units.every((u) => u.on && u.morale === 100));
 });
 
 await step('回合上限：30 回合内未取胜判负（全程只按回合结束）', async () => {

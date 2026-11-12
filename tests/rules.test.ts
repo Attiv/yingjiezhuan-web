@@ -294,8 +294,8 @@ describe('回合、胜败与事件', () => {
     const l = level([unit(0, 0, 1, 0, 0), unit(15, 0, 1, 4, 0, { mode: 2 })], {
       w: 6, h: 1,
       triggers: [
-        { flag: 'granary', who: null, at: [1, 0], run: (_b, u, evs) => script.item(u, 30, evs) },
-        { flag: 'duel', who: 'u0', next: 'u15', run: (b, _u, evs) => script.retreat(b, 15, evs) },
+        { flag: 'granary', who: null, at: [1, 0], effects: [{ op: 'item', id: 30 }] },
+        { flag: 'duel', who: 'u0', next: 'u15', effects: [{ op: 'retreat', slot: 15 }] },
       ],
     });
     const b = start(l);

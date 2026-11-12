@@ -24,6 +24,9 @@ export interface Unit {
   items: number[]; // 最多 8 件
 }
 
+/** 跨战斗保留的成长：按武将名字记等级、经验和道具。 */
+export type Roster = Record<string, { level: number; exp: number; items: number[] }>;
+
 export type Stage = 'player' | 'ally' | 'enemy' | 'won' | 'lost';
 
 /** 完整战斗状态：整个对象可直接 JSON 序列化，就是存档内容。 */

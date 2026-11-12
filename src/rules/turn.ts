@@ -2,7 +2,7 @@ import { aiOrder, decide, executionTarget } from './ai';
 import { castAttack, conditionRecovery, physicalAttack, strategyUsable, upkeep, useRecoverItem } from './combat';
 import { TB, attackTargets, bySlot, foes, friendly, itemName, knownStrategies, maxHp, maxMp, rand, rangeCells, unitAt } from './core';
 import { canStop, reachField, route, type Field } from './move';
-import type { Battle, Ev, Unit } from './types';
+import type { Battle, Ev, Roster, Unit } from './types';
 
 export interface UnitInit {
   slot: number;
@@ -21,13 +21,22 @@ export interface UnitInit {
   items?: number[];
 }
 
+/** 触发后依次执行的效果。全部是数据，关卡文件里不写代码；slot 是部队槽位。 */
+export type Effect =
+  | { op: 'gold'; n: number } // 得金
+  | { op: 'item'; id: number } // 道具给触发的部队
+  | { op: 'talk'; who: string; text: string }
+  | { op: 'duel'; a: number; d: number } // 单挑演出，不扣兵力
+  | { op: 'levels'; slot: number; n: number } // 剧情升级
+  | { op: 'retreat'; slot: number };
+
 /** 关卡脚本里的一条触发记录，对应原版的「部队到达格」和「部队相邻」两种。 */
 export interface Trigger {
   flag: string; // 触发一次后记下，不再重复
   who: string | null; // 行动部队的名字；null = 任意我方部队
   at?: [number, number]; // 到达格
   next?: string; // 与之相邻的部队名字
-  run(b: Battle, u: Unit, evs: Ev[]): void;
+  effects: Effect[];
 }
 
 export interface Level {
@@ -46,23 +55,42 @@ export interface Level {
 }
 
 const LEVELS: Record<string, Level> = {};
-export const registerLevel = (l: Level) => (LEVELS[l.id] = l);
+/** 登记一关。关卡是外来的数据，登记时先查一遍，有错直接报出是哪一关的哪一处。 */
+export function registerLevel(l: Level): Level {
+  const bad = (msg: string) => new Error(`关卡「${l.id}」${msg}`);
+  if (l.terrain.length !== l.w * l.h) throw bad(`的地形应有 ${l.w * l.h} 格，实际 ${l.terrain.length} 格`);
+  const slots = new Set(l.units.map((u) => u.slot));
+  const cells = new Set(l.units.map((u) => `${u.x},${u.y}`));
+  if (slots.size !== l.units.length) throw bad('有重复的部队槽位');
+  if (cells.size !== l.units.length) throw bad('有两支部队站在同一格');
+  for (const u of l.units) {
+    if (u.x < 0 || u.y < 0 || u.x >= l.w || u.y >= l.h) throw bad(`的部队 ${u.name} 站在地图外`);
+    if (!TB.classNames[u.cls]) throw bad(`的部队 ${u.name} 兵种 ${u.cls} 不存在`);
+  }
+  const used = [l.lord, l.boss, ...l.triggers.flatMap((t) => t.effects.flatMap((e) => ('slot' in e ? [e.slot] : 'a' in e ? [e.a, e.d] : [])))];
+  for (const s of used) if (!slots.has(s)) throw bad(`引用了不存在的部队槽位 ${s}`);
+  if (new Set(l.triggers.map((t) => t.flag)).size !== l.triggers.length) throw bad('有重名的触发记录');
+  return (LEVELS[l.id] = l);
+}
 export const levelOf = (b: Battle) => LEVELS[b.level];
+export const levelById = (id: string): Level | undefined => LEVELS[id];
 
 /** 不合法的行动一律抛错，玩家与 AI 走同一套检查。 */
 function need(ok: unknown, msg: string): asserts ok {
   if (!ok) throw new Error(msg);
 }
 
-/** 开战：双方满兵力、满策略值、士气 100。 */
-export function newBattle(level: Level, seed: number): { b: Battle; evs: Ev[] } {
+/** 开战：双方满兵力、满策略值、士气 100。roster 里有记录的玩家部队带着上一战的等级、经验和道具出场。 */
+export function newBattle(level: Level, seed: number, roster: Roster = {}): { b: Battle; evs: Ev[] } {
   registerLevel(level);
   const units = level.units.map((i): Unit => {
+    const kept = i.mode === 7 ? roster[i.name] : undefined;
+    const lv = kept?.level ?? i.level;
     const u: Unit = {
-      slot: i.slot, name: i.name, face: i.face, cls: i.cls, level: i.level, exp: 0,
-      lead: i.lead, str: i.str, int: i.int, hp: maxHp(i.cls, i.level), mp: 0, morale: 100,
+      slot: i.slot, name: i.name, face: i.face, cls: i.cls, level: lv, exp: kept?.exp ?? 0,
+      lead: i.lead, str: i.str, int: i.int, hp: maxHp(i.cls, lv), mp: 0, morale: 100,
       x: i.x, y: i.y, on: true, confused: false, moved: false, acted: false,
-      mode: i.mode, target: i.target ?? null, goal: i.goal ?? null, items: [...(i.items ?? [])],
+      mode: i.mode, target: i.target ?? null, goal: i.goal ?? null, items: [...(kept?.items ?? i.items ?? [])],
     };
     u.mp = maxMp(u);
     return u;
@@ -118,7 +146,14 @@ function hooks(b: Battle, u: Unit, evs: Ev[]): void {
   const fire = (t: Trigger) => {
     if (over(b) || b.flags.includes(t.flag)) return;
     b.flags.push(t.flag);
-    t.run(b, u, evs);
+    for (const e of t.effects) {
+      if (e.op === 'gold') script.gold(b, u, e.n, evs);
+      else if (e.op === 'item') script.item(u, e.id, evs);
+      else if (e.op === 'talk') evs.push({ t: 'talk', who: e.who, text: e.text });
+      else if (e.op === 'duel') evs.push({ t: 'duel', a: e.a, d: e.d });
+      else if (e.op === 'levels') script.levels(bySlot(b, e.slot)!, e.n, evs);
+      else script.retreat(b, e.slot, evs);
+    }
   };
   const mine = (t: Trigger) => (t.who === null ? friendly(u.slot) : t.who === u.name);
   if (u.on) {
@@ -291,3 +326,7 @@ export const script = {
     if (u?.on) (u.on = false), evs.push({ t: 'retreat', slot });
   },
 };
+
+/** 战后把玩家部队的成长记下来，带进下一战（撤退的也算）。 */
+export const harvest = (b: Battle): Roster =>
+  Object.fromEntries(b.units.filter((u) => u.mode === 7 && friendly(u.slot)).map((u) => [u.name, { level: u.level, exp: u.exp, items: [...u.items] }]));

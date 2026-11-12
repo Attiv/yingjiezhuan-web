@@ -111,6 +111,9 @@ img { image-rendering: pixelated; }
 #screen.scroll { background: url('/assets/title.png') center / cover no-repeat; }
 #screen.scroll .card { background: rgba(12, 20, 48, 0.94); }
 #screen.veil { background: rgba(5, 7, 15, 0.86); }
+/* 剧情：整屏只有背景，对话框挪到舞台下方正中、盖在背景上面 */
+#screen.story { background: var(--navy) center / cover no-repeat; }
+#stage.story #talk { z-index: 11; left: 136px; top: 356px; }
 .card { width: 400px; padding: 20px 24px; }
 .card h1 { margin: 0; font-size: 36px; line-height: 44px; font-weight: normal; color: var(--gold); letter-spacing: 2px; }
 .card h1.lost { color: var(--orange); }

@@ -1,4 +1,4 @@
-import { script, type Level, type Trigger } from '../rules/turn';
+import type { Level, Trigger } from '../rules/turn';
 import D from './sishui.json';
 
 /**
@@ -13,7 +13,7 @@ const cells: Trigger[] = D.cells.map((c) => ({
   flag: `cell${c.x},${c.y}`,
   who: null, // 原版记录是「任意我方部队」
   at: [c.x, c.y],
-  run: (b, unit, evs) => (c.gold ? script.gold(b, unit, c.gold, evs) : script.item(unit, c.item!, evs)),
+  effects: [c.gold ? { op: 'gold', n: c.gold } : { op: 'item', id: c.item! }],
 }));
 
 export const SISHUI: Level = {
@@ -37,14 +37,14 @@ export const SISHUI: Level = {
     {
       // 原版记录：行动方关羽与华雄相邻 → 单挑，关羽升级，华雄离场
       flag: 'duel', who: nameOf(D.contact.actor), next: nameOf(D.contact.next),
-      run: (b, unit, evs) => {
-        evs.push({ t: 'talk', who: unit.name, text: '华雄！关某来取你首级！' });
-        evs.push({ t: 'talk', who: nameOf(D.contact.next), text: '无名小卒，也敢在此叫阵！' });
-        evs.push({ t: 'duel', a: unit.slot, d: slotOf(D.contact.removes) });
-        script.levels(b.units.find((v) => v.name === nameOf(D.contact.levelsTo))!, D.contact.levels, evs);
-        script.retreat(b, slotOf(D.contact.removes), evs);
-        evs.push({ t: 'talk', who: unit.name, text: '华雄已斩。' });
-      },
+      effects: [
+        { op: 'talk', who: nameOf(D.contact.actor), text: '华雄！关某来取你首级！' },
+        { op: 'talk', who: nameOf(D.contact.next), text: '无名小卒，也敢在此叫阵！' },
+        { op: 'duel', a: slotOf(D.contact.actor), d: slotOf(D.contact.removes) },
+        { op: 'levels', slot: slotOf(D.contact.levelsTo), n: D.contact.levels },
+        { op: 'retreat', slot: slotOf(D.contact.removes) },
+        { op: 'talk', who: nameOf(D.contact.actor), text: '华雄已斩。' },
+      ],
     },
   ],
 };
