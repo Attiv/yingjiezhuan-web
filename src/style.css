@@ -122,9 +122,14 @@ img { image-rendering: pixelated; }
 #duelplay { position: absolute; inset: 0; z-index: 12; background: #05070f; overflow: hidden; }
 #duelplay[hidden] { display: none; }
 #duelplay .terrain { position: absolute; left: 0; top: 190px; width: 640px; height: 208px; background-size: 640px 208px; image-rendering: pixelated; }
-#duelplay canvas { position: absolute; top: 96px; width: 288px; height: 288px; image-rendering: pixelated; }
-#duelplay .left { left: 40px; }
-#duelplay .right { right: 40px; transform: scaleX(-1); }
+#duelplay canvas { position: absolute; top: 110px; width: 240px; height: 240px; image-rendering: pixelated; }
+#duelplay .left { left: 30px; }
+#duelplay .right { right: 30px; transform: scaleX(-1); }
+/* 交锋时两把兵器之间的火花 */
+#duelplay .spark { position: absolute; left: 50%; top: 210px; width: 176px; height: 176px; margin: -88px 0 0 -88px; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, #fffdf2 0%, #ffe9a8 24%, #ffb03a 46%, rgba(239, 101, 0, 0) 72%); }
+#duelplay .spark.on { animation: duel-spark 0.32s ease-out; }
+@keyframes duel-spark { 0% { opacity: 0.95; transform: scale(0.35); } 100% { opacity: 0; transform: scale(1.5); } }
 #duelplay .versus { position: absolute; left: 0; right: 0; top: 18px; display: flex; justify-content: center; gap: 20px; align-items: baseline; color: var(--gold); }
 #duelplay .versus b { font-size: 20px; font-weight: normal; }
 #duelplay .versus em { font-style: normal; color: var(--orange); }

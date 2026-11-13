@@ -214,7 +214,9 @@ python3 tools/make_full_assets.py <EXTRACT> <PACK> # → public/assets/**（图�
 - **战斗特写**：`cutin/<兵种>.png`，每个兵种 150 帧 × 80×80：0–59 待机（呼吸）、60–119 出手（60fps）、
   120–149 受击。见 `docs/assets.md`。
 - **单挑**：`duel/`——关羽、张飞、吕布三张专属图集（15 帧 96×96），其余用 `left.png`/`right.png`；
-  背景按战场中点地形取 `terrain_*.png`（10 张）。
+  背景按战场中点地形取 `terrain_*.png`（10 张）。整屏两骑对冲，按剧本 `acts` 表逐条演：
+  `charge` 压上（带蹄声）、`strike` 交锋（兵器之间闪一团火花，连击的每下都闪）、
+  `fall` 被击退人马下沉后淡出、`flee` 调头跑出画面；收招会自动退回列阵位，下一轮再冲。
 - **声音**：BGM 是 10 首原版 OPL 乐谱渲染的 mp3，按剧情 / 阵营切换并整曲循环；
   音效是 `public/assets/sfx/` 的 21 个 WAV（**CC0 替代素材，不是原版 DOS 音效**，见 `docs/assets.md`）。
   `src/audio.ts` 负责预加载、节流、音量与静音（存 `yjz.sfx.v1`）；`src/sfx-map.ts` 把每个规则事件
@@ -240,7 +242,7 @@ python3 tools/make_full_assets.py <EXTRACT> <PACK> # → public/assets/**（图�
 
 - 布阵只能站到关卡数据给的出兵位上，不能自己另选格子（原版也只在这些格子里摆）。
 - 策略的施放演出按八个家族分（见 §10），不是原版逐条策略的专属动画。
-- 单挑的招式映射是按 `acts` 表驱动的固定演出，不是原版逐帧脚本。
+- 单挑的招式、位移与收招按 `acts` 表驱动，帧序列取自原版图集，但不是原版逐帧脚本。
 - 音乐是整曲循环，没有按战场形势切换。
 - **效果音不是原版 DOS 音效**：原版由 `SBOPL2.COM` 在 OPL2 的 7/8 通道实时合成，音符表走
   `MAIN.EXE` 的 `int 65h`，目前没有可用提取器；现用 21 个 CC0 音效按动作替代。

@@ -273,7 +273,8 @@ async function playDuel(aId: string, bId: string, acts: DuelAct[]) {
   el.innerHTML = `<div class="terrain" style="background-image:url(/assets/duel/terrain_${terrain}.png)"></div>` +
     `<canvas class="left" width="${DFRAME * DSCALE}" height="${DFRAME * DSCALE}"></canvas>` +
     `<canvas class="right" width="${DFRAME * DSCALE}" height="${DFRAME * DSCALE}"></canvas>` +
-    `<div class="versus"><b>${esc(bySlot(b, 0) ? nameOf(aId) : aId)}</b><em>單騎決鬥</em><b>${esc(nameOf(bId))}</b></div>`;
+    `<div class="versus"><b>${esc(bySlot(b, 0) ? nameOf(aId) : aId)}</b><em>單騎決鬥</em><b>${esc(nameOf(bId))}</b></div>` +
+    '<div class="spark"></div>';
   el.hidden = false;
   const ctx = (sel: string) => (el.querySelector(sel) as HTMLCanvasElement).getContext('2d')!;
   const [ca, cb] = [ctx('.left'), ctx('.right')];
@@ -297,25 +298,62 @@ async function playDuel(aId: string, bId: string, acts: DuelAct[]) {
   draw(ca, ia, 0);
   draw(cb, ib, 0);
   await wait(700);
+  const spark = el.querySelector('.spark') as HTMLElement;
+  /** 交锋的火花：重启动画，让连击的每一下都闪一次。 */
+  const flash = () => {
+    spark.classList.remove('on');
+    void spark.offsetWidth;
+    spark.classList.add('on');
+  };
+  const canvasOf = (side: 'left' | 'right') => (side === 'left' ? el.querySelector('.left') : el.querySelector('.right')) as HTMLElement;
+  /** 两骑的横向位置：30 = 列阵，105 = 交锋（left 是距左边缘，right 是距右边缘）。 */
+  const [HOME, MEET] = [30, 105];
+  const shift = (side: 'left' | 'right', px: number, ms: number) => {
+    const c = canvasOf(side);
+    const d = Math.max(1, ms * (scene.speed || 1));
+    c.style.transition = `${side} ${d}ms cubic-bezier(0.2, 0.7, 0.3, 1), top ${d}ms ease-in, opacity ${d}ms linear`;
+    c.style.setProperty(side, `${px}px`);
+  };
   for (const act of acts) {
     const side = act.side === 'right' ? 'right' : 'left';
-    if (act.act === 'charge') await play(side, [2, 3, 4], 90);
-    else if (act.act === 'strike') {
+    if (act.act === 'charge') {
+      // 冲阵：从列阵位置压上去，迈蹄帧同步，蹄声一起
+      playSfx('step', 0.7);
+      shift(side, MEET, 260);
+      await play(side, [2, 3, 4], 90);
+    } else if (act.act === 'strike') {
       const n = Math.min(3, Math.max(1, Math.round((act.n ?? 3) / 3)));
       for (let i = 0; i < n; i++) {
+        shift(side, MEET, 140); // 没冲过阵的（连续挥击）先压上
         playSfx('hit_heavy', 0.8);
+        flash();
         await play(side, [5, 6, 7, 8, 9, 10], 65);
         await wait(60);
       }
+      shift(side, HOME, 220); // 收招退回，下一轮再冲
     } else if (act.act === 'fall') {
+      // 落马：被击退、人马下沉，最后一帧淡出
       playSfx('retreat', 0.8);
+      shift(side, HOME - 22, 420);
+      canvasOf(side).style.top = '156px';
       show(side, 11);
       await wait(180);
       show(side, 12);
       await wait(220);
       show(side, 14);
       await wait(320);
-    } else if (act.act === 'back') await play(side, [4, 3, 2, 1], 80);
+      canvasOf(side).style.opacity = '0';
+      await wait(240);
+    } else if (act.act === 'flee') {
+      // 败走：调头跑出画面
+      playSfx('retreat', 0.8);
+      shift(side, -150, 540);
+      canvasOf(side).style.opacity = '0';
+      await play(side, [4, 3, 2], 110);
+    } else if (act.act === 'back') {
+      shift(side, HOME, 240);
+      await play(side, [4, 3, 2, 1], 80);
+    }
   }
   await wait(500);
   el.hidden = true;
@@ -1056,7 +1094,7 @@ game.events.once('ready', () => {
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
-      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene, level: lvOf, sfx: sfxLog, sfxEnabled } });
+      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene, level: lvOf, sfx: sfxLog, sfxEnabled, duel: playDuel } });
     }
     if (demo) {
       // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用
