@@ -78,6 +78,8 @@ def token_index(u: dict) -> int:
 
 
 def make_tokens(ex: Path, units: list[dict]) -> None:
+    # 早期单关演示用的旧版图集（2 行）。整部游戏的 tokens.png 由 make_full_assets.py
+    # 生成 39 列 × 4 行（含 HEXZCHR 的站立 / 迈步两帧），重跑本脚本会覆盖成旧布局。
     sheet = Image.new("RGBA", (FRAME * len(units), FRAME * 2), (0, 0, 0, 0))
     for i, u in enumerate(units):
         n = token_index(u)

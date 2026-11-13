@@ -163,6 +163,7 @@ def make_map(carto: Path, font: Path):
     return data
 
 
+# 占位棋子（无原版素材时用的演示图）；会覆盖 tokens.png，正式素材请用 make_full_assets.py。
 def make_tokens(data, reloaded: Path, font: Path):
     """棋子：一支部队一帧（顺序同 sishui.json 的 units）。有画像的武将是圆形头像加兵种小章，杂兵是一枚兵种字。
     第二行是同一批棋子褪成灰色的样子，给本回合已行动的部队用。"""

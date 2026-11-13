@@ -8,7 +8,8 @@
 产出：
   maps/           58 张战场图（3 倍整数放大）+ 15 张地形被改变时的补丁图
   faces/          240 张 64×80 武将头像（FACEDAT 原样）
-  tokens.png      19 兵种 × 2 阵营 + 刘备旗步兵，各 96×96；第二行是已行动的去饱和版
+  tokens.png      39 列 × 4 行，各 96×96：站立 / 行走 / 已行动站立 / 已行动行走
+                  （原版 HEXZCHR 每个兵种图标是 32×64 上下两帧，正好是走路的交替帧）
   pictures/       31 张事件插画
   duel/           单挑动画图（15 帧 96×96）与 10 张单挑地形背景
   cutin/          战斗特写：每兵种 60 帧待机（呼吸）+ 60 帧出手 + 30 帧受击，60fps 播放
@@ -138,19 +139,32 @@ def make_faces(ex: Path) -> int:
 
 # ---------------------------------------------------------------- 棋子 ----
 def make_tokens(ex: Path) -> None:
-    """39 帧：cls×2+阵营（0–37），第 38 帧是刘备的旗步兵；第二行是已行动的去饱和版。"""
+    """39 列 × 4 行：cls×2+阵营（0–37），第 38 帧是刘备的旗步兵。
+
+    原版 HEXZCHR 每个图标是 32×64，上下各一帧：上半是站立、下半是迈步，
+    棋盘上移动时两帧交替显示。以前只裁了上半帧，部队只能靠位移「滑」过去。
+    这里把两帧都保留，并各配一份「本回合已行动」的去饱和版：
+        行 0 站立　　行 1 行走　　行 2 站立(灰)　　行 3 行走(灰)
+    """
     S = 32 * RES
-    frames = []
-    for i in range(39):
+    cols = 39
+    idle, walk = [], []
+    for i in range(cols):
         src = rgba(ex / f"gfx/original/hexzchr/{i:03d}.png")
         assert src.size == (32, 64), f"HEXZCHR[{i}] 尺寸不对：{src.size}"
-        frames.append(src.crop((0, 0, 32, 32)).resize((S, S), NEAREST))
-    sheet = Image.new("RGBA", (S * len(frames), S * 2), (0, 0, 0, 0))
-    for i, im in enumerate(frames):
-        sheet.paste(im, (i * S, 0))
-        grey = im.convert("L").point(lambda v: int(28 + v * 0.45))
-        g = Image.merge("RGBA", (grey, grey, grey, im.getchannel("A")))
-        sheet.paste(g, (i * S, S))
+        idle.append(src.crop((0, 0, 32, 32)).resize((S, S), NEAREST))
+        walk.append(src.crop((0, 32, 32, 64)).resize((S, S), NEAREST))
+
+    def grey(im: Image.Image) -> Image.Image:
+        g = im.convert("L").point(lambda v: int(28 + v * 0.45))
+        return Image.merge("RGBA", (g, g, g, im.getchannel("A")))
+
+    sheet = Image.new("RGBA", (S * cols, S * 4), (0, 0, 0, 0))
+    for i, (a, w) in enumerate(zip(idle, walk)):
+        sheet.paste(a, (i * S, 0))
+        sheet.paste(w, (i * S, S))
+        sheet.paste(grey(a), (i * S, S * 2))
+        sheet.paste(grey(w), (i * S, S * 3))
     sheet.save(OUT / "tokens.png")
 
 

@@ -279,7 +279,7 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   await shot('03-battle-start');
 });
 
-await step('选中关羽显示移动范围；右键取消；移动后弹出指令菜单，Esc 退回原位', async () => {
+await step('选中关羽显示移动范围；右键取消；逐帧行走、弹出指令菜单，Esc 退回原位', async () => {
   const g = await unit('關羽');
   await clickCell(g.x, g.y);
   assert.equal(await mode(), 'unit');
@@ -288,9 +288,45 @@ await step('选中关羽显示移动范围；右键取消；移动后弹出指�
   assert.equal(await mode(), 'idle');
 
   const plan = await decide('關羽', 'duel');
+  // 临时开启动画并每 12ms 采一次棋子帧号：原版走一格是站立 / 迈步两帧交替
+  const guan = await unit('關羽');
+  await page.evaluate((slot) => {
+    const sc = window.__yjz.scene;
+    window.__prevSpeed = sc.speed;
+    sc.speed = 3; // 放慢一点，既方便采样也方便抓到行走中的那一帧
+    window.__walkSeen = [];
+    window.__walkShot = null;
+    window.__shotBusy = false;
+    window.__shotTries = 0;
+    window.__walkTimer = setInterval(() => {
+      const img = sc.tokens.get(slot);
+      const f = Number(img.frame.name);
+      window.__walkSeen.push(f);
+      if (window.__walkShot || window.__shotBusy || window.__shotTries > 40 || f < 39 || f >= 78) return;
+      window.__shotBusy = true;
+      window.__shotTries++;
+      sc.game.renderer.snapshot((im) => {
+        window.__shotBusy = false;
+        if (Number(sc.tokens.get(slot).frame.name) >= 39) window.__walkShot = im.src;
+      });
+    }, 12);
+  }, guan.slot);
   await clickCell(g.x, g.y);
   await clickCell(...plan.to);
   await settle();
+  const walk = await page.evaluate(() => {
+    const sc = window.__yjz.scene;
+    clearInterval(window.__walkTimer);
+    sc.speed = window.__prevSpeed;
+    return { frames: window.__walkSeen, total: sc.textures.get(`tokens:${window.__yjz.b.level}`).frameTotal, png: window.__walkShot };
+  });
+  assert.ok(walk.png, '应抓到棋子迈步中的一帧');
+  writeFileSync(`${SHOTS}25-walking.png`, Buffer.from(walk.png.split(',')[1], 'base64'));
+  assert.equal(walk.total, 157, '棋子图集：39 列 × 4 行 + 整图帧');
+  const standing = guan.cls * 2;
+  assert.ok(walk.frames.includes(standing), `出现站立帧 ${standing}`);
+  assert.ok(walk.frames.includes(standing + 39), `出现行走帧 ${standing + 39}`);
+  assert.ok(walk.frames.filter((f) => f === standing + 39).length >= 2, '行走帧反复出现（两帧交替）');
   assert.equal(await mode(), 'menu');
   assert.deepEqual([(await unit('關羽')).x, (await unit('關羽')).y], plan.to);
   await shot('05-command-menu');

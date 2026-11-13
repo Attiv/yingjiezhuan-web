@@ -43,6 +43,7 @@
   平面 p 是颜色位 p，颜色 0 透明。头像/插画用 `TFDED.COM` 的 **TF-DCE** 压缩。
 - 调色板不在数据文件里，而在 `MAIN.EXE` 偏移 `0x37CDA`：9 组 × 16 色，4bit B,R,G 按 VGA DAC 扩成 6bit。
   战场/兵种用 slot 1，头像/界面用 slot 0。
+- **行走帧**：`HEXZCHR` 每个图标 32×64 是上下两帧，上半站立、下半迈步；网页版用这两帧在棋盘上逐格交替。
 - **朝向**：`HEXZCHR` 只存了一个方向（骑兵马头一律朝右），游戏运行时靠左右镜像生成反方向。
   网页版在 `src/scene.ts` 里按阵营和移动方向做 `setFlipX`，所以原始 PNG 不要预先翻转。
 - **战斗帧分组**：`hexbchr` 按兵种连续排列，顺序同 `src/data/tables.json` 的 `classNames`

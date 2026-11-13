@@ -51,7 +51,7 @@ export class BattleScene extends Phaser.Scene {
   private map?: Phaser.GameObjects.Image;
   private mirror = true; // 棋子图本身朝右，朝左靠镜像；占位棋子上写着字，不镜像
   private perUnit = false; // 占位棋子按部队序号取帧；原版棋子图按兵种与阵营取帧
-  private static readonly TOKENS = 39; // tokens.png 每行 39 帧：兵种×2 + 阵营，第二行是已行动的样子
+  private static readonly TOKENS = 39; // tokens.png 每行 39 帧（兵种×2+阵营）；行 0/2 站立、行 1/3 行走
   private hp = new Map<number, number>(); // 画面上显示的兵力：事件一条条播，数字跟着一步步变
   private marks!: Phaser.GameObjects.Graphics;
   private cursor!: Phaser.GameObjects.Graphics;
@@ -91,7 +91,8 @@ export class BattleScene extends Phaser.Scene {
 
   /**
    * 换一场战斗（开局或读档）：按清单装载这一关的图，重摆全部棋子。
-   * 地图是一整张图，拉伸到 w×h 格；棋子图每格 CELL 见方，一支部队一帧（顺序同关卡数据），第二行是本回合已行动的样子。
+   * 地图是一整张图，拉伸到 w×h 格；棋子图每格 CELL 见方，按「兵种×2+阵营」取帧，
+   * 站立 / 行走 / 已行动各占一行。没有图时退化成每支部队一张占位图。
    */
   async setBattle(b: Battle) {
     this.b = b;
@@ -226,10 +227,12 @@ export class BattleScene extends Phaser.Scene {
     return this.tokens.get(slot)!;
   }
 
-  /** 棋子帧号：原版棋子图按「兵种×2+阵营」排，第二行是已行动的去饱和版。 */
-  private frameOf(u: Unit, acted: boolean) {
+  /** 棋子帧号：原版 HEXZCHR 每个兵种是站立 / 行走两帧，图集按行铺开：
+   * 0 站立、1 行走、2 已行动站立、3 已行动行走。列 = 兵种×2+阵营。 */
+  private frameOf(u: Unit, acted: boolean, walking = false) {
     if (this.perUnit) return this.b.units.findIndex((v) => v.slot === u.slot) + (acted ? this.b.units.length : 0);
-    return (acted ? BattleScene.TOKENS : 0) + u.cls * 2 + (u.slot >= 15 ? 1 : 0);
+    const row = (acted ? 2 : 0) + (walking ? 1 : 0);
+    return row * BattleScene.TOKENS + u.cls * 2 + (u.slot >= 15 ? 1 : 0);
   }
 
   /** 把棋子对齐到当前状态：位置、是否在场；我军已行动的换成灰色那一帧，混乱的歪倒并发紫。 */
@@ -362,7 +365,16 @@ export class BattleScene extends Phaser.Scene {
         const dx = ev.path.length > 1 ? ev.path[1][0] - ev.path[0][0] : 0;
         s.setFlipX(this.mirror && (dx < 0 ? true : dx > 0 ? false : facesLeft(b, u)));
         await this.tween({ targets: s, scale: 1.1, duration: 70 });
-        for (const [x, y] of ev.path.slice(1)) await this.tween({ targets: s, x: mid(x), y: mid(y), duration: 105, ease: 'Linear' });
+        // 原版棋盘上走一格是两帧交替：前半格迈步（略微抬起），后半格落脚回站立帧
+        for (const [x, y] of ev.path.slice(1)) {
+          const [tx, ty] = [mid(x), mid(y)];
+          const [x0, y0] = [s.x, s.y];
+          s.setFrame(this.frameOf(u, false, true));
+          await this.tween({ targets: s, x: (x0 + tx) / 2, y: (y0 + ty) / 2 - 2 * RES, duration: 52, ease: 'Linear' });
+          s.setFrame(this.frameOf(u, false, false));
+          await this.tween({ targets: s, x: tx, y: ty, duration: 53, ease: 'Linear' });
+        }
+        s.setFrame(this.frameOf(u, false, false));
         await this.tween({ targets: s, scale: 1, duration: 90, ease: 'Bounce.easeOut' });
         s.setFlipX(this.mirror && facesLeft(b, u)); // 站定后转回面向敌方（棋子图本身朝右，朝左靠镜像）
         s.setDepth(2 + ev.path[ev.path.length - 1][1] / 100);
