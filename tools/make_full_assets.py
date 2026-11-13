@@ -317,6 +317,34 @@ def make_campaign(ex: Path) -> int:
     return n
 
 
+# ---------------------------------------------------------------- 剧情场景 ----
+def make_story(ex: Path) -> int:
+    """剧情页的场景底图（原版 `load_map` 的那几张图）。
+
+    宫殿 = PMAP.R3 的 23 张 32×20 瓦片图（512×320，等距视角的内景），
+          剧情里「陳留宮殿」「洛陽宮殿」这类场面就站在这上面。
+    野外 = 0x1000 号地图：原版没有单独的图，就是战场那套「天空 + 地平线 + 地面」条带
+          拼出来的野外地平（HEXBMAP.R3），照 512×320 拼成 5 种天色。
+    两张都按 2 倍整数放大，和界面一样保持硬像素。"""
+    dst = ensure(OUT / "story")
+    n = 0
+    for f in sorted((ex / "gfx/original/maps/town").glob("pmap-*.png")):
+        im = Image.open(f).convert("RGB")
+        im.resize((im.width * 2, im.height * 2), NEAREST).save(dst / f.name)
+        n += 1
+    scene = ex / "gfx/original/maps/scene"
+    skies = sorted(scene.glob("00[0-4].png"))
+    ground = Image.open(scene / "005.png").convert("RGB")
+    for i, sky in enumerate(skies):
+        im = Image.open(sky).convert("RGB")
+        canvas = Image.new("RGB", (512, 320), (0, 0, 0))
+        canvas.paste(im.resize((512, 128), NEAREST), (0, 0))
+        canvas.paste(ground.resize((512, 192), NEAREST), (0, 128))
+        canvas.resize((1024, 640), NEAREST).save(dst / f"field-{i:02d}.png")
+        n += 1
+    return n
+
+
 # ---------------------------------------------------------------- 清单 ----
 def write_manifest(actors: dict) -> None:
     p = OUT / "manifest.json"
@@ -337,6 +365,7 @@ def main() -> None:
     make_tokens(ex)
     print(f"插画 {make_pictures(pack)} 张、单挑图 {make_duel(pack)} 张")
     print(f"行军图 {make_campaign(ex)} 张")
+    print(f"剧情场景 {make_story(ex)} 张（23 座宫殿 + 5 张野外地平）")
     actors = make_cutin(ex)
     write_manifest(actors)
     print(f"特写 {len(actors)} 个兵种 × 150 帧（60 待机 + 60 出手 + 30 受击）")

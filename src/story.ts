@@ -14,6 +14,7 @@ export interface DuelAct {
 }
 
 export type Step =
+  | { t: 'stage'; id: string } // 这一幕的场景（地图 + 场上人物，见 data/stages.json）
   | { t: 'bg'; key: string } // 换背景：界面层按 key 找图，空串 = 不用背景
   | { t: 'say'; who: string; text: string } // 对话，等玩家点一下
   | { t: 'text'; text: string } // 旁白，等玩家点一下
@@ -62,6 +63,7 @@ export interface Story {
   pc: number;
   bg: string;
   picture: string; // 事件插画（assets/pictures/<key>.png），空串 = 没有
+  section: string; // 当前这一幕的 id（对应 stages.json），空串 = 没登记场景
   bgm: string; // 当前音乐
   cast: string[]; // 场上人物（最多两个），对话时按出场顺序摆
   flags: Record<string, Flag>;
@@ -99,7 +101,7 @@ export interface StartOpts {
 }
 
 export const startStory = (s: Script, o: StartOpts = {}): Story => ({
-  script: s.id, pc: -1, bg: '', picture: '', bgm: '', cast: [], flags: {},
+  script: s.id, pc: -1, bg: '', picture: '', section: '', bgm: '', cast: [], flags: {},
   roster: o.roster ?? {}, party: [...(o.party ?? [])], bag: [], deploy: [], gold: o.gold ?? 0,
 });
 
@@ -150,6 +152,7 @@ export function nextStep(s: Script, st: Story, answer = 0, api: StoryApi = {}): 
     const x = s.steps[++st.pc];
     if (!x || x.t === 'end') return (st.pc = s.steps.length), null;
     if (x.t === 'bg') st.bg = x.key;
+    else if (x.t === 'stage') st.section = x.id;
     else if (x.t === 'picture') st.picture = x.key;
     else if (x.t === 'bgm') st.bgm = x.key;
     else if (x.t === 'hide') st.cast = [];

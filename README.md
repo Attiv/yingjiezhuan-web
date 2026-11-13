@@ -7,9 +7,11 @@
 纯前端，本地存档，无后端。
 音效是 CC0 替代素材，**不是原版 DOS 的效果音**（原版走 `SBOPL2.COM` 的 OPL 合成，尚无可用的提取器）。
 
-内容全部是数据，格式见 [docs/framework.md](docs/framework.md)：5491 步流程、610 幕插剧、
+内容全部是数据，格式见 [docs/framework.md](docs/framework.md)：5731 步流程、610 幕插剧、
 70 场战斗、58 张战场地图、129 名武将、63 件道具（价格、回复量、装备加成、8 条转职链）、37 条策略，
-由 `tools/build_campaign.py` 从原版盘转出。
+由 `tools/build_campaign.py` 从原版盘转出；剧情画面的**舞台调度**（每幕用哪张宫殿图、
+场上摆了谁、哪句话时走动退场、点谁能听他说什么）由 `tools/build_stages.py` 转成
+`src/data/stages.json`。
 规则数据直接读自原版文件，核心规则在原版程序里反汇编核对过；证据、状态和已知差异都在
 [docs/rules.md](docs/rules.md)。**可玩不等于已对齐原版**：两个状态分开写在那份文档的开头。
 
@@ -26,6 +28,7 @@ node tests/e2e.mjs              # 浏览器实操验证（需要开发服务器�
 node tests/prod-smoke.mjs       # 生产构建冒烟（需要预览服务器在 5274）
 
 python3 tools/build_campaign.py                            # 原版剧本/战斗/武将/道具/策略 → src/data/*.json
+python3 tools/build_stages.py                              # 剧情舞台：地图、摆人、地名条、点人的台词 → src/data/stages.json
 python3 tools/make_full_assets.py <EXTRACT> <PACK>          # 原版图与音乐 → public/assets/**
 python3 tools/make_sfx.py                                  # CC0 动作音效 → public/assets/sfx/
 python3 tools/extract.py "<原版目录>"                       # 单关数据与数值表（早期工具）
@@ -38,12 +41,16 @@ python3 tools/make_assets.py <四样素材的路径>               # 旧版：�
 ## 操作
 
 - 剧情里点对话框或按回车、空格翻到下一句；章节横幅点一下继续；遇到选择必须点其中一项。
+  剧情画面是原版的舞台：宫殿底图、场上站着人、左上角有地名条；**点场上的人**能听他说一句
+  （原版剧本里记着的闲话），说完接着演。
 - 出兵准备（营地）：左边编成（必带的人锁定，点「出陣／待命」切换），右边道具（包袱 ↔ 武将 8 格，
   能转职的道具旁有「轉○○」）、武将情报与商店（原版定价，点价钱买），底部「存檔」「出陣」。
 - 出陣后是**部隊配置**：点蓝色出兵格依次摆人，点已摆好的收回，「自動配置」按关卡出兵位摆好，
   全摆完才能「開始」。
-- 左键点我军部队：选中并显示移动范围。再点范围内的格子移动，点部队自己则原地下令。
-  移动时棋子按原版 `HEXZCHR` 的站立 / 迈步两帧逐格交替，走完回到站立帧。
+- 左键点我军部队：选中并显示**蓝色可移动格**和**橙色攻击范围**（走过去能打到哪儿）。
+  再点范围内的格子移动，点部队自己则原地下令。
+  移动时棋子按原版 `HEXZCHR` 的站立 / 迈步两帧逐格交替，走完回到站立帧；
+  站着不动的部队会像原版那样轻轻起伏（待机呼吸）。
 - 移动后弹出指令菜单：攻击、策略、道具、待命。策略菜单按射程与策略值列出当前真能用的条目，
   群体策略（大援助、大激励…）直接对周围友军施放；火龍書、爆彈这类道具也走同一套策略结算。
 - 右键或 Esc：取消。在指令菜单里取消会退回原位，移动作废。
@@ -61,14 +68,15 @@ python3 tools/make_assets.py <四样素材的路径>               # 旧版：�
 ```
 src/rules/     战斗规则，纯 TypeScript，不依赖画面：数值、移动、结算、回合、AI
 src/data/      原版数据：game.json（整部剧本 + 70 关 + 武将）、items.json（道具与转职表）、
-               strategies.json（37 条策略）、game.ts（装配成关卡）、items.ts / strategies.ts（查询）、
-               tables.json 数值表；
+               strategies.json（37 条策略）、stages.json（剧情舞台）、
+               game.ts（装配成关卡）、items.ts / strategies.ts（查询）、tables.json 数值表；
                sishui.*/campaign.ts 是早期单关演示，测试仍在用
 src/audio.ts   音效播放：预加载、节流、音量、静音开关（localStorage）
 src/sfx-map.ts 规则事件 → 音效键的纯函数映射（可单测）
 src/music.ts   音乐导演：按阶段 / 场合选曲（战斗、敌军阶段、单挑、败北…）的纯函数（可单测）
 src/result.ts  战斗结算：军资拆分、经验与升级、回合数的纯函数（可单测）
 src/story.ts   流程脚本解释器：对话、选择、标志、战斗的先后，纯 TypeScript
+src/stage.ts   剧情舞台：这一幕该铺哪张图、人摆在哪、点谁说什么（纯逻辑，可单测）
 src/facing.ts  棋子朝向：面向敌方
 src/scene.ts   Phaser 场景：画地图和棋子、播放规则层给出的事件、战斗特写帧动画
 src/main.ts    操作流程与界面（标题、剧情、营地、状态栏、菜单、单挑、存读档、胜负与结局）

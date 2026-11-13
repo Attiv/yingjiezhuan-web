@@ -424,7 +424,7 @@ def scene_steps(scenes: dict[str, list[dict]], sid: str) -> list[dict]:
     n = _OCC.get(sid, 0)
     _OCC[sid] = n + 1
     pre = lambda name: f"{sid}~{n}:{name}"
-    out = []
+    out = [{"t": "stage", "id": sid}]  # 这一幕的场景（地图与场上人物，见 stages.json）
     for st in scenes[sid]:
         st = dict(st)
         t = st["t"]

@@ -9,8 +9,9 @@ import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { tally } from './result';
+import { StageScript, isSceneMap, mapPoint, mapSrc, stageOf, tokenFrame } from './stage';
 import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, syncUnit } from './trainer';
-import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
+import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, rangeCells, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doDrop, doGive, doItem, doItemAll, doMove, doWait, endPhase, giveTargets, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
 import type { Battle, Ev, Flag, Unit } from './rules/types';
@@ -45,6 +46,7 @@ let pick: { targets: Unit[]; run: (t: Unit) => Ev[] } | null = null;
 let answer: ((i: number) => void) | null = null; // 对话框等待中的回调
 let onEsc = 0; // 按 Esc 时回答的选项序号；-1 = 必须自己选
 let autoTalk = false; // 仅开发模式的 ?fast：对话不等点击
+let aside = false; // 正在点人问话：此时的点击只翻那一句
 
 /** 武将的初始成长：等级取原版数据，其余空白。 */
 const blank = (id: string) => ({ level: officers[id]?.level ?? 1, exp: 0, items: [] as number[] });
@@ -293,12 +295,17 @@ function talk(who: string, text: string, options: string[] = [], face = '', esc_
   });
 }
 $('talk').addEventListener('click', (e) => {
+  if (aside) return; // 点人问话时，这一下只用来翻那一句
   const btn = (e.target as HTMLElement).closest('button');
   if ($('talk').querySelector('.ask') && !btn) return; // 有选项时必须点按钮
   if (!btn) playSfx('cursor', 0.55); // 翻到下一句
   answer?.(Number(btn?.dataset.i ?? 0));
 });
-const say = (who: string, text: string) => talk(nameOf(who), text, [], faceOf(who) ?? '');
+const say = (who: string, text: string) => {
+  speaking = nameOf(who);
+  spotSpeaker();
+  return talk(speaking, text, [], faceOf(who) ?? '');
+};
 const confirmBox = (text: string) => talk('刘备', text, ['是', '否'], 'faces/038', 1).then((i) => i === 0);
 
 // ---------------------------------------------------------------- 单挑演出 ----
@@ -423,18 +430,98 @@ async function playDuel(aId: string, bId: string, acts: DuelAct[]) {
 }
 
 // ---------------------------------------------------------------- 剧情 ----
-/** 剧情背景：原版事件插画（224×144）按 2 倍摆进舞台中央。 */
-function showPicture(key: string) {
+/** 这一幕的舞台：地图、站在格子上的人、点人说话。原版的剧情画面就是这个。 */
+let stageScript = new StageScript();
+let stageSection = ''; // 当前幕的 id
+let stageLine = 0; // 本幕已经说过几句台词：舞台调度按它对表
+
+/** 人身上贴哪张棋子图：兵种×2 + 阵营，取站立那一帧。 */
+function actorStyle(id?: string): string {
+  const { col } = tokenFrame(id ? officers[id]?.cls ?? 0 : 0);
+  return `background-position:${-col * 40}px 0`;
+}
+
+/** 画剧情场景：有事件插画就整屏插画（原版 show_picture），否则铺地图并摆人。 */
+function renderStoryView() {
+  const el = $('screen');
+  if (story.picture) {
+    el.innerHTML = `<img class="pic" src="/assets/pictures/${story.picture}.png" alt="">`;
+    return;
+  }
+  const map = stageScript.map;
+  if (!isSceneMap(map)) {
+    el.innerHTML = '';
+    return;
+  }
+  const names = stageScript.info?.names ?? {};
+  const people = [...stageScript.people.values()].sort((a, b) => a.y - b.y || a.x - b.x);
+  const place = stageScript.place ? `<div class="place">${esc(stageScript.place)}</div>` : '';
+  el.innerHTML = `<div class="scene"><img class="backdrop" src="${mapSrc(map)}" alt="">` + place +
+    people.map((p) => {
+      const { left, top } = mapPoint(p.x, p.y);
+      const flip = p.dir === 3 ? 'transform:translate(-50%,-100%) scaleX(-1);' : '';
+      return `<button class="actor" data-who="${p.who}" title="${esc(names[p.who] ?? '')}"` +
+        ` style="left:${left}px;top:${top}px;${flip}"><i style="${actorStyle(p.id)}"></i></button>`;
+    }).join('') + '</div>';
+  el.querySelectorAll<HTMLElement>('.actor').forEach((b) => (b.onclick = (e) => (e.stopPropagation(), talkTo(Number(b.dataset.who)))));
+  spotSpeaker();
+}
+
+/** 说话的人身上亮一圈金光，其余人恢复常态。 */
+let speaking = '';
+function spotSpeaker(): void {
+  $('screen').querySelectorAll<HTMLElement>('.actor').forEach((b) => {
+    b.classList.toggle('on', !!speaking && stageScript.info?.names?.[Number(b.dataset.who)] === speaking);
+  });
+}
+
+/** 剧情推进到下一句：按「本幕已说过几句」把舞台调度走一步。 */
+function storyFrame() {
+  if (story.section !== stageSection) {
+    stageScript = new StageScript(stageOf(story.section), stageScript); // 同一处的后续段接着上一幕的人和地图
+    stageSection = story.section;
+    stageLine = 0;
+  }
+  stageScript.advance(stageLine);
   const el = $('screen');
   el.className = 'story';
   el.hidden = false;
   el.style.backgroundImage = '';
-  el.innerHTML = key ? `<img class="pic" src="/assets/pictures/${key}.png" alt="">` : '';
-}
-function storyFrame() {
-  showPicture(story.picture);
+  renderStoryView();
   playBgm(story.bgm);
   $('stage').classList.add('story');
+}
+
+/** 点场上的人：原版剧本里记着每个人这一幕会说的话（talk 触发），有就说一句，没有就报个名字。 */
+async function talkTo(who: number): Promise<void> {
+  const info = stageScript.info;
+  const name = info?.names?.[who] ?? '';
+  if (!name) return;
+  const lines = info?.talks?.[who] ?? [];
+  const box = $('talk');
+  if (aside) return;
+  aside = true;
+  const saved = box.hidden ? '' : box.innerHTML;
+  const wasHidden = box.hidden;
+  box.hidden = false;
+  playSfx('cursor', 0.5);
+  const face = info?.ops.find((o) => o.who === who)?.id;
+  try {
+    for (const line of lines.length ? lines : [`（${name}）`]) {
+      box.innerHTML = `<div class="face" style="${faceStyle(face ? officers[face]?.face : '')}"></div>` +
+        `<div><h3>${esc(name)}</h3><p>${esc(line)}</p></div>`;
+      await new Promise<void>((done) => {
+        const off = () => (box.removeEventListener('click', off), document.removeEventListener('keydown', key), done());
+        const key = (e: KeyboardEvent) => (e.key === 'Enter' || e.key === ' ') && off();
+        box.addEventListener('click', off);
+        document.addEventListener('keydown', key);
+      });
+    }
+  } finally {
+    aside = false;
+    if (wasHidden) box.hidden = true;
+    else box.innerHTML = saved;
+  }
 }
 /** 章节标题：原版行军图铺满舞台（缓慢平移），中间压一条横幅，点一下或按回车继续。 */
 function chapter(text: string): Promise<void> {
@@ -469,6 +556,9 @@ function hideStoryFrame() {
   $('screen').innerHTML = '';
   $('screen').style.backgroundImage = '';
   $('stage').classList.remove('story');
+  stageScript = new StageScript(); // 收起舞台：下一幕从干净的一场开始
+  stageSection = '';
+  speaking = '';
 }
 
 /** 战场里插播的一幕：演出、单挑、选项，演完回战场。
@@ -480,7 +570,7 @@ async function playScene(id: string) {
   steps.forEach((s, i) => s.t === 'label' && labels.set(s.name, i));
   const flags = () => ({ ...story.flags, ...b.vars });
   const el = $('screen');
-  el.className = 'story';
+  el.className = 'story over-battle'; // 战场插剧：透出战场，只把对话框浮在上面
   el.hidden = false;
   el.innerHTML = '';
   $('stage').classList.add('story');
@@ -523,27 +613,53 @@ async function playScene(id: string) {
   }
 }
 
+/** 地名条（原版 caption）：画面上只打一行字，停一下自己过去，也可以点掉。 */
+async function captionBeat(): Promise<void> {
+  const el = $('screen');
+  playSfx('cursor', 0.4);
+  await new Promise<void>((done) => {
+    let timer = 0;
+    const off = () => {
+      window.clearTimeout(timer);
+      el.removeEventListener('click', off);
+      document.removeEventListener('keydown', key);
+      done();
+    };
+    const key = (e: KeyboardEvent) => (e.key === 'Enter' || e.key === ' ') && off();
+    el.addEventListener('click', off);
+    document.addEventListener('keydown', key);
+    // 有人正在点场上的人问话时先等着，别把对话框抢回去
+    const tick = () => (aside ? (timer = window.setTimeout(tick, 120)) : off());
+    timer = window.setTimeout(tick, autoTalk ? 60 : 1200);
+  });
+}
+
 /** 从某一步起把流程演下去：对话、旁白、选择在这里处理；遇到战斗先出战前说明，全部演完回标题。 */
 async function playStory(step: Shown | null) {
   mode = 'busy'; // 剧情期间战场不接受操作
-  storyFrame();
   while (step) {
+    while (aside) await new Promise((r) => setTimeout(r, 80)); // 正在点人问话：等他问完再往下演
+    storyFrame(); // 先把这一幕的舞台摆到这一句该有的样子，再开口
     switch (step.t) {
-      case 'say': await say(step.who, step.text); break;
-      case 'text': await talk('', step.text); break;
+      case 'say': await say(step.who, step.text); stageLine++; break;
+      case 'text': {
+        // 地名条不是台词：画面上已经写在左上角，停一下就走，不占对话框
+        if (stageScript.place && step.text === stageScript.place) await captionBeat();
+        else await talk('', step.text);
+        stageLine++;
+        break;
+      }
       case 'title': await chapter(step.text); break;
       case 'choice': {
         const i = await talk(step.who ? nameOf(step.who) : '', step.text, step.options.map((o) => o.label));
-        storyFrame();
         step = nextStep(CAMPAIGN, story, i, API);
         continue;
       }
       case 'duel': await playDuel(step.a, step.b, step.acts); break;
-      case 'camp': await camp(step); storyFrame(); step = nextStep(CAMPAIGN, story, 0, API); continue;
+      case 'camp': await camp(step); step = nextStep(CAMPAIGN, story, 0, API); continue;
       case 'ending': return showEnding(step.text);
       case 'battle': hideStoryFrame(); return showBrief(step.level);
     }
-    storyFrame();
     step = nextStep(CAMPAIGN, story, 0, API);
   }
   hideStoryFrame();
@@ -745,6 +861,23 @@ function reachCells(u: Unit): [number, number][] {
   return out;
 }
 
+/**
+ * 选中这支部队时「站过去就能打到」的格子：从当前位置和每个能停的格子出发，
+ * 按兵种的攻击范围铺开，去掉移动范围内的格子（那些已经画成蓝的）。
+ * 原版选人时也是一蓝一橙两片，玩家能一眼看出这一步走完能不能打到人。
+ */
+function threatCells(u: Unit, move: [number, number][]): [number, number][] {
+  const walk = new Set(move.map(([x, y]) => `${x},${y}`));
+  const out = new Map<string, [number, number]>();
+  for (const [x, y] of [[u.x, u.y] as [number, number], ...move]) {
+    for (const [cx, cy] of rangeCells(b, x, y, TB.range[u.cls])) {
+      const k = `${cx},${cy}`;
+      if (!walk.has(k) && !out.has(k)) out.set(k, [cx, cy]);
+    }
+  }
+  return [...out.values()];
+}
+
 function deselect() {
   sel = null;
   pick = null;
@@ -753,13 +886,22 @@ function deselect() {
   scene.unmark();
   renderTurn();
 }
+let rangeHint = false; // 每场战斗第一次选人时说明一次蓝橙两片格子的含义
 function select(u: Unit) {
   playSfx('cursor', 0.6);
   sel = u;
   pick = null;
   mode = 'unit';
   closeMenu();
-  scene.mark(u.moved ? [[u.x, u.y]] : reachCells(u), 'move');
+  if (u.moved) scene.mark([[u.x, u.y]], 'move', { cells: cellsOf(attackTargets(b, u)), kind: 'attack' });
+  else {
+    const move = reachCells(u);
+    scene.mark(move, 'move', { cells: threatCells(u, move), kind: 'attack' });
+  }
+  if (!rangeHint) {
+    rangeHint = true;
+    log('藍格：可移動。　橙格：走過去能攻擊到的範圍。');
+  }
   renderUnit(u);
   renderTurn();
 }
@@ -1381,6 +1523,7 @@ function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
   }
   const lv = levelOf(b);
   shown = sel = pick = null;
+  rangeHint = false; // 换一场战斗就重新提示一次蓝橙格
   mode = 'busy';
   playBgm(battleBgm(lv, b.stage), true); // 开战：原版的战斗曲
   renderUnit(null);

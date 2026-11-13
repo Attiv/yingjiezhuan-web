@@ -128,6 +128,22 @@ img { image-rendering: pixelated; }
 /* 剧情：整屏背景（原版事件插画）盖住战场，对话框挪到舞台下方正中 */
 #screen.story { background: var(--navy) center / cover no-repeat; display: grid; place-items: center; }
 #screen.story .pic { width: 448px; height: 288px; object-fit: contain; image-rendering: pixelated; border: 3px solid var(--gold); background: #000; }
+/* 战场里插播的一幕：不盖住战场，只把对话框浮在上面（原版也是压在战场上说话） */
+#screen.over-battle { background: transparent; }
+/* 剧情场景：原版的等距地图铺满舞台（512×320 的 1.25 倍），人站在格子上，点一下说话 */
+#screen .scene { position: absolute; inset: 0; overflow: hidden; }
+#screen .scene .backdrop { position: absolute; left: 0; top: 0; width: 640px; height: 400px; image-rendering: pixelated; }
+#screen .scene .place { position: absolute; left: 16px; top: 12px; padding: 3px 12px; font-size: 17px; line-height: 22px;
+  letter-spacing: 3px; color: var(--gold); background: rgba(12, 20, 48, 0.82);
+  border-left: 3px solid var(--gold); text-shadow: 0 1px 0 #000; }
+#screen .scene .actor { position: absolute; width: 40px; height: 40px; padding: 0; border: 0; background: none;
+  transform: translate(-50%, -100%); cursor: pointer; }
+#screen .scene .actor i { display: block; width: 40px; height: 40px; background-image: url('/assets/tokens.png');
+  background-size: 1560px 160px; background-repeat: no-repeat; image-rendering: pixelated; }
+#screen .scene .actor::after { content: ''; position: absolute; left: 50%; bottom: -2px; width: 24px; height: 7px;
+  margin-left: -12px; border-radius: 50%; background: rgba(0, 0, 0, 0.34); }
+#screen .scene .actor:hover { filter: drop-shadow(0 0 5px var(--gold)); }
+#screen .scene .actor.on { filter: drop-shadow(0 0 6px var(--gold)) drop-shadow(0 0 3px var(--orange)); }
 /* 章节标题：整屏原版行军图缓缓平移，中间一条金龙纹横幅写「第X章」与副题 */
 #screen.chapter-screen { animation: chapter-pan 20s ease-out both; }
 #screen.chapter-screen[data-pan='rev'] { animation-name: chapter-pan-rev; }

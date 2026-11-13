@@ -65,9 +65,9 @@ async function settle(answerYes = true) {
   throw new Error('等待超时：游戏一直处于播放状态');
 }
 
-/** 点击地图上的一格（先把镜头移过去，这只是视角，不改战斗状态）。 */
-async function clickCell(x, y, button = 'left') {
-  const p = await page.evaluate(([cx, cy]) => {
+/** 一格在屏幕上的中心坐标；顺便把镜头移过去（只是视角，不改战斗状态）。 */
+async function cellPoint(x, y) {
+  return page.evaluate(([cx, cy]) => {
     const { scene } = window.__yjz;
     scene.focus(cx, cy, true);
     const cam = scene.cameras.main;
@@ -76,6 +76,10 @@ async function clickCell(x, y, button = 'left') {
     const s = r.width / cam.width;
     return { x: r.left + ((cx + 0.5) * cell - cam.scrollX) * s, y: r.top + ((cy + 0.5) * cell - cam.scrollY) * s };
   }, [x, y]);
+}
+/** 点地图上的一格（先把镜头移过去，这只是视角，不改战斗状态）。 */
+async function clickCell(x, y, button = 'left') {
+  const p = await cellPoint(x, y);
   await page.mouse.move(p.x, p.y);
   await page.mouse.click(p.x, p.y, { button });
   await page.waitForTimeout(20);
@@ -211,15 +215,106 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   await shot('15-chapter');
   await page.keyboard.press('Enter'); // 键盘也能翻页
   await page.waitForSelector('#talk:not([hidden])');
-  // 前几句是旁白，往前点几句就会出现原版的事件插画
+  /** 往前演一步：有对白就点对话框（有选项就选第一项），没有就按回车（章节横幅、地名条都认回车）。 */
+  const next = async () => {
+    if (await page.evaluate(() => !!document.querySelector('#talk:not([hidden]) .ask'))) await page.click('#talk .ask button:first-child');
+    else if (await page.evaluate(() => !document.getElementById('talk').hidden)) await page.click('#talk');
+    else await page.keyboard.press('Enter');
+    await page.waitForTimeout(40);
+  };
+  // 前几句是旁白，往前点几句就会出现原版的事件插画；再往后是原版剧情的舞台：地图 + 场上的人
   let pic = null;
-  for (let i = 0; i < 12 && !pic; i++) {
-    pic = await page.$('#screen .pic');
-    if (!pic) { await page.click('#talk'); await page.waitForTimeout(40); }
+  let stage = null;
+  for (let i = 0; i < 40 && !(pic && stage); i++) {
+    const now = await page.evaluate(() => {
+      const sc = document.querySelector('#screen .scene');
+      return {
+        pic: document.querySelector('#screen .pic')?.getAttribute('src') ?? '',
+        talk: !document.getElementById('talk').hidden,
+        speaker: document.querySelector('#talk h3')?.textContent ?? '',
+        scene: sc && {
+          src: sc.querySelector('.backdrop')?.getAttribute('src') ?? '',
+          place: sc.querySelector('.place')?.textContent ?? '',
+          actors: [...sc.querySelectorAll('.actor')].map((a) => a.title),
+          lit: [...sc.querySelectorAll('.actor.on')].map((a) => a.title),
+        },
+      };
+    });
+    if (now.pic) pic = now.pic;
+    // 只在有对白等点击时抓：这一刻点人才安全，不会把剧情演飞
+    if (now.scene?.actors.length && now.talk) stage = { ...now.scene, speaker: now.speaker };
+    if (!(pic && stage)) await next();
   }
   assert.ok(pic, '剧情背景应是原版事件插画');
-  assert.match(await pic.getAttribute('src'), /^\/assets\/pictures\//);
+  assert.match(pic, /^\/assets\/pictures\//);
   await shot('16-story');
+  // 剧情画面不是一个空屏：铺原版地图（宫殿图 / 野外地平），场上站着人，左上角有地名条
+  assert.ok(stage, '剧情应铺出原版地图并摆上人物');
+  assert.match(stage.src, /^\/assets\/story\/(pmap-\d{3}|field-\d{2})\.png$/, `地图来源 ${stage.src}`);
+  assert.equal(await page.evaluate((u) => fetch(u).then((r) => r.status), stage.src), 200, '地图文件真能加载');
+  assert.equal(stage.place, '陳留宮殿', `这一幕的地名条，实际「${stage.place}」`);
+  assert.ok(stage.actors.length >= 8, `陳留宮殿应站着原版的 10 个人，实际 ${stage.actors.length}`);
+  for (const n of stage.actors) assert.ok(n, '每个人都要报得出名字（不是无名占位）');
+  if (stage.speaker) assert.ok(stage.lit.includes(stage.speaker), `说话的人要亮着，实际 ${stage.lit}`);
+  await shot('29-story-stage');
+  // 一路演到「陳留營帳」的第一句对白：这一幕的原版记录里，每个人身上都挂着台词
+  let tent = null;
+  for (let i = 0; i < 260 && !tent; i++) {
+    tent = await page.evaluate(() => {
+      if (window.__yjz.story.section !== 'c0_s0_story4') return null;
+      if (document.getElementById('talk').hidden) return null; // 还在地名条上，等它过去
+      const sc = document.querySelector('#screen .scene');
+      if (!sc) return null;
+      return {
+        place: sc.querySelector('.place')?.textContent ?? '',
+        actors: [...sc.querySelectorAll('.actor')].map((a) => a.title),
+        speaker: document.querySelector('#talk h3')?.textContent ?? '',
+        line: document.querySelector('#talk p')?.textContent ?? '',
+      };
+    });
+    if (!tent) await next();
+  }
+  assert.ok(tent, '应演到陳留營帳的对白');
+  assert.equal(tent.place, '陳留營帳', `这一幕的地名条，实际「${tent.place}」`);
+  assert.ok(tent.actors.includes('袁紹'), `陳留營帳应站着袁紹，实际 ${tent.actors}`);
+  // 点场上的人：原版剧本记着他这一幕的台词，点一下就能听见，说完回到正在演的那句
+  // 棋子高过一格、彼此压着，先找一个真能点到他身上的点（原版也是这样点头脸）
+  const spot = await page.evaluate(() => {
+    const el = document.querySelector('#screen .scene .actor[title="袁紹"]');
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    for (let dy = 3; dy < r.height; dy += 3) {
+      for (let dx = 2; dx < r.width; dx += 3) {
+        const hit = document.elementFromPoint(r.left + dx, r.top + dy);
+        if (hit === el || el.contains(hit)) return { x: r.left + dx, y: r.top + dy };
+      }
+    }
+    return null;
+  });
+  assert.ok(spot, '袁紹应能点得到（没被别人整个挡住）');
+  await page.mouse.click(spot.x, spot.y);
+  await page.waitForTimeout(120);
+  const heard = await page.evaluate(() => ({
+    who: document.querySelector('#talk h3')?.textContent ?? '',
+    line: document.querySelector('#talk p')?.textContent ?? '',
+  }));
+  assert.equal(heard.who, '袁紹', '点谁就报谁的名');
+  assert.match(heard.line, /華雄乃勇猛之人/, `说的是原版剧本里袁紹这一句，实际「${heard.line}」`);
+  // 他可能不止一句：一直点到回到原来那句为止
+  for (let k = 0; k < 8; k++) {
+    const now = await page.evaluate(() => ({
+      who: document.querySelector('#talk h3')?.textContent ?? '',
+      line: document.querySelector('#talk p')?.textContent ?? '',
+    }));
+    if (now.who === tent.speaker && now.line === tent.line) break;
+    await page.click('#talk');
+    await page.waitForTimeout(60);
+  }
+  const back = await page.evaluate(() => ({
+    who: document.querySelector('#talk h3')?.textContent ?? '',
+    line: document.querySelector('#talk p')?.textContent ?? '',
+  }));
+  assert.deepEqual([back.who, back.line], [tent.speaker, tent.line], '说完回到原来那句');
   const s = await advance();
   assert.equal(s.camp, true, '序章演完应到出兵准备');
   const st = await storyNow();
@@ -334,11 +429,59 @@ await step('道具指令：豆可以「给予 / 丢弃」，菜单里只有这�
   assert.equal((await unit('劉備')).acted, true);
 });
 
-await step('选中关羽显示移动范围；右键取消；逐帧行走、弹出指令菜单，Esc 退回原位', async () => {
+await step('选中关羽：蓝格能走、橙格能打到，站着的部队会呼吸；右键取消；逐帧行走、指令菜单，Esc 退回原位', async () => {
   const g = await unit('關羽');
-  await clickCell(g.x, g.y);
+  const at = await cellPoint(g.x, g.y);
+  await page.mouse.move(at.x, at.y); // 先把光标停在同一格，免得悬停框混进下面的对比
+  // 冻结呼吸，好逐像素比出「选中」到底多画了什么
+  await page.evaluate(() => {
+    const sc = window.__yjz.scene;
+    sc.speed = 0;
+    window.__pixels = () => new Promise((done) => sc.game.renderer.snapshot((img) => {
+      const c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      done(ctx.getImageData(0, 0, c.width, c.height).data);
+    }));
+  });
+  await page.evaluate(async () => (window.__plain = await window.__pixels()));
+  await page.mouse.click(at.x, at.y);
+  await page.waitForTimeout(60);
   assert.equal(await mode(), 'unit');
+  const tint = await page.evaluate(async () => {
+    const a = window.__plain;
+    const b = await window.__pixels();
+    let blue = 0;
+    let orange = 0;
+    for (let i = 0; i < a.length; i += 4) {
+      const [dr, dg, db] = [b[i] - a[i], b[i + 1] - a[i + 1], b[i + 2] - a[i + 2]];
+      if (Math.abs(dr) + Math.abs(dg) + Math.abs(db) < 15) continue; // 没变的
+      if (db >= dr && db >= dg && db > 6) blue++; // 亮蓝 0x8acfff
+      else if (dr > dg && dr > db && dr > 6) orange++; // 朱 0xef6500
+    }
+    return { blue, orange };
+  });
+  // 一片格子 92×92 像素：真画出来就是成千上万的像素，不是几个残余
+  assert.ok(tint.blue > 4000, `选中部队应亮出蓝色移动格，实际蓝 ${tint.blue} 像素`);
+  assert.ok(tint.orange > 4000, `还应亮出橙色攻击范围，实际橙 ${tint.orange} 像素`);
   await shot('04-select-move-range');
+  // 待机呼吸：站着的棋子一直在轻轻起伏，原版就是这样喘气
+  const breath = await page.evaluate(async () => {
+    const sc = window.__yjz.scene;
+    sc.speed = 1;
+    const sample = () => [...sc.tokens.values()].filter((s) => s.visible).map((s) => [s.y, s.scaleY]);
+    const a = sample();
+    await new Promise((r) => setTimeout(r, 300));
+    const b = sample();
+    const dy = b.map((v, i) => Math.abs(v[0] - a[i][0]));
+    return { n: a.length, max: Math.max(...dy), moved: dy.filter((d) => d > 0.3).length, stretch: Math.max(...b.map((v) => Math.abs(v[1] - 1))) };
+  });
+  assert.ok(breath.n >= 10, `场上应有十来支部队，实际 ${breath.n}`);
+  assert.ok(breath.moved >= 5, `站着的部队应在起伏，实际只动了 ${breath.moved} 支`);
+  assert.ok(breath.max > 0 && breath.max <= 5, `呼吸要轻（画布像素不超过 5），实际 ${breath.max}`);
+  assert.ok(breath.stretch > 0.0005 && breath.stretch <= 0.02, `呼吸带一点纵向伸缩，实际 ${breath.stretch}`);
   await clickCell(g.x + 1, g.y + 3, 'right');
   assert.equal(await mode(), 'idle');
 

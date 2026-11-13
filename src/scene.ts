@@ -72,6 +72,7 @@ export class BattleScene extends Phaser.Scene {
   private perUnit = false; // 占位棋子按部队序号取帧；原版棋子图按兵种与阵营取帧
   private static readonly TOKENS = 39; // tokens.png 每行 39 帧（兵种×2+阵营）；行 0/2 站立、行 1/3 行走
   private hp = new Map<number, number>(); // 画面上显示的兵力：事件一条条播，数字跟着一步步变
+  private breath = new Map<number, number>(); // 每个棋子上一次叠加的呼吸位移，换新值时只要补差值
   private marks!: Phaser.GameObjects.Graphics;
   private cursor!: Phaser.GameObjects.Graphics;
   private keys!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -106,6 +107,28 @@ export class BattleScene extends Phaser.Scene {
     if (this.keys.right.isDown) cam.scrollX += step;
     if (this.keys.up.isDown) cam.scrollY -= step;
     if (this.keys.down.isDown) cam.scrollY += step;
+    this.breathe();
+  }
+
+  /**
+   * 待机呼吸：原版站在棋盘上的部队一直在轻轻起伏，像在喘气。
+   * 每个棋子相位错开，避免整片一起上下。移动、出手时补间在改坐标，先让给补间。
+   */
+  private breathe() {
+    if (!this.speed) return; // 系统要求减少动效时不喘
+    const now = this.time.now;
+    this.tokens.forEach((s, slot) => {
+      const prev = this.breath.get(slot) ?? 0;
+      if (!s.visible || this.tweens.isTweening(s)) {
+        this.breath.set(slot, 0);
+        return;
+      }
+      const wave = Math.sin(now * 0.0031 + slot * 1.7);
+      const dy = wave * 2.2; // 画布像素：3 倍分辨率下也就半个舞台像素，够轻
+      s.y += dy - prev;
+      s.scaleY = 1 + wave * 0.012;
+      this.breath.set(slot, dy);
+    });
   }
 
   /**
@@ -263,6 +286,7 @@ export class BattleScene extends Phaser.Scene {
       if (u.confused) s.setTint(0x8acfff);
       else s.clearTint();
       this.hp.set(u.slot, u.hp);
+      this.breath.set(u.slot, 0); // 位置归零了，下一次呼吸重新算差值
     });
   }
   /** 画面上这支部队此刻显示的兵力（事件还没播到的扣减不算）。 */
@@ -275,13 +299,30 @@ export class BattleScene extends Phaser.Scene {
     this.onHover(x, y);
   }
 
-  /** 高亮一批格子：移动范围用原版亮蓝，攻击/策略范围用橙，道具对象用青绿（绿地上也看得清）。直角方框，和原版光标一致。 */
-  mark(cells: [number, number][], kind: 'move' | 'attack' | 'aid') {
-    const color = { move: 0x8acfff, attack: CINNABAR, aid: 0x3cf0b0 }[kind];
+  /**
+   * 高亮一批格子：移动范围用原版亮蓝，攻击/策略范围用橙，道具对象用青绿（绿地上也看得清）。
+   * `extra` 是同时要画的另一层（选中部队时把「站到哪儿能打到」的格子一起画出来），先画它再盖上移动格。
+   * 直角方框，和原版光标一致；底下那层只描整片的外沿，否则几十个格子一起描边会糊成一片。
+   */
+  mark(cells: [number, number][], kind: 'move' | 'attack' | 'aid', extra?: { cells: [number, number][]; kind: 'attack' | 'aid' }) {
     this.marks.clear();
+    if (extra) this.paint(extra.cells, extra.kind, 0.3, 'edge');
+    this.paint(cells, kind, 0.34, 'cell');
+  }
+  private paint(cells: [number, number][], kind: 'move' | 'attack' | 'aid', alpha: number, border: 'none' | 'cell' | 'edge') {
+    const color = { move: 0x8acfff, attack: CINNABAR, aid: 0x3cf0b0 }[kind];
+    const zone = new Set(cells.map(([x, y]) => `${x},${y}`));
     for (const [x, y] of cells) {
-      this.marks.fillStyle(color, 0.34).fillRect(x * CELL + 2, y * CELL + 2, CELL - 4, CELL - 4);
-      this.marks.lineStyle(5, color, 1).strokeRect(x * CELL + 3, y * CELL + 3, CELL - 6, CELL - 6);
+      this.marks.fillStyle(color, alpha).fillRect(x * CELL + 2, y * CELL + 2, CELL - 4, CELL - 4);
+      if (border === 'cell') this.marks.lineStyle(5, color, 1).strokeRect(x * CELL + 3, y * CELL + 3, CELL - 6, CELL - 6);
+      if (border !== 'edge') continue;
+      // 只画这一片的外沿：邻居不在这片里，才描这一条边
+      const [l, t, r, b] = [x * CELL + 3, y * CELL + 3, (x + 1) * CELL - 3, (y + 1) * CELL - 3];
+      this.marks.lineStyle(5, color, 0.9);
+      if (!zone.has(`${x},${y - 1}`)) this.marks.lineBetween(l, t, r, t);
+      if (!zone.has(`${x},${y + 1}`)) this.marks.lineBetween(l, b, r, b);
+      if (!zone.has(`${x - 1},${y}`)) this.marks.lineBetween(l, t, l, b);
+      if (!zone.has(`${x + 1},${y}`)) this.marks.lineBetween(r, t, r, b);
     }
   }
   unmark() {

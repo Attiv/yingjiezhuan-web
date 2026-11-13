@@ -63,6 +63,15 @@ const bgm = await page.evaluate(async (ks) => Promise.all(ks.map(async (k) => (a
   ['title', 'peace', 'camp', 'battle', 'boss', 'enemy', 'tension', 'sad', 'defeat', 'ending']);
 assert.deepEqual([...new Set(bgm)], [200], '10 首 BGM 都在生产包里');
 
+// 剧情舞台用的宫殿图与野外地平：23 + 5 张，一张不缺
+const story = await page.evaluate(async () => {
+  const files = [...Array(23)].map((_, i) => `pmap-${String(i).padStart(3, '0')}.png`)
+    .concat([...Array(5)].map((_, i) => `field-${String(i).padStart(2, '0')}.png`));
+  return Promise.all(files.map(async (f) => (await fetch(`/assets/story/${f}`)).status));
+});
+assert.deepEqual([...new Set(story)], [200], '28 张剧情场景图都在生产包里');
+
 assert.deepEqual(errors, []);
-console.log('生产构建冒烟通过：标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合，21 个音效、10 首 BGM 与 4 张行军图可加载，控制台无报错');
+console.log('生产构建冒烟通过：标题 → 序章（含舞台式剧情）→ 营地 → 汜水關之戰 → 第 2 回合，' +
+  '21 个音效、10 首 BGM、4 张行军图与 28 张剧情场景图可加载，控制台无报错');
 await browser.close();
