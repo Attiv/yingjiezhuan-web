@@ -219,10 +219,10 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   assert.equal(st.flags.orig_f0, 1, '序章的标志应写进流程');
 });
 
-await step('营地：600 金、三人编成（关张必带）、买豆装给刘备、存档只存流程', async () => {
+await step('营地：500 金（曹操在序章拨的那笔）、三人编成（关张必带）、买豆装给刘备、存档只存流程', async () => {
   const card = await page.textContent('#screen .card');
   assert.match(card, /汜水關 — 出兵準備/);
-  assert.match(card, /軍資 600 金/);
+  assert.match(card, /軍資 500 金/);
   assert.match(card, /出征 3\/3 名/);
   assert.match(card, /關羽[\s\S]*必須/);
   await page.click('[data-pick="liu_bei"]');
@@ -231,7 +231,7 @@ await step('营地：600 金、三人编成（关张必带）、买豆装给刘�
   assert.match(shop, /豆[\s\S]{0,12}兵力 \+600/);
   assert.match(shop, /傷藥[\s\S]{0,24}300 金/);
   await page.click('[data-buy="30"]');
-  assert.equal((await storyNow()).gold, 500);
+  assert.equal((await storyNow()).gold, 400);
   assert.deepEqual((await storyNow()).bag, [30]);
   await page.click('[data-bag="30"]'); // 豆装进刘备的包袱
   const st = await storyNow();
@@ -240,7 +240,7 @@ await step('营地：600 金、三人编成（关张必带）、买豆装给刘�
   await page.click('[data-go="camp-save"]');
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.save.v3')));
   assert.equal(saved.battle, undefined, '营地存档只存流程，不存战斗');
-  assert.equal(saved.story.gold, 500);
+  assert.equal(saved.story.gold, 400);
   await shot('02-camp');
   await page.click('[data-go="camp-go"]');
 });
@@ -528,8 +528,15 @@ await step('關羽贴近華雄：单挑演出 → 華雄撤退 → 勝利', asyn
   assert.equal((await unit('華雄')).on, false, '华雄撤退');
   assert.equal((await unit('關羽')).level, 2, '单挑后关羽升一级');
   assert.ok((await page.evaluate(() => window.__yjz.bgmLog())).includes('boss'), '单挑应压上「强敌」曲');
-  assert.match(await page.textContent('#screen .card'), /勝利/);
-  assert.match(await page.textContent('#screen .card'), /華雄/);
+  const card = await page.textContent('#screen .card');
+  assert.match(card, /勝利/);
+  assert.match(card, /華雄/);
+  // 结算：军资拆成赏金与拾得，下面是我军各部队的经验与等级
+  assert.match(card, /所得軍資/);
+  assert.match(card, /賞金 \d+ ＋ 拾得 \d+/);
+  assert.match(card, /武將[\s\S]*兵種[\s\S]*等級[\s\S]*經驗[\s\S]*兵力/);
+  assert.match(card, /Lv\+1/, '单挑升的那一级标在关羽那行');
+  assert.ok((await page.locator('#screen .card table.squad tr').count()) >= 3, '表头之外至少列出出征的两支部队');
   await shot('20-victory');
 });
 
@@ -570,6 +577,7 @@ await step('系统性失败：全军撤退判负 → 重新開始回到这一关
   assert.equal(lost.stage, 'lost');
   assert.equal(lost.reason, '全军撤退');
   assert.match(await page.textContent('#screen .card'), /敗北/);
+  assert.match(await page.textContent('#screen .card'), /敗北不計賞金與拾得/, '败北结算不加军资');
   assert.equal(await page.evaluate(() => window.__yjz.bgm), 'defeat', '败北应切败北曲');
   await shot('22-defeat');
   await page.click('[data-go="next"]'); // 重新開始：这一关没有失败分支，退回战前说明

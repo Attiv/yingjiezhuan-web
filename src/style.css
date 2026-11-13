@@ -221,4 +221,20 @@ img { image-rendering: pixelated; }
 .card .seal { float: right; width: 44px; height: 44px; margin: 4px 0 0 12px; background: var(--orange); color: var(--white);
   border: 1px solid var(--gold); display: grid; place-items: center; font-size: 11px; line-height: 14px; text-align: center; }
 
+/* 战斗结果：军资一行 + 我军成绩表（经验 / 等级 / 兵力） */
+.card.result { width: 520px; }
+.result .tally { display: flex; gap: 8px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--blue); border-bottom: 1px solid var(--blue); }
+.result .tally span { color: var(--dim); }
+.result .tally b { font-weight: normal; font-size: 14px; line-height: 18px; color: var(--gold); }
+.result .tally em { font-style: normal; color: var(--blue-hi); margin-left: auto; }
+.result table.squad { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
+.result table.squad th { padding: 2px 4px; text-align: left; font-weight: normal; color: var(--dim); border-bottom: 1px solid var(--blue); }
+.result table.squad td { padding: 3px 4px; }
+.result table.squad td span { color: var(--dim); }
+.result table.squad tr.off td { color: #6a6a7a; }
+.result table.squad .up { margin-left: 5px; font-style: normal; color: var(--gold); }
+.result .rounds { margin: 10px 0 0; color: var(--dim); }
+.result .rounds em { font-style: normal; color: var(--blue-hi); margin-left: 16px; }
+.result .row { justify-content: flex-end; }
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

@@ -19,9 +19,9 @@ for (let i = 0; i < 400; i++) {
   await page.waitForTimeout(20);
 }
 assert.match(await page.textContent('#screen .card'), /汜水關 — 出兵準備/);
-assert.match(await page.textContent('#screen .card'), /軍資 600 金/);
+assert.match(await page.textContent('#screen .card'), /軍資 500 金/); // 曹操在序章拨的那 500
 await page.click('[data-buy="30"]'); // 买一袋豆（原版 100 金），看看商店与军资
-assert.match(await page.textContent('#screen .card'), /軍資 500 金/);
+assert.match(await page.textContent('#screen .card'), /軍資 400 金/);
 await page.click('[data-go="camp-go"]');
 
 await page.waitForSelector('[data-go="deploy"]');

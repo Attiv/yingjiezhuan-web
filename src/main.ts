@@ -8,6 +8,7 @@ import { PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './d
 import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
+import { tally } from './result';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doDrop, doGive, doItem, doItemAll, doMove, doWait, endPhase, giveTargets, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
@@ -624,6 +625,8 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
   const shop = step.shop.map((id) => `<div class="buy"><span>${esc(itemName(id))}<em>${esc(itemEffect(id))}</em></span>` +
     `<button class="btn" data-buy="${id}"${story.gold < (priceOf(id) ?? 100) ? ' disabled' : ''}>${priceOf(id) ?? 100} 金</button></div>`).join('');
   const render = () => {
+    // 重画时留住滚动位置：营地比一屏高，买完东西跳回顶部会让人找不着刚才那一行
+    const top = el.scrollTop;
     el.className = '';
     el.innerHTML = `<div class="card camp"><h1 style="font-size:24px;line-height:30px">${esc(step.title)}</h1>` +
       `<p class="sub">軍資 ${story.gold} 金　出征 ${story.deploy.length}/${max} 名</p>` +
@@ -633,7 +636,9 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
       `<div class="row end"><button class="btn" data-go="camp-save">存檔</button>` +
       `<button class="btn" data-go="camp-go"${story.deploy.length ? '' : ' disabled'}>出陣</button></div>`;
     el.hidden = false;
-    (el.querySelector('[data-go="camp-go"]') as HTMLElement | null)?.focus();
+    el.scrollTop = top;
+    // 焦点给出陣，但不让它把卡片滚到底
+    (el.querySelector('[data-go="camp-go"]') as HTMLElement | null)?.focus({ preventScroll: true });
   };
   render();
   return new Promise<void>((done) => {
@@ -933,11 +938,11 @@ function load() {
 }
 
 // ---------------------------------------------------------------- 整屏 ----
-function screen(html: string, veil = false) {
+function screen(html: string, veil = false, cls = '') {
   const el = $('screen');
   el.className = veil ? 'veil' : 'scroll';
   el.style.backgroundImage = '';
-  el.innerHTML = `<div class="card">${html}</div>`;
+  el.innerHTML = `<div class="card${cls ? ` ${cls}` : ''}">${html}</div>`;
   el.hidden = false;
   (el.querySelector('button') as HTMLElement | null)?.focus();
 }
@@ -947,7 +952,8 @@ $('screen').addEventListener('click', (e) => {
   if (!btn) playSfx('cursor', 0.55); // 章节横幅：点一下继续
   if (go === 'start') {
     story = startStory(CAMPAIGN, { party: [...START_PARTY] });
-    story.gold = 100;
+    // 开局一分钱没有：原版序章里曹操当场拨 500 金（剧本的 @gold 500），
+    // 那笔钱正好赶在第一次进道具屋之前，所以这里不再另给。
     void playStory(nextStep(CAMPAIGN, story, 0, API));
   }
   if (go === 'new') ($('screen').hidden = true), begin(null);
@@ -1055,18 +1061,44 @@ function showDeploy(levelId: string) {
     render();
   };
 }
+/**
+ * 开战前各武将的等级：成长只在战后（`afterBattle`）写回 `story.roster`，
+ * 所以战斗进行中读到的 roster 就是开战时的等级——读档接手的战斗也算得对。
+ */
+const levelBeforeBattle = () => Object.fromEntries(
+  Object.entries(officers).map(([id, o]) => [id, story.roster[id]?.level ?? o.level]),
+);
+
+/**
+ * 战斗结果：原版的「戰鬥結果」只报三样——军资、各部队的经验与升级、打了多少回合。
+ * 数值全部从战场状态与关卡数据算（`src/result.ts`），版面是网页版自己的深蓝面板。
+ */
 function showResult() {
   mode = 'over';
   renderTurn();
-  const won = b.stage === 'won';
-  const music = resultBgm(won);
+  const lv = levelOf(b);
+  const t = tally(b, { reward: lv.reward, turnLimit: lv.turnLimit, before: levelBeforeBattle() });
+  const music = resultBgm(t.won);
   if (music) playBgm(music, true); // 败北曲立刻压上；胜利保持战斗曲，剧本接手
   const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
+  const rows = t.rows.map((r) =>
+    `<tr${r.on ? '' : ' class="off"'}><td>${esc(r.name)}${r.up ? `<i class="up">Lv+${r.up}</i>` : ''}</td>` +
+    `<td>${esc(r.className)}</td><td>${r.level}</td><td>${r.exp}<span>/100</span></td>` +
+    `<td>${r.on ? `${r.hp}<span>/${r.maxHp}</span>` : '撤退'}</td></tr>`).join('');
+  const money = t.won
+    ? `<div class="tally"><span>所得軍資</span><b>${t.gold}</b>金` +
+      `<em>賞金 ${t.reward} ＋ 拾得 ${t.found}</em></div>`
+    : `<div class="tally"><span>軍資</span><b>${story.gold}</b>金<em>敗北不計賞金與拾得</em></div>`;
+  const tail = t.won
+    ? `歷時 ${t.rounds} 回合<em>軍資 ${story.gold} → ${story.gold + t.gold}</em>`
+    : `歷時 ${t.rounds} 回合<em>上限 ${lv.turnLimit} 回合</em>`;
   screen(
-    `<h1 class="${won ? '' : 'lost'}">${won ? '勝利' : '敗北'}</h1><p class="sub">${esc(b.reason)}</p>` +
-    `<p>历时 ${Math.min(b.round, levelOf(b).turnLimit)} 回合${won ? `，所得军资 ${b.gold} 金` : ''}。</p>` +
-    `<div class="row"><button class="btn" data-go="next">${won || step?.lose !== undefined ? '續' : '重新開始'}</button>` +
-    (won ? '' : '<button class="btn" data-go="title">回標題</button>') + '</div>', true);
+    `<h1 class="${t.won ? '' : 'lost'}">${t.won ? '勝利' : '敗北'}</h1><p class="sub">${esc(b.reason)}</p>` +
+    money +
+    `<table class="squad"><tr><th>武將</th><th>兵種</th><th>等級</th><th>經驗</th><th>兵力</th></tr>${rows}</table>` +
+    `<p class="rounds">${tail}</p>` +
+    `<div class="row"><button class="btn" data-go="next">${t.won || step?.lose !== undefined ? '續' : '重新開始'}</button>` +
+    (t.won ? '' : '<button class="btn" data-go="title">回標題</button>') + '</div>', true, 'result');
 }
 function showEnding(text: string) {
   mode = 'over';
