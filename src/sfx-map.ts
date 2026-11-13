@@ -40,6 +40,8 @@ export function sfxOf(ev: Ev, b: Battle): SfxKey | null {
     case 'retreat': return 'retreat';
     case 'terrain': return 'rock';
     case 'gain': return 'treasure';
+    case 'give': return 'treasure';
+    case 'drop': return 'cancel';
     case 'duel': return 'hit_heavy';
     case 'end': return ev.won ? 'victory' : 'defeat';
     default: return null;

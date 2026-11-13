@@ -637,6 +637,34 @@ export function doItemAll(b: Battle, slot: number, id: number): Ev[] {
   return done(b, u, evs);
 }
 
+/** 一支部队最多带 8 件道具：原版存档记录里道具就是 8 个槽。 */
+export const MAX_ITEMS = 8;
+
+/** 给予的对象：身边一圈（含斜角）的友军，且道具栏没满。 */
+export function giveTargets(b: Battle, u: Unit, id: number): Unit[] {
+  if (!u.items.includes(id)) return [];
+  return b.units.filter((d) => d.on && d.slot !== u.slot && !foes(u, d) &&
+    Math.max(Math.abs(d.x - u.x), Math.abs(d.y - u.y)) === 1 && d.items.length < MAX_ITEMS);
+}
+
+/** 给予：把一件道具交给身边的友军。和「使用」一样算一次行动。 */
+export function doGive(b: Battle, slot: number, id: number, target: number): Ev[] {
+  const u = manual(b, slot);
+  const d = bySlot(b, target);
+  need(d && giveTargets(b, u, id).includes(d), '不能把道具交给这支部队');
+  u.items.splice(u.items.indexOf(id), 1);
+  d!.items.push(id);
+  return done(b, u, [{ t: 'give', a: u.slot, d: d!.slot, item: id }]);
+}
+
+/** 丢弃：把一件道具扔掉。也算一次行动，腾出道具栏。 */
+export function doDrop(b: Battle, slot: number, id: number): Ev[] {
+  const u = manual(b, slot);
+  need(u.items.includes(id), '没有这件道具');
+  u.items.splice(u.items.indexOf(id), 1);
+  return done(b, u, [{ t: 'drop', slot: u.slot, item: id }]);
+}
+
 /** 结束我军阶段，进入友军行动。 */
 export function endPhase(b: Battle): Ev[] {
   need(b.stage === 'player', '现在不是我军阶段');

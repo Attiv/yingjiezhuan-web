@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ITEM_SPEC, PROMOTE, classChange, classUse, itemEffect, priceOf, promotion, specOf } from '../src/data/items';
 import { upkeep } from '../src/rules/combat';
 import { atk, bySlot, def, maxHp, moveBudget } from '../src/rules/core';
-import { doItem, itemTargets, newBattle, type Level, type UnitInit } from '../src/rules/turn';
+import { doDrop, doGive, doItem, giveTargets, itemTargets, newBattle, type Level, type UnitInit } from '../src/rules/turn';
 import type { Battle } from '../src/rules/types';
 
 /** 道具表来自原版的 items.toml：价格、回复量、装备加成、转职条件都得对得上。 */
@@ -150,5 +150,39 @@ describe('兵种转职', () => {
     expect(classChange(16)).toBe(3);
     expect(classChange(30)).toBeNull();
     expect(classUse(9, 20, 2)).toBe(12);
+  });
+});
+
+describe('给予与丢弃（原版道具指令的另外两项）', () => {
+  it('给予：把豆交给相邻的友军，两边道具栏同步变化，并消耗这次行动', () => {
+    const b = start([unit(0, 0, 5, 1, 0, { items: [30] }), unit(1, 0, 5, 2, 0), unit(2, 0, 5, 4, 0), unit(15, 0, 1, 5, 0)]);
+    const u = bySlot(b, 0)!;
+    expect(giveTargets(b, u, 30).map((d) => d.slot)).toEqual([1]);
+    const evs = doGive(b, 0, 30, 1);
+    expect(u.items).toEqual([]);
+    expect(bySlot(b, 1)!.items).toEqual([30]);
+    expect(evs[0]).toEqual({ t: 'give', a: 0, d: 1, item: 30 });
+    expect(u.acted).toBe(true);
+  });
+
+  it('隔一格、道具栏已满、敌军都不能给', () => {
+    const b = start([
+      unit(0, 0, 5, 1, 0, { items: [30] }),
+      unit(1, 0, 5, 3, 0), // 隔一格
+      unit(2, 0, 5, 2, 0, { items: [30, 30, 30, 30, 30, 30, 30, 30] }), // 满 8 件
+      unit(15, 0, 1, 0, 0), // 相邻但是敌军
+    ]);
+    const u = bySlot(b, 0)!;
+    expect(giveTargets(b, u, 30)).toEqual([]);
+    expect(() => doGive(b, 0, 30, 1)).toThrow();
+  });
+
+  it('丢弃：道具离身，同样消耗这次行动', () => {
+    const b = start([unit(0, 0, 5, 2, 0, { items: [30, 31] }), unit(15, 0, 1, 5, 0)]);
+    const u = bySlot(b, 0)!;
+    const evs = doDrop(b, 0, 30);
+    expect(u.items).toEqual([31]);
+    expect(evs[0]).toEqual({ t: 'drop', slot: 0, item: 30 });
+    expect(u.acted).toBe(true);
   });
 });

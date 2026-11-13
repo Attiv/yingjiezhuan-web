@@ -279,6 +279,28 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   await shot('03-battle-start');
 });
 
+await step('道具指令：豆可以「给予 / 丢弃」，菜单里只有这三项', async () => {
+  const bei = await unit('劉備');
+  assert.ok((await unit('劉備')).items.includes(30), '营地买的豆应在刘备身上');
+  await clickCell(bei.x, bei.y);
+  assert.equal(await mode(), 'unit');
+  await clickCell(bei.x, bei.y); // 点自己脚下 = 原地下令
+  await settle();
+  assert.equal(await mode(), 'menu');
+  await menu('道具');
+  await page.waitForTimeout(60);
+  assert.match(await page.textContent('#menu'), /豆/);
+  await page.click('#menu button:has-text("豆")');
+  await page.waitForTimeout(60);
+  assert.deepEqual(await page.$$eval('#menu button', (bs) => bs.map((b) => b.textContent)), ['使用', '给予', '丢弃']);
+  await shot('26-item-menu');
+  await page.click('#menu button:has-text("丢弃")');
+  await settle();
+  assert.equal((await unit('劉備')).items.includes(30), false, '丢弃后豆应离身');
+  // 丢掉也算行动过
+  assert.equal((await unit('劉備')).acted, true);
+});
+
 await step('选中关羽显示移动范围；右键取消；逐帧行走、弹出指令菜单，Esc 退回原位', async () => {
   const g = await unit('關羽');
   await clickCell(g.x, g.y);

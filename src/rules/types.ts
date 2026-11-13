@@ -78,5 +78,8 @@ export type Ev =
   | { t: 'drama'; scene: string }
   | { t: 'duel'; a: number; d: number }
   | { t: 'gain'; slot: number; text: string }
+  /** 把道具交给身边的友军 / 扔掉。 */
+  | { t: 'give'; a: number; d: number; item: number }
+  | { t: 'drop'; slot: number; item: number }
   | { t: 'talk'; who: string; text: string }
   | { t: 'end'; won: boolean; text: string };

@@ -8,7 +8,7 @@ import { PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './d
 import { strategyName, strategySpec } from './data/strategies';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
-import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doItem, doItemAll, doMove, doWait, endPhase, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
+import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doDrop, doGive, doItem, doItemAll, doMove, doWait, endPhase, giveTargets, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
 import type { Battle, Ev, Flag, Unit } from './rules/types';
 import { BattleScene, CELL, RES, VIEW_H, VIEW_W, sideOf } from './scene';
 import { checkScript, currentStep, nextStep, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
@@ -161,6 +161,8 @@ function describe(ev: Ev): string {
     case 'spawn': return '敌军增援赶到！';
     case 'objective': return `胜利条件：${ev.text}`;
     case 'gain': return `${name(ev.slot)}${ev.text}`;
+    case 'give': return `${name(ev.a)}把「${itemName(ev.item)}」交给${name(ev.d)}。`;
+    case 'drop': return `${name(ev.slot)}丢掉了「${itemName(ev.item)}」。`;
     case 'end': return ev.text;
     default: return '';
   }
@@ -661,14 +663,9 @@ function openCommand() {
       : () => aim(ts, spec?.target === 'ally' ? 'aid' : 'attack', (t) => doCast(b, u.slot, id, t.slot));
     return [{ label: `${strategyName(id)}　${spec?.mp ?? 0}`, on: run }];
   });
-  const bag = u.items.filter((id) => specOf(id)?.battle).flatMap((id) => {
-    const ts = itemTargets(b, u, id);
-    if (!ts.length) return [];
-    const st = strategySpec(specOf(id)!.strategyId ?? -1);
-    const run = st?.area === 'all_in_range'
-      ? () => act(doItemAll(b, u.slot, id))
-      : () => aim(ts, st?.target === 'ally' ? 'aid' : 'attack', (t) => doItem(b, u.slot, id, t.slot));
-    return [{ label: st ? `${itemName(id)}・${st.name}` : itemName(id), on: run }];
+  const bag = u.items.map((id) => {
+    const st = strategySpec(specOf(id)?.strategyId ?? -1);
+    return { label: st ? `${itemName(id)}・${st.name}` : itemName(id), on: () => openItemMenu(u, id) };
   });
   openMenu([
     { label: '攻击', on: foes.length ? () => aim(foes, 'attack', (t) => doAttack(b, u.slot, t.slot)) : undefined },
@@ -677,12 +674,29 @@ function openCommand() {
     { label: '待命', on: () => act(doWait(b, u.slot)) },
   ], u);
 }
-function aim(targets: Unit[], kind: 'attack' | 'aid', run: (t: Unit) => Ev[]) {
+
+/** 一件道具的子菜单：使用 / 给予 / 丢弃。原版的道具指令也是这三项（让渡即给予）。
+ * 装备类道具不能「使用」，但可以交给身边的友军或扔掉。 */
+function openItemMenu(u: Unit, id: number) {
+  const it = specOf(id);
+  const ts = itemTargets(b, u, id);
+  const st = it?.strategyId != null ? strategySpec(it.strategyId) : undefined;
+  const use = !it?.battle || !ts.length ? undefined
+    : st?.area === 'all_in_range' ? () => act(doItemAll(b, u.slot, id))
+    : () => aim(ts, st?.target === 'ally' ? 'aid' : 'attack', (t) => doItem(b, u.slot, id, t.slot));
+  const mates = giveTargets(b, u, id);
+  openMenu([
+    { label: '使用', on: use },
+    { label: '给予', on: mates.length ? () => aim(mates, 'aid', (t) => doGive(b, u.slot, id, t.slot), '选择给予对象。') : undefined },
+    { label: '丢弃', on: () => act(doDrop(b, u.slot, id)) },
+  ], u);
+}
+function aim(targets: Unit[], kind: 'attack' | 'aid', run: (t: Unit) => Ev[], hint?: string) {
   mode = 'target';
   pick = { targets, run };
   closeMenu();
   scene.mark(cellsOf(targets), kind);
-  log(kind === 'aid' ? '选择使用对象。' : '选择目标。');
+  log(hint ?? (kind === 'aid' ? '选择使用对象。' : '选择目标。'));
 }
 
 async function act(evs: Ev[]) {

@@ -275,13 +275,13 @@ export class BattleScene extends Phaser.Scene {
     this.onHover(x, y);
   }
 
-  /** 高亮一批格子：移动范围用原版亮蓝，攻击/策略范围用橙，道具对象用绿。直角方框，和原版光标一致。 */
+  /** 高亮一批格子：移动范围用原版亮蓝，攻击/策略范围用橙，道具对象用青绿（绿地上也看得清）。直角方框，和原版光标一致。 */
   mark(cells: [number, number][], kind: 'move' | 'attack' | 'aid') {
-    const color = { move: 0x8acfff, attack: CINNABAR, aid: GREEN }[kind];
+    const color = { move: 0x8acfff, attack: CINNABAR, aid: 0x3cf0b0 }[kind];
     this.marks.clear();
     for (const [x, y] of cells) {
-      this.marks.fillStyle(color, 0.28).fillRect(x * CELL + 2, y * CELL + 2, CELL - 4, CELL - 4);
-      this.marks.lineStyle(4, color, 0.95).strokeRect(x * CELL + 3, y * CELL + 3, CELL - 6, CELL - 6);
+      this.marks.fillStyle(color, 0.34).fillRect(x * CELL + 2, y * CELL + 2, CELL - 4, CELL - 4);
+      this.marks.lineStyle(5, color, 1).strokeRect(x * CELL + 3, y * CELL + 3, CELL - 6, CELL - 6);
     }
   }
   unmark() {
@@ -530,6 +530,12 @@ export class BattleScene extends Phaser.Scene {
         break;
       case 'gain':
         await this.float(unit(ev.slot), '获得', '#ffcf55');
+        break;
+      case 'give':
+        await this.float(unit(ev.d), '授予', '#ffcf55');
+        break;
+      case 'drop':
+        await this.float(unit(ev.slot), '舍弃', '#8acfff');
         break;
       case 'hp': {
         this.hp.set(ev.slot, Math.max(0, this.hpOf(ev.slot) + ev.delta));
