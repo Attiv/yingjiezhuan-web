@@ -988,9 +988,14 @@ function showBrief(levelId: string) {
   const deploy = story.deploy.length ? story.deploy : defaultDeploy(levelId, story.party);
   const who = deploy.map((id) => officers[id]?.name ?? id).join('、') || '—';
   const lose = '主將撤退，或超過回合上限';
+  // 敌情：开战就在场的敌军有几队、主将是谁（增援组不算在里面）
+  const foes = lv.units.filter((u) => u.slot >= 15 && !u.off);
+  const boss = foes.find((u) => u.commander);
+  const intel = `敵軍 ${foes.length} 隊${boss ? `・主將 ${boss.name}` : ''}　回合上限 ${lv.turnLimit}`;
   screen(
     `<h1 style="font-size:24px;line-height:28px">${esc(lv.name)}</h1>` +
-    `<ul><li>勝利：${esc(lv.goal || '擊破敵軍主將')}</li><li>失敗：${esc(lose)}</li><li>出征：${esc(who)}</li></ul>` +
+    `<ul><li>勝利：${esc(lv.goal || '擊破敵軍主將')}</li><li>失敗：${esc(lose)}</li><li>出征：${esc(who)}</li>` +
+    `<li>敵情：${esc(intel)}</li></ul>` +
     '<p class="sub" style="margin:0">左键选择部队、移动、下令；右键或 Esc 取消；方向键卷动地图；回车结束回合。</p>' +
     '<div class="row"><button class="btn" data-go="deploy">部隊配置</button></div>');
 }
