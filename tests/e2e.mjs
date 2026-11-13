@@ -12,6 +12,14 @@ mkdirSync(SHOTS, { recursive: true });
 
 let page;
 const shot = (name) => page.screenshot({ path: `${SHOTS}${name}.png` });
+/** 在舞台左上角的修改器热区连点三下。 */
+async function tapCorner() {
+  const { x, y } = await page.evaluate(() => {
+    const r = document.getElementById('stage').getBoundingClientRect();
+    return { x: r.left, y: r.top };
+  });
+  for (let i = 0; i < 3; i++) await page.mouse.click(x + 8, y + 8);
+}
 const state = () => page.evaluate(() => JSON.parse(JSON.stringify(window.__yjz.b)));
 const mode = () => page.evaluate(() => window.__yjz.mode);
 const storyNow = () => page.evaluate(() => JSON.parse(JSON.stringify(window.__yjz.story)));
@@ -246,6 +254,15 @@ await step('营地：500 金（曹操在序章拨的那笔）、三人编成（�
   assert.equal(saved.battle, undefined, '营地存档只存流程，不存战斗');
   assert.equal(saved.story.gold, 400);
   await shot('02-camp');
+  // 修改器：左上角三下 → 密码 1122，在这里拍一张真实队伍（三人）的面板，不改数值
+  await tapCorner();
+  await page.waitForSelector('#gate:not([hidden])');
+  await page.fill('#gate-pass', '1122');
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('#trainer:not([hidden])');
+  assert.match(await page.textContent('.trainer'), /武將（3）/);
+  await shot('28-trainer');
+  await page.click('[data-tr="close"]');
   await page.click('[data-go="camp-go"]');
 });
 
@@ -676,6 +693,61 @@ await step('后期关卡实机：大地图、民众护送、军乐队都能开�
       assert.ok((await page.evaluate(() => window.__yjz.banners())).includes('敵軍增援'), '第 3 回合应有增援横幅');
     }
   }
+});
+
+await step('修改器：左上角连点三下 → 密码 1122 → 军资 / 兵种 / 一键装备 / 道具', async () => {
+  await tapCorner();
+  await page.waitForSelector('#gate:not([hidden])');
+  assert.equal(await page.evaluate(() => window.__yjz.gateOpen), true);
+  // 错密码留在密码框，不会打开面板
+  await page.fill('#gate-pass', '9999');
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(120);
+  assert.equal(await page.textContent('#gate .err'), '密碼不對。');
+  assert.equal(await page.evaluate(() => window.__yjz.trainerOpen), false);
+  await page.fill('#gate-pass', '1122');
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('#trainer:not([hidden])');
+  assert.equal(await page.evaluate(() => window.__yjz.trainerOpen), true);
+
+  // 军资：快捷加钱与直接输入
+  const gold0 = (await storyNow()).gold;
+  await page.click('[data-gold="10000"]');
+  assert.equal((await storyNow()).gold, gold0 + 10000);
+  await page.fill('#tr-gold', '12345');
+  await page.press('#tr-gold', 'Tab');
+  assert.equal((await storyNow()).gold, 12345);
+
+  // 战场上的可控部队：改等级与兵种，部队当场跟着变（兵力补满）
+  const who = await page.evaluate(() => window.__yjz.b.units.find((u) => u.mode === 7 && u.key)?.key);
+  assert.ok(who, '战场上应有一支可控部队');
+  const cls0 = await page.evaluate((id) => {
+    const u = window.__yjz.b.units.find((x) => x.key === id);
+    return window.__yjz.story.roster[id]?.cls ?? u.cls;
+  }, who);
+  const cls1 = (cls0 + 1) % 19;
+  await page.selectOption(`[data-cls="${who}"]`, String(cls1));
+  const lv0 = await page.evaluate((id) => window.__yjz.story.roster[id]?.level ?? 1, who);
+  await page.fill(`[data-lv="${who}"]`, String(lv0 + 7));
+  await page.press(`[data-lv="${who}"]`, 'Tab');
+  const unitNow = await page.evaluate((id) => {
+    const u = window.__yjz.b.units.find((x) => x.key === id);
+    return { cls: u.cls, level: u.level, hp: u.hp };
+  }, who);
+  assert.equal(unitNow.cls, cls1, '兵种应同步到战场');
+  assert.equal(unitNow.level, lv0 + 7, '等级应同步到战场');
+  assert.ok(unitNow.hp > 0, '改完等级应补满兵力');
+
+  // 道具：全部各一件 → 一键装备取最好的三件（霸者劍 / 孫子兵法 / 赤兎馬）
+  await page.click('[data-tr="give-all"]');
+  assert.ok((await storyNow()).bag.length >= 60, '包袱里应有全部道具');
+  await page.click(`[data-equip="${who}"]`);
+  const items = (await storyNow()).roster[who].items;
+  for (const id of [59, 3, 7]) assert.ok(items.includes(id), `一键装备应有 ${id}`);
+  assert.match(await page.textContent('.trainer .tr-bag'), /英雄之劍/, '包袱里应还剩没穿上的装备');
+
+  await page.click('[data-tr="close"]');
+  assert.equal(await page.evaluate(() => window.__yjz.trainerOpen), false);
 });
 
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');

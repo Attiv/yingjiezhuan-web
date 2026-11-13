@@ -4,12 +4,13 @@ import { playSfx, preloadSfx, sfxEnabled, sfxLog, toggleSfx, unlockSfx } from '.
 import { sfxOf } from './sfx-map';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
 import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
-import { PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './data/items';
+import { ITEM_SPEC, PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './data/items';
 import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { tally } from './result';
-import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
+import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, syncUnit } from './trainer';
+import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doDrop, doGive, doItem, doItemAll, doMove, doWait, endPhase, giveTargets, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
 import type { Battle, Ev, Flag, Unit } from './rules/types';
@@ -645,6 +646,7 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
     (el.querySelector('[data-go="camp-go"]') as HTMLElement | null)?.focus({ preventScroll: true });
   };
   render();
+  uiRefresh = render; // 修改器改军资 / 等级 / 兵种后，营地跟着重画
   return new Promise<void>((done) => {
     el.onclick = (e) => {
       const t = e.target as HTMLElement;
@@ -694,6 +696,7 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
       if (go === 'camp-go') {
         el.onclick = null;
         el.hidden = true;
+        uiRefresh = null;
         return done();
       }
       if (go === 'camp-save') saveCamp();
@@ -941,6 +944,251 @@ function load() {
   return true;
 }
 
+// ---------------------------------------------------------------- 修改器 ----
+/** 舞台左上角的热区（舞台坐标）：在这里连点三下打开密码框。 */
+const TRAINER_ZONE = 44;
+/** 三下之间允许的最长间隔。 */
+const TRAINER_TAP_MS = 1400;
+let taps: number[] = [];
+let gateOpen = false;
+let trainerOpen = false;
+/** 营地的重画回调：修改器改完数值后让营地跟着刷新（不在营地时为空）。 */
+let uiRefresh: (() => void) | null = null;
+
+/** 左上角热区里的三下点击。挂在 document 捕获阶段，不挡战场本身的点击。 */
+document.addEventListener('pointerdown', (e) => {
+  if (gateOpen || trainerOpen) return;
+  const r = $('stage').getBoundingClientRect();
+  if (!r.width) return;
+  const s = r.width / 640;
+  const x = (e.clientX - r.left) / s;
+  const y = (e.clientY - r.top) / s;
+  if (x < 0 || y < 0 || x > TRAINER_ZONE || y > TRAINER_ZONE) return;
+  const now = performance.now();
+  taps = taps.filter((t) => now - t < TRAINER_TAP_MS);
+  taps.push(now);
+  if (taps.length < 3) return;
+  taps = [];
+  openGate();
+}, true);
+
+function openGate() {
+  gateOpen = true;
+  const el = $('gate');
+  el.innerHTML = '<div class="card gate"><h1>修改器</h1><p class="sub">請輸入密碼</p>' +
+    '<input id="gate-pass" type="password" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="密碼">' +
+    '<p class="err"></p><div class="row"><button class="btn" data-gate="ok">確定</button>' +
+    '<button class="btn" data-gate="no">取消</button></div></div>';
+  el.hidden = false;
+  const card = el.querySelector('.card') as HTMLElement;
+  const input = el.querySelector('#gate-pass') as HTMLInputElement;
+  const err = el.querySelector('.err') as HTMLElement;
+  const submit = () => {
+    if (input.value.trim() !== TRAINER_PASSWORD) {
+      err.textContent = '密碼不對。';
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      input.select();
+      return;
+    }
+    closeGate();
+    openTrainer();
+  };
+  input.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      submit();
+    } else if (ev.key === 'Escape') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      closeGate();
+    }
+  });
+  el.onclick = (ev) => {
+    const btn = (ev.target as HTMLElement).closest<HTMLElement>('[data-gate]');
+    if (!btn) return;
+    if (btn.dataset.gate === 'ok') submit();
+    else closeGate();
+  };
+  input.focus();
+}
+
+function closeGate() {
+  gateOpen = false;
+  const el = $('gate');
+  el.hidden = true;
+  el.innerHTML = '';
+  el.onclick = null;
+}
+
+function openTrainer() {
+  trainerOpen = true;
+  renderTrainer();
+  $('trainer').hidden = false;
+}
+
+function closeTrainer() {
+  trainerOpen = false;
+  const el = $('trainer');
+  el.hidden = true;
+  el.innerHTML = '';
+  el.onclick = null;
+  el.onchange = null;
+  uiRefresh?.();
+}
+
+/** 修改器里的道具分组：兵器 / 防具 / 马 / 其他（消耗品、书、玉璽）。 */
+function trainerItems(): [string, number[]][] {
+  const groups: Record<string, number[]> = { 兵器: [], 防具: [], 馬: [], 其他道具: [] };
+  for (const [k, s] of Object.entries(ITEM_SPEC)) {
+    const id = Number(k);
+    const key = s.kind === 'weapon' ? '兵器' : s.kind === 'armor' ? '防具'
+      : s.kind === 'accessory' && s.move > 0 ? '馬' : '其他道具';
+    groups[key].push(id);
+  }
+  return Object.entries(groups).map(([k, v]) => [k, v.sort((a, b) => a - b)]);
+}
+
+/** 改完一名武将后，战场上的同一支部队跟着变（等级、兵种、道具，兵力与策略值补满）。 */
+function syncBattleUnit(id: string) {
+  const r = story.roster[id];
+  if (!r || !b?.units) return;
+  for (const u of b.units) if (u.key === id && friendly(u.slot)) syncUnit(u, r);
+}
+
+/** 数值改完：营地重画、战场信息栏重画、棋子按新兵种重绘。 */
+function syncAfterTrainer() {
+  uiRefresh?.();
+  if (mode !== 'over' && b?.units?.length) {
+    renderTurn();
+    renderUnit(shown);
+    scene?.sync();
+  }
+}
+
+function renderTrainer() {
+  if (!trainerOpen) return;
+  const el = $('trainer');
+  // 重画时留住滚动位置：武将多的时候列表很长，点一次「一鍵裝備」不该跳回顶部
+  const oldCard = el.querySelector('.card.trainer') as HTMLElement | null;
+  const oldList = el.querySelector('.tr-officers') as HTMLElement | null;
+  const [cardTop, listTop] = [oldCard?.scrollTop ?? 0, oldList?.scrollTop ?? 0];
+  const party = story.party.filter((id) => officers[id]);
+  const clsOptions = (cur: number) => TB.classNames.map((n, i) => `<option value="${i}"${i === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
+  const rows = party.map((id) => {
+    const o = officers[id];
+    const r = (story.roster[id] ??= blank(id));
+    return `<div class="tr-row"><b>${esc(o.name)}</b>` +
+      `<label>Lv<input type="number" min="1" max="99" value="${r.level}" data-lv="${id}"></label>` +
+      `<label>經驗<input type="number" min="0" max="99" value="${r.exp}" data-exp="${id}"></label>` +
+      `<select data-cls="${id}" aria-label="兵種">${clsOptions(r.cls ?? o.cls)}</select>` +
+      `<button class="btn" data-equip="${id}">一鍵裝備</button></div>`;
+  }).join('') || '<p class="note">先開始遊戲或讀取存檔，才有武將可改。</p>';
+  const options = trainerItems().map(([label, list]) => `<optgroup label="${label}">` +
+    list.map((id) => `<option value="${id}">${esc(itemName(id))}${itemEffect(id) ? `（${esc(itemEffect(id))}）` : ''}</option>`).join('') +
+    '</optgroup>').join('');
+  const counts = new Map<number, number>();
+  for (const id of story.bag) counts.set(id, (counts.get(id) ?? 0) + 1);
+  const bag = counts.size ? [...counts].map(([id, n]) => `${esc(itemName(id))}×${n}`).join('　') : '（空）';
+  // 「我軍補滿」只在真的站在战场上时给：营地、剧情、结算画面背后也挂着一场背景战，不能算
+  const fighting = !!b?.units?.length && isFighting(b.stage) && $('screen').hidden;
+  el.innerHTML = '<div class="card trainer"><div class="tr-head"><h1>修改器</h1>' +
+    '<button class="btn tr-x" data-tr="close" aria-label="關閉">✕</button></div>' +
+    `<h2>軍資</h2><div class="tr-gold"><input id="tr-gold" type="number" min="0" max="9999999" value="${story.gold}"> 金` +
+    '<button class="btn" data-gold="1000">＋1000</button><button class="btn" data-gold="10000">＋10000</button>' +
+    '<button class="btn" data-gold="0">歸零</button></div>' +
+    `<h2>武將（${party.length}）</h2><div class="tr-officers">${rows}</div>` +
+    '<div class="tr-acts"><button class="btn" data-tr="equip-all">全隊一鍵裝備</button>' +
+    '<button class="btn" data-tr="level-all">全隊 +10 級</button>' +
+    (fighting ? '<button class="btn" data-tr="heal">我軍補滿</button>' : '') + '</div>' +
+    `<h2>道具</h2><div class="tr-give"><select id="tr-item">${options}</select>` +
+    '<input id="tr-count" type="number" min="1" max="99" value="1"><button class="btn" data-tr="give">放入包袱</button></div>' +
+    '<div class="tr-acts"><button class="btn" data-tr="give-all">全部道具各 1</button>' +
+    '<button class="btn" data-tr="give-consum">消耗品各 10</button>' +
+    '<button class="btn" data-tr="clear-bag">清空包袱</button></div>' +
+    `<p class="tr-bag">包袱：${bag}</p>` +
+    '<p class="note">左上角連點三下再開（密碼 1122）。改動立刻生效，存檔時一併寫入。</p></div>';
+  const newCard = el.querySelector('.card.trainer') as HTMLElement | null;
+  const newList = el.querySelector('.tr-officers') as HTMLElement | null;
+  if (newCard) newCard.scrollTop = cardTop;
+  if (newList) newList.scrollTop = listTop;
+  el.onchange = (ev) => {
+    const t = ev.target as HTMLInputElement;
+    const id = t.dataset.lv ?? t.dataset.exp ?? t.dataset.cls;
+    if (id) {
+      const r = (story.roster[id] ??= blank(id));
+      if (t.dataset.lv) r.level = clampLevel(Number(t.value));
+      else if (t.dataset.exp) r.exp = clampExp(Number(t.value));
+      else r.cls = Math.max(0, Math.min(TB.classNames.length - 1, Number(t.value)));
+      t.value = String(t.dataset.lv ? r.level : t.dataset.exp ? r.exp : r.cls);
+      syncBattleUnit(id);
+      syncAfterTrainer();
+      return;
+    }
+    if (t.id === 'tr-gold') {
+      story.gold = clampGold(Number(t.value));
+      t.value = String(story.gold);
+      syncAfterTrainer();
+    }
+  };
+  el.onclick = (ev) => {
+    const t = ev.target as HTMLElement;
+    const tr = t.closest<HTMLElement>('[data-tr]')?.dataset.tr;
+    const equip = t.closest<HTMLElement>('[data-equip]')?.dataset.equip;
+    const gold = t.closest<HTMLElement>('[data-gold]')?.dataset.gold;
+    if (equip) {
+      const r = (story.roster[equip] ??= blank(equip));
+      r.items = equipBest(r.items, story.bag);
+      syncBattleUnit(equip);
+      syncAfterTrainer();
+      renderTrainer();
+      (el.querySelector(`[data-equip="${equip}"]`) as HTMLElement | null)?.focus({ preventScroll: true });
+      return;
+    }
+    if (gold !== undefined) {
+      story.gold = gold === '0' ? 0 : clampGold(story.gold + Number(gold));
+      syncAfterTrainer();
+      renderTrainer();
+      return;
+    }
+    if (!tr) return;
+    if (tr === 'close') return closeTrainer();
+    if (tr === 'equip-all') {
+      for (const id of story.party) {
+        const r = (story.roster[id] ??= blank(id));
+        r.items = equipBest(r.items, story.bag);
+        syncBattleUnit(id);
+      }
+    } else if (tr === 'level-all') {
+      for (const id of story.party) {
+        const r = (story.roster[id] ??= blank(id));
+        r.level = clampLevel(r.level + 10);
+        syncBattleUnit(id);
+      }
+    } else if (tr === 'heal') {
+      for (const u of b?.units ?? []) if (friendly(u.slot) && u.on) {
+        u.hp = maxHp(u.cls, u.level);
+        u.mp = maxMp(u);
+        u.morale = 100;
+        u.confused = false;
+      }
+    } else if (tr === 'give') {
+      const sel = el.querySelector('#tr-item') as HTMLSelectElement | null;
+      const cnt = el.querySelector('#tr-count') as HTMLInputElement | null;
+      if (sel) giveItem(story.bag, Number(sel.value), Number(cnt?.value ?? 1));
+    } else if (tr === 'give-all') {
+      for (const id of Object.keys(ITEM_SPEC)) story.bag.push(Number(id));
+    } else if (tr === 'give-consum') {
+      for (const [k, s] of Object.entries(ITEM_SPEC)) if (s.kind === 'consumable') giveItem(story.bag, Number(k), 10);
+    } else if (tr === 'clear-bag') {
+      story.bag.length = 0;
+    }
+    syncAfterTrainer();
+    renderTrainer();
+  };
+}
+
 // ---------------------------------------------------------------- 整屏 ----
 function screen(html: string, veil = false, cls = '') {
   const el = $('screen');
@@ -1171,6 +1419,8 @@ $('sys').replaceChildren(...sysButtons.map(([label, cls, on]) => {
 }));
 
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && trainerOpen) return closeTrainer();
+  if (gateOpen || trainerOpen) return; // 密码框与修改器自己处理按键
   if (e.key === 'Escape') cancel();
   else if ((e.key === 'Enter' || e.key === ' ') && answer && !$('talk').querySelector('.ask')) answer(0); // 键盘翻对话
   else if (e.key === 'Enter' && !answer && mode === 'idle' && !(document.activeElement instanceof HTMLButtonElement)) void endTurn();
@@ -1208,7 +1458,7 @@ game.events.once('ready', () => {
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
-      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxEnabled, duel: playDuel, banner } });
+      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxEnabled, duel: playDuel, banner, get trainerOpen() { return trainerOpen; }, get gateOpen() { return gateOpen; } } });
     }
     if (demo) {
       // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用

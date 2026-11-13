@@ -238,4 +238,41 @@ img { image-rendering: pixelated; }
 .result .rounds em { font-style: normal; color: var(--blue-hi); margin-left: 16px; }
 .result .row { justify-content: flex-end; }
 
+/* 修改器：左上角连点三下 → 密码框 → 面板 */
+#gate[hidden], #trainer[hidden] { display: none; }
+#gate, #trainer { position: absolute; inset: 0; display: grid; place-items: center; }
+#gate { z-index: 70; background: rgba(3, 5, 12, 0.9); }
+#trainer { z-index: 71; background: rgba(3, 5, 12, 0.72); }
+#gate .card { width: 320px; }
+#gate h1 { font-size: 26px; line-height: 30px; }
+#gate .sub { margin: 2px 0 6px; }
+#gate input { width: 100%; padding: 6px 8px; font: inherit; letter-spacing: 6px; text-align: center;
+  color: var(--gold); background: var(--ink); border: 1px solid var(--gold); outline: none; }
+#gate .err { min-height: 16px; margin: 4px 0 0; color: var(--orange); }
+#gate .card.shake { animation: gate-shake 0.28s ease-in-out; }
+@keyframes gate-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 75% { transform: translateX(7px); } }
+#trainer .card.trainer { width: 624px; max-height: 456px; overflow: auto; padding: 10px 16px 14px; }
+.trainer .tr-head { display: flex; align-items: center; justify-content: space-between; }
+.trainer h1 { font-size: 26px; line-height: 30px; }
+.trainer h2 { margin: 8px 0 3px; font-size: 15px; line-height: 19px; font-weight: normal; color: var(--gold); }
+.trainer .tr-x { width: 26px; padding: 0; text-align: center; }
+.trainer input[type='number'], .trainer select { font: inherit; color: var(--gold); background: var(--ink); border: 1px solid var(--blue-hi); padding: 1px 3px; }
+.trainer .tr-gold { display: flex; gap: 6px; align-items: center; }
+.trainer .tr-gold input { width: 92px; }
+.trainer .tr-gold .btn { width: auto; padding: 2px 12px; }
+.trainer .tr-officers { max-height: 168px; overflow-y: auto; padding-right: 4px; }
+.trainer .tr-row { display: flex; gap: 5px; align-items: center; margin: 2px 0; }
+.trainer .tr-row b { width: 54px; font-weight: normal; }
+.trainer .tr-row input { width: 50px; }
+.trainer .tr-row select { max-width: 136px; }
+.trainer .tr-row .btn { width: auto; padding: 1px 8px; margin-left: auto; }
+.trainer .tr-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.trainer .tr-acts .btn { width: auto; padding: 2px 10px; }
+.trainer .tr-give { display: flex; gap: 6px; align-items: center; }
+.trainer .tr-give select { flex: 1; min-width: 0; }
+.trainer .tr-give input { width: 50px; }
+.trainer .tr-give .btn { width: auto; padding: 1px 10px; }
+.trainer .tr-bag { margin: 4px 0 0; color: var(--blue-hi); max-height: 54px; overflow-y: auto; }
+.trainer .note { margin: 8px 0 0; color: var(--dim); }
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
