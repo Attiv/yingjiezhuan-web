@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SCRIPT, defaultDeploy, hasLevel, level, officers, scene } from '../src/data/game';
+import { MARCH_CHAPTERS, MARCH_MAPS, chapterOfName, chapterTitle, marchMap } from '../src/data/march';
 import type { Battle, Roster } from '../src/rules/types';
 import { aiStep, doWait, endPhase, newBattle } from '../src/rules/turn';
 import { checkScript, nextStep, startStory, testFlag, type Shown, type StoryApi, type Step } from '../src/story';
@@ -269,5 +270,41 @@ describe('整部战役的战斗推进', () => {
       }
     }
     expect(problems, `${ids.length} 关全部推进`).toEqual([]);
+  });
+});
+
+describe('章节行军图', () => {
+  it('五章各配一张原版图：序章与第一章共用第一张，其余依次', () => {
+    expect(MARCH_CHAPTERS.map((c) => c.name)).toEqual(['序章', '第一章', '第二章', '第三章', '第四章']);
+    expect(MARCH_CHAPTERS.map((c) => c.map)).toEqual([0, 0, 1, 2, 3]);
+    expect(MARCH_MAPS.map((m) => m.index)).toEqual([0, 1, 2, 3]);
+  });
+
+  it('尺寸与「每章用多大一块」的表对得上，图片路径指向 maps/campaign', () => {
+    const sizes = [[96, 96], [96, 96], [72, 112], [120, 88], [112, 128]];
+    for (const c of MARCH_CHAPTERS) {
+      const m = marchMap(c.key);
+      if (!m) throw new Error(`${c.name} 没有行军图`);
+      expect(m.tiles, c.name).toEqual(sizes[Number(c.key.slice(1))]);
+      expect(m.image).toBe(`maps/campaign/${String(m.index).padStart(3, '0')}.png`);
+    }
+  });
+
+  it('原版标题拆成章名与副题（有的标题没留空格）', () => {
+    expect(chapterTitle('第一章界橋之戰')).toMatchObject({ name: '第一章', sub: '界橋之戰' });
+    expect(chapterTitle('序章　群雄起兵討伐董卓')).toMatchObject({ name: '序章', sub: '群雄起兵討伐董卓' });
+    expect(chapterTitle('第四章\u3000中原決死戰').chapter?.key).toBe('c4');
+    expect(chapterOfName('第三章')?.key).toBe('c3');
+    expect(chapterTitle('隨便一句').chapter).toBeUndefined();
+  });
+
+  it('剧本里每一处章节标题都能落到一张图上', () => {
+    const titles = SCRIPT.steps.filter((s) => s.t === 'title') as { t: 'title'; text: string }[];
+    expect(titles.length).toBeGreaterThanOrEqual(18);
+    const bad = titles.filter((s) => {
+      const t = chapterTitle(s.text);
+      return !t.name || !t.sub || !t.chapter || !marchMap(t.chapter.key);
+    });
+    expect(bad.map((s) => s.text)).toEqual([]);
   });
 });

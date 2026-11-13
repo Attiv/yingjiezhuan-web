@@ -50,10 +50,8 @@
   （短兵 0–7、长兵 8–15、战车 16–23…运输队 145–153），每组排法一致：开头 1–2 帧待机、中间出手、
   带爆发帧算命中、末帧后仰受击。发石车是机器/乘员两帧交替存，用前要合成。
   网页版用到的切帧表在 `tools/make_original_assets.py` 的 `CUTIN_CLASSES`。
-- **效果音**：不在本提取产物里。原版由 `SBOPL2.COM` 在 OPL2 的 7/8 通道实时合成，音符表走
-  `MAIN.EXE` 的 `int 65h`；网页版改用 21 个 CC0 音效，见 `public/assets/CREDITS.md`。
-- **效果音**：不在本提取产物里。原版由 `SBOPL2.COM` 在 OPL2 的 7/8 通道实时合成，音符表走
-  `MAIN.EXE` 的 `int 65h`；网页版改用 21 个 CC0 音效，见 `public/assets/CREDITS.md`。
+- **效果音**：不在本提取产物里。原版由 `SBOPL2.COM` 在 OPL2 上实时合成，乐谱经
+  `int 66h`（`ah=0`，`ds:dx` 指向数据）送给驱动；网页版改用 21 个 CC0 音效，见 `public/assets/CREDITS.md`。
 - 完整规格见参考项目 `docs/reverse-engineering/FORMATS.md`（本仓库未附带，见下方链接）。
 
 ## 重新生成

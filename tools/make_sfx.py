@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """把音效装进 public/assets/sfx/。
 
-原版 DOS 的效果音由 SBOPL2.COM（Sound Blaster BGM Driver 1.01）在 OPL2 的 7/8 通道上
-实时合成，音符表走 MAIN.EXE 的 int 65h，目前没有可用的提取器。这里采用开源复刻项目
+原版 DOS 的效果音由 SBOPL2.COM（Sound Blaster BGM Driver 1.01）在 OPL2 上实时合成，
+游戏通过 int 66h（ah=0，ds:dx 指向数据）把乐谱送给驱动，调用散在 MAIN.EXE 的远调用里，
+目前没有可用的提取器。这里采用开源复刻项目
 eiketsuden-reloaded 为同一套引擎挑好的 21 个动作音效（Ninja Adventure，CC0），语义键
 与它的引擎 sfx::* 一一对应；**不是原版 DOS 音效**，见 public/assets/CREDITS.md。
 

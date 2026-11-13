@@ -39,6 +39,7 @@ python3 tools/make_full_assets.py <EXTRACT> <PACK>
 | `faces/*.png` | 240 张武将头像 | `FACEDAT.R3` 的 240 张 TF-DCE 压缩头像，编号由 `BAKDATA.R3` 武将记录 +14 字节给出 | 64×80，原版原尺寸 |
 | `portraits/_unknown.png` | 杂兵（无武将记录） | `HEXZCHR.R3` 短兵图标放大 2 倍放进 64×80 框（原版状态窗给杂兵显示的也是兵种图） | 64×80 |
 | `pictures/*.png` | 31 张事件插画 | `PACKGRP.R3` 第 3–33 项 | 224×144，界面按 2 倍摆进舞台 |
+| `maps/campaign/000–003.png` | 4 张章节行军图（序章与第一章共用第一张，其后每章一张） | `MMAP.R3`（调色板用 `MMAPBGPL.R3` 第 0 项）；哪章用哪张由 `MAIN.EXE` 的每章尺寸表对出 | 原 1536² 到 1920×1408，缩到长边 1024 后量化 64 色，共 1.1MB |
 | `title.png` | 标题页底图：金龙纹框、深蓝斜纹、两张事件插画、龙纹 | `PACKGRP.R3` 第 1 项（640×400 战斗画面框）与第 3–33 项 | 640×480 |
 | `ui/gold.png` | 金龙纹边框的 3×3 九宫格，CSS `border-image` 用 | `PACKGRP.R3` 第 1 项的四角与四边 | 48×48，slice 16 |
 | `ui/blue.png` / `dragon.png` / `titlebar.png` | 深蓝斜纹底纹、右下龙纹、顶部蓝色标题条 | 同上 | 32×32 / 176×112 / 176×24 |
@@ -49,7 +50,7 @@ python3 tools/make_full_assets.py <EXTRACT> <PACK>
 | `duel/left.png`、`right.png` | 通用单挑骑将（其余武将共用） | 同上，取两套通用骑将帧 | 15 帧，96×96 |
 | `duel/terrain_*.png` | 10 张单挑地形背景（平原、树林、山、河、桥、城墙、城、草地、村庄、荒地…） | `HEXBMAP.R3` 的战场条带按地形拼成 | 416×208 |
 | `bgm/*.mp3` | 10 首原版 BGM：title / peace / camp / battle / boss / enemy / tension / sad / defeat / ending | 原版 BGM 数据（`hero-tools` 解出的音轨），ffmpeg 转 mp3 | 44.1kHz 单声道 |
-| `sfx/*.wav` | 21 个动作音效：cursor / confirm / cancel / error / step / hit / hit_heavy / arrow / fire / water / rock / heal / morale_up / morale_down / confuse / levelup / retreat / treasure / phase / victory / defeat | **非原版**：CC0 的 Ninja Adventure，经 eiketsuden-reloaded 的 `build_audio.py` 裁切淡出；原版效果音由 `SBOPL2.COM` 在 OPL2 的 7/8 通道实时合成，音符表走 `MAIN.EXE` 的 `int 65h`，尚无提取器 | 16-bit 单声道 44.1kHz，共 959KB |
+| `sfx/*.wav` | 21 个动作音效：cursor / confirm / cancel / error / step / hit / hit_heavy / arrow / fire / water / rock / heal / morale_up / morale_down / confuse / levelup / retreat / treasure / phase / victory / defeat | **非原版**：CC0 的 Ninja Adventure，经 eiketsuden-reloaded 的 `build_audio.py` 裁切淡出；原版效果音由 `SBOPL2.COM` 在 OPL2 上实时合成，乐谱经 `int 66h`（`ah=0`，`ds:dx` 指向数据）送出，尚无提取器 | 16-bit 单声道 44.1kHz，共 959KB |
 | `fx/*.png` | 11 张特效贴图（斩痕、箭、火焰、烟、光点、光环、旋涡、迸溅） | `trace_06`/`flame_05`/`flame_06` 取 `HEXBCHR.R3` 169/154/157 号帧的轮廓；其余抽象粒子按原版 16 色硬像素风格用代码画 | 256×256，白色 + alpha，运行时染成调色板色 |
 | `fx/original/*.png` | 原版彩色特效帧留档：火、水、石、箭、音符、虎 | `HEXBCHR.R3` 154–175 号 | 64×64 |
 | `palette.json` | 原版 9 组 16 色 VGA 调色板 | `MAIN.EXE` 偏移 `0x37CDA` | JSON |

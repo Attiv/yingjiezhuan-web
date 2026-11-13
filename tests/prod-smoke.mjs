@@ -53,6 +53,11 @@ const keys = ['cursor', 'confirm', 'cancel', 'error', 'step', 'hit', 'hit_heavy'
 const codes = await page.evaluate(async (ks) => Promise.all(ks.map(async (k) => (await fetch(`/assets/sfx/${k}.wav`)).status)), keys);
 assert.deepEqual([...new Set(codes)], [200], '21 个音效都在生产包里');
 
+// 四张章节行军图也都在
+const maps = await page.evaluate(async () => Promise.all(['000', '001', '002', '003']
+  .map(async (n) => (await fetch(`/assets/maps/campaign/${n}.png`)).status)));
+assert.deepEqual([...new Set(maps)], [200], '4 张行军图都在生产包里');
+
 assert.deepEqual(errors, []);
-console.log('生产构建冒烟通过：标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合，21 个音效可加载，控制台无报错');
+console.log('生产构建冒烟通过：标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合，21 个音效与 4 张行军图可加载，控制台无报错');
 await browser.close();

@@ -625,6 +625,44 @@ def item_specs() -> dict:
     return {"items": out, "promote": promote}
 
 
+# ---------------------------------------------------------------- 行军图 ----
+# 原版 MMAP.R3 的四张行军图，MAIN.EXE 里另有一张「每章用多大一块」的表
+# （original/extract/maps/campaign.json 的 sizes_by_chapter）。序章与第一章
+# 尺寸相同，用的也是同一张图，所以 5 章只对应 4 张图。
+CHAPTER_NAMES = ["序章", "第一章", "第二章", "第三章", "第四章"]
+
+
+def campaign_specs() -> dict:
+    src = ROOT / "original" / "extract" / "maps" / "campaign.json"
+    if not src.exists():
+        return {"chapters": [], "maps": []}
+    d = json.loads(src.read_text(encoding="utf-8"))
+    maps = [
+        {
+            "index": m["index"],
+            "image": f"maps/campaign/{m['index']:03d}.png",
+            "tiles": m["size_tiles"],
+        }
+        for m in d["maps"]
+    ]
+    # 尺寸相同的章节共用一张图：按「这张图第几次出现」定位
+    first_seen: dict[tuple[int, int], int] = {}
+    chapters = []
+    for i, size in enumerate(d.get("sizes_by_chapter") or []):
+        key = (size[0], size[1])
+        if key not in first_seen:
+            same = [m["index"] for m in maps if tuple(m["tiles"]) == key]
+            if not same:
+                continue
+            first_seen[key] = same[0]
+        chapters.append({
+            "key": f"c{i}",
+            "name": CHAPTER_NAMES[i] if i < len(CHAPTER_NAMES) else f"第{i}章",
+            "map": first_seen[key],
+        })
+    return {"chapters": chapters, "maps": maps}
+
+
 # ---------------------------------------------------------------- 主流程 ----
 def main() -> None:
     officers_toml = tomllib.loads((PACK / "officers.toml").read_text(encoding="utf-8"))["officer"]
@@ -711,6 +749,11 @@ def main() -> None:
     strats = strategy_specs()
     (OUT / "strategies.json").write_text(json.dumps(strats, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"策略 {len(strats['strategies'])} 条（可学 36、爆彈 1）")
+
+    camp = campaign_specs()
+    (OUT / "campaign.json").write_text(json.dumps(camp, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"行军图 {len(camp['maps'])} 张、{len(camp['chapters'])} 章（" +
+          "、".join(f"{c['name']}→{c['map']}" for c in camp["chapters"]) + "）")
 
     print(f"流程步骤 {len(steps)}（标签 {sum(1 for s in steps if s['t'] == 'label')}）")
     print(f"剧本 {len(scenes)} 幕、战斗 {len(battles)} 场、地图 {len(maps)} 张、武将 {len(officers)}、人物 {len(persons)}")

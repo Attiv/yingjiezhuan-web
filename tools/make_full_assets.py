@@ -295,6 +295,28 @@ def make_bgm(pack: Path) -> int:
     return n
 
 
+# ---------------------------------------------------------------- 行军图 ----
+def make_campaign(ex: Path) -> int:
+    """章节标题画面用的原版行军图（MMAP.R3）。原图 1536² 到 1920×1408，缩到长边 1024
+    再量化成 64 色：舞台上只显示 640×480，缩一半看不出差别，体积却只剩零头。"""
+    src = ex / "maps" / "campaign.json"
+    if not src.exists():
+        return 0
+    meta = json.loads(src.read_text(encoding="utf-8"))
+    dst = ensure(OUT / "maps" / "campaign")
+    n = 0
+    for m in meta["maps"]:
+        im = Image.open(ex / m["image"]).convert("RGB")
+        w, h = im.size
+        scale = 1024 / max(w, h)
+        if scale < 1:
+            im = im.resize((round(w * scale), round(h * scale)), Image.Resampling.LANCZOS)
+        im = im.quantize(colors=64, method=Image.Quantize.MEDIANCUT).convert("P")
+        im.save(dst / f"{m['index']:03d}.png", optimize=True)
+        n += 1
+    return n
+
+
 # ---------------------------------------------------------------- 清单 ----
 def write_manifest(actors: dict) -> None:
     p = OUT / "manifest.json"
@@ -314,6 +336,7 @@ def main() -> None:
     print(f"头像 {make_faces(ex)} 张")
     make_tokens(ex)
     print(f"插画 {make_pictures(pack)} 张、单挑图 {make_duel(pack)} 张")
+    print(f"行军图 {make_campaign(ex)} 张")
     actors = make_cutin(ex)
     write_manifest(actors)
     print(f"特写 {len(actors)} 个兵种 × 150 帧（60 待机 + 60 出手 + 30 受击）")

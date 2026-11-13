@@ -114,8 +114,25 @@ img { image-rendering: pixelated; }
 /* 剧情：整屏背景（原版事件插画）盖住战场，对话框挪到舞台下方正中 */
 #screen.story { background: var(--navy) center / cover no-repeat; display: grid; place-items: center; }
 #screen.story .pic { width: 448px; height: 288px; object-fit: contain; image-rendering: pixelated; border: 3px solid var(--gold); background: #000; }
-#screen .chapter { position: absolute; left: 0; right: 0; top: 176px; padding: 18px 0; text-align: center; font-size: 24px; line-height: 30px;
-  color: var(--gold); background: rgba(12, 20, 48, 0.92); border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); }
+/* 章节标题：整屏原版行军图缓缓平移，中间一条金龙纹横幅写「第X章」与副题 */
+#screen.chapter-screen { animation: chapter-pan 20s ease-out both; }
+#screen.chapter-screen[data-pan='rev'] { animation-name: chapter-pan-rev; }
+#screen.chapter-screen::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at center, rgba(5, 7, 15, 0) 24%, rgba(5, 7, 15, 0.66) 100%),
+    linear-gradient(rgba(5, 7, 15, 0.22), rgba(5, 7, 15, 0.22));
+}
+#screen .chapter { position: absolute; inset: 0; animation: chapter-in 600ms ease-out both; }
+#screen .chapter-band { position: absolute; left: 0; right: 0; top: 168px; padding: 16px 0 18px; text-align: center;
+  background: rgba(12, 20, 48, 0.88); border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); }
+#screen .chapter-band b { display: block; font-size: 26px; line-height: 32px; font-weight: normal; color: var(--gold); letter-spacing: 8px; text-indent: 8px; }
+#screen .chapter-band span { display: block; margin-top: 8px; font-size: 16px; line-height: 22px; color: var(--white); letter-spacing: 3px; text-indent: 3px; }
+#screen .chapter-hint { position: absolute; left: 0; right: 0; bottom: 20px; text-align: center; color: var(--gold);
+  opacity: 0.85; text-shadow: 0 1px 0 var(--ink), 0 0 6px rgba(0, 0, 0, 0.9); }
+@keyframes chapter-pan { from { background-position: 14% 84%; } to { background-position: 86% 16%; } }
+@keyframes chapter-pan-rev { from { background-position: 86% 16%; } to { background-position: 14% 84%; } }
+@keyframes chapter-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 #stage.story #talk { z-index: 11; left: 136px; top: 356px; }
 
 /* 单挑：整屏两骑对冲，底部地形，上方对阵名 */

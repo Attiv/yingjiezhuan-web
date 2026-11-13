@@ -188,10 +188,16 @@ await step('标题画面：原版标题图、繁体菜单，没存档时「讀�
   await shot('01-title');
 });
 
-await step('開新遊戲：章节横幅 → 原版插画与对白 → 汜水關出兵準備', async () => {
+await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对白 → 汜水關出兵準備', async () => {
   await page.click('[data-go="start"]');
   await page.waitForSelector('#screen .chapter');
   assert.match(await page.textContent('#screen .chapter'), /序章/);
+  assert.match(await page.textContent('#screen .chapter'), /群雄起兵討伐董卓/, '横幅上要有副题');
+  // 背景是原版行军图：序章用第一张，图能真的加载出来
+  const bg = await page.evaluate(() => getComputedStyle(document.getElementById('screen')).backgroundImage);
+  assert.match(bg, /\/assets\/maps\/campaign\/000\.png/, `序章用第一张行军图，实际 ${bg}`);
+  assert.equal(await page.evaluate(() => fetch('/assets/maps/campaign/000.png').then((r) => r.status)), 200);
+  await page.waitForTimeout(700); // 等横幅淡入完再拍
   await shot('15-chapter');
   await page.keyboard.press('Enter'); // 键盘也能翻页
   await page.waitForSelector('#talk:not([hidden])');

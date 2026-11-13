@@ -78,5 +78,6 @@ python3 tools/make_assets.py <cartography> <particles> <reloaded> <font.ttf>
 键名与它的引擎 `sfx::*` 一致。用 `python3 tools/make_sfx.py` 可复现。
 
 **这些不是原版 DOS 音效。** 原版的效果音由 `SBOPL2.COM`（KOEI Sound Blaster BGM Driver 1.01）
-在 OPL2 的 7/8 通道实时合成，音符表走 `MAIN.EXE` 的 `int 65h` 路径，目前没有可用的提取器；
+在 OPL2 上实时合成，游戏通过 `int 66h`（`ah=0`，`ds:dx` 指向数据）把乐谱送给驱动，
+目前没有可用的提取器；
 BGM 已由 `MUSIC.R3` / `OPMUSIC.R3` / `EDMUSIC.R3` 的 OPL 乐谱渲染，但效果音尚未还原。

@@ -5,6 +5,7 @@ import { sfxOf } from './sfx-map';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
 import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
 import { PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './data/items';
+import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
@@ -365,6 +366,7 @@ function showPicture(key: string) {
   const el = $('screen');
   el.className = 'story';
   el.hidden = false;
+  el.style.backgroundImage = '';
   el.innerHTML = key ? `<img class="pic" src="/assets/pictures/${key}.png" alt="">` : '';
 }
 function storyFrame() {
@@ -372,18 +374,24 @@ function storyFrame() {
   playBgm(story.bgm);
   $('stage').classList.add('story');
 }
-/** 章节标题：居中的一条横幅，点一下或按回车继续。 */
+/** 章节标题：原版行军图铺满舞台（缓慢平移），中间压一条横幅，点一下或按回车继续。 */
 function chapter(text: string): Promise<void> {
   const el = $('screen');
-  el.className = 'story';
+  const title = chapterTitle(text);
+  const map = title.chapter ? marchMap(title.chapter.key) : undefined;
+  el.className = map ? 'story chapter-screen' : 'story';
   el.hidden = false;
+  el.style.backgroundImage = map ? `url(/assets/${map.image})` : '';
+  if (title.chapter) el.dataset.pan = Number(title.chapter.key.slice(1)) % 2 ? 'rev' : 'fwd';
   const box = document.createElement('div');
   box.className = 'chapter';
-  box.textContent = text;
+  box.innerHTML = `<div class="chapter-band"><b>${esc(title.name)}</b><span>${esc(title.sub || text)}</span></div>` +
+    `<div class="chapter-hint">點擊或按 Enter 繼續</div>`;
   el.append(box);
   return new Promise((done) => {
     const end = () => {
       box.remove();
+      el.style.backgroundImage = '';
       document.removeEventListener('keydown', key);
       el.removeEventListener('click', end);
       done();
@@ -397,6 +405,7 @@ function chapter(text: string): Promise<void> {
 function hideStoryFrame() {
   $('screen').hidden = true;
   $('screen').innerHTML = '';
+  $('screen').style.backgroundImage = '';
   $('stage').classList.remove('story');
 }
 
