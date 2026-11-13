@@ -58,6 +58,11 @@ const maps = await page.evaluate(async () => Promise.all(['000', '001', '002', '
   .map(async (n) => (await fetch(`/assets/maps/campaign/${n}.png`)).status)));
 assert.deepEqual([...new Set(maps)], [200], '4 张行军图都在生产包里');
 
+// 10 首原版 BGM 也都在（战斗曲 / 敌将曲 / 单挑曲都靠它们）
+const bgm = await page.evaluate(async (ks) => Promise.all(ks.map(async (k) => (await fetch(`/assets/bgm/${k}.mp3`)).status)),
+  ['title', 'peace', 'camp', 'battle', 'boss', 'enemy', 'tension', 'sad', 'defeat', 'ending']);
+assert.deepEqual([...new Set(bgm)], [200], '10 首 BGM 都在生产包里');
+
 assert.deepEqual(errors, []);
-console.log('生产构建冒烟通过：标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合，21 个音效与 4 张行军图可加载，控制台无报错');
+console.log('生产构建冒烟通过：标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合，21 个音效、10 首 BGM 与 4 张行军图可加载，控制台无报错');
 await browser.close();

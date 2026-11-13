@@ -185,6 +185,8 @@ await step('标题画面：原版标题图、繁体菜单，没存档时「讀�
   assert.match(await page.textContent('#screen'), /PC DOS 繁體中文版/);
   assert.equal(await page.evaluate(() => localStorage.getItem('yjz.save.v3')), null);
   assert.equal(await page.isDisabled('[data-go="load"]'), true, '没有存档时读档应不可点');
+  await page.waitForFunction(() => !!window.__yjz, null, { timeout: 30000 });
+  assert.equal(await page.evaluate(() => window.__yjz.bgm), 'title', '标题应播原版标题曲');
   await shot('01-title');
 });
 
@@ -282,6 +284,10 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   assert.match(await page.textContent('#turn'), /第1回合/);
   const g = b.units.find((u) => u.name === '關羽');
   assert.deepEqual([g.x, g.y], cells[1].split(',').map(Number), '关羽应站在布阵时指定的格子');
+  // 开战换成原版的战斗曲（此前一直没播过 battle.mp3）
+  await page.waitForTimeout(400); // 换曲有 160ms 淡出
+  assert.equal(await page.evaluate(() => window.__yjz.bgm), 'battle');
+  assert.match(await page.evaluate(() => window.__yjz.bgmSrc), /battle\.mp3/);
   await shot('03-battle-start');
 });
 
@@ -439,6 +445,7 @@ await step('战场存档 → 打两回合 → 读档，状态与存档时完全�
   await command('關羽', 'duel');
   await command('張飛', 'hunt');
   await endTurn();
+  assert.ok((await page.evaluate(() => window.__yjz.bgmLog())).includes('enemy'), '敌军阶段应切到「敌将」曲');
   assert.notDeepEqual(await state(), saved);
   await sys('读档');
   await settle();
@@ -520,6 +527,7 @@ await step('關羽贴近華雄：单挑演出 → 華雄撤退 → 勝利', asyn
   } else assert.fail(`没有演到单挑，沿途对白：${sayings.join(' / ')}`);
   assert.equal((await unit('華雄')).on, false, '华雄撤退');
   assert.equal((await unit('關羽')).level, 2, '单挑后关羽升一级');
+  assert.ok((await page.evaluate(() => window.__yjz.bgmLog())).includes('boss'), '单挑应压上「强敌」曲');
   assert.match(await page.textContent('#screen .card'), /勝利/);
   assert.match(await page.textContent('#screen .card'), /華雄/);
   await shot('20-victory');
@@ -562,6 +570,7 @@ await step('系统性失败：全军撤退判负 → 重新開始回到这一关
   assert.equal(lost.stage, 'lost');
   assert.equal(lost.reason, '全军撤退');
   assert.match(await page.textContent('#screen .card'), /敗北/);
+  assert.equal(await page.evaluate(() => window.__yjz.bgm), 'defeat', '败北应切败北曲');
   await shot('22-defeat');
   await page.click('[data-go="next"]'); // 重新開始：这一关没有失败分支，退回战前说明
   await page.waitForSelector('[data-go="deploy"]', { timeout: 60000 });
@@ -625,7 +634,7 @@ await step('后期关卡实机：大地图、民众护送、军乐队都能开�
   const G = JSON.parse(readFileSync(new URL('../src/data/game.json', import.meta.url), 'utf8'));
   const party = Object.keys(G.officers);
   const roster = Object.fromEntries(Object.entries(G.officers).map(([id, o]) => [id, { level: o.level, exp: 0, items: [] }]));
-  for (const lid of ['c1_s0_b6', 'c2_s3_b7', 'c4_s2_b4']) {
+  for (const lid of ['c1_s0_b6', 'c2_s3_b7', 'c4_s2_b4', 'c1_s0_b13']) {
     const pc = G.steps.findIndex((st) => st.t === 'battle' && st.level === lid);
     assert.ok(pc > 0, `${lid} 应在流程里`);
     const story = { script: 'yingjiezhuan', pc, bg: '', picture: '', bgm: '', cast: [], flags: {}, roster, party, bag: [], deploy: [], gold: 10000 };
@@ -650,6 +659,10 @@ await step('后期关卡实机：大地图、民众护送、军乐队都能开�
     }
     const end = await state();
     assert.ok(end.round >= 3 || end.stage === 'won' || end.stage === 'lost', `${lid} 应能推进到第 3 回合`);
+    if (lid === 'c1_s0_b13') {
+      // 这一关第 3 回合开场有敌军增援，画面上要弹「敵軍增援」横幅
+      assert.ok((await page.evaluate(() => window.__yjz.banners())).includes('敵軍增援'), '第 3 回合应有增援横幅');
+    }
   }
 });
 

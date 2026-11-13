@@ -49,7 +49,7 @@ python3 tools/make_full_assets.py <EXTRACT> <PACK>
 | `duel/guan_yu.png`、`zhang_fei.png`、`lu_bu.png` | 单挑专属图集 | `HEXBCHR.R3` 里三名武将的骑马帧 | 15 帧，96×96 一行（1440×96） |
 | `duel/left.png`、`right.png` | 通用单挑骑将（其余武将共用） | 同上，取两套通用骑将帧 | 15 帧，96×96 |
 | `duel/terrain_*.png` | 10 张单挑地形背景（平原、树林、山、河、桥、城墙、城、草地、村庄、荒地…） | `HEXBMAP.R3` 的战场条带按地形拼成 | 416×208 |
-| `bgm/*.mp3` | 10 首原版 BGM：title / peace / camp / battle / boss / enemy / tension / sad / defeat / ending | 原版 BGM 数据（`hero-tools` 解出的音轨），ffmpeg 转 mp3 | 44.1kHz 单声道 |
+| `bgm/*.mp3` | 10 首原版 BGM：title / peace / camp / battle / boss / enemy / tension / sad / defeat / ending | 原版 BGM 数据（`hero-tools` 解出的音轨）：title = `OPMUSIC.R3` 0、ending = `EDMUSIC.R3` 0、其余 `MUSIC.R3` 的 5 / 12 / 11 / 2 / 4 / 18 / 9 / 16 号 | 44.1kHz 单声道 |
 | `sfx/*.wav` | 21 个动作音效：cursor / confirm / cancel / error / step / hit / hit_heavy / arrow / fire / water / rock / heal / morale_up / morale_down / confuse / levelup / retreat / treasure / phase / victory / defeat | **非原版**：CC0 的 Ninja Adventure，经 eiketsuden-reloaded 的 `build_audio.py` 裁切淡出；原版效果音由 `SBOPL2.COM` 在 OPL2 上实时合成，乐谱经 `int 66h`（`ah=0`，`ds:dx` 指向数据）送出，尚无提取器 | 16-bit 单声道 44.1kHz，共 959KB |
 | `fx/*.png` | 11 张特效贴图（斩痕、箭、火焰、烟、光点、光环、旋涡、迸溅） | `trace_06`/`flame_05`/`flame_06` 取 `HEXBCHR.R3` 169/154/157 号帧的轮廓；其余抽象粒子按原版 16 色硬像素风格用代码画 | 256×256，白色 + alpha，运行时染成调色板色 |
 | `fx/original/*.png` | 原版彩色特效帧留档：火、水、石、箭、音符、虎 | `HEXBCHR.R3` 154–175 号 | 64×64 |
@@ -58,6 +58,21 @@ python3 tools/make_full_assets.py <EXTRACT> <PACK>
 
 **非原版素材只有两处**：上面的像素字体和 `sfx/*.wav` 音效，其余画面与音乐都逐像素 / 逐音符取自原版盘。
 音效的授权、来源与「为什么不是原版」写在 `public/assets/CREDITS.md`。
+
+每首曲子用在哪，照原版剧本里的用法定（`src/music.ts`）：
+
+| 曲子 | 原版编号 | 用在哪 |
+|---|---|---|
+| title | `OPMUSIC.R3` 0 | 标题画面 |
+| ending | `EDMUSIC.R3` 0 | 通关结局 |
+| peace | `MUSIC.R3` 5 | 议事厅、城里对话 |
+| camp | `MUSIC.R3` 12 | 出兵准备（营地） |
+| tension | `MUSIC.R3` 11 | 敌营、紧张场面 |
+| sad | `MUSIC.R3` 2 | 悲叹、葬礼 |
+| defeat | `MUSIC.R3` 4 | 败北 / 游戏结束 |
+| battle | `MUSIC.R3` 18 | 战斗：我军、友军阶段 |
+| enemy | `MUSIC.R3` 9 | 战斗：敌军阶段 |
+| boss | `MUSIC.R3` 16 | 强敌出现、单挑 |
 
 界面其余部分（兵力条、高亮格、按钮、飘字、对阵条边框）由 CSS 和运行时绘制，配色全部取自上表调色板：
 黑 `#000000`、蓝 `#2045aa`、亮蓝 `#8acfff`、橙 `#ef6500`、绿 `#00ba75`、金 `#ffcf55`、白 `#ffffff`。

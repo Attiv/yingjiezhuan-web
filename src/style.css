@@ -84,6 +84,20 @@ img { image-rendering: pixelated; }
 #talk .ask { display: flex; gap: 6px; margin-top: 8px; }
 #talk .ask .btn { width: auto; }
 
+/* 战场中央的短横幅：增援 / 伏兵这类一瞬间的提示 */
+#banner { position: absolute; left: 0; width: 416px; top: 176px; padding: 10px 0; text-align: center; z-index: 7;
+  font-size: 24px; line-height: 30px; letter-spacing: 6px; color: var(--gold);
+  background: linear-gradient(90deg, rgba(12, 20, 48, 0), rgba(12, 20, 48, 0.94) 18%, rgba(12, 20, 48, 0.94) 82%, rgba(12, 20, 48, 0));
+  border-top: 2px solid rgba(255, 207, 85, 0.9); border-bottom: 2px solid rgba(255, 207, 85, 0.9);
+  text-shadow: 0 0 8px rgba(239, 101, 0, 0.8); opacity: 0; transform: scaleY(0.7); }
+#banner.on { animation: banner-in 900ms ease-out both; }
+@keyframes banner-in {
+  0% { opacity: 0; transform: scaleY(0.55); }
+  14% { opacity: 1; transform: scaleY(1); }
+  78% { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(1.05); }
+}
+
 /* 对阵条：贴在战场顶部，左攻右守 */
 #clash { position: absolute; left: 8px; top: 8px; width: 400px; padding: 6px 8px; display: flex; align-items: center; gap: 8px; z-index: 6; }
 #clash .l, #clash .r { flex: 1; display: flex; gap: 8px; align-items: center; min-width: 0; }

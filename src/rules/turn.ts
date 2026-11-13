@@ -128,6 +128,9 @@ export interface Level {
   /** 地图与棋子的素材键（相对 assets/）；不写就用清单里的。 */
   map?: string;
   tokens?: string;
+  /** 这一关的曲子：我军 / 友军阶段与敌军阶段各一首（原版每关都带）。 */
+  bgm?: string;
+  bgmEnemy?: string;
 
   /* 旧接口：单主将、单敌将、踩格得金。保留给早期关卡，也方便测试直接写小关卡。 */
   lord?: number;

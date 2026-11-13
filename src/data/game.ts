@@ -13,6 +13,7 @@ interface BattleData {
   deploy: { max: number; required: string[]; forbidden: string[]; slots: [number, number][] };
   units: BUnitData[]; groups: Record<string, BUnitData[]>;
   victory: unknown[]; defeat: unknown[]; events: unknown[]; treasures: { x: number; y: number; item: number | null; gold: number }[];
+  bgm?: string; bgmEnemy?: string;
 }
 interface GameData {
   title: string; steps: Step[]; scenes: Record<string, Step[]>;
@@ -91,6 +92,7 @@ export function level(id: string): Level | undefined {
   const lv: Level = {
     id, name: b.name, goal: b.goal, turnLimit: b.turnLimit, w: map.w, h: map.h, terrain: map.terrain as number[],
     units, reward: b.reward, map: `maps/${b.map}.png`, tokens: 'tokens.png',
+    bgm: b.bgm, bgmEnemy: b.bgmEnemy,
     deploy, candidates: TEMPLATE,
     victory: b.victory as Level['victory'], defeat: b.defeat as Level['defeat'],
     events: b.events as BattleEvent[], treasures: b.treasures, triggers: [],

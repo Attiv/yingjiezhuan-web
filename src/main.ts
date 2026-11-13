@@ -7,6 +7,7 @@ import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, 
 import { PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './data/items';
 import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
+import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { TB, atk, attackTargets, bySlot, def, itemName, knownStrategies, maxHp, maxMp, moveBudget, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doDrop, doGive, doItem, doItemAll, doMove, doWait, endPhase, giveTargets, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
@@ -76,19 +77,56 @@ const API: StoryApi = {
 // ---------------------------------------------------------------- 音乐 / 音效 ----
 const audio = new Audio();
 audio.loop = true;
+const BGM_VOLUME = 0.55;
 let bgmKey = '';
+/** 想放的曲子（即使浏览器暂时不让放也记着，第一次点击后补播）。 */
+let bgmWanted = '';
+/** 调试 / 自动化用：真正换过的曲目（按顺序）。 */
+const bgmLog: string[] = [];
+/** 淡入淡出的令牌：换曲时旧的淡出过程不会把新曲的音量再拉回去。 */
+let fadeToken = 0;
+const fadeTo = (to: number, ms = 220) => {
+  const token = ++fadeToken;
+  const from = audio.volume;
+  const t0 = performance.now();
+  return new Promise<void>((done) => {
+    const step = () => {
+      if (token !== fadeToken) return done();
+      const k = ms > 0 ? Math.min(1, (performance.now() - t0) / ms) : 1;
+      audio.volume = Math.max(0, Math.min(1, from + (to - from) * k));
+      if (k < 1) requestAnimationFrame(step);
+      else done();
+    };
+    requestAnimationFrame(step);
+  });
+};
+/** 换曲：先淡出旧的 160ms，再换源从 0 淡入；同一首不重来。 */
 function playBgm(key: string, force = false) {
-  if (!key || (key === bgmKey && !force)) return;
+  if (!key) return;
+  bgmWanted = key;
+  if (!force && key === bgmKey) return;
   bgmKey = key;
-  audio.src = `/assets/bgm/${key}.mp3`;
-  audio.volume = 0.55;
-  void audio.play().catch(() => {}); // 浏览器不允许自动播放时静音进行
+  bgmLog.push(key);
+  if (bgmLog.length > 300) bgmLog.shift();
+  const start = () => {
+    if (key !== bgmKey) return; // 淡出期间又换了曲，这一首就不放了
+    audio.src = `/assets/bgm/${key}.mp3`;
+    audio.volume = 0;
+    void audio.play().then(() => fadeTo(BGM_VOLUME)).catch(() => { /* 等第一次点击 */ });
+  };
+  if (!audio.paused && audio.volume > 0.01) void fadeTo(0, 160).then(start);
+  else start();
+}
+/** 战斗里按阶段对齐曲子；不在战斗里就什么也不做。 */
+function syncBattleMusic() {
+  if (b && isFighting(b.stage)) playBgm(battleBgm(levelOf(b), b.stage));
 }
 
 preloadSfx();
 // 第一次手势解锁出声；UI 按钮统一在捕获阶段给一声确认，指令菜单用更轻的光标音
 document.addEventListener('pointerdown', (e) => {
   unlockSfx();
+  if (bgmWanted && audio.paused) playBgm(bgmWanted, true); // 自动播放被拦下的曲子在这里补上
   const btn = (e.target as HTMLElement).closest('button');
   if (btn && !(btn as HTMLButtonElement).disabled) playSfx(btn.closest('#menu') ? 'cursor' : 'confirm', 0.75);
 }, true);
@@ -101,6 +139,7 @@ function renderTurn() {
     `<b>第${b.round}回合</b><div style="text-align:right"><div>${weatherName(b.weather)}　限 ${levelOf(b).turnLimit} 回合</div>` +
     `<div class="phase-${cls}">${label}行动</div></div>`;
   for (const el of $('sys').querySelectorAll('button')) if (!el.dataset.sfx) el.disabled = mode !== 'idle';
+  syncBattleMusic(); // 回合 / 阶段事件都会走到这里，曲子跟着阶段换
 }
 
 function renderUnit(u: Unit | null = shown) {
@@ -141,7 +180,25 @@ function log(text: string) {
   while ($('log').children.length > 5) $('log').firstChild!.remove();
 }
 
+/** 战场中央的一条短横幅：敌军增援 / 伏兵出现这类一瞬间的提示。 */
+const banners: string[] = [];
+async function banner(text: string) {
+  banners.push(text);
+  if (banners.length > 20) banners.shift();
+  const el = $('banner');
+  el.textContent = text;
+  el.hidden = false;
+  el.classList.remove('on');
+  void el.offsetWidth; // 重启动画
+  el.classList.add('on');
+  playSfx('phase', 0.9);
+  await new Promise<void>((done) => setTimeout(done, Math.max(1, 900 * (scene.speed || 1))));
+  el.classList.remove('on');
+  el.hidden = true;
+}
+
 const name = (slot: number) => bySlot(b, slot)?.name ?? '';
+
 function describe(ev: Ev): string {
   switch (ev.t) {
     case 'round': return `—— 第 ${ev.round} 回合，${weatherName(ev.weather)} ——`;
@@ -179,6 +236,7 @@ async function present(evs: Ev[]) {
     if (ev.t === 'round' || ev.t === 'stage') renderTurn();
     if (ev.t === 'drama') await playScene(ev.scene);
     else if (ev.t === 'talk') await talk(ev.who, ev.text);
+    else if (ev.t === 'spawn') await banner('敵軍增援');
     else if (ev.t === 'hit' && scene.speed) await clash(ev);
     else await scene.play(ev);
   }
@@ -268,6 +326,7 @@ interface DuelAct { side: 'left' | 'right' | string; act: string; n?: number }
 /** 单挑：整屏上两骑对冲，按剧本里的 act 表（charge / strike / fall / back）逐帧演。 */
 async function playDuel(aId: string, bId: string, acts: DuelAct[]) {
   const el = $('duelplay');
+  playBgm(DUEL_BGM); // 单挑：原版第 16 曲「强敌出现」
   const [aKey, bKey] = [DUEL_SHEETS.has(aId) ? aId : 'left', DUEL_SHEETS.has(bId) ? bId : 'right'];
   const [ia, ib] = await Promise.all([duelImage(aKey), duelImage(bKey)]);
   const terrain = DUEL_TERRAIN[terrainAt(b, Math.floor(b.w / 2), Math.floor(b.h / 2))] ?? 'plain';
@@ -358,6 +417,7 @@ async function playDuel(aId: string, bId: string, acts: DuelAct[]) {
   }
   await wait(500);
   el.hidden = true;
+  syncBattleMusic(); // 打完回到战场曲（单挑可能发生在剧情里，那时不动）
 }
 
 // ---------------------------------------------------------------- 剧情 ----
@@ -457,6 +517,7 @@ async function playScene(id: string) {
     el.className = '';
     el.innerHTML = '';
     $('stage').classList.remove('story');
+    syncBattleMusic(); // 战场里插播的一幕演完，回到战斗曲；剧情里的幕不动
   }
 }
 
@@ -901,8 +962,8 @@ $('screen').addEventListener('click', (e) => {
 
 function showTitle(note = '') {
   mode = 'over';
-  audio.pause();
   bgmKey = '';
+  playBgm(TITLE_BGM, true);
   screen(
     '<div class="seal">非官方<br>復刻</div><h1>三國志英傑傳</h1>' +
     '<p class="sub">PC DOS 繁體中文版 全流程復刻</p>' +
@@ -998,6 +1059,8 @@ function showResult() {
   mode = 'over';
   renderTurn();
   const won = b.stage === 'won';
+  const music = resultBgm(won);
+  if (music) playBgm(music, true); // 败北曲立刻压上；胜利保持战斗曲，剧本接手
   const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
   screen(
     `<h1 class="${won ? '' : 'lost'}">${won ? '勝利' : '敗北'}</h1><p class="sub">${esc(b.reason)}</p>` +
@@ -1030,6 +1093,7 @@ function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
   const lv = levelOf(b);
   shown = sel = pick = null;
   mode = 'busy';
+  playBgm(battleBgm(lv, b.stage), true); // 开战：原版的战斗曲
   renderUnit(null);
   renderTile(0, 0);
   const lord = bySlot(b, lv.lord ?? -1) ?? b.units.find((u) => u.mode === 7) ?? b.units[0];
@@ -1103,7 +1167,7 @@ game.events.once('ready', () => {
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
-      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene, level: lvOf, sfx: sfxLog, sfxEnabled, duel: playDuel } });
+      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxEnabled, duel: playDuel, banner } });
     }
     if (demo) {
       // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用
