@@ -20,6 +20,8 @@ export interface Unit {
   y: number;
   on: boolean; // 在场
   confused: boolean;
+  /** 策略造成的混乱还剩几个自己的阶段；0 / 缺省 = 没有时限，只按每回合判定恢复（士气跌落的混乱）。 */
+  confusedTurns?: number;
   moved: boolean;
   acted: boolean;
   mode: number; // 7 = 玩家手动；0 向目标移动，1 攻击最近敌人，2 原地不动，3 待机，4 只移动不攻击
@@ -61,6 +63,8 @@ export type Ev =
   | { t: 'stage'; stage: Stage }
   | { t: 'move'; slot: number; path: [number, number][] }
   | { t: 'hit'; a: number; d: number; dmg: number; morale: number; counter: boolean }
+  /** 起势：施法者抬手的演出。一次施法只发一条，多个目标共用。 */
+  | { t: 'castbegin'; slot: number; id: number }
   | { t: 'cast'; a: number; d: number; id: number; ok: boolean; dmg: number; morale: number }
   | { t: 'aid'; a: number; d: number; id: number; ok: boolean; hp: number; morale: number }
   | { t: 'exp'; slot: number; gain: number; levels: number; learned: number[] }

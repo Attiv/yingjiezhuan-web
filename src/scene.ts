@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { facesLeft } from './facing';
+import { strategySpec } from './data/strategies';
 import { TB, bySlot } from './rules/core';
 import { levelOf } from './rules/turn';
 import type { Battle, Ev, Unit } from './rules/types';
@@ -14,6 +15,24 @@ const FONT = { fontFamily: '"Pixel", monospace', fontSize: '36px', stroke: '#000
 const FX = ['slash_03', 'scratch_01', 'trace_06', 'flame_05', 'flame_06', 'smoke_04', 'star_06', 'circle_02', 'circle_05', 'twirl_01', 'scorch_01'];
 /** 原版 MAIN.EXE 的 16 色 VGA 调色板（slot 1）：黑、橙、绿、金、亮蓝。特效贴图是白色剪影，运行时染成这几种原版色。 */
 const [INK, CINNABAR, GREEN, GOLD, PURPLE] = [0x000000, 0xef6500, 0x00ba75, 0xffcf55, 0x8acfff];
+/** 策略演出用的补充色：水蓝、土黄、紫、火药的橙黄。 */
+const [WATER, EARTH, VIOLET, BLAST] = [0x4f9fd8, 0xa48a62, 0xb07be0, 0xffa53d];
+
+/** 策略的演出家族。原版一条策略一个花样，这里按效果归成八类，每类一套固定的起势与命中演出。 */
+export type CastMood = 'fire' | 'water' | 'rock' | 'mind' | 'rally' | 'gloom' | 'heal' | 'blast';
+
+/** 由策略数据推演出家族：攻击系按编号分火/水/石，其余按效果分扰心、振气、丧气、回复，爆彈单独一类。 */
+export function castMood(id: number): CastMood {
+  if (id === 36) return 'blast';
+  const s = strategySpec(id);
+  if (!s) return 'fire';
+  if (s.effects.some((e) => e.type === 'damage')) return (['fire', 'water', 'rock'] as const)[Math.trunc(id / 5)] ?? 'fire';
+  if (s.effects.some((e) => e.type === 'status')) return 'mind';
+  if (s.effects.some((e) => e.type === 'heal')) return 'heal';
+  const m = s.effects.find((e) => e.type === 'morale');
+  return m && (m.amount ?? 0) < 0 ? 'gloom' : 'rally';
+}
+const MOOD_TINT: Record<CastMood, number> = { fire: CINNABAR, water: WATER, rock: EARTH, mind: VIOLET, rally: GOLD, gloom: 0x9a4a4a, heal: GREEN, blast: BLAST };
 
 /** 画面素材清单 public/assets/manifest.json：每一关用哪张地图、哪张棋子图（相对 assets/）。 */
 export interface Manifest {
@@ -315,6 +334,75 @@ export class BattleScene extends Phaser.Scene {
     ]);
   }
 
+  /** 施法者的起势：脚下亮起家族色的法阵，头顶旋起一小圈光，身体轻轻一抬。一次施法只画一遍。 */
+  private async castBegin(u: Unit, id: number) {
+    const s = this.tk(u.slot);
+    const tint = MOOD_TINT[castMood(id)];
+    await Promise.all([
+      this.puff('circle_02', s.x, s.y + 24, tint, { scale: 0.24, alpha: 0.9 }, { scale: 0.82, alpha: 0 }, 460),
+      this.puff('twirl_01', s.x, s.y - 8, tint, { scale: 0.16, angle: 0 }, { scale: 0.46, angle: 150, alpha: 0 }, 480, 80),
+      this.tween({ targets: s, y: s.y - 5, duration: 150, yoyo: true, ease: 'Quad.easeOut' }),
+    ]);
+  }
+
+  /**
+   * 受术：按策略家族各画一套，不再一律是同一簇火花。
+   * 火往上烧、水从脚下冲起、石从头顶砸落、扰心是紫色旋涡、振气金光上升、丧气压顶而下、回复绿光、火药大爆。
+   */
+  private async castHit(d: Unit, id: number, ok: boolean) {
+    const s = this.tk(d.slot);
+    const mood = castMood(id);
+    const tint = MOOD_TINT[mood];
+    const jobs: Promise<unknown>[] = [];
+    switch (mood) {
+      case 'fire':
+        jobs.push(
+          ...[-26, 2, 26, -10, 14].map((dx, i) =>
+            this.puff(i % 2 ? 'flame_06' : 'flame_05', s.x + dx, s.y + 28, i % 2 ? 0xd9731f : CINNABAR, { scale: 0.4 }, { y: s.y - 64, scale: 0.9, alpha: 0 }, 640, i * 80)),
+          this.puff('smoke_04', s.x, s.y - 10, INK, { scale: 0.3, alpha: 0.55 }, { y: s.y - 82, scale: 0.75, alpha: 0 }, 760, 240));
+        break;
+      case 'water':
+        jobs.push(
+          this.puff('circle_05', s.x, s.y + 30, tint, { scale: 0.3, alpha: 0.95 }, { y: s.y - 74, scale: 1.05, alpha: 0 }, 700),
+          ...[-24, 0, 24].map((dx, i) =>
+            this.puff('twirl_01', s.x + dx, s.y + 22, 0x9fd8f5, { scale: 0.26, angle: 0 }, { y: s.y - 50, scale: 0.85, angle: 320, alpha: 0 }, 720, i * 90)));
+        break;
+      case 'rock':
+        jobs.push(
+          ...[-30, 0, 26].map((dx, i) =>
+            this.puff('scorch_01', s.x + dx, s.y - 220, 0x6b5a45, { scale: 0.9, alpha: 1 }, { y: s.y + 14, scale: 1, alpha: 0.15 }, 560, i * 130)),
+          this.puff('circle_05', s.x, s.y + 6, 0xcbb894, { scale: 0.25, alpha: 0.9 }, { scale: 1.15, alpha: 0 }, 520, 380),
+          this.puff('smoke_04', s.x, s.y, INK, { scale: 0.4, alpha: 0.5 }, { y: s.y - 52, scale: 0.9, alpha: 0 }, 640, 340));
+        if (this.speed) this.cameras.main.shake(180 * this.speed, 0.007);
+        break;
+      case 'mind':
+        jobs.push(
+          this.puff('twirl_01', s.x, s.y - 24, tint, { scale: 0.34, angle: 0 }, { scale: 0.95, angle: 360, alpha: 0 }, 760),
+          this.puff('twirl_01', s.x, s.y + 6, tint, { scale: 0.28, angle: 360 }, { scale: 0.85, angle: -40, alpha: 0 }, 760, 120),
+          this.puff('circle_05', s.x, s.y, tint, { scale: 0.3, alpha: 0.85 }, { scale: 1, alpha: 0 }, 640));
+        break;
+      case 'gloom':
+        jobs.push(
+          this.puff('circle_05', s.x, s.y - 92, tint, { scale: 1.1, alpha: 0.85 }, { y: s.y + 16, scale: 0.9, alpha: 0 }, 700),
+          this.puff('smoke_04', s.x - 18, s.y - 6, INK, { scale: 0.5, alpha: 0.65 }, { y: s.y - 56, scale: 1, alpha: 0 }, 700, 100),
+          this.puff('smoke_04', s.x + 20, s.y + 8, INK, { scale: 0.44, alpha: 0.55 }, { y: s.y - 46, scale: 0.9, alpha: 0 }, 680, 240));
+        break;
+      case 'rally':
+      case 'heal':
+        jobs.push(this.sparkle(d, mood === 'heal' ? GREEN : GOLD));
+        break;
+      case 'blast':
+        jobs.push(
+          this.puff('circle_05', s.x, s.y, BLAST, { scale: 0.3, alpha: 1 }, { scale: 1.6, alpha: 0 }, 420),
+          this.puff('scorch_01', s.x, s.y, CINNABAR, { scale: 0.4, alpha: 1 }, { scale: 1.5, alpha: 0 }, 520),
+          this.puff('smoke_04', s.x, s.y - 20, INK, { scale: 0.4, alpha: 0.8 }, { y: s.y - 110, scale: 1.1, alpha: 0 }, 760, 160));
+        if (this.speed) this.cameras.main.shake(260 * this.speed, 0.012);
+        break;
+    }
+    if (ok) jobs.push(this.tween({ targets: s, x: s.x + 6, duration: 50, yoyo: true, repeat: 3 }));
+    await Promise.all(jobs);
+  }
+
   /** 一次出手：近战先收后冲，落下一道墨色斩痕；弓兵放三支箭。命中时对方被震退、闪白，画面轻晃。 */
   private async strike(a: Unit, d: Unit, onImpact?: () => void) {
     const [sa, sd] = [this.tk(a.slot), this.tk(d.slot)];
@@ -391,18 +479,14 @@ export class BattleScene extends Phaser.Scene {
         await this.float(d, `-${ev.dmg}`, '#ffcf55');
         break;
       }
+      case 'castbegin':
+        await this.castBegin(unit(ev.slot), ev.id);
+        break;
       case 'cast': {
         const d = unit(ev.d);
-        const s = this.tk(d.slot);
         this.hp.set(d.slot, this.hpOf(d.slot) - ev.dmg);
         await this.focus(d.x, d.y);
-        await Promise.all([
-          ...[-22, 4, 24, -6].map((dx, i) =>
-            this.puff(i % 2 ? 'flame_06' : 'flame_05', s.x + dx, s.y + 26, i % 2 ? 0xd9731f : CINNABAR, { scale: 0.32 }, { y: s.y - 56, scale: 0.72, alpha: 0 }, 560, i * 90)),
-          this.puff('smoke_04', s.x, s.y - 10, INK, { scale: 0.25, alpha: 0.5 }, { y: s.y - 70, scale: 0.6, alpha: 0 }, 700, 260),
-          ev.ok && this.tween({ targets: s, x: s.x + 6, duration: 50, yoyo: true, repeat: 3 }),
-        ]);
-        await this.float(d, ev.ok ? `-${ev.dmg}` : '识破', ev.ok ? '#ffcf55' : '#8acfff');
+        await Promise.all([this.castHit(d, ev.id, ev.ok), this.float(d, ev.ok ? `-${ev.dmg}` : '识破', ev.ok ? '#ffcf55' : '#8acfff')]);
         break;
       }
       case 'duel': {
@@ -424,13 +508,14 @@ export class BattleScene extends Phaser.Scene {
         await Promise.all([this.sparkle(unit(ev.slot), GREEN), this.float(unit(ev.slot), ev.hp ? `+${ev.hp}` : `士气+${ev.morale}`, '#00ba75')]);
         break;
       case 'aid': {
-        // 策略补给：成功时飘回复量，被识破时飘「识破」
+        // 策略补给：命中后按家族画一遍受术（回复绿光 / 振气金光 / 扰心紫旋 / 丧气压顶），再飘数值
         const d = unit(ev.d);
+        if (ev.ok) this.hp.set(d.slot, this.hpOf(d.slot) + ev.hp);
+        await this.focus(d.x, d.y);
         if (ev.ok) {
-          this.hp.set(d.slot, this.hpOf(d.slot) + ev.hp);
           const label = ev.hp ? `+${ev.hp}` : ev.morale ? `士气${ev.morale > 0 ? '+' : ''}${ev.morale}` : '回復';
           const bright = ev.hp > 0 || ev.morale > 0;
-          await Promise.all([this.sparkle(d, bright ? GREEN : PURPLE), this.float(d, label, bright ? '#00ba75' : '#8acfff')]);
+          await Promise.all([this.castHit(d, ev.id, true), this.float(d, label, bright ? '#00ba75' : '#8acfff')]);
         } else await this.float(d, '识破', '#8acfff');
         break;
       }

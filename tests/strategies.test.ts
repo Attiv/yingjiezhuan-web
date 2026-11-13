@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { STRATEGIES, strategyName, strategySpec } from '../src/data/strategies';
 import { knownStrategies, maxHp, maxMp } from '../src/rules/core';
 import { bySlot } from '../src/rules/core';
+import { conditionRecovery } from '../src/rules/combat';
 import { aiStep, castTargets, doCast, doCastAll, doItem, doItemAll, itemTargets, newBattle, type Level, type UnitInit } from '../src/rules/turn';
-import type { Battle } from '../src/rules/types';
+import type { Battle, Ev } from '../src/rules/types';
 import { ITEM_SPEC, specOf } from '../src/data/items';
 
 /** 策略表来自原版 strategies.toml：射程、目标、威力、士气增减、混乱都要对得上。 */
@@ -204,6 +205,53 @@ describe('混乱与士气系策略', () => {
       expect(aid.morale).toBeGreaterThanOrEqual(-35);
       expect(bySlot(b, 15)!.morale).toBeLessThan(80);
     }
+  });
+
+  it('混乱按策略表的 turns 计：假情报 2 个阶段后必定恢复', () => {
+    let b: Battle | undefined;
+    for (let seed = 1; seed <= 40 && !b; seed++) {
+      const t = start([unit(0, 15, 20, 2, 2, { int: 100 }), unit(15, 0, 1, 2, 3, { int: 10 })], seed);
+      const aid = doCast(t, 0, 15, 15).find((e) => e.t === 'aid');
+      if (aid?.t === 'aid' && aid.ok) b = t;
+    }
+    const u = bySlot(b!, 15)!;
+    expect([u.confused, u.confusedTurns]).toEqual([true, 2]);
+    // 统御和士气都压到 0，恢复掷骰永远失败，只有时限到点才会解除
+    u.lead = 0;
+    u.morale = 0;
+    const evs: Ev[] = [];
+    conditionRecovery(b!, 15, evs);
+    expect([u.confused, u.confusedTurns, evs.length]).toEqual([true, 1, 0]);
+    conditionRecovery(b!, 15, evs);
+    expect([u.confused, u.confusedTurns]).toEqual([false, 0]);
+    expect(evs).toContainEqual({ t: 'confuse', slot: 15, on: false });
+  });
+
+  it('士气跌落的混乱没有时限，不会数到 0 就自己恢复', () => {
+    const b = start([unit(0, 6, 10, 0, 0), unit(15, 0, 1, 2, 3)]);
+    const u = bySlot(b, 15)!;
+    u.confused = true;
+    u.confusedTurns = 0;
+    u.lead = 0;
+    u.morale = 0;
+    const evs: Ev[] = [];
+    for (let i = 0; i < 5; i++) conditionRecovery(b, 15, evs);
+    expect(u.confused).toBe(true);
+    expect(evs).toHaveLength(0);
+  });
+
+  it('一次施法只在开头起势一次，单体与群体都一样', () => {
+    const one = start([unit(0, 15, 20, 2, 2, { int: 100 }), unit(15, 0, 1, 2, 3, { int: 10 })]);
+    const solo = doCast(one, 0, 0, 15);
+    expect(solo[0]).toEqual({ t: 'castbegin', slot: 0, id: 0 });
+    expect(solo.filter((e) => e.t === 'castbegin')).toHaveLength(1);
+
+    const all = start([unit(0, 18, 30, 2, 2), unit(1, 6, 30, 3, 2), unit(2, 6, 30, 2, 3), unit(15, 0, 1, 6, 5)]);
+    hurt(all, 0, 100);
+    hurt(all, 1, 100);
+    const group = doCastAll(all, 0, 33);
+    expect(group[0]).toEqual({ t: 'castbegin', slot: 0, id: 33 });
+    expect(group.filter((e) => e.t === 'castbegin')).toHaveLength(1);
   });
 });
 

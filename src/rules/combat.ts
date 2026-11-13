@@ -32,11 +32,13 @@ export function setMorale(b: Battle, u: Unit, requested: number, evs: Ev[]): voi
   u.morale = Math.max(0, Math.min(100, requested));
   if (old > requested && (requested & 0xffff) < 30 && rand(b, 5) < 3 && !u.confused) {
     u.confused = true;
+    u.confusedTurns = 0; // 士气跌落的混乱没有固定时限，只能靠每回合判定恢复
     evs.push({ t: 'confuse', slot: u.slot, on: true });
   }
   if (old <= requested && (old < requested || requested === 100) && u.confused && u.on) {
     if (rand(b, 100) < idiv(u.lead + u.morale, 3)) {
       u.confused = false;
+      u.confusedTurns = 0;
       evs.push({ t: 'confuse', slot: u.slot, on: false });
     }
   }
@@ -176,7 +178,9 @@ function attackOne(b: Battle, a: Unit, d: Unit, id: number, evs: Ev[]): void {
 /** 攻击系策略：按范围（单体 / 十字）依次结算。策略值由调用方扣，道具施放不扣。 */
 export function castAttack(b: Battle, a: Unit, d: Unit, id: number): Ev[] {
   const evs: Ev[] = [];
-  for (const t of strategyArea(b, a, id, d)) attackOne(b, a, t, id, evs);
+  const targets = strategyArea(b, a, id, d);
+  if (targets.length) evs.push({ t: 'castbegin', slot: a.slot, id });
+  for (const t of targets) attackOne(b, a, t, id, evs);
   return evs;
 }
 
@@ -204,6 +208,7 @@ export function castSupport(b: Battle, a: Unit, d: Unit | undefined, id: number)
   const evs: Ev[] = [];
   if (!spec) return evs;
   const targets = strategyArea(b, a, id, d);
+  if (targets.length) evs.push({ t: 'castbegin', slot: a.slot, id });
   for (const t of targets) {
     const enemy = foes(a, t);
     const needsRoll = enemy && spec.effects.some((e) => e.type === 'status' || (e.type === 'morale' && (e.amount ?? 0) < 0));
@@ -220,6 +225,7 @@ export function castSupport(b: Battle, a: Unit, d: Unit | undefined, id: number)
           setMorale(b, t, t.morale + (amount < 0 ? -delta : delta), evs);
         } else if (e.type === 'status' && e.status === 'confused' && !t.confused) {
           t.confused = true;
+          t.confusedTurns = e.turns ?? 0; // 原版策略表里混乱 2 个阶段，到点必定恢复
           evs.push({ t: 'confuse', slot: t.slot, on: true });
         }
       }
@@ -267,12 +273,24 @@ export function upkeep(b: Battle, slot: number, evs: Ev[]): void {
   if (u.hp !== hp0 || u.morale !== m0) evs.push({ t: 'recover', slot, hp: u.hp - hp0, morale: u.morale - m0 });
 }
 
-/** 阶段开始时的混乱恢复判定。 */
+/** 阶段开始时的混乱恢复判定。
+ * 策略造成的混乱带固定时限（原版策略表 turns = 2 个自己的阶段）：数到 0 的那一阶段必定恢复；
+ * 到点之前仍按 (统御 + 士气)÷3 掷骰提前挣脱。士气跌落的混乱没有时限，只看掷骰。 */
 export function conditionRecovery(b: Battle, slot: number, evs: Ev[]): void {
   const u = bySlot(b, slot);
   if (!u || !u.on || !u.confused) return;
+  const left = u.confusedTurns ?? 0;
+  if (left > 0) {
+    u.confusedTurns = left - 1;
+    if (left === 1) {
+      u.confused = false;
+      evs.push({ t: 'confuse', slot, on: false });
+      return;
+    }
+  }
   if (rand(b, 100) < idiv(u.lead + u.morale, 3)) {
     u.confused = false;
+    u.confusedTurns = 0;
     evs.push({ t: 'confuse', slot, on: false });
   }
 }

@@ -206,7 +206,7 @@ export function newBattle(level: Level, seed: number, roster: Roster = {}, opts:
     const u: Unit = {
       slot: i.slot, key: i.key ?? i.name, name: i.name, face: i.face, cls, level: lv, exp: kept?.exp ?? 0,
       lead: i.lead, str: i.str, int: i.int, hp: maxHp(cls, lv), mp: 0, morale: 100,
-      x: i.x, y: i.y, on: !i.off, confused: false, moved: false, acted: false,
+      x: i.x, y: i.y, on: !i.off, confused: false, confusedTurns: 0, moved: false, acted: false,
       mode: i.mode, target: i.target ?? null, goal: i.goal ?? null, items: [...(kept?.items ?? i.items ?? [])],
       commander: !!i.commander, group: i.group,
     };
