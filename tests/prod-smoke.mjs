@@ -47,6 +47,12 @@ if (await page.$('#talk .ask')) await page.click('#talk .ask button:first-child'
 await page.waitForFunction(() => document.getElementById('turn').textContent.includes('第2回合'), null, { timeout: 90000 });
 await page.screenshot({ path: new URL('../docs/screenshots/13-production-build.png', import.meta.url).pathname });
 
+// 生产包里 21 个音效都在（运行时不依赖开发态调试对象）
+const keys = ['cursor', 'confirm', 'cancel', 'error', 'step', 'hit', 'hit_heavy', 'arrow', 'fire', 'water', 'rock',
+  'heal', 'morale_up', 'morale_down', 'confuse', 'levelup', 'retreat', 'treasure', 'phase', 'victory', 'defeat'];
+const codes = await page.evaluate(async (ks) => Promise.all(ks.map(async (k) => (await fetch(`/assets/sfx/${k}.wav`)).status)), keys);
+assert.deepEqual([...new Set(codes)], [200], '21 个音效都在生产包里');
+
 assert.deepEqual(errors, []);
-console.log('生产构建冒烟通过：标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合，控制台无报错');
+console.log('生产构建冒烟通过：标题 → 序章 → 营地 → 汜水關之戰 → 第 2 回合，21 个音效可加载，控制台无报错');
 await browser.close();

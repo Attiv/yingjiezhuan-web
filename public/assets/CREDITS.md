@@ -67,3 +67,16 @@ python3 tools/make_assets.py <cartography> <particles> <reloaded> <font.ttf>
 
 该脚本会重新生成纸本舆图与古画头像（CC0 / 公有领域），覆盖同名文件。它末尾会把当时的
 `docs/assets.md` 拷成 `public/assets/CREDITS.md`，所以公开分发前请按实际使用的素材版本核对署名文件。
+
+## 音效（2026-11-13 追加）
+
+`sfx/*.wav`（21 个：`cursor` `confirm` `cancel` `error` `step` `hit` `hit_heavy` `arrow`
+`fire` `water` `rock` `heal` `morale_up` `morale_down` `confuse` `levelup` `retreat`
+`treasure` `phase` `victory` `defeat`）来自 **CC0 素材包 Ninja Adventure**，由开源复刻项目
+[eiketsuden-reloaded](https://github.com/jeiel85/eiketsuden-reloaded) 的
+`tools/assets/build_audio.py` 转成 16-bit 单声道 44.1kHz WAV、裁掉静音并淡出，
+键名与它的引擎 `sfx::*` 一致。用 `python3 tools/make_sfx.py` 可复现。
+
+**这些不是原版 DOS 音效。** 原版的效果音由 `SBOPL2.COM`（KOEI Sound Blaster BGM Driver 1.01）
+在 OPL2 的 7/8 通道实时合成，音符表走 `MAIN.EXE` 的 `int 65h` 路径，目前没有可用的提取器；
+BGM 已由 `MUSIC.R3` / `OPMUSIC.R3` / `EDMUSIC.R3` 的 OPL 乐谱渲染，但效果音尚未还原。

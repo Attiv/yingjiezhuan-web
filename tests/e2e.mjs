@@ -2,7 +2,7 @@
 // 先启动开发服务器（npm run dev -- --port 5273），再运行：node tests/e2e.mjs
 // 截图写入 docs/screenshots/。读状态用的 window.__yjz 只在开发模式存在。
 import assert from 'node:assert/strict';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
@@ -568,6 +568,61 @@ await step('策略：等级够时列出可用的回复策略，群体大援助�
   assert.equal(after.mp, before.mp - 24, '大援助扣 24 点策略值');
   assert.equal(after.acted, true);
   assert.match(await page.textContent('#log'), /大援助/);
+});
+
+await step('音效：21 个资源可加载、按钮与战斗事件有声、静音开关生效', async () => {
+  const keys = ['cursor', 'confirm', 'cancel', 'error', 'step', 'hit', 'hit_heavy', 'arrow', 'fire', 'water', 'rock',
+    'heal', 'morale_up', 'morale_down', 'confuse', 'levelup', 'retreat', 'treasure', 'phase', 'victory', 'defeat'];
+  const codes = await page.evaluate(async (ks) => Promise.all(ks.map(async (k) => (await fetch(`/assets/sfx/${k}.wav`)).status)), keys);
+  assert.deepEqual([...new Set(codes)], [200], '21 个音效都能加载');
+  const played = await page.evaluate(() => window.__yjz.sfx());
+  assert.ok(played.includes('confirm'), '按钮有确认音');
+  assert.ok(played.includes('phase'), '回合开始有提示音');
+  assert.equal(await page.textContent('#sys [data-sfx]'), '音效 開');
+  await page.click('#sys [data-sfx]');
+  assert.equal(await page.evaluate(() => window.__yjz.sfxEnabled()), false);
+  assert.equal(await page.evaluate(() => localStorage.getItem('yjz.sfx.v1')), '0');
+  assert.equal(await page.textContent('#sys [data-sfx]'), '音效 關');
+  const before = await page.evaluate(() => window.__yjz.sfx().length);
+  await sys('胜利条件'); // 静音后点按钮不该再出声
+  const after = await page.evaluate(() => window.__yjz.sfx().length);
+  assert.equal(after, before);
+  await page.click('#sys [data-sfx]');
+  assert.equal(await page.evaluate(() => window.__yjz.sfxEnabled()), true);
+  assert.equal(await page.textContent('#sys [data-sfx]'), '音效 開');
+});
+
+await step('后期关卡实机：大地图、民众护送、军乐队都能开打并推进回合', async () => {
+  // 用正常读档路径跳到指定战斗：把流程进度指向那一步，不直接改战斗状态
+  const G = JSON.parse(readFileSync(new URL('../src/data/game.json', import.meta.url), 'utf8'));
+  const party = Object.keys(G.officers);
+  const roster = Object.fromEntries(Object.entries(G.officers).map(([id, o]) => [id, { level: o.level, exp: 0, items: [] }]));
+  for (const lid of ['c1_s0_b6', 'c2_s3_b7', 'c4_s2_b4']) {
+    const pc = G.steps.findIndex((st) => st.t === 'battle' && st.level === lid);
+    assert.ok(pc > 0, `${lid} 应在流程里`);
+    const story = { script: 'yingjiezhuan', pc, bg: '', picture: '', bgm: '', cast: [], flags: {}, roster, party, bag: [], deploy: [], gold: 10000 };
+    await page.evaluate((st) => localStorage.setItem('yjz.save.v3', JSON.stringify({ story: st })), story);
+    await page.reload();
+    await page.waitForSelector('[data-go="start"]');
+    await page.click('[data-go="load"]');
+    await settle();
+    await page.waitForSelector('[data-go="deploy"]');
+    await page.click('[data-go="deploy"]');
+    await page.waitForSelector('[data-go="battle"]');
+    await page.click('[data-go="auto"]');
+    await page.click('[data-go="battle"]');
+    await settle();
+    const cur = await state();
+    assert.equal(cur.level, lid, `读档应进入 ${lid}`);
+    assert.ok(cur.units.filter((u) => u.on).length >= 15, `${lid} 部队数`);
+    assert.equal(await page.evaluate(() => window.__yjz.scene.textures.exists(`map:${window.__yjz.b.level}`)), true, `${lid} 地图已加载`);
+    for (let i = 0; i < 2; i++) {
+      await sys('回合结束');
+      await settle();
+    }
+    const end = await state();
+    assert.ok(end.round >= 3 || end.stage === 'won' || end.stage === 'lost', `${lid} 应能推进到第 3 回合`);
+  }
 });
 
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');

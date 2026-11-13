@@ -1,5 +1,7 @@
 import * as Phaser from 'phaser';
 import './style.css';
+import { playSfx, preloadSfx, sfxEnabled, sfxLog, toggleSfx, unlockSfx } from './audio';
+import { sfxOf } from './sfx-map';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
 import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
 import { PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './data/items';
@@ -70,7 +72,7 @@ const API: StoryApi = {
   },
 };
 
-// ---------------------------------------------------------------- 音乐 ----
+// ---------------------------------------------------------------- 音乐 / 音效 ----
 const audio = new Audio();
 audio.loop = true;
 let bgmKey = '';
@@ -82,13 +84,22 @@ function playBgm(key: string, force = false) {
   void audio.play().catch(() => {}); // 浏览器不允许自动播放时静音进行
 }
 
+preloadSfx();
+// 第一次手势解锁出声；UI 按钮统一在捕获阶段给一声确认，指令菜单用更轻的光标音
+document.addEventListener('pointerdown', (e) => {
+  unlockSfx();
+  const btn = (e.target as HTMLElement).closest('button');
+  if (btn && !(btn as HTMLButtonElement).disabled) playSfx(btn.closest('#menu') ? 'cursor' : 'confirm', 0.75);
+}, true);
+document.addEventListener('keydown', () => unlockSfx(), { once: true });
+
 // ---------------------------------------------------------------- 画面各栏 ----
 function renderTurn() {
   const [cls, label] = b.stage === 'ally' ? SIDE[1] : b.stage === 'enemy' ? SIDE[2] : SIDE[0];
   $('turn').innerHTML =
     `<b>第${b.round}回合</b><div style="text-align:right"><div>${weatherName(b.weather)}　限 ${levelOf(b).turnLimit} 回合</div>` +
     `<div class="phase-${cls}">${label}行动</div></div>`;
-  for (const el of $('sys').querySelectorAll('button')) el.disabled = mode !== 'idle';
+  for (const el of $('sys').querySelectorAll('button')) if (!el.dataset.sfx) el.disabled = mode !== 'idle';
 }
 
 function renderUnit(u: Unit | null = shown) {
@@ -158,6 +169,8 @@ function describe(ev: Ev): string {
 /** 依次播放一批规则事件；对话要等玩家点击。 */
 async function present(evs: Ev[]) {
   for (const ev of evs) {
+    const fx = sfxOf(ev, b);
+    if (fx) playSfx(fx, ev.t === 'move' || ev.t === 'recover' ? 0.5 : 1);
     const text = describe(ev);
     if (text) log(text);
     if (ev.t === 'round' || ev.t === 'stage') renderTurn();
@@ -219,6 +232,7 @@ function talk(who: string, text: string, options: string[] = [], face = '', esc_
 $('talk').addEventListener('click', (e) => {
   const btn = (e.target as HTMLElement).closest('button');
   if ($('talk').querySelector('.ask') && !btn) return; // 有选项时必须点按钮
+  if (!btn) playSfx('cursor', 0.55); // 翻到下一句
   answer?.(Number(btn?.dataset.i ?? 0));
 });
 const say = (who: string, text: string) => talk(nameOf(who), text, [], faceOf(who) ?? '');
@@ -287,10 +301,12 @@ async function playDuel(aId: string, bId: string, acts: DuelAct[]) {
     else if (act.act === 'strike') {
       const n = Math.min(3, Math.max(1, Math.round((act.n ?? 3) / 3)));
       for (let i = 0; i < n; i++) {
+        playSfx('hit_heavy', 0.8);
         await play(side, [5, 6, 7, 8, 9, 10], 65);
         await wait(60);
       }
     } else if (act.act === 'fall') {
+      playSfx('retreat', 0.8);
       show(side, 11);
       await wait(180);
       show(side, 12);
@@ -616,6 +632,7 @@ function deselect() {
   renderTurn();
 }
 function select(u: Unit) {
+  playSfx('cursor', 0.6);
   sel = u;
   pick = null;
   mode = 'unit';
@@ -708,6 +725,7 @@ async function endTurn(confirmed = false) {
 
 function cancel() {
   if (answer) return void (onEsc >= 0 && answer(onEsc));
+  if (mode !== 'over') playSfx('cancel', 0.6);
   if (mode === 'target') return openCommand();
   if (mode === 'menu') {
     const u = sel!;
@@ -737,6 +755,7 @@ async function onCell(x: number, y: number) {
   if (!t) return deselect();
   if (canCommand(b, t)) return select(t);
   // 不能下令的部队（敌军、友军、已行动）：只查看状态和移动范围
+  playSfx('cursor', 0.5);
   deselect();
   scene.mark(reachCells(t), 'move');
   renderUnit(t);
@@ -801,7 +820,9 @@ function screen(html: string, veil = false) {
   (el.querySelector('button') as HTMLElement | null)?.focus();
 }
 $('screen').addEventListener('click', (e) => {
-  const go = (e.target as HTMLElement).closest('button')?.dataset.go;
+  const btn = (e.target as HTMLElement).closest('button');
+  const go = btn?.dataset.go;
+  if (!btn) playSfx('cursor', 0.55); // 章节横幅：点一下继续
   if (go === 'start') {
     story = startStory(CAMPAIGN, { party: [...START_PARTY] });
     story.gold = 100;
@@ -959,8 +980,11 @@ function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
 }
 
 // ---------------------------------------------------------------- 启动 ----
+let sfxBtn: HTMLButtonElement | null = null;
+const syncSfxButton = () => { if (sfxBtn) sfxBtn.textContent = sfxEnabled() ? '音效 開' : '音效 關'; };
 const sysButtons: [string, string, () => void][] = [
-  ['回合结束', 'wide', () => void endTurn()],
+  ['回合结束', '', () => void endTurn()],
+  [sfxEnabled() ? '音效 開' : '音效 關', '', () => { toggleSfx(); syncSfxButton(); playSfx('confirm', 0.75); }],
   ['胜利条件', '', () => void talk('', `胜利：${b.objective}。失败：主将撤退，或 ${levelOf(b).turnLimit} 回合内未能取胜。`)],
   ['全军撤退', '', async () => {
     if (mode !== 'idle') return;
@@ -976,6 +1000,7 @@ $('sys').replaceChildren(...sysButtons.map(([label, cls, on]) => {
   btn.className = `btn ${cls}`;
   btn.textContent = label;
   btn.onclick = on;
+  if (label.startsWith('音效')) (btn.dataset.sfx = '1'), (sfxBtn = btn);
   return btn;
 }));
 
@@ -1017,7 +1042,7 @@ game.events.once('ready', () => {
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
-      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene, level: lvOf } });
+      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, scene, level: lvOf, sfx: sfxLog, sfxEnabled } });
     }
     if (demo) {
       // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用

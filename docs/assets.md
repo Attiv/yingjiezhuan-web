@@ -49,10 +49,14 @@ python3 tools/make_full_assets.py <EXTRACT> <PACK>
 | `duel/left.png`、`right.png` | 通用单挑骑将（其余武将共用） | 同上，取两套通用骑将帧 | 15 帧，96×96 |
 | `duel/terrain_*.png` | 10 张单挑地形背景（平原、树林、山、河、桥、城墙、城、草地、村庄、荒地…） | `HEXBMAP.R3` 的战场条带按地形拼成 | 416×208 |
 | `bgm/*.mp3` | 10 首原版 BGM：title / peace / camp / battle / boss / enemy / tension / sad / defeat / ending | 原版 BGM 数据（`hero-tools` 解出的音轨），ffmpeg 转 mp3 | 44.1kHz 单声道 |
+| `sfx/*.wav` | 21 个动作音效：cursor / confirm / cancel / error / step / hit / hit_heavy / arrow / fire / water / rock / heal / morale_up / morale_down / confuse / levelup / retreat / treasure / phase / victory / defeat | **非原版**：CC0 的 Ninja Adventure，经 eiketsuden-reloaded 的 `build_audio.py` 裁切淡出；原版效果音由 `SBOPL2.COM` 在 OPL2 的 7/8 通道实时合成，音符表走 `MAIN.EXE` 的 `int 65h`，尚无提取器 | 16-bit 单声道 44.1kHz，共 959KB |
 | `fx/*.png` | 11 张特效贴图（斩痕、箭、火焰、烟、光点、光环、旋涡、迸溅） | `trace_06`/`flame_05`/`flame_06` 取 `HEXBCHR.R3` 169/154/157 号帧的轮廓；其余抽象粒子按原版 16 色硬像素风格用代码画 | 256×256，白色 + alpha，运行时染成调色板色 |
 | `fx/original/*.png` | 原版彩色特效帧留档：火、水、石、箭、音符、虎 | `HEXBCHR.R3` 154–175 号 | 64×64 |
 | `palette.json` | 原版 9 组 16 色 VGA 调色板 | `MAIN.EXE` 偏移 `0x37CDA` | JSON |
-| `font/fusion-pixel-12px-zh_hans.woff2` | 界面像素字体 | **唯一非原版素材**：Fusion Pixel 12px，SIL OFL 1.1（同目录 `OFL.txt`）。原版字库 `ZIKU.16P` 是 Big5 点阵，没有现成的 Unicode 网页字体，故用像素字体逼近 DOS 观感 | woff2 |
+| `font/fusion-pixel-12px-zh_hans.woff2` | 界面像素字体 | **非原版素材之一**：Fusion Pixel 12px，SIL OFL 1.1（同目录 `OFL.txt`）。原版字库 `ZIKU.16P` 是 Big5 点阵，没有现成的 Unicode 网页字体，故用像素字体逼近 DOS 观感 | woff2 |
+
+**非原版素材只有两处**：上面的像素字体和 `sfx/*.wav` 音效，其余画面与音乐都逐像素 / 逐音符取自原版盘。
+音效的授权、来源与「为什么不是原版」写在 `public/assets/CREDITS.md`。
 
 界面其余部分（兵力条、高亮格、按钮、飘字、对阵条边框）由 CSS 和运行时绘制，配色全部取自上表调色板：
 黑 `#000000`、蓝 `#2045aa`、亮蓝 `#8acfff`、橙 `#ef6500`、绿 `#00ba75`、金 `#ffcf55`、白 `#ffffff`。

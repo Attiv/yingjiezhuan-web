@@ -242,3 +242,32 @@ describe('AI 接管有军师的关卡', () => {
     }
   });
 });
+
+describe('整部战役的战斗推进', () => {
+  it('70 场战斗各推进 3 回合：事件、增援、AI 与数值都不出错', () => {
+    const roster: Roster = {};
+    for (const [id, o] of Object.entries(officers)) roster[id] = { level: o.level, exp: 0, items: [] };
+    const ids = SCRIPT.steps.filter((s) => s.t === 'battle').map((s) => (s as { level: string }).level);
+    const problems: string[] = [];
+    for (const [n, id] of ids.entries()) {
+      const lv = level(id)!;
+      const deploy = defaultDeploy(id, Object.keys(roster).filter((k) => lv.candidates?.[k]));
+      try {
+        const { b } = newBattle(lv, n + 1, roster, { deploy });
+        let steps = 0;
+        while (b.stage !== 'won' && b.stage !== 'lost' && b.round <= 3 && steps++ < 3000) {
+          if (b.stage === 'player') endPhase(b);
+          else aiStep(b);
+        }
+        if (steps >= 3000) problems.push(`${id} 步数超限`);
+        if (!Number.isFinite(b.rng)) problems.push(`${id} 随机数状态异常`);
+        for (const u of b.units) {
+          if (!Number.isFinite(u.hp) || !Number.isFinite(u.mp) || !Number.isFinite(u.morale)) problems.push(`${id} ${u.name} 数值异常`);
+        }
+      } catch (e) {
+        problems.push(`${id} ${String(e).slice(0, 120)}`);
+      }
+    }
+    expect(problems, `${ids.length} 关全部推进`).toEqual([]);
+  });
+});

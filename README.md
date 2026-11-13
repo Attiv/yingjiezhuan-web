@@ -2,7 +2,9 @@
 
 《三國志英傑傳》（KOEI，1995，PC DOS 繁體中文版）的网页版复刻，非官方。
 **整部游戏**：从序章「群雄起兵討伐董卓」开始的全部剧情、70 场战斗、营地编成与商店、部队配置（布阵）、
-装备与转职、全 37 条策略（含回复、士气、混乱与策略书）、单挑演出、原版 BGM，一直到结局。纯前端，本地存档，无后端。
+装备与转职、全 37 条策略（含回复、士气、混乱与策略书）、单挑演出、棋子逐帧行走、
+原版 BGM 与 21 个动作音效，一直到结局。纯前端，本地存档，无后端。
+音效是 CC0 替代素材，**不是原版 DOS 的效果音**（原版走 `SBOPL2.COM` 的 OPL 合成，尚无可用的提取器）。
 
 内容全部是数据，格式见 [docs/framework.md](docs/framework.md)：5491 步流程、610 幕插剧、
 70 场战斗、58 张战场地图、129 名武将、63 件道具（价格、回复量、装备加成、8 条转职链）、37 条策略，
@@ -24,6 +26,7 @@ node tests/prod-smoke.mjs       # 生产构建冒烟（需要预览服务器在 
 
 python3 tools/build_campaign.py                            # 原版剧本/战斗/武将/道具/策略 → src/data/*.json
 python3 tools/make_full_assets.py <EXTRACT> <PACK>          # 原版图与音乐 → public/assets/**
+python3 tools/make_sfx.py                                  # CC0 动作音效 → public/assets/sfx/
 python3 tools/extract.py "<原版目录>"                       # 单关数据与数值表（早期工具）
 python3 tools/make_original_assets.py <EXTRACT> <PACK>     # 单关素材（早期工具）
 python3 tools/make_assets.py <四样素材的路径>               # 旧版：换回不含原版素材的 CC0/公有领域画面
@@ -45,7 +48,8 @@ python3 tools/make_assets.py <四样素材的路径>               # 旧版：�
 - 右键或 Esc：取消。在指令菜单里取消会退回原位，移动作废。
 - 点敌军或友军：查看状态和移动范围。
 - 方向键卷动地图；回车或右下「回合结束」结束我军阶段。
-- 右下还有：胜利条件、全军撤退、存档、读档。存档只有一个栏位，只能在我军阶段、没有部队移动到一半时存。
+- 右下还有：胜利条件、全军撤退、存档、读档，以及「音效 開／關」（静音会记住，刷新后仍在）。
+  存档只有一个栏位，只能在我军阶段、没有部队移动到一半时存。
 
 网址加 `?seed=数字` 可以固定随机种子；开发模式下再加 `&fast` 会跳过动画和对话等待。
 开发模式下加 `?demo` 换成不配图的演示流程（两场小战斗，占位画面），用来验证框架本身。
@@ -58,6 +62,8 @@ src/data/      原版数据：game.json（整部剧本 + 70 关 + 武将）、it
                strategies.json（37 条策略）、game.ts（装配成关卡）、items.ts / strategies.ts（查询）、
                tables.json 数值表；
                sishui.*/campaign.ts 是早期单关演示，测试仍在用
+src/audio.ts   音效播放：预加载、节流、音量、静音开关（localStorage）
+src/sfx-map.ts 规则事件 → 音效键的纯函数映射（可单测）
 src/story.ts   流程脚本解释器：对话、选择、标志、战斗的先后，纯 TypeScript
 src/facing.ts  棋子朝向：面向敌方
 src/scene.ts   Phaser 场景：画地图和棋子、播放规则层给出的事件、战斗特写帧动画
@@ -65,6 +71,7 @@ src/main.ts    操作流程与界面（标题、剧情、营地、状态栏、�
 tests/         自动化测试与浏览器脚本
 tools/         原版数据转换、素材生成、浏览器辅助
 docs/          框架说明、规则对照表、素材清单、截图
+public/assets/sfx/  21 个动作音效 WAV（CC0），来源与授权见 public/assets/CREDITS.md
 original/      从原版盘提取的全部资源（58 关地图、240 头像、全兵种/动画/插画/音乐），见 original/README.md
 ```
 
