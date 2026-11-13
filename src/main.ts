@@ -611,15 +611,19 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
       return `<span class="held" title="${esc(itemEffect(id))}"><button class="btn item" data-drop="${i}">${esc(itemName(id))}</button>${up}</span>`;
     }).join('');
   };
-  /** 武將情報：能力、兵种、随身道具的一行摘要。 */
+  /** 武將情報：能力、兵种、随身道具与已学会的策略。 */
   const info = () => {
     const o = officers[pick];
     if (!o) return '';
     const r = rosterOf(pick);
+    const cls = clsOf(pick);
     const equips = r.items.filter(isEquipment).map(itemName);
+    const strs = knownStrategies({ cls, level: r.level });
     return `<h2>情報・${esc(o.name)}</h2><div class="info"><div><span>武力</span>${o.str}</div>` +
       `<div><span>統御</span>${o.lead}</div><div><span>智力</span>${o.int}</div>` +
-      `<div><span>等級</span>${r.level}</div><div><span>兵種</span>${esc(TB.classNames[clsOf(pick)])}</div>` +
+      `<div><span>等級</span>${r.level}</div><div><span>兵種</span>${esc(TB.classNames[cls])}</div>` +
+      `<div><span>經驗</span>${r.exp}/100</div><div><span>兵力</span>${maxHp(cls, r.level)}</div>` +
+      `<div><span>策略</span><i title="${esc(strs.map(strategyName).join('、'))}">${strs.length} 條</i></div>` +
       `<div><span>裝備</span>${equips.length ? esc(equips.join('、')) : '—'}</div></div>`;
   };
   const shop = step.shop.map((id) => `<div class="buy"><span>${esc(itemName(id))}<em>${esc(itemEffect(id))}</em></span>` +

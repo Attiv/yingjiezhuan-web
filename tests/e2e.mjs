@@ -225,6 +225,10 @@ await step('营地：500 金（曹操在序章拨的那笔）、三人编成（�
   assert.match(card, /軍資 500 金/);
   assert.match(card, /出征 3\/3 名/);
   assert.match(card, /關羽[\s\S]*必須/);
+  // 情報栏：等级、经验、满编兵力与已学会的策略条数
+  assert.match(card, /經驗\d+\/100/);
+  assert.match(card, /兵力\d+/);
+  assert.match(card, /策略\d+ 條/);
   await page.click('[data-pick="liu_bei"]');
   // 商店价格照原版道具表：豆 100、酒 120、伤药 300
   const shop = await page.textContent('#screen .card');

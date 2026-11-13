@@ -93,8 +93,8 @@ export function attackTargets(b: Battle, u: Unit, x = u.x, y = u.y): Unit[] {
   return out;
 }
 
-/** 该部队当前等级已学会的策略 ID（升序）。 */
-export function knownStrategies(u: Unit): number[] {
+/** 该部队当前等级已学会的策略 ID（升序）。只看兵种与等级，营地查资料也能用。 */
+export function knownStrategies(u: Pick<Unit, 'cls' | 'level'>): number[] {
   const out: number[] = [];
   for (let id = 0; id < 36; id++) {
     if (TB.strategyLevel[id][u.cls] <= u.level) out.push(id); // 255 = 学不会

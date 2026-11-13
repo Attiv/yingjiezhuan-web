@@ -203,6 +203,7 @@ img { image-rendering: pixelated; }
 .camp .need { color: var(--dim); }
 .camp .info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px 6px; }
 .camp .info span { color: var(--dim); margin-right: 4px; }
+.camp .info i { font-style: normal; border-bottom: 1px dotted var(--dim); cursor: help; }
 .camp .buy { display: flex; justify-content: space-between; align-items: center; margin: 2px 0; }
 .camp .buy em { font-style: normal; color: var(--dim); margin-left: 6px; }
 .camp .buy .btn { width: auto; padding: 1px 8px; }
