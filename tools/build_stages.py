@@ -12,7 +12,7 @@
   2. 走一遍 record 的操作码，把 load_map / place_person / move_person / remove_person /
      clear_persons 记成「在这一幕的第几句台词之前发生」。
   3. 输出 { section: { map, ops: [{at, op, ...}], lines } }：at = 这一幕里已经说过几句台词，
-     lines = 这一幕应该有几句（运行时拿它对账，数目不符就不摆人，免得错位）。
+     lines = 这一幕应该有几句；map 动作保留 record 中途换图的时序。
 
 对齐不上的一节就不写，运行时退回原来的纯对话框，不会演错。
 """
@@ -125,12 +125,15 @@ class Rec:
 
     def _walk(self, rec: dict, dialogues: dict[int, list[str]]) -> None:
         pending: list[dict] = []
+        people = json.loads((EX / "text/officers.json").read_text(encoding="utf-8"))
         for c in rec["code"]:
             m = c["mnemonic"]
             args = {a["name"]: a["value"] for a in c.get("args", [])}
             if m == "load_map":
-                self.map = map_key(args["map"])
-                pending.append({"op": "map", "id": self.map})
+                key = map_key(args["map"])
+                if self.map is None:
+                    self.map = key
+                pending.append({"op": "map", "map": key})
             elif m == "caption":
                 # 地名条：原版在画面左上角打一行字，剧本里也留成了 @narr，所以它自己算一个台词块
                 text = (c.get("resolved") or {}).get("text", "").strip()
@@ -145,6 +148,8 @@ class Rec:
                 if "person" in args:
                     who = args["person"]
                     op["who"] = who
+                    if STAGE_OPS[m] in ("place", "move"):
+                        op["sprite"] = people[who]["sprite"]
                     name = (c.get("resolved") or {}).get("person")
                     if name:
                         self.name[who] = name.strip()
@@ -182,6 +187,7 @@ class Merged:
     """把同一 block 的几条 run record 接成一条：一章的剧情幕常常跨好几条 record。"""
 
     def __init__(self, recs: list["Rec"]):
+        self.recs = recs
         self.chunks: list[list[str]] = []
         self.optional: list[bool] = []
         self.groups: list[tuple[int, list[dict]]] = []
@@ -217,9 +223,9 @@ def align(section: list[str], rec) -> list[int] | None:
     at: list[int] = []
     pos = 0
     for k, lines in enumerate(rec.chunks):
-        target = norm(lines[0])
+        target = [norm(line) for line in lines]
         j = pos
-        while j < len(section) and norm(section[j]) != target:
+        while j < len(section) and [norm(line) for line in section[j:j + len(lines)]] != target:
             j += 1
         if j >= len(section):
             if rec.optional[k]:
@@ -266,19 +272,8 @@ def build_ops(rec, at: list[int], lines: list[str]) -> list[dict]:
         # 最后一块之后的动作演完之后才有
         pos = 0 if chunk == 0 else (at[chunk] if chunk < len(at) else len(lines))
         for op in group:
-            if op["op"] == "map":
-                continue  # 地图单独放顶层
             ops.append({"at": pos, **op})
     return ops
-
-
-GRID_W, GRID_H = 31, 20  # 宫殿图 32×20 瓦片，人能站的走格是 31×20
-
-
-def fits(ops: list[dict]) -> bool:
-    """摆人的坐标是不是在这张图上：落到图外的多半是配错了 record（宫殿与野外的坐标系不一样）。"""
-    return all(0 <= o.get("x", 0) < GRID_W and 0 <= o.get("y", 0) < GRID_H
-               for o in ops if o["op"] in ("place", "move"))
 
 
 def main() -> None:
@@ -299,31 +294,30 @@ def main() -> None:
                 continue
             scene = scenes[sy]
             dlg = dialogue_map(scene)
-            best: tuple[bool, int, object, list[int], list[dict]] | None = None
+            best: tuple[int, object, list[int], list[dict]] | None = None
             for b in scene["blocks"]:
                 if b["index"] != block:
                     continue
                 for rec in candidates(b, dlg, officers):
+                    # orig 节名明确带 record 编号，不能用同 block 的相似对白替换。
+                    explicit = re.match(r"^orig_c\d+_s\d+_b\d+_(\d+)(?:_|$)", sid)
+                    if explicit and rec.record != int(explicit.group(1)):
+                        continue
                     at = align(lines, rec)
                     if at is None:
                         continue
-                    # 对上的台词越多越可信：一场戏往往横跨好几条 record。
-                    # 人全落在图外的一律不选：那多半是同 block 里别的场景的 record。
-                    cover = sum(len(rec.chunks[k]) for k in range(len(at)))
+                    # 只按完整台词块匹配选记录；坐标不是 record 身份的依据。
+                    cover = sum(len(chunk) for k, chunk in enumerate(rec.chunks) if not rec.optional[k])
                     ops = build_ops(rec, at, lines)
-                    ok = fits(ops) or not (rec.map or "").startswith("palace/")
-                    if best is None or (ok, cover) > (best[0], best[1]):
-                        best = (ok, cover, rec, at, ops)
+                    if best is None or cover > best[0]:
+                        best = (cover, rec, at, ops)
             if best is None:
                 failed.append(sid)
                 continue
-            _, _, rec, at, ops = best
-            if (rec.map or "").startswith("palace/"):
-                ops = [o for o in ops if o["op"] not in ("place", "move", "remove", "clear") or fits([o])]
-            else:
-                # 野外的坐标系比一张底图大（原版这里会跟着人滚屏），我们只铺底图，不摆人
-                ops = [o for o in ops if o["op"] not in ("place", "move", "remove", "clear")]
-            stage: dict = {"map": rec.map, "lines": len(lines), "ops": ops}
+            _, rec, at, ops = best
+            source_records = [r.record for r in rec.recs] if isinstance(rec, Merged) else [rec.record]
+            stage: dict = {"map": rec.map, "lines": len(lines), "ops": ops,
+                           "source": {"chapter": ch, "scene": sy, "block": block, "records": source_records}}
             onStage = {o["who"] for o in ops if o["op"] == "place"}
             if rec.name and onStage:
                 stage["names"] = {w: n for w, n in rec.name.items() if w in onStage}

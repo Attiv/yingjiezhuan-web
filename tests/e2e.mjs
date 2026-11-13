@@ -236,6 +236,7 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
           src: sc.querySelector('.backdrop')?.getAttribute('src') ?? '',
           place: sc.querySelector('.place')?.textContent ?? '',
           actors: [...sc.querySelectorAll('.actor')].map((a) => a.title),
+          art: [...sc.querySelectorAll('.actor i')].map((a) => getComputedStyle(a).backgroundImage),
           lit: [...sc.querySelectorAll('.actor.on')].map((a) => a.title),
         },
       };
@@ -256,6 +257,7 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   assert.ok(stage.actors.length >= 8, `陳留宮殿应站着原版的 10 个人，实际 ${stage.actors.length}`);
   for (const n of stage.actors) assert.ok(n, '每个人都要报得出名字（不是无名占位）');
   if (stage.speaker) assert.ok(stage.lit.includes(stage.speaker), `说话的人要亮着，实际 ${stage.lit}`);
+  for (const art of stage.art) assert.match(art, /\/assets\/story\/people\.png/, '剧情人物必须用 SSCCHR2，不能回退到战斗棋子');
   await shot('29-story-stage');
   // 一路演到「陳留營帳」的第一句对白：这一幕的原版记录里，每个人身上都挂着台词
   let tent = null;
@@ -404,6 +406,21 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   await page.waitForTimeout(400); // 换曲有 160ms 淡出
   assert.equal(await page.evaluate(() => window.__yjz.bgm), 'battle');
   assert.match(await page.evaluate(() => window.__yjz.bgmSrc), /battle\.mp3/);
+  // 镜头跟随可在战场设置中关闭；关闭后角色演出不接管镜头，但画布边缘仍可卷屏。
+  assert.equal(await page.evaluate(() => window.__yjz.scene.isCameraFollowEnabled()), true);
+  await sys('镜头跟随 开');
+  assert.deepEqual(await page.evaluate(() => ({ enabled: window.__yjz.scene.isCameraFollowEnabled(), saved: localStorage.getItem('yjz.camera-follow') })), { enabled: false, saved: '0' });
+  const edge = await page.$eval('#map canvas', (canvas) => {
+    const r = canvas.getBoundingClientRect();
+    return { x: r.right - 2, y: r.top + r.height / 2 };
+  });
+  const beforeEdgeScroll = await page.evaluate(() => window.__yjz.scene.cameras.main.scrollX);
+  await page.mouse.move(edge.x, edge.y);
+  await page.waitForTimeout(180);
+  const edgeScroll = { before: beforeEdgeScroll, after: await page.evaluate(() => window.__yjz.scene.cameras.main.scrollX) };
+  assert.ok(edgeScroll.after > edgeScroll.before, `关闭跟随后鼠标靠近右边界仍应卷屏，实际 ${JSON.stringify(edgeScroll)}`);
+  await sys('镜头跟随 关');
+  assert.deepEqual(await page.evaluate(() => ({ enabled: window.__yjz.scene.isCameraFollowEnabled(), saved: localStorage.getItem('yjz.camera-follow') })), { enabled: true, saved: '1' });
   await shot('03-battle-start');
 });
 
@@ -471,17 +488,20 @@ await step('选中关羽：蓝格能走、橙格能打到，站着的部队会�
   const breath = await page.evaluate(async () => {
     const sc = window.__yjz.scene;
     sc.speed = 1;
-    const sample = () => [...sc.tokens.values()].filter((s) => s.visible).map((s) => [s.y, s.scaleY]);
-    const a = sample();
-    await new Promise((r) => setTimeout(r, 300));
-    const b = sample();
-    const dy = b.map((v, i) => Math.abs(v[0] - a[i][0]));
-    return { n: a.length, max: Math.max(...dy), moved: dy.filter((d) => d > 0.3).length, stretch: Math.max(...b.map((v) => Math.abs(v[1] - 1))) };
+    const sample = () => [...sc.tokens.values()].filter((s) => s.visible).map((s) => [s.frame.index, s.frame.name, s.texture.key, s.textureFrame, s.scaleX, s.scaleY]);
+    const samples = [sample()];
+    for (let i = 0; i < 6; i++) {
+      await new Promise((r) => setTimeout(r, 150));
+      samples.push(sample());
+    }
+    const first = samples[0];
+    const changed = first.map((v, i) => samples.slice(1).some((row) => row[i][0] !== v[0] || row[i][1] !== v[1] || row[i][3] !== v[3]));
+    const last = samples.at(-1);
+    return { n: first.length, changed: changed.filter(Boolean).length, scales: [...last.map((v) => Math.abs(v[4] - 1)), ...last.map((v) => Math.abs(v[5] - 1))] };
   });
   assert.ok(breath.n >= 10, `场上应有十来支部队，实际 ${breath.n}`);
-  assert.ok(breath.moved >= 5, `站着的部队应在起伏，实际只动了 ${breath.moved} 支`);
-  assert.ok(breath.max > 0 && breath.max <= 5, `呼吸要轻（画布像素不超过 5），实际 ${breath.max}`);
-  assert.ok(breath.stretch > 0.0005 && breath.stretch <= 0.02, `呼吸带一点纵向伸缩，实际 ${breath.stretch}`);
+  assert.ok(breath.changed >= 5, `站着的部队应交替原版待机帧，实际只变了 ${breath.changed} 支，调试 ${JSON.stringify(breath)}`);
+  assert.ok(breath.scales.every((v) => v === 0), `原版待机不拉伸棋子，实际缩放偏差 ${Math.max(...breath.scales)}`);
   await clickCell(g.x + 1, g.y + 3, 'right');
   assert.equal(await mode(), 'idle');
 

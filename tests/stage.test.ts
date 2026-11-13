@@ -4,12 +4,12 @@ import {
   MAP_W,
   STAGES,
   StageScript,
-  TOKEN_COLS,
+  ACTOR_COLS,
   isSceneMap,
   mapPoint,
   mapSrc,
   stageOf,
-  tokenFrame,
+  actorFrame,
   type StageInfo,
 } from '../src/stage';
 
@@ -30,20 +30,29 @@ describe('剧情舞台：地图', () => {
     expect([MAP_W, MAP_H]).toEqual([512, 320]);
   });
 
-  it('人站在瓦片 (x, y) 的下沿中点，舞台按 1.25 倍铺开', () => {
-    expect(mapPoint(0, 0)).toEqual({ left: 20, top: 10 });
-    expect(mapPoint(10, 4)).toEqual({ left: 220, top: 90 }); // 16×10+16 = 176 → 220
-    expect(mapPoint(31, 19)).toEqual({ left: 640, top: 390 }); // 右下角那格仍在 640×400 里
+  it('复现 MAIN 0x1DAA6 的交错列及 SSCCHR2 底部锚点', () => {
+    expect(mapPoint(0, 0)).toEqual({ left: 20, top: 30 });
+    expect(mapPoint(10, 4)).toEqual({ left: 220, top: 110 });
+    expect(mapPoint(31, 19)).toEqual({ left: 640, top: 390 });
+    // 陈留宫殿：献帝在奇数列；董卓在偶数列，必须额外下移 20px。
+    expect(mapPoint(25, 6)).toEqual({ left: 520, top: 130 });
+    expect(mapPoint(16, 11)).toEqual({ left: 340, top: 250 });
+    // 营帐：袁绍与曹操相邻列，原版的列交错不能抹平。
+    expect(mapPoint(23, 7)).toEqual({ left: 480, top: 150 });
+    expect(mapPoint(20, 7)).toEqual({ left: 420, top: 170 });
   });
 
-  it('棋子取站立行，列 = 兵种×2 + 阵营', () => {
-    expect(tokenFrame(0, false)).toEqual({ col: 0, row: 0 });
-    expect(tokenFrame(0, true)).toEqual({ col: 1, row: 0 });
-    expect(tokenFrame(17, false).col).toBe(34);
-    expect(tokenFrame(18, false).col).toBe(36);
-    expect(tokenFrame(18, true).col).toBe(37); // 19 个兵种用到第 37 列，第 38 列留给刘备旗步兵
-    expect(TOKEN_COLS).toBe(39);
-    for (let cls = 0; cls < 19; cls++) for (const enemy of [false, true]) expect(tokenFrame(cls, enemy).col).toBeLessThan(TOKEN_COLS);
+  it('人物使用 SSCCHR2 外观号及正背面帧，和兵种无关', () => {
+    expect(actorFrame(0, 2)).toEqual({ col: 0, row: 0 });
+    expect(actorFrame(16, 0)).toEqual({ col: 16, row: 2 });
+    expect(actorFrame(8, 1)).toEqual({ col: 8, row: 2 });
+    expect(actorFrame(28, 3)).toEqual({ col: 28, row: 0 });
+    expect(ACTOR_COLS).toBe(29);
+    const sc = new StageScript(stageOf('c0_s0_story1'));
+    sc.advance(0);
+    expect(sc.people.get(382)?.sprite).toBe(16); // 獻帝
+    expect(sc.people.get(3)?.sprite).toBe(8); // 董卓
+    expect(sc.people.get(6)?.sprite).toBe(12); // 李儒
   });
 });
 
@@ -112,6 +121,24 @@ describe('剧情舞台：一幕的调度', () => {
     expect(new StageScript({ map: 'field', lines: 1, ops: [] }).map).toBe('field');
   });
 
+  it('同一幕中途换图时清场，野外原始坐标不会混进宫殿', () => {
+    const s = new StageScript({ map: 'palace/005', lines: 2, ops: [
+      { at: 0, op: 'place', who: 3, x: 23, y: 7 },
+      { at: 1, op: 'map', map: 'field' },
+      { at: 1, op: 'place', who: 5, x: 1, y: 26 },
+      { at: 2, op: 'map', map: 'palace/014' },
+      { at: 2, op: 'place', who: 8, x: 23, y: 7 },
+    ] });
+    s.advance(0);
+    expect(s.people.has(3)).toBe(true);
+    s.advance(1);
+    expect(s.map).toBe('field');
+    expect(s.people.size).toBe(0);
+    s.advance(2);
+    expect(s.map).toBe('palace/014');
+    expect([...s.people.keys()]).toEqual([8]);
+  });
+
   it('reset 清人、清地名，保留地图', () => {
     const s = new StageScript(PLAY);
     s.advance(1);
@@ -166,18 +193,20 @@ describe('剧情舞台：从原版剧本转出来的数据', () => {
           placed++;
           mine++;
           expect(op.who).toBeTypeOf('number');
-          // 宫殿图是 32×20 瓦片、走格 31×20；落到图外的坐标说明配错了 record，构建时已经筛掉
+          expect(op.sprite).toBeTypeOf('number');
+          expect(op.sprite).toBeGreaterThanOrEqual(0);
+          expect(op.sprite).toBeLessThan(ACTOR_COLS);
+          // 保留原版字节坐标，包括退场和野外；不能以图内范围判断记录是否正确。
           expect(op.x).toBeGreaterThanOrEqual(0);
-          expect(op.x).toBeLessThan(palace ? 31 : 32);
+          expect(op.x).toBeLessThan(256);
           expect(op.y).toBeGreaterThanOrEqual(0);
-          expect(op.y).toBeLessThan(20);
+          expect(op.y).toBeLessThan(256);
           expect(op.dir ?? 0).toBeGreaterThanOrEqual(0);
           expect(op.dir ?? 0).toBeLessThan(4);
         }
         if (op.op === 'caption') expect(op.text).toBeTruthy();
       }
-      // 野外那一张底图装不下原版野外的坐标系（原版会跟着人滚屏），只铺景不摆人
-      if (info.map === 'field') expect(mine).toBe(0);
+      // 野外动作保留在数据中；当前无滚屏相机，由 StageScript 暂不展示。
       // 场上有人才谈得上「点他说话」，报得出名字的人才点得到
       if (mine) withPeople++;
       if (info.talks) {

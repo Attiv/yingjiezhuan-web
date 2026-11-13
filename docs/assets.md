@@ -39,6 +39,7 @@ python3 tools/make_full_assets.py <EXTRACT> <PACK>
 | `faces/*.png` | 240 张武将头像 | `FACEDAT.R3` 的 240 张 TF-DCE 压缩头像，编号由 `BAKDATA.R3` 武将记录 +14 字节给出 | 64×80，原版原尺寸 |
 | `portraits/_unknown.png` | 杂兵（无武将记录） | `HEXZCHR.R3` 短兵图标放大 2 倍放进 64×80 框（原版状态窗给杂兵显示的也是兵种图） | 64×80 |
 | `pictures/*.png` | 31 张事件插画 | `PACKGRP.R3` 第 3–33 项 | 224×144，界面按 2 倍摆进舞台 |
+| `story/people.png` | 29 种剧情人物外观，按 BAKDATA 的 sprite 编号取图 | `SSCCHR2.R3`，每项四个独立 planar 帧，正面/背面各两步 | 29 列 × 4 行，每帧 32×40；`python3 tools/make_story_people.py <原版游戏目录>` 重建 |
 | `story/pmap-000–022.png` | 23 张剧情宫殿内景（「陳留宮殿」「洛陽宮殿」这些场面站的地方） | `PMAP.R3` 的 23 张 32×20 瓦片图（调色板 `SMAPBGPL.R3` 第 1 项） | 原版 512×320，2 倍放大成 1024×640 |
 | `story/field-00–04.png` | 5 张剧情野外地平（5 种天色） | 原版没有单独的野外图：用战场那套条带拼——天空 `HEXBMAP.R3` 背景条带 `000–004` 铺上部，地平线/地面 `005` 铺下部 | 512×320，2 倍放大成 1024×640 |
 | `maps/campaign/000–003.png` | 4 张章节行军图（序章与第一章共用第一张，其后每章一张） | `MMAP.R3`（调色板用 `MMAPBGPL.R3` 第 0 项）；哪章用哪张由 `MAIN.EXE` 的每章尺寸表对出 | 原 1536² 到 1920×1408，缩到长边 1024 后量化 64 色，共 1.1MB |

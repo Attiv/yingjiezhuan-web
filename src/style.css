@@ -73,6 +73,7 @@ img { image-rendering: pixelated; }
 .btn:disabled { color: #5a5a6a; border-color: #333a55; cursor: default; }
 #sys { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 #sys .wide { grid-column: 1 / -1; }
+#sys .camera-toggle { color: var(--blue-hi); }
 
 #menu { position: absolute; width: 76px; padding: 4px; display: grid; gap: 2px; z-index: 5; }
 #menu[hidden], #talk[hidden], #screen[hidden], #clash[hidden], #duel[hidden] { display: none; }
@@ -136,10 +137,10 @@ img { image-rendering: pixelated; }
 #screen .scene .place { position: absolute; left: 16px; top: 12px; padding: 3px 12px; font-size: 17px; line-height: 22px;
   letter-spacing: 3px; color: var(--gold); background: rgba(12, 20, 48, 0.82);
   border-left: 3px solid var(--gold); text-shadow: 0 1px 0 #000; }
-#screen .scene .actor { position: absolute; width: 40px; height: 40px; padding: 0; border: 0; background: none;
+#screen .scene .actor { position: absolute; width: 40px; height: 50px; padding: 0; border: 0; background: none;
   transform: translate(-50%, -100%); cursor: pointer; }
-#screen .scene .actor i { display: block; width: 40px; height: 40px; background-image: url('/assets/tokens.png');
-  background-size: 1560px 160px; background-repeat: no-repeat; image-rendering: pixelated; }
+#screen .scene .actor i { display: block; width: 40px; height: 50px; background-image: url('/assets/story/people.png');
+  background-size: 1160px 200px; background-repeat: no-repeat; image-rendering: pixelated; }
 #screen .scene .actor::after { content: ''; position: absolute; left: 50%; bottom: -2px; width: 24px; height: 7px;
   margin-left: -12px; border-radius: 50%; background: rgba(0, 0, 0, 0.34); }
 #screen .scene .actor:hover { filter: drop-shadow(0 0 5px var(--gold)); }

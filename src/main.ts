@@ -9,7 +9,7 @@ import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { tally } from './result';
-import { StageScript, isSceneMap, mapPoint, mapSrc, stageOf, tokenFrame } from './stage';
+import { StageScript, isSceneMap, mapPoint, mapSrc, stageOf, actorFrame } from './stage';
 import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, syncUnit } from './trainer';
 import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, rangeCells, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
@@ -19,6 +19,9 @@ import { BattleScene, CELL, RES, VIEW_H, VIEW_W, sideOf } from './scene';
 import { checkScript, currentStep, nextStep, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
 
 const SAVE_KEY = 'yjz.save.v3'; // 流程进度 + 战斗状态
+const CAMERA_FOLLOW_KEY = 'yjz.camera-follow';
+const readCameraFollow = () => localStorage.getItem(CAMERA_FOLLOW_KEY) !== '0';
+let cameraFollow = readCameraFollow();
 /** 仅开发模式：?demo 换成不带任何图的演示流程，用来验证框架本身。 */
 const demo = import.meta.env.DEV && new URLSearchParams(location.search).has('demo');
 if (demo) DEMO_LEVELS.forEach(registerLevel);
@@ -435,10 +438,10 @@ let stageScript = new StageScript();
 let stageSection = ''; // 当前幕的 id
 let stageLine = 0; // 本幕已经说过几句台词：舞台调度按它对表
 
-/** 人身上贴哪张棋子图：兵种×2 + 阵营，取站立那一帧。 */
-function actorStyle(id?: string): string {
-  const { col } = tokenFrame(id ? officers[id]?.cls ?? 0 : 0);
-  return `background-position:${-col * 40}px 0`;
+/** 剧情人物使用 BAKDATA 指定的 SSCCHR2 外观，不读取战场兵种。 */
+function actorStyle(sprite: number, dir: number): string {
+  const { col, row } = actorFrame(sprite, dir);
+  return `background-position:${-col * 40}px ${-row * 50}px`;
 }
 
 /** 画剧情场景：有事件插画就整屏插画（原版 show_picture），否则铺地图并摆人。 */
@@ -461,7 +464,7 @@ function renderStoryView() {
       const { left, top } = mapPoint(p.x, p.y);
       const flip = p.dir === 3 ? 'transform:translate(-50%,-100%) scaleX(-1);' : '';
       return `<button class="actor" data-who="${p.who}" title="${esc(names[p.who] ?? '')}"` +
-        ` style="left:${left}px;top:${top}px;${flip}"><i style="${actorStyle(p.id)}"></i></button>`;
+        ` style="left:${left}px;top:${top}px;${flip}"><i style="${actorStyle(p.sprite, p.dir)}"></i></button>`;
     }).join('') + '</div>';
   el.querySelectorAll<HTMLElement>('.actor').forEach((b) => (b.onclick = (e) => (e.stopPropagation(), talkTo(Number(b.dataset.who)))));
   spotSpeaker();
@@ -1538,10 +1541,20 @@ function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
 
 // ---------------------------------------------------------------- 启动 ----
 let sfxBtn: HTMLButtonElement | null = null;
+let cameraBtn: HTMLButtonElement | null = null;
 const syncSfxButton = () => { if (sfxBtn) sfxBtn.textContent = sfxEnabled() ? '音效 開' : '音效 關'; };
+const syncCameraButton = () => { if (cameraBtn) cameraBtn.textContent = cameraFollow ? '镜头跟随 开' : '镜头跟随 关'; };
+const toggleCameraFollow = () => {
+  cameraFollow = !cameraFollow;
+  localStorage.setItem(CAMERA_FOLLOW_KEY, cameraFollow ? '1' : '0');
+  scene.setCameraFollow(cameraFollow);
+  syncCameraButton();
+  playSfx('confirm', 0.75);
+};
 const sysButtons: [string, string, () => void][] = [
   ['回合结束', '', () => void endTurn()],
   [sfxEnabled() ? '音效 開' : '音效 關', '', () => { toggleSfx(); syncSfxButton(); playSfx('confirm', 0.75); }],
+  [cameraFollow ? '镜头跟随 开' : '镜头跟随 关', 'camera-toggle', toggleCameraFollow],
   ['胜利条件', '', () => void talk('', `胜利：${b.objective}。失败：主将撤退，或 ${levelOf(b).turnLimit} 回合内未能取胜。`)],
   ['全军撤退', '', async () => {
     if (mode !== 'idle') return;
@@ -1558,6 +1571,7 @@ $('sys').replaceChildren(...sysButtons.map(([label, cls, on]) => {
   btn.textContent = label;
   btn.onclick = on;
   if (label.startsWith('音效')) (btn.dataset.sfx = '1'), (sfxBtn = btn);
+  if (label.startsWith('镜头跟随')) (btn.dataset.camera = '1'), (cameraBtn = btn);
   return btn;
 }));
 
@@ -1598,6 +1612,7 @@ game.events.once('ready', () => {
     scene.onCancel = cancel;
     scene.onHover = (x, y) => (renderTile(x, y), renderUnit(unitAt(b, x, y) ?? sel ?? shown));
     scene.speed = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1;
+    scene.setCameraFollow(cameraFollow);
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
