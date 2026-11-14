@@ -5,6 +5,7 @@ import {
   STAGES,
   StageScript,
   ACTOR_COLS,
+  ACTOR_ROWS,
   isSceneMap,
   mapPoint,
   mapSrc,
@@ -42,12 +43,16 @@ describe('剧情舞台：地图', () => {
     expect(mapPoint(20, 7)).toEqual({ left: 420, top: 170 });
   });
 
-  it('人物使用 SSCCHR2 外观号及正背面帧，和兵种无关', () => {
-    expect(actorFrame(0, 2)).toEqual({ col: 0, row: 0 });
-    expect(actorFrame(16, 0)).toEqual({ col: 16, row: 2 });
-    expect(actorFrame(8, 1)).toEqual({ col: 8, row: 2 });
-    expect(actorFrame(28, 3)).toEqual({ col: 28, row: 0 });
+  it('人物用 SSCCHR2 外观号、正背面两向与左右镜像，和兵种无关', () => {
+    expect(actorFrame(0, 2)).toEqual({ col: 0, row: 0, flip: false }); // 下：正面
+    expect(actorFrame(16, 0)).toEqual({ col: 16, row: 2, flip: false }); // 上：背面
+    expect(actorFrame(8, 1)).toEqual({ col: 8, row: 2, flip: true }); // 右：背面 + 镜像
+    expect(actorFrame(28, 3)).toEqual({ col: 28, row: 0, flip: true }); // 左：正面 + 镜像
+    // step=1 是同朝向的迈步帧，四帧都要用得上，不能只定格在两帧上
+    expect(actorFrame(0, 2, 1)).toEqual({ col: 0, row: 1, flip: false });
+    expect(actorFrame(16, 0, 1)).toEqual({ col: 16, row: 3, flip: false });
     expect(ACTOR_COLS).toBe(29);
+    expect(ACTOR_ROWS).toBe(4);
     const sc = new StageScript(stageOf('c0_s0_story1'));
     sc.advance(0);
     expect(sc.people.get(382)?.sprite).toBe(16); // 獻帝
@@ -86,6 +91,17 @@ describe('剧情舞台：一幕的调度', () => {
     expect(s.people.has(1)).toBe(false);
     s.advance(3);
     expect([...s.people.keys()]).toEqual([3]);
+  });
+
+  it('刚走一步的人切到迈步帧，下一句收回站立姿态', () => {
+    const s = new StageScript(PLAY);
+    s.advance(0);
+    expect(s.people.get(2)?.walking).toBeFalsy();
+    s.advance(1);
+    expect(s.people.get(2)?.walking).toBe(true);
+    s.advance(1); // 这一句没有新动作，但迈出去的那一步已经演完
+    expect(s.people.get(2)?.walking).toBe(false);
+    expect(s.people.get(1)?.walking).toBeFalsy(); // 站着的人始终不迈步
   });
 
   it('只前进不后退：同一句多喊几次也不重放动作', () => {

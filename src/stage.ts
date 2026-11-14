@@ -51,6 +51,8 @@ export interface Crowd {
   dir: number;
   sprite: number;
   id?: string;
+  /** 这一句刚走过一步：待机的两帧交替加快，像原版迈步。 */
+  walking?: boolean;
 }
 
 /** 只有宫殿与野外才铺场景；战场里插播的幕还是原来那样盖在战场上。 */
@@ -86,6 +88,8 @@ export class StageScript {
     const ops = this.info?.ops;
     if (!ops?.length) return false;
     let dirty = false;
+    // 上一句迈出去的那一步已经演完，先收回站立姿态，再执行这一句的新动作。
+    for (const p of this.people.values()) if (p.walking) { p.walking = false; dirty = true; }
     while (this.idx < ops.length && ops[this.idx].at <= n) {
       this.run(ops[this.idx++]);
       dirty = true;
@@ -124,6 +128,7 @@ export class StageScript {
       dir: op.dir ?? 2,
       sprite: op.sprite ?? this.people.get(op.who)?.sprite ?? 0,
       id: op.id ?? this.people.get(op.who)?.id,
+      walking: op.op === 'move',
     });
   }
 }
@@ -138,6 +143,15 @@ export const mapPoint = (x: number, y: number) => ({
   top: (16 * (y + (x % 2 === 0 ? 1 : 0)) + 8) * 1.25,
 });
 
-/** SSCCHR2 的正面/背面各两帧；左右由镜像得到。 */
-export const actorFrame = (sprite: number, dir: number) => ({ col: sprite, row: dir === 0 || dir === 1 ? 2 : 0 });
+/**
+ * SSCCHR2 每个外观有 4 帧：行 0/1 是正面站立 / 迈步，行 2/3 是背面站立 / 迈步。
+ * 原版只存「朝向观察者」和「背对观察者」两向，左右靠运行时水平镜像（见 sprites.json 的 note）。
+ * place_person 的 dir：0 上、1 右、2 下、3 左；上 / 右取背面，下 / 左取正面，右 / 左再镜像。
+ * step=1 取同朝向的迈步帧，走动时与站立帧交替。
+ */
+export const actorFrame = (sprite: number, dir: number, step = 0) => {
+  const back = dir === 0 || dir === 1;
+  return { col: sprite, row: (back ? 2 : 0) + (step ? 1 : 0), flip: dir === 1 || dir === 3 };
+};
 export const ACTOR_COLS = 29;
+export const ACTOR_ROWS = 4;

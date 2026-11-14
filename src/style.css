@@ -140,7 +140,16 @@ img { image-rendering: pixelated; }
 #screen .scene .actor { position: absolute; width: 40px; height: 50px; padding: 0; border: 0; background: none;
   transform: translate(-50%, -100%); cursor: pointer; }
 #screen .scene .actor i { display: block; width: 40px; height: 50px; background-image: url('/assets/story/people.png');
-  background-size: 1160px 200px; background-repeat: no-repeat; image-rendering: pixelated; }
+  background-size: 1160px 200px; background-repeat: no-repeat; image-rendering: pixelated;
+  background-position: var(--p0); animation: actor-step 1100ms steps(1, end) infinite;
+  animation-delay: var(--delay, 0ms); }
+/* 原版只存正面/背面两向，左右靠镜像；刚走一步时两帧交替加快，像迈步。 */
+#screen .scene .actor.walking i { animation-duration: 260ms; }
+#screen .scene .actor i.flip { transform: scaleX(-1); }
+@keyframes actor-step {
+  0%, 49.99% { background-position: var(--p0); }
+  50%, 100% { background-position: var(--p1); }
+}
 #screen .scene .actor::after { content: ''; position: absolute; left: 50%; bottom: -2px; width: 24px; height: 7px;
   margin-left: -12px; border-radius: 50%; background: rgba(0, 0, 0, 0.34); }
 #screen .scene .actor:hover { filter: drop-shadow(0 0 5px var(--gold)); }

@@ -134,6 +134,15 @@ export class BattleScene extends Phaser.Scene {
     this.breathe();
   }
 
+  /** 演出时长倍率：越小动作越快，0 省去演出。系统菜单里改，存档不参与。 */
+  setAnimSpeed(multiplier: number) {
+    this.speed = Math.max(0, multiplier);
+  }
+
+  getAnimSpeed() {
+    return this.speed;
+  }
+
   setCameraFollow(enabled: boolean) {
     this.cameraFollow = enabled;
     if (!enabled) {
@@ -270,7 +279,8 @@ export class BattleScene extends Phaser.Scene {
     for (const name of ['idle', 'attack', 'hurt'] as const) {
       const an = ac.anims[name];
       if (!this.anims.exists(`${key}:${name}`))
-        this.anims.create({ key: `${key}:${name}`, frames: this.anims.generateFrameNumbers(key, { frames: an.frames }), frameRate: an.fps, repeat: name === 'idle' ? -1 : 0 });
+        // 掉帧时宁可放慢也不跳帧：像素动画一跳帧就会「顿一下」，不像原版那样连续。
+        this.anims.create({ key: `${key}:${name}`, frames: this.anims.generateFrameNumbers(key, { frames: an.frames }), frameRate: an.fps, repeat: name === 'idle' ? -1 : 0, skipMissedFrames: false });
     }
     this.ready.set(ac, key);
   }
@@ -280,21 +290,35 @@ export class BattleScene extends Phaser.Scene {
   /** 战斗特写：横幅盖在战场上，左攻右守。攻方播 attack，到命中帧时回调并让守方播 hurt，然后各自回到 idle。 */
   private async cutin(a: Unit, d: Unit, onImpact?: () => void) {
     const [top, h] = [88 * RES, 160 * RES];
-    const box = this.add.container(0, top).setDepth(20);
+    const box = this.add.container(0, top + 14 * RES).setDepth(20).setAlpha(0);
     box.add(this.textures.exists('cutin:bg') ? this.add.image(0, 0, 'cutin:bg').setOrigin(0).setDisplaySize(VW, h) : this.add.rectangle(0, 0, VW, h, 0x10141c, 0.94).setOrigin(0));
     const actor = (u: Unit, left: boolean) => {
       const ac = this.actorOf(u)!;
       const key = this.ready.get(ac)!;
-      const s = this.add.sprite(VW * (left ? 0.28 : 0.72), h - 4 * RES, key).setOrigin(0.5, 1).setScale(ac.scale ?? Math.max(2, Math.round((h * 1.05) / ac.frameHeight))).setFlipX(!left);
-      s.anims.timeScale = 1 / this.speed;
+      const home = VW * (left ? 0.28 : 0.72);
+      // 从画面外各滑进来一点，出场不硬切；scale / 朝向仍按清单里的原版设置。
+      const s = this.add.sprite(home + (left ? -1 : 1) * 42 * RES, h - 4 * RES, key)
+        .setOrigin(0.5, 1).setScale(ac.scale ?? Math.max(2, Math.round((h * 1.05) / ac.frameHeight))).setFlipX(!left);
+      s.anims.timeScale = 1 / Math.max(this.speed, 0.25);
       s.play(`${key}:idle`);
       box.add(s);
-      return { s, key, ac };
+      // 帧图的呼吸只有 0/-1/-2 三档，放大后会一跳一跳；叠一层平滑位移把档位之间补上。
+      const baseY = s.y;
+      const breath = this.tweens.add({ targets: s, y: baseY - 2 * RES, duration: 620 * Math.max(this.speed, 0.3),
+        yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      return { s, key, ac, home, breath, baseY };
     };
     const [att, def] = [actor(a, true), actor(d, false)];
     box.setScrollFactor(0, 0, true); // 钉在画面上，不跟地图卷动
+    await Promise.all([
+      this.tween({ targets: box, y: top, alpha: 1, duration: 230, ease: 'Cubic.easeOut' }),
+      this.tween({ targets: att.s, x: att.home, duration: 280, ease: 'Cubic.easeOut' }),
+      this.tween({ targets: def.s, x: def.home, duration: 280, ease: 'Cubic.easeOut' }),
+    ]);
     // 待机：两个演员都在喘气（60 帧循环），让玩家先看清双方的架势
-    await this.wait(900);
+    await this.wait(780);
+    // 出手时停掉呼吸补间并归位，免得挥刀的人还在上下飘
+    for (const act of [att, def]) { act.breath.stop(); act.s.y = act.baseY; }
     await new Promise<void>((done) => {
       const at = att.ac.anims.attack.impact ?? att.ac.anims.attack.frames.length - 1;
       let hit = false;
@@ -302,6 +326,11 @@ export class BattleScene extends Phaser.Scene {
         if (hit) return;
         hit = true;
         onImpact?.();
+        // 命中这一下给一点原版式的反馈：轻晃、闪白、守方被震退，再接后仰帧。
+        this.cameras.main.shake(90 * Math.max(this.speed, 0.35), 0.0025);
+        def.s.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
+        this.time.delayedCall(70, () => def.s.clearTint().setTintMode(Phaser.TintModes.MULTIPLY));
+        void this.tween({ targets: def.s, x: def.home + 9 * RES, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
         def.s.play(`${def.key}:hurt`).chain(`${def.key}:idle`);
       };
       att.s.on('animationupdate', (_an: unknown, frame: Phaser.Animations.AnimationFrame) => frame.index - 1 >= at && impact());
@@ -309,8 +338,11 @@ export class BattleScene extends Phaser.Scene {
       att.s.play(`${att.key}:attack`);
       if (at <= 0) impact();
     });
-    // 收招后回到待机，继续呼吸一会儿再收起横幅
-    await this.wait(620);
+    // 收招后回到待机，继续呼吸一会儿再连横幅一起淡出收起
+    await this.wait(520);
+    await this.tween({ targets: box, alpha: 0, y: top - 10 * RES, duration: 190, ease: 'Cubic.easeIn' });
+    att.breath.stop();
+    def.breath.stop();
     box.destroy();
   }
 

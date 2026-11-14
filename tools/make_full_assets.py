@@ -214,18 +214,25 @@ def cutin_frames(ex: Path, start: int, n: int, idle: int, impact: int,
     idle_frames = []
     base = keys[0]
     for t in range(60):
-        # 吸气占前 45%，屏住 10%，呼气占 45%
-        phase = (t / 60) * 2 * math.pi
-        breath = -1 if math.sin(phase) > 0.15 else 0
+        # 一个完整呼吸来回：躯干在 0 / -1 / -2 三档间逐帧过渡，不再是 0↔-1 的硬跳。
+        # 余弦曲线让吸气与呼气两端都平缓，中间快，像原版人物「喘一口气」。
+        phase = t / 60
+        level = 0.5 - 0.5 * math.cos(2 * math.pi * phase)  # 0 → 1 → 0
+        breath = -round(2 * level)
         idle_frames.append(frame_canvas(base, canvas, breath=breath, pivot=pivot))
         if pair:  # 机器不呼吸，只让整台车轻轻一晃
-            idle_frames[-1] = frame_canvas(base, canvas, dx=1 if math.sin(phase) > 0.15 else 0)
+            idle_frames[-1] = frame_canvas(base, canvas, dx=round(1.4 * math.sin(2 * math.pi * phase)))
 
     attack_keys = keys[idle:impact + 1]
     m = len(attack_keys)
-    # 权重：起手稍慢，命中前稍慢，中间快
-    weights = [1.35] + [1.0] * max(0, m - 2) + [1.25]
-    weights = weights[:m]
+    # 关键帧时长按缓动曲线分：起手蓄力慢、中段快、命中帧略停顿，动作才有轻重。
+    weights = []
+    for i in range(m):
+        p = i / max(1, m - 1)
+        w = 1.7 - 1.0 * math.sin(math.pi * p)
+        if i == m - 1:
+            w += 0.5
+        weights.append(w)
     total = sum(weights)
     durations = [max(3, round(60 * w / total)) for w in weights]
     while sum(durations) < 60:
@@ -249,11 +256,14 @@ def cutin_frames(ex: Path, start: int, n: int, idle: int, impact: int,
         attack_frames.append(frame_canvas(attack_keys[k], canvas, dx=lunge, dy=hop))
 
     hurt_frames = []
-    last = keys[min(n - 1, impact + 1)] if impact + 1 < n else keys[-1]
+    hit_key = keys[min(impact, n - 1)]
+    fall_key = keys[min(n - 1, impact + 1)]
     for f in range(30):
         p = f / 29
+        # 前一截还停在命中姿势，后一截才换成原版的后仰帧；全程平滑退让，不再是一张图横着滑。
+        pose = hit_key if p < 0.32 else fall_key
         back = -round(10 * (1 - p) ** 2)
-        hurt_frames.append(frame_canvas(last, canvas, dx=back, dy=round(2 * (1 - p))))
+        hurt_frames.append(frame_canvas(pose, canvas, dx=back, dy=round(2 * (1 - p))))
 
     return idle_frames + attack_frames + hurt_frames, impact_out
 

@@ -237,6 +237,11 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
           place: sc.querySelector('.place')?.textContent ?? '',
           actors: [...sc.querySelectorAll('.actor')].map((a) => a.title),
           art: [...sc.querySelectorAll('.actor i')].map((a) => getComputedStyle(a).backgroundImage),
+          pose: [...sc.querySelectorAll('.actor i')].map((a) => {
+            const cs = getComputedStyle(a);
+            return { p0: cs.getPropertyValue('--p0').trim(), p1: cs.getPropertyValue('--p1').trim(),
+              delay: cs.getPropertyValue('--delay').trim(), flip: a.classList.contains('flip') };
+          }),
           lit: [...sc.querySelectorAll('.actor.on')].map((a) => a.title),
         },
       };
@@ -258,6 +263,25 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   for (const n of stage.actors) assert.ok(n, '每个人都要报得出名字（不是无名占位）');
   if (stage.speaker) assert.ok(stage.lit.includes(stage.speaker), `说话的人要亮着，实际 ${stage.lit}`);
   for (const art of stage.art) assert.match(art, /\/assets\/story\/people\.png/, '剧情人物必须用 SSCCHR2，不能回退到战斗棋子');
+  // 四帧都要用得上：每个人有站立/迈步两个位置，朝左右的人镜像，相位按人物号错开
+  assert.equal(stage.pose.length, stage.actors.length);
+  assert.ok(stage.pose.some((p) => p.flip), '朝左 / 朝右的人应按原版做水平镜像');
+  assert.ok(stage.pose.some((p) => !p.flip), '朝上 / 朝下的人保持原帧');
+  assert.ok(new Set(stage.pose.map((p) => p.delay)).size > 1, '同一外观的几个人要错开呼吸相位');
+  for (const p of stage.pose) {
+    assert.match(p.p0, /^-?\d+px -?\d+px$/, `站立帧位置 ${p.p0}`);
+    assert.match(p.p1, /^-?\d+px -?\d+px$/, `迈步帧位置 ${p.p1}`);
+    assert.notEqual(p.p0, p.p1, '站立帧与迈步帧不能是同一张图');
+  }
+  // 光有 CSS 变量不算数：隔一会儿真的要有人从站立帧切到迈步帧
+  const poseMotion = await page.evaluate(async () => {
+    const read = () => [...document.querySelectorAll('#screen .scene .actor i')].map((a) => getComputedStyle(a).backgroundPosition);
+    const a = read();
+    await new Promise((r) => setTimeout(r, 620));
+    const b = read();
+    return { n: a.length, changed: a.filter((v, i) => v !== b[i]).length };
+  });
+  assert.ok(poseMotion.n >= 8 && poseMotion.changed > 0, `剧情人物应交替两帧，实际 ${JSON.stringify(poseMotion)}`);
   await shot('29-story-stage');
   // 一路演到「陳留營帳」的第一句对白：这一幕的原版记录里，每个人身上都挂着台词
   let tent = null;
@@ -421,6 +445,25 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   assert.ok(edgeScroll.after > edgeScroll.before, `关闭跟随后鼠标靠近右边界仍应卷屏，实际 ${JSON.stringify(edgeScroll)}`);
   await sys('镜头跟随 关');
   assert.deepEqual(await page.evaluate(() => ({ enabled: window.__yjz.scene.isCameraFollowEnabled(), saved: localStorage.getItem('yjz.camera-follow') })), { enabled: true, saved: '1' });
+  // 角色移动速度：循环切换并记住选择，切回标准再继续后面的战斗流程
+  const speedBtn = '#sys button[data-speed="1"]';
+  const speedState = () => page.evaluate(() => ({
+    label: document.querySelector('#sys button[data-speed="1"]').textContent.trim(),
+    v: window.__yjz.scene.getAnimSpeed(), saved: localStorage.getItem('yjz.anim-speed'),
+  }));
+  const speed0 = await speedState();
+  assert.equal(speed0.label, '移动速度 标准', '默认标准速度');
+  assert.equal(speed0.v, 1);
+  assert.ok(speed0.saved === null || speed0.saved === '1', '没改过时不该有别的速度档');
+  await page.click(speedBtn);
+  assert.deepEqual(await speedState(), { label: '移动速度 慢', v: 1.6, saved: '1.6' });
+  await page.click(speedBtn);
+  assert.deepEqual(await speedState(), { label: '移动速度 很慢', v: 2.5, saved: '2.5' });
+  await page.click(speedBtn);
+  assert.deepEqual(await speedState(), { label: '移动速度 瞬时', v: 0, saved: '0' });
+  // 再点两下回到标准：瞬时 → 很快 → 标准
+  for (let i = 0; i < 2; i++) await page.click(speedBtn);
+  assert.deepEqual(await speedState(), { label: '移动速度 标准', v: 1, saved: '1' });
   await shot('03-battle-start');
 });
 

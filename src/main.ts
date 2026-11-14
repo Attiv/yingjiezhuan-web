@@ -9,7 +9,7 @@ import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { tally } from './result';
-import { StageScript, isSceneMap, mapPoint, mapSrc, stageOf, actorFrame } from './stage';
+import { StageScript, isSceneMap, mapPoint, mapSrc, stageOf, actorFrame, type Crowd } from './stage';
 import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, syncUnit } from './trainer';
 import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, rangeCells, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
@@ -22,6 +22,23 @@ const SAVE_KEY = 'yjz.save.v3'; // 流程进度 + 战斗状态
 const CAMERA_FOLLOW_KEY = 'yjz.camera-follow';
 const readCameraFollow = () => localStorage.getItem(CAMERA_FOLLOW_KEY) !== '0';
 let cameraFollow = readCameraFollow();
+/** 演出时长倍率：越小走得越快，0 = 省去演出。系统菜单里循环切换并记住选择。 */
+const ANIM_SPEED_KEY = 'yjz.anim-speed';
+const ANIM_SPEEDS = [
+  { v: 0, label: '瞬时' },
+  { v: 0.5, label: '很快' },
+  { v: 1, label: '标准' },
+  { v: 1.6, label: '慢' },
+  { v: 2.5, label: '很慢' },
+] as const;
+const readAnimSpeed = () => {
+  const raw = localStorage.getItem(ANIM_SPEED_KEY);
+  if (raw === null) return 2; // 没设过就是标准；Number(null) 是 0，别落到「瞬时」档
+  const saved = Number(raw);
+  const i = ANIM_SPEEDS.findIndex((s) => s.v === saved);
+  return i < 0 ? 2 : i;
+};
+let animSpeedIndex = readAnimSpeed();
 /** 仅开发模式：?demo 换成不带任何图的演示流程，用来验证框架本身。 */
 const demo = import.meta.env.DEV && new URLSearchParams(location.search).has('demo');
 if (demo) DEMO_LEVELS.forEach(registerLevel);
@@ -438,10 +455,16 @@ let stageScript = new StageScript();
 let stageSection = ''; // 当前幕的 id
 let stageLine = 0; // 本幕已经说过几句台词：舞台调度按它对表
 
-/** 剧情人物使用 BAKDATA 指定的 SSCCHR2 外观，不读取战场兵种。 */
-function actorStyle(sprite: number, dir: number): string {
-  const { col, row } = actorFrame(sprite, dir);
-  return `background-position:${-col * 40}px ${-row * 50}px`;
+/**
+ * 剧情人物使用 BAKDATA 指定的 SSCCHR2 外观，不读取战场兵种。
+ * 原版每个外观有「站立 / 迈步」两帧，静止时慢速交替（呼吸），刚走一步时快速交替；
+ * 相位按人物号错开，同一外观的几个人不会整齐地摆同一个姿势。
+ */
+function actorStyle(p: Crowd): string {
+  const a = actorFrame(p.sprite, p.dir, 0);
+  const b = actorFrame(p.sprite, p.dir, 1);
+  const at = (f: { col: number; row: number }) => `${-f.col * 40}px ${-f.row * 50}px`;
+  return `--p0:${at(a)};--p1:${at(b)};--delay:${-((p.who % 9) * 130)}ms`;
 }
 
 /** 画剧情场景：有事件插画就整屏插画（原版 show_picture），否则铺地图并摆人。 */
@@ -462,9 +485,9 @@ function renderStoryView() {
   el.innerHTML = `<div class="scene"><img class="backdrop" src="${mapSrc(map)}" alt="">` + place +
     people.map((p) => {
       const { left, top } = mapPoint(p.x, p.y);
-      const flip = p.dir === 3 ? 'transform:translate(-50%,-100%) scaleX(-1);' : '';
-      return `<button class="actor" data-who="${p.who}" title="${esc(names[p.who] ?? '')}"` +
-        ` style="left:${left}px;top:${top}px;${flip}"><i style="${actorStyle(p.sprite, p.dir)}"></i></button>`;
+      const { flip } = actorFrame(p.sprite, p.dir);
+      return `<button class="actor${p.walking ? ' walking' : ''}" data-who="${p.who}" title="${esc(names[p.who] ?? '')}"` +
+        ` style="left:${left}px;top:${top}px"><i class="${flip ? 'flip' : ''}" style="${actorStyle(p)}"></i></button>`;
     }).join('') + '</div>';
   el.querySelectorAll<HTMLElement>('.actor').forEach((b) => (b.onclick = (e) => (e.stopPropagation(), talkTo(Number(b.dataset.who)))));
   spotSpeaker();
@@ -1542,8 +1565,17 @@ function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
 // ---------------------------------------------------------------- 启动 ----
 let sfxBtn: HTMLButtonElement | null = null;
 let cameraBtn: HTMLButtonElement | null = null;
+let speedBtn: HTMLButtonElement | null = null;
 const syncSfxButton = () => { if (sfxBtn) sfxBtn.textContent = sfxEnabled() ? '音效 開' : '音效 關'; };
 const syncCameraButton = () => { if (cameraBtn) cameraBtn.textContent = cameraFollow ? '镜头跟随 开' : '镜头跟随 关'; };
+const syncSpeedButton = () => { if (speedBtn) speedBtn.textContent = `移动速度 ${ANIM_SPEEDS[animSpeedIndex].label}`; };
+const cycleAnimSpeed = () => {
+  animSpeedIndex = (animSpeedIndex + 1) % ANIM_SPEEDS.length;
+  localStorage.setItem(ANIM_SPEED_KEY, String(ANIM_SPEEDS[animSpeedIndex].v));
+  scene.setAnimSpeed(ANIM_SPEEDS[animSpeedIndex].v);
+  syncSpeedButton();
+  playSfx('confirm', 0.75);
+};
 const toggleCameraFollow = () => {
   cameraFollow = !cameraFollow;
   localStorage.setItem(CAMERA_FOLLOW_KEY, cameraFollow ? '1' : '0');
@@ -1555,6 +1587,7 @@ const sysButtons: [string, string, () => void][] = [
   ['回合结束', '', () => void endTurn()],
   [sfxEnabled() ? '音效 開' : '音效 關', '', () => { toggleSfx(); syncSfxButton(); playSfx('confirm', 0.75); }],
   [cameraFollow ? '镜头跟随 开' : '镜头跟随 关', 'camera-toggle', toggleCameraFollow],
+  [`移动速度 ${ANIM_SPEEDS[animSpeedIndex].label}`, 'speed-toggle', cycleAnimSpeed],
   ['胜利条件', '', () => void talk('', `胜利：${b.objective}。失败：主将撤退，或 ${levelOf(b).turnLimit} 回合内未能取胜。`)],
   ['全军撤退', '', async () => {
     if (mode !== 'idle') return;
@@ -1572,6 +1605,7 @@ $('sys').replaceChildren(...sysButtons.map(([label, cls, on]) => {
   btn.onclick = on;
   if (label.startsWith('音效')) (btn.dataset.sfx = '1'), (sfxBtn = btn);
   if (label.startsWith('镜头跟随')) (btn.dataset.camera = '1'), (cameraBtn = btn);
+  if (label.startsWith('移动速度')) (btn.dataset.speed = '1'), (speedBtn = btn);
   return btn;
 }));
 
@@ -1611,7 +1645,7 @@ game.events.once('ready', () => {
     scene.onCell = (x, y) => void onCell(x, y);
     scene.onCancel = cancel;
     scene.onHover = (x, y) => (renderTile(x, y), renderUnit(unitAt(b, x, y) ?? sel ?? shown));
-    scene.speed = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1;
+    scene.setAnimSpeed(matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ANIM_SPEEDS[animSpeedIndex].v);
     scene.setCameraFollow(cameraFollow);
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
