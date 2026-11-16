@@ -190,6 +190,10 @@ const step = async (title, fn) => {
 
 const { browser, page: p, errors } = await open(`${BASE}/`);
 page = p;
+// 主流程的文案断言沿用原版 DOS 繁体；默认简体与简繁切换放到最后一项单独验证。
+await page.waitForSelector('#stage');
+await page.evaluate(() => localStorage.setItem('yjz.script', 'hant'));
+await page.reload();
 
 await step('标题画面：原版标题图、繁体菜单，没存档时「讀取存檔」是灰的', async () => {
   await page.waitForSelector('[data-go="start"]');
@@ -371,9 +375,22 @@ await step('营地：500 金（曹操在序章拨的那笔）、三人编成（�
   assert.deepEqual(st.roster.liu_bei.items, [30]);
   assert.deepEqual(st.bag, []);
   await page.click('[data-go="camp-save"]');
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.save.v3')));
-  assert.equal(saved.battle, undefined, '营地存档只存流程，不存战斗');
-  assert.equal(saved.story.gold, 400);
+  // 存档列表：六个槽位，空槽显示为空，营地存档只写流程
+  await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+  assert.equal(await page.$$eval('#save-list .save-slot', (els) => els.length), 6, '存档应有六个槽位');
+  assert.equal(await page.$$eval('#save-list [data-act="read"]', (els) => els.length), 0, '存档模式只给写入按钮');
+  await page.click('#save-list [data-slot="0"][data-act="write"]');
+  assert.equal(await page.evaluate(() => document.getElementById('save-list').hidden), true, '存档后列表收起');
+  const saved = await page.evaluate(() => ({
+    mirror: JSON.parse(localStorage.getItem('yjz.save.v3')),
+    list: JSON.parse(localStorage.getItem('yjz.saves.v1')),
+  }));
+  assert.equal(saved.mirror.battle, undefined, '营地存档只存流程，不存战斗');
+  assert.equal(saved.mirror.story.gold, 400);
+  assert.equal(saved.list.slots.length, 6);
+  assert.equal(saved.list.last, 0, '最近存档指向檔一');
+  assert.equal(saved.list.slots[0].story.gold, 400);
+  assert.equal(saved.list.slots[1], null, '其余槽位仍是空的');
   await shot('02-camp');
   // 修改器：左上角三下 → 密码 1122，在这里拍一张真实队伍（三人）的面板，不改数值
   await tapCorner();
@@ -426,6 +443,15 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   assert.match(await page.textContent('#turn'), /第1回合/);
   const g = b.units.find((u) => u.name === '關羽');
   assert.deepEqual([g.x, g.y], cells[1].split(',').map(Number), '关羽应站在布阵时指定的格子');
+  // 刘备在原版里是专属旗步兵（图集第 39 帧），不能退回普通短兵那一列
+  const liuSlot = b.units.find((u) => u.name === '劉備').slot;
+  const frames = await page.evaluate(([a, b2]) => ({
+    liu: Number(window.__yjz.scene.tokens.get(a).frame.name),
+    guan: Number(window.__yjz.scene.tokens.get(b2).frame.name),
+  }), [liuSlot, g.slot]);
+  // 待机会在站立 / 迈步两帧间切换，所以只看列号（39 帧一行）
+  assert.equal(frames.liu % 39, 38, `刘备应取第 39 列旗步兵，实际帧 ${frames.liu}`);
+  assert.equal(frames.guan % 39, g.cls * 2, '其他武将仍按兵种取帧');
   // 开战换成原版的战斗曲（此前一直没播过 battle.mp3）
   await page.waitForTimeout(400); // 换曲有 160ms 淡出
   assert.equal(await page.evaluate(() => window.__yjz.bgm), 'battle');
@@ -637,7 +663,7 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
       const box = window.__yjz.scene.children.list.find((o) => o.type === 'Container' && o.depth === 20);
       if (!box) return;
       const sp = box.list.filter((o) => o.type === 'Sprite');
-      if (sp.length === 2) window.__seen.push(sp.map((s) => Number(s.frame.name)));
+      if (sp.length === 2) window.__seen.push([...sp.map((s) => Number(s.frame.name)), performance.now()]);
     }, 16);
   });
   // 友军在第一回合就会打到前排步兵，特写自然播出：横幅出现时截一张，再让它演完
@@ -662,21 +688,71 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
   const firstAttack = att.findIndex((f) => f >= 60);
   const firstHurt = def.findIndex((f) => f >= 120);
   assert.ok(firstAttack > 3, '先待机呼吸，再出手');
+  // 亮相到出手不该干等：以前滑入 280ms + 站桩 780ms，玩家会觉得「等了一会儿才打」
+  const lead = seenFrames[firstAttack][2] - seenFrames[0][2];
+  console.log(`    特写亮相 → 出手 ${Math.round(lead)}ms`);
+  assert.ok(lead < 700, `特写亮相到挥刀应紧凑，实际 ${Math.round(lead)}ms`);
   assert.ok(firstHurt > firstAttack, '守方的受击不应早于攻方出手');
   assert.equal((await state()).round, 2);
 });
 
-await step('战场存档 → 打两回合 → 读档，状态与存档时完全一致', async () => {
+await step('存档列表：多槽写入、概要、覆盖、删除 → 读指定档恢复完整战况', async () => {
   await sys('存档');
+  await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+  // 檔一还留着营地存档；这次写到檔二，两个槽互不影响
+  await page.click('#save-list [data-slot="1"][data-act="write"]');
   const saved = await state();
+  let list = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.saves.v1')));
+  assert.equal(list.last, 1, '最近存档指向檔二');
+  assert.equal(list.slots[0].battle, undefined, '檔一仍是只含流程的营地存档');
+  assert.equal(list.slots[1].battle.level, saved.level, '檔二带完整战况');
+  // 概要里要能看出是哪一关、第几回合，而不是一片空白
+  await sys('存档');
+  await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+  const text = await page.textContent('#save-list .save-slot:nth-child(2) .slot-info');
+  assert.match(text, /第\d+回合/, `槽位应显示关卡与回合，实际「${text}」`);
+  assert.match(text, /金/, '槽位应显示军资');
+  await shot('30-save-list');
+  await page.click('#save-list [data-slot="2"][data-act="write"]'); // 再占一格，用来验证删除
+  await sys('存档');
+  await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+  assert.equal(await page.$$eval('#save-list .save-slot', (els) => els.length), 6);
+  await page.click('#save-list [data-slot="2"][data-act="delete"]'); // 第一下只是变「確認刪除」
+  assert.match(await page.textContent('#save-list [data-slot="2"][data-act="delete"]'), /確認刪除/);
+  await page.click('#save-list [data-slot="2"][data-act="delete"]'); // 第二下才真的删
+  list = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.saves.v1')));
+  assert.equal(list.slots[2], null, '確認后檔三被删掉');
+  assert.equal(list.slots[1].battle.level, saved.level, '删别的槽不动檔二');
+  await page.keyboard.press('Escape'); // Esc 也能收起列表
+  assert.equal(await page.evaluate(() => document.getElementById('save-list').hidden), true);
+
   await command('關羽', 'duel');
   await command('張飛', 'hunt');
   await endTurn();
   assert.ok((await page.evaluate(() => window.__yjz.bgmLog())).includes('enemy'), '敌军阶段应切到「敌将」曲');
   assert.notDeepEqual(await state(), saved);
   await sys('读档');
+  await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+  assert.equal(await page.isDisabled('#save-list [data-slot="0"][data-act="read"]'), false, '有存档的槽可读');
+  assert.equal(await page.isEnabled('#save-list [data-slot="3"][data-act="read"]'), false, '空槽不可读');
+  await page.click('#save-list [data-slot="1"][data-act="read"]'); // 明确选檔二，不是「最近一个」
   await settle();
   assert.deepEqual(await state(), saved, '读档应恢复完整战斗状态（含随机数、回合、行动标记、事件）');
+});
+
+await step('从标题读战斗档：标题卡片必须收起，直接回到战场原状态', async () => {
+  // 回归：begin() 以前只开战、不收起 #screen，从标题读战斗档会停在标题画面一动不动。
+  const disk = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.saves.v1')).slots[1].battle);
+  await page.reload();
+  await page.waitForSelector('[data-go="start"]');
+  await page.click('[data-go="load"]');
+  await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+  await page.click('#save-list [data-slot="1"][data-act="read"]');
+  await page.waitForFunction(() => window.__yjz?.mode === 'idle', null, { timeout: 60000 });
+  assert.equal(await page.evaluate(() => document.getElementById('screen').hidden), true, '标题卡片应已收起，不能盖住战场');
+  assert.equal(await page.evaluate(() => document.getElementById('save-list').hidden), true, '读档列表也应收起');
+  assert.match(await page.textContent('#turn'), /第2回合/);
+  assert.deepEqual(await state(), disk, '从标题读战斗档应恢复存档里的完整战况');
 });
 
 /** 一边点对白一边等单挑画面出现；返回是否演过单挑。 */
@@ -778,8 +854,12 @@ await step('續 → 战后剧情：成长、军资与战场标志带回流程，
   st = await storyNow();
   assert.ok(s.camp || s.brief, '战后剧情演完应该到下一场战斗的营地或战前说明');
   assert.ok(st.pc > 0);
-  // 到下一个营地后存一次档，好在刷新页面后验证成长没丢
-  if (s.camp) await page.click('[data-go="camp-save"]');
+  // 到下一个营地后覆盖檔一，好在刷新页面后验证成长没丢
+  if (s.camp) {
+    await page.click('[data-go="camp-save"]');
+    await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+    await page.click('#save-list [data-slot="0"][data-act="write"]');
+  }
 });
 
 await step('刷新页面 → 讀取存檔：营地、军资、关羽 2 级都还在', async () => {
@@ -788,6 +868,9 @@ await step('刷新页面 → 讀取存檔：营地、军资、关羽 2 级都还
   await page.waitForSelector('[data-go="start"]');
   assert.equal(await page.isDisabled('[data-go="load"]'), false, '有存档时读档可点');
   await page.click('[data-go="load"]');
+  await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+  assert.match(await page.textContent('#save-list h1'), /讀取存檔/);
+  await page.click('#save-list [data-slot="0"][data-act="read"]');
   const s = await advance();
   assert.ok(s.camp || s.brief, '读档后应接着停在营地或战前说明');
   const st = await storyNow();
@@ -873,10 +956,15 @@ await step('后期关卡实机：大地图、民众护送、军乐队都能开�
     const pc = G.steps.findIndex((st) => st.t === 'battle' && st.level === lid);
     assert.ok(pc > 0, `${lid} 应在流程里`);
     const story = { script: 'yingjiezhuan', pc, bg: '', picture: '', bgm: '', cast: [], flags: {}, roster, party, bag: [], deploy: [], gold: 10000 };
-    await page.evaluate((st) => localStorage.setItem('yjz.save.v3', JSON.stringify({ story: st })), story);
+    await page.evaluate((st) => {
+      localStorage.setItem('yjz.saves.v1', JSON.stringify({ slots: [{ story: st, at: Date.now() }], last: 0 }));
+      localStorage.setItem('yjz.save.v3', JSON.stringify({ story: st }));
+    }, story);
     await page.reload();
     await page.waitForSelector('[data-go="start"]');
     await page.click('[data-go="load"]');
+    await page.waitForSelector('#save-list:not([hidden]) .save-slot');
+    await page.click('#save-list [data-slot="0"][data-act="read"]');
     await settle();
     await page.waitForSelector('[data-go="deploy"]');
     await page.click('[data-go="deploy"]');
@@ -954,6 +1042,92 @@ await step('修改器：左上角连点三下 → 密码 1122 → 军资 / 兵�
 
   await page.click('[data-tr="close"]');
   assert.equal(await page.evaluate(() => window.__yjz.trainerOpen), false);
+});
+
+await step('简繁切换：默认简体，一键还原原版繁体，对白 / 菜单 / 标题一起变', async () => {
+  await page.evaluate(() => localStorage.removeItem('yjz.script'));
+  await page.reload();
+  await page.waitForSelector('[data-go="start"]');
+  const hans = await page.evaluate(() => ({
+    title: document.querySelector('#screen h1').textContent,
+    body: document.querySelector('#screen').innerText,
+    pageTitle: document.title,
+    label: document.querySelector('[data-go="script"]').textContent.trim(),
+  }));
+  assert.match(hans.title, /三国志英杰传/, `默认应显示简体，实际「${hans.title}」`);
+  assert.doesNotMatch(hans.title, /[國傑傳]/);
+  assert.match(hans.body, /开始新游戏/);
+  assert.match(hans.body, /读取存档/);
+  assert.match(hans.pageTitle, /三国志英杰传/, '浏览器标签也跟着转');
+  assert.equal(hans.label, '文字 简体');
+  const allPlain = await page.evaluate(async () => {
+    const { toSimplified } = await import('/src/zh.ts');
+    const t = document.querySelector('#screen').innerText;
+    return { text: t, plain: toSimplified(t) === t };
+  });
+  assert.ok(allPlain.plain, `简体模式整个标题卡片都不该残留繁体字，实际「${allPlain.text}」`);
+  await shot('31-title-hans');
+
+  // 切回繁体：原文还在 WeakMap 里，是无损还原而不是反向猜
+  await page.click('[data-go="script"]');
+  const hant = await page.evaluate(() => ({
+    title: document.querySelector('#screen h1').textContent,
+    body: document.querySelector('#screen').innerText,
+    label: document.querySelector('[data-go="script"]').textContent.trim(),
+    saved: localStorage.getItem('yjz.script'),
+  }));
+  assert.match(hant.title, /三國志英傑傳/);
+  assert.match(hant.body, /開始新遊戲/);
+  assert.equal(hant.saved, 'hant');
+  assert.equal(hant.label, '文字 繁体');
+
+  // 再切回简体，进游戏检查章节横幅与对白
+  await page.click('[data-go="script"]');
+  await page.click('[data-go="start"]');
+  await page.waitForSelector('#screen .chapter');
+  const plain = await page.evaluate(async () => {
+    const { toSimplified } = await import('/src/zh.ts');
+    return [document.querySelector('#screen .chapter-band').innerText, document.querySelector('#sys').innerText]
+      .map((t) => ({ text: t, plain: toSimplified(t) === t }));
+  });
+  assert.ok(plain.every((p) => p.plain), `简体模式下横幅与菜单不应还有繁体字，实际 ${JSON.stringify(plain)}`);
+  // 点掉章节横幅 / 地名条，直到对白出现；不用 Enter，免得焦点还留在标题按钮上又触发一次点击
+  for (let i = 0; i < 16 && !(await page.$('#talk:not([hidden])')); i++) {
+    if (await page.$('#talk .ask')) await page.click('#talk .ask button:first-child');
+    else if (await page.evaluate(() => !document.getElementById('talk').hidden)) break;
+    else await page.click('#screen');
+    await page.waitForTimeout(60);
+  }
+  await page.waitForSelector('#talk:not([hidden])');
+  const talkPlain = await page.evaluate(async () => {
+    const { toSimplified } = await import('/src/zh.ts');
+    const t = document.querySelector('#talk').innerText;
+    return { text: t, plain: toSimplified(t) === t };
+  });
+  assert.ok(talkPlain.plain, `对白应为简体，实际「${talkPlain.text}」`);
+
+  // 战场系统菜单里是同一个开关
+  await page.evaluate(() => document.querySelector('#sys [data-script="1"]').click());
+  assert.equal(await page.evaluate(() => localStorage.getItem('yjz.script')), 'hant', '系统菜单也能切换');
+  assert.match(await page.textContent('#sys [data-script="1"]'), /文字 繁体/);
+});
+
+await step('读档浮层兜底：即使舞台节点被挪走，点开列表也不能抛错', async () => {
+  // 回归：曾出现 `$('stage')` 取不到时 openSaveList 抛 TypeError，浮层没插进去、画面毫无反应。
+  const r = await page.evaluate(() => {
+    document.getElementById('save-list')?.remove(); // 逼它走「首次创建」那条分支
+    const stage = document.getElementById('stage');
+    stage.id = 'stage-moved';
+    let msg = '';
+    try { window.__yjz.openSaveList('load'); } catch (e) { msg = String(e && e.message); }
+    const list = document.getElementById('save-list');
+    const out = { msg, ok: !!list && !list.hidden, parent: list?.parentElement?.tagName ?? '', slots: list?.querySelectorAll('.save-slot').length ?? 0 };
+    stage.id = 'stage';
+    if (list) list.hidden = true;
+    return out;
+  });
+  assert.equal(r.msg, '', `打开列表不应抛错，实际「${r.msg}」`);
+  assert.deepEqual([r.ok, r.parent, r.slots], [true, 'BODY', 6], `浮层应挂到 body 并列出六格，实际 ${JSON.stringify(r)}`);
 });
 
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');

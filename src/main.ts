@@ -17,6 +17,7 @@ import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll
 import type { Battle, Ev, Flag, Unit } from './rules/types';
 import { BattleScene, CELL, RES, VIEW_H, VIEW_W, sideOf } from './scene';
 import { checkScript, currentStep, nextStep, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
+import { initScript, scriptLabel, toggleScript } from './zh';
 
 const SAVE_KEY = 'yjz.save.v3'; // 流程进度 + 战斗状态
 const CAMERA_FOLLOW_KEY = 'yjz.camera-follow';
@@ -841,7 +842,7 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
         uiRefresh = null;
         return done();
       }
-      if (go === 'camp-save') saveCamp();
+      if (go === 'camp-save') openSaveList('save');
       render();
     };
   });
@@ -1064,52 +1065,162 @@ async function onCell(x: number, y: number) {
 }
 
 // ---------------------------------------------------------------- 存档 ----
-function saveCamp() {
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ story }));
-    log('已存档。');
-  } catch {
-    log('存档失败：浏览器不允许写入本地存储。');
-  }
-}
-function save() {
-  if (mode !== 'idle' || b.stage !== 'player' || b.undo) return;
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ story, battle: b }));
-    log('已存档。');
-  } catch {
-    log('存档失败：浏览器不允许写入本地存储。');
-  }
-}
+const SAVE_LIST_KEY = 'yjz.saves.v1'; // 六格存档表；SAVE_KEY 仍作「最近存档」镜像，兼容旧版
+const SAVE_SLOTS = 6;
+const SLOT_NAMES = ['一', '二', '三', '四', '五', '六'];
+
 interface SaveData { story: Story; battle?: Battle }
-function readSave(): SaveData | null {
+interface SaveEntry extends SaveData { at: number } // 存档时间，只用于列表显示
+interface SaveList { slots: (SaveEntry | null)[]; last: number | null }
+
+/** 坏档不让读：流程要对得上，带战斗的还要对得上关卡、地形尺寸和随机数。 */
+function validSave(d: SaveData | null | undefined): SaveData | null {
+  const st = d?.story;
+  if (!st || st.script !== CAMPAIGN.id || !Array.isArray(st.party)) return null;
+  const bt = d?.battle;
+  if (!bt) return d!;
+  const step = CAMPAIGN.steps[st.pc];
+  const ok = step?.t === 'battle' && step.level === bt.level && lvOf(bt.level) &&
+    Array.isArray(bt.units) && Array.isArray(bt.terrain) && bt.terrain.length === bt.w * bt.h &&
+    typeof bt.rng === 'number' && bt.stage === 'player' && !!bt.vars;
+  return ok ? d! : null;
+}
+
+const blankList = (): SaveList => ({ slots: Array(SAVE_SLOTS).fill(null), last: null });
+
+function writeSaveList(list: SaveList) {
+  localStorage.setItem(SAVE_LIST_KEY, JSON.stringify(list));
+  // 旧入口 / 自动化测试仍从 yjz.save.v3 找「最近一次存档」，这里保持同步。
+  const cur = list.last === null ? null : list.slots[list.last];
+  if (cur) localStorage.setItem(SAVE_KEY, JSON.stringify({ story: cur.story, battle: cur.battle }));
+  else localStorage.removeItem(SAVE_KEY);
+}
+
+/** 读六格表；列表还空时把旧版单槽存档（或外部预置的单槽）接到檔一。 */
+function readSaveList(): SaveList {
+  const list = blankList();
   try {
-    const d = JSON.parse(localStorage.getItem(SAVE_KEY) ?? 'null') as SaveData | null;
-    const st = d?.story;
-    if (!st || st.script !== CAMPAIGN.id || !Array.isArray(st.party)) return null;
-    const bt = d.battle;
-    if (!bt) return d;
-    const step = CAMPAIGN.steps[st.pc];
-    const ok = step?.t === 'battle' && step.level === bt.level && lvOf(bt.level) &&
-      Array.isArray(bt.units) && Array.isArray(bt.terrain) && bt.terrain.length === bt.w * bt.h &&
-      typeof bt.rng === 'number' && bt.stage === 'player' && !!bt.vars;
-    return ok ? d : null;
+    const raw = JSON.parse(localStorage.getItem(SAVE_LIST_KEY) ?? 'null') as Partial<SaveList> | null;
+    if (raw && Array.isArray(raw.slots)) {
+      for (let i = 0; i < SAVE_SLOTS; i++) {
+        const e = raw.slots[i] as SaveEntry | null | undefined;
+        const ok = e && validSave(e);
+        list.slots[i] = ok ? { story: ok.story, battle: ok.battle, at: Number(e!.at) || Date.now() } : null;
+      }
+      list.last = Number.isInteger(raw.last) && list.slots[raw.last as number] ? raw.last as number : null;
+    }
+    if (!list.slots.some(Boolean)) {
+      const legacy = validSave(JSON.parse(localStorage.getItem(SAVE_KEY) ?? 'null') as SaveData | null);
+      if (legacy) {
+        list.slots[0] = { ...legacy, at: Date.now() };
+        list.last = 0;
+        writeSaveList(list);
+      }
+    }
+  } catch { /* 坏表当空表，不挡着玩 */ }
+  return list;
+}
+
+const hasSaves = () => readSaveList().slots.some(Boolean);
+const saveSummary = (e: SaveEntry) => {
+  const where = e.battle ? `${esc(lvOf(e.battle.level)?.name ?? e.battle.level)} · 第${e.battle.round}回合` : '出兵準備 / 劇情';
+  const when = new Date(e.at).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  return `${where}<br><span>${e.story.gold} 金 · ${e.story.party.length} 名武將　${esc(when)}</span>`;
+};
+
+/** 当前能存什么：战斗中带完整战况，其余只存流程；标题 / 结局不能存。 */
+function currentSaveData(): SaveData | null {
+  if (mode === 'over') return null;
+  if (mode === 'idle' && b.stage === 'player' && !b.undo) return { story, battle: b };
+  return { story };
+}
+function writeSlot(i: number): boolean {
+  const data = currentSaveData();
+  if (!data) return false;
+  try {
+    const list = readSaveList();
+    list.slots[i] = { ...data, at: Date.now() };
+    list.last = i;
+    writeSaveList(list);
+    log(`已存入檔${SLOT_NAMES[i]}。`);
+    return true;
   } catch {
-    return null;
+    log('存档失败：浏览器不允许写入本地存储。');
+    return false;
   }
 }
-function load() {
-  const d = readSave();
+function deleteSlot(i: number) {
+  try {
+    const list = readSaveList();
+    list.slots[i] = null;
+    if (list.last === i) { const next = list.slots.findIndex(Boolean); list.last = next < 0 ? null : next; }
+    writeSaveList(list);
+    log(`已刪除檔${SLOT_NAMES[i]}。`);
+  } catch { log('删除失败：浏览器不允许写入本地存储。'); }
+}
+function loadSlot(i: number): boolean {
+  const d = validSave(readSaveList().slots[i]);
   if (!d) return log('没有可用的存档。'), false;
   story = d.story;
-  if (d.battle) {
-    begin(d.battle);
-    log('已读档。');
-  } else {
-    $('screen').hidden = true;
-    void playStory(currentStep(CAMPAIGN, story));
-  }
+  if (d.battle) { begin(d.battle); log('已读档。'); }
+  else { $('screen').hidden = true; void playStory(currentStep(CAMPAIGN, story)); }
   return true;
+}
+
+// ---- 存档列表：独立浮层，不占 #screen（剧情 / 章节横幅还在用它的点击） ----
+let saveMode: 'save' | 'load' = 'load';
+let pendingDelete: number | null = null;
+const saveListEl = () => document.getElementById('save-list');
+
+function renderSaveList() {
+  const el = saveListEl();
+  if (!el) return;
+  const list = readSaveList();
+  const canSave = !!currentSaveData();
+  el.innerHTML = `<div class="card saves"><h1>${saveMode === 'save' ? '存檔' : '讀取存檔'}</h1>` +
+    `<p class="sub">${saveMode === 'save' ? '選一個檔位寫入（已有存檔會被覆蓋）' : '選一個檔位讀取'}　共 ${SAVE_SLOTS} 格</p>` +
+    `<div class="save-slots">${list.slots.map((e, i) => {
+      const del = pendingDelete === i;
+      return `<div class="save-slot${e ? '' : ' empty'}"><span class="slot-no">檔 ${SLOT_NAMES[i]}</span>` +
+        `<span class="slot-info">${e ? saveSummary(e) : '— 空 —'}</span>` +
+        (saveMode === 'save'
+          ? `<button class="btn" data-slot="${i}" data-act="write"${canSave ? '' : ' disabled'}>${e ? '覆蓋' : '存檔'}</button>`
+          : `<button class="btn" data-slot="${i}" data-act="read"${e ? '' : ' disabled'}>讀取</button>`) +
+        (e ? `<button class="btn del${del ? ' sure' : ''}" data-slot="${i}" data-act="delete">${del ? '確認刪除' : '刪除'}</button>` : '') +
+        '</div>';
+    }).join('')}</div>` +
+    '<div class="row end"><button class="btn" data-act="close">返回</button></div></div>';
+}
+function closeSaveList() { const el = saveListEl(); if (el) el.hidden = true; }
+function openSaveList(use: 'save' | 'load') {
+  saveMode = use;
+  pendingDelete = null;
+  let el = saveListEl();
+  if (!el) {
+    // 浮层挂在舞台里才跟着等比缩放；万一舞台节点不在（旧页面缓存、被外部脚本挪走），
+    // 退到 body 也不能让整个读档入口直接抛错、画面一动不动。
+    const host = document.getElementById('stage') ?? document.body;
+    if (!host) return;
+    if (host === document.body) console.warn('[save] 找不到 #stage，存档浮层挂到 body');
+    el = document.createElement('div');
+    el.id = 'save-list';
+    host.appendChild(el);
+    el.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-act]');
+      if (!btn) return;
+      const act = btn.dataset.act;
+      const i = Number(btn.dataset.slot);
+      if (act === 'close') return closeSaveList();
+      if (act === 'delete') {
+        if (pendingDelete !== i) { pendingDelete = i; return renderSaveList(); }
+        deleteSlot(i); pendingDelete = null; return renderSaveList();
+      }
+      if (act === 'write') { if (writeSlot(i)) closeSaveList(); return; }
+      if (act === 'read') { closeSaveList(); if (!loadSlot(i)) showTitle('没有可用的存档。'); return; }
+    });
+  }
+  el.hidden = false;
+  renderSaveList();
 }
 
 // ---------------------------------------------------------------- 修改器 ----
@@ -1382,7 +1493,8 @@ $('screen').addEventListener('click', (e) => {
     if (step) showDeploy(step.level);
   }
   if (go === 'next') afterBattle();
-  if (go === 'load') ($('screen').hidden = !!readSave()), load() || showTitle('没有可用的存档。');
+  if (go === 'load') openSaveList('load');
+  if (go === 'script') toggleScriptMode();
   if (go === 'title') showTitle();
 });
 
@@ -1394,7 +1506,8 @@ function showTitle(note = '') {
     '<div class="seal">非官方<br>復刻</div><h1>三國志英傑傳</h1>' +
     '<p class="sub">PC DOS 繁體中文版 全流程復刻</p>' +
     '<p class="credit">畫面、劇本、地圖、兵種、頭像與音樂均取自原版《三國志英傑傳》DOS 版，逐像素還原。詳見 docs/assets.md。</p>' +
-    `<div class="row"><button class="btn" data-go="start">開始新遊戲</button><button class="btn" data-go="load"${readSave() ? '' : ' disabled'}>讀取存檔</button></div>` +
+    `<div class="row"><button class="btn" data-go="start">開始新遊戲</button><button class="btn" data-go="load"${hasSaves() ? '' : ' disabled'}>讀取存檔</button>` +
+    `<button class="btn" data-go="script" data-script-label>${scriptLabel()}</button></div>` +
     (note ? `<p class="sub" style="margin:10px 0 0">${esc(note)}</p>` : ''));
 }
 /** 战前说明：列出这一关的胜利条件、失败条件与出征名单。 */
@@ -1537,6 +1650,12 @@ function showEnding(text: string) {
 
 /** 开始一场战斗：d 为读档数据；null 表示新开流程当前停着的那一关，带上此前的成长与布阵。 */
 function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
+  // 读档可能从标题 / 战报 / 剧情舞台进来，那些整屏卡片必须收起，否则战场在下面开打、画面却纹丝不动。
+  const frame = $('screen');
+  frame.hidden = true;
+  frame.innerHTML = '';
+  frame.className = '';
+  $('stage').classList.remove('story');
   $('log').replaceChildren();
   let evs: Ev[] = [];
   const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
@@ -1566,9 +1685,16 @@ function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
 let sfxBtn: HTMLButtonElement | null = null;
 let cameraBtn: HTMLButtonElement | null = null;
 let speedBtn: HTMLButtonElement | null = null;
+let scriptBtn: HTMLButtonElement | null = null;
 const syncSfxButton = () => { if (sfxBtn) sfxBtn.textContent = sfxEnabled() ? '音效 開' : '音效 關'; };
 const syncCameraButton = () => { if (cameraBtn) cameraBtn.textContent = cameraFollow ? '镜头跟随 开' : '镜头跟随 关'; };
 const syncSpeedButton = () => { if (speedBtn) speedBtn.textContent = `移动速度 ${ANIM_SPEEDS[animSpeedIndex].label}`; };
+/** 右下系统菜单和标题上的按钮都标出当前字形；标签本身用简体写，不参与转换。 */
+const syncScriptButton = () => {
+  if (scriptBtn) scriptBtn.textContent = scriptLabel();
+  document.querySelectorAll<HTMLElement>('[data-script-label]').forEach((el) => (el.textContent = scriptLabel()));
+};
+const toggleScriptMode = () => { toggleScript(); syncScriptButton(); playSfx('confirm', 0.75); };
 const cycleAnimSpeed = () => {
   animSpeedIndex = (animSpeedIndex + 1) % ANIM_SPEEDS.length;
   localStorage.setItem(ANIM_SPEED_KEY, String(ANIM_SPEEDS[animSpeedIndex].v));
@@ -1588,6 +1714,7 @@ const sysButtons: [string, string, () => void][] = [
   [sfxEnabled() ? '音效 開' : '音效 關', '', () => { toggleSfx(); syncSfxButton(); playSfx('confirm', 0.75); }],
   [cameraFollow ? '镜头跟随 开' : '镜头跟随 关', 'camera-toggle', toggleCameraFollow],
   [`移动速度 ${ANIM_SPEEDS[animSpeedIndex].label}`, 'speed-toggle', cycleAnimSpeed],
+  [scriptLabel(), 'script-toggle', toggleScriptMode],
   ['胜利条件', '', () => void talk('', `胜利：${b.objective}。失败：主将撤退，或 ${levelOf(b).turnLimit} 回合内未能取胜。`)],
   ['全军撤退', '', async () => {
     if (mode !== 'idle') return;
@@ -1595,8 +1722,8 @@ const sysButtons: [string, string, () => void][] = [
     if (await confirmBox('全军撤退，放弃这一战吗？')) return (b.stage = 'lost'), (b.reason = '全军撤退'), showResult();
     mode = 'idle';
   }],
-  ['存档', '', save],
-  ['读档', '', () => mode === 'idle' && load()],
+  ['存档', '', () => openSaveList('save')],
+  ['读档', '', () => mode === 'idle' && openSaveList('load')],
 ];
 $('sys').replaceChildren(...sysButtons.map(([label, cls, on]) => {
   const btn = document.createElement('button');
@@ -1606,10 +1733,15 @@ $('sys').replaceChildren(...sysButtons.map(([label, cls, on]) => {
   if (label.startsWith('音效')) (btn.dataset.sfx = '1'), (sfxBtn = btn);
   if (label.startsWith('镜头跟随')) (btn.dataset.camera = '1'), (cameraBtn = btn);
   if (label.startsWith('移动速度')) (btn.dataset.speed = '1'), (speedBtn = btn);
+  if (label.startsWith('文字')) (btn.dataset.script = '1'), (scriptBtn = btn);
   return btn;
 }));
 
+// 简繁显示：之后所有 DOM 文本（对白、菜单、状态栏、浮层）都自动按当前设置转换。
+initScript();
+
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && saveListEl()?.hidden === false) return closeSaveList();
   if (e.key === 'Escape' && trainerOpen) return closeTrainer();
   if (gateOpen || trainerOpen) return; // 密码框与修改器自己处理按键
   if (e.key === 'Escape') cancel();
@@ -1650,7 +1782,7 @@ game.events.once('ready', () => {
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
-      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxEnabled, duel: playDuel, banner, get trainerOpen() { return trainerOpen; }, get gateOpen() { return gateOpen; } } });
+      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxEnabled, duel: playDuel, banner, openSaveList, get trainerOpen() { return trainerOpen; }, get gateOpen() { return gateOpen; } } });
     }
     if (demo) {
       // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用

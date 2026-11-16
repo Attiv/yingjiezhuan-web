@@ -3,6 +3,7 @@ import { facesLeft } from './facing';
 import { strategySpec } from './data/strategies';
 import { TB, bySlot } from './rules/core';
 import { levelOf } from './rules/turn';
+import { convert } from './zh';
 import type { Battle, Ev, Unit } from './rules/types';
 
 /** 画布像素与舞台单位之比：战场按 3 倍分辨率画，再缩回舞台里的 416×384，放大后仍然清晰。 */
@@ -239,7 +240,7 @@ export class BattleScene extends Phaser.Scene {
         g.strokeStyle = 'rgba(0, 0, 0, 0.18)';
         g.strokeRect(x + 0.5, y + 0.5, 31, 31);
         g.fillStyle = 'rgba(0, 0, 0, 0.6)';
-        if (code) g.fillText((TB.terrainNames[code] ?? '?')[0], x + 16, y + 17);
+        if (code) g.fillText(convert(TB.terrainNames[code] ?? '?')[0], x + 16, y + 17);
       });
       t.refresh();
     }
@@ -256,7 +257,7 @@ export class BattleScene extends Phaser.Scene {
         g.fill();
         g.stroke();
         g.fillStyle = '#ffffff';
-        g.fillText(u.name[0], cx, cy + 3);
+        g.fillText(convert(u.name)[0], cx, cy + 3);
         t.add(i + row * n, 0, i * CELL, row * CELL, CELL, CELL);
       }));
       t.refresh();
@@ -311,12 +312,13 @@ export class BattleScene extends Phaser.Scene {
     const [att, def] = [actor(a, true), actor(d, false)];
     box.setScrollFactor(0, 0, true); // 钉在画面上，不跟地图卷动
     await Promise.all([
-      this.tween({ targets: box, y: top, alpha: 1, duration: 230, ease: 'Cubic.easeOut' }),
-      this.tween({ targets: att.s, x: att.home, duration: 280, ease: 'Cubic.easeOut' }),
-      this.tween({ targets: def.s, x: def.home, duration: 280, ease: 'Cubic.easeOut' }),
+      this.tween({ targets: box, y: top, alpha: 1, duration: 150, ease: 'Cubic.easeOut' }),
+      this.tween({ targets: att.s, x: att.home, duration: 190, ease: 'Cubic.easeOut' }),
+      this.tween({ targets: def.s, x: def.home, duration: 190, ease: 'Cubic.easeOut' }),
     ]);
-    // 待机：两个演员都在喘气（60 帧循环），让玩家先看清双方的架势
-    await this.wait(780);
+    // 亮相一下就出手：原版特写不是站着喘半天气才挥刀。演员入场时 idle 已在播，
+    // 所以这里再留 260ms 就能看到呼吸，又不会让「等一会儿才打」。
+    await this.wait(260);
     // 出手时停掉呼吸补间并归位，免得挥刀的人还在上下飘
     for (const act of [att, def]) { act.breath.stop(); act.s.y = act.baseY; }
     await new Promise<void>((done) => {
@@ -355,7 +357,9 @@ export class BattleScene extends Phaser.Scene {
   private frameOf(u: Unit, acted: boolean, walking = false) {
     if (this.perUnit) return this.b.units.findIndex((v) => v.slot === u.slot) + (acted ? this.b.units.length : 0);
     const row = (acted ? 2 : 0) + (walking ? 1 : 0);
-    return row * BattleScene.TOKENS + u.cls * 2 + (u.slot >= 15 ? 1 : 0);
+    // 图集最后一列（38）是原版给刘备的专属旗步兵，不是普通短兵；按兵种算列会永远取不到它。
+    const col = u.key === 'liu_bei' || u.name === '劉備' ? BattleScene.TOKENS - 1 : u.cls * 2 + (u.slot >= 15 ? 1 : 0);
+    return row * BattleScene.TOKENS + col;
   }
 
   /** 把棋子对齐到当前状态：位置、是否在场；我军已行动的换成灰色那一帧，混乱的歪倒并发紫。 */
@@ -433,7 +437,7 @@ export class BattleScene extends Phaser.Scene {
   /** 头顶飘字。 */
   private async float(u: Unit, text: string, color: string) {
     const s = this.tk(u.slot);
-    const t = this.add.text(s.x, s.y - 30, text, { ...FONT, color }).setOrigin(0.5, 1).setDepth(9).setScale(0.6);
+    const t = this.add.text(s.x, s.y - 30, convert(text), { ...FONT, color }).setOrigin(0.5, 1).setDepth(9).setScale(0.6);
     await this.tween({ targets: t, y: t.y - 44, scale: 1, duration: 420, ease: 'Back.easeOut' });
     await this.tween({ targets: t, alpha: 0, duration: 260, delay: 180 });
     t.destroy();
@@ -599,7 +603,8 @@ export class BattleScene extends Phaser.Scene {
       case 'hit': {
         const [a, d] = [unit(ev.a), unit(ev.d)];
         this.hp.set(d.slot, this.hpOf(d.slot) - ev.dmg);
-        await this.focus(d.x, d.y, false, true);
+        // 有特写时横幅盖住战场，镜头不必再慢慢卷过去（那 300ms 全成了出手前的空等）。
+        await this.focus(d.x, d.y, this.speed > 0 && this.hasCutin(a, d), true);
         if (!this.speed) onImpact?.();
         else if (this.hasCutin(a, d)) await this.cutin(a, d, onImpact);
         else await this.strike(a, d, onImpact);
