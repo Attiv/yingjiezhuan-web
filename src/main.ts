@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import './style.css';
-import { playSfx, preloadSfx, sfxEnabled, sfxLog, toggleSfx, unlockSfx } from './audio';
+import { playSfx, preloadSfx, sfxDiagnostics, sfxEnabled, sfxLog, toggleSfx, unlockSfx } from './audio';
 import { sfxOf } from './sfx-map';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
 import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
@@ -192,8 +192,11 @@ function renderUnit(u: Unit | null = shown) {
     notes.map((n) => `<p class="note">${esc(n)}</p>`).join('');
 }
 
+let shownTerrain: number | undefined;
 function renderTile(x: number, y: number) {
   const t = terrainAt(b, x, y);
+  if (t === shownTerrain) return;
+  shownTerrain = t;
   const d = terrainDef(t);
   $('tile').innerHTML = `<div>${TB.terrainNames[t] ?? ''}</div><span>${d === 255 ? '不能进入' : `防御 ${d}%`}</span>`;
 }
@@ -255,7 +258,8 @@ function describe(ev: Ev): string {
 async function present(evs: Ev[]) {
   for (const ev of evs) {
     const fx = sfxOf(ev, b);
-    if (fx) playSfx(fx, ev.t === 'move' || ev.t === 'recover' ? 0.5 : 1);
+    // 行走、攻击和单挑由画面在每一步 / 命中时触发，避免音效提前响完。
+    if (fx && ev.t !== 'move' && ev.t !== 'hit' && ev.t !== 'duel') playSfx(fx, ev.t === 'recover' ? 0.5 : 1);
     const text = describe(ev);
     if (text) log(text);
     if (ev.t === 'round' || ev.t === 'stage') renderTurn();
@@ -327,7 +331,7 @@ const say = (who: string, text: string) => {
   spotSpeaker();
   return talk(speaking, text, [], faceOf(who) ?? '');
 };
-const confirmBox = (text: string) => talk('刘备', text, ['是', '否'], 'faces/038', 1).then((i) => i === 0);
+const confirmBox = (text: string) => talk('刘备', text, ['是', '否'], faceOf('liu_bei') ?? '', 1).then((i) => i === 0);
 
 // ---------------------------------------------------------------- 单挑演出 ----
 /** 单挑用的两匹马：有专属图集的用专属，其余用原版的通用武将。 */
@@ -864,10 +868,10 @@ function openMenu(items: Item[], u: Unit, wide = false) {
   }));
   el.hidden = false;
   const cam = scene.cameras.main;
-  const w = wide ? 132 : 76;
+  const w = el.offsetWidth;
   const cell = CELL / RES; // 菜单按舞台单位摆，贴在部队右侧，放不下就放左侧
   const left = (u.x * CELL - cam.scrollX) / RES + cell + 2;
-  el.style.left = `${left + w > VIEW_W ? left - cell - w - 4 : left}px`;
+  el.style.left = `${Math.max(8, Math.min(VIEW_W - w - 8, left + w > VIEW_W ? left - cell - w - 4 : left))}px`;
   el.style.top = `${Math.max(0, Math.min(VIEW_H - el.offsetHeight, (u.y * CELL - cam.scrollY) / RES))}px`;
   (el.querySelector('button:not(:disabled)') as HTMLElement | null)?.focus();
 }
@@ -1023,6 +1027,7 @@ async function endTurn(confirmed = false) {
   renderTurn();
   await present(endPhase(b));
   while (autoPhase(b)) await present(aiStep(b));
+  writeAutoSave(); // 友军、敌军及新回合事件全部结算后，保存可直接操作的回合开局。
   await settle();
 }
 
@@ -1066,6 +1071,7 @@ async function onCell(x: number, y: number) {
 
 // ---------------------------------------------------------------- 存档 ----
 const SAVE_LIST_KEY = 'yjz.saves.v1'; // 六格存档表；SAVE_KEY 仍作「最近存档」镜像，兼容旧版
+const AUTO_SAVE_KEY = 'yjz.autosave.v1'; // 独立只读槽：仅由新战斗 / 新回合写入
 const SAVE_SLOTS = 6;
 const SLOT_NAMES = ['一', '二', '三', '四', '五', '六'];
 
@@ -1121,7 +1127,20 @@ function readSaveList(): SaveList {
   return list;
 }
 
-const hasSaves = () => readSaveList().slots.some(Boolean);
+/** 自动档不写手动槽位或旧版最近存档镜像，手动保存也不能碰它。 */
+function readAutoSave(): SaveEntry | null {
+  try {
+    const e = JSON.parse(localStorage.getItem(AUTO_SAVE_KEY) ?? 'null') as SaveEntry | null;
+    return e?.battle && validSave(e) ? e : null;
+  } catch { return null; }
+}
+function writeAutoSave() {
+  if (b.stage !== 'player' || b.undo) return;
+  try {
+    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify({ story, battle: b, at: Date.now() } satisfies SaveEntry));
+  } catch { log('自动存档失败：浏览器不允许写入本地存储，请检查存储空间。'); }
+}
+const hasSaves = () => !!readAutoSave() || readSaveList().slots.some(Boolean);
 const saveSummary = (e: SaveEntry) => {
   const where = e.battle ? `${esc(lvOf(e.battle.level)?.name ?? e.battle.level)} · 第${e.battle.round}回合` : '出兵準備 / 劇情';
   const when = new Date(e.at).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
@@ -1135,6 +1154,7 @@ function currentSaveData(): SaveData | null {
   return { story };
 }
 function writeSlot(i: number): boolean {
+  if (!Number.isInteger(i) || i < 0 || i >= SAVE_SLOTS) return false;
   const data = currentSaveData();
   if (!data) return false;
   try {
@@ -1150,6 +1170,7 @@ function writeSlot(i: number): boolean {
   }
 }
 function deleteSlot(i: number) {
+  if (!Number.isInteger(i) || i < 0 || i >= SAVE_SLOTS) return;
   try {
     const list = readSaveList();
     list.slots[i] = null;
@@ -1158,8 +1179,8 @@ function deleteSlot(i: number) {
     log(`已刪除檔${SLOT_NAMES[i]}。`);
   } catch { log('删除失败：浏览器不允许写入本地存储。'); }
 }
-function loadSlot(i: number): boolean {
-  const d = validSave(readSaveList().slots[i]);
+function loadSlot(i: number | 'auto'): boolean {
+  const d = validSave(i === 'auto' ? readAutoSave() : readSaveList().slots[i]);
   if (!d) return log('没有可用的存档。'), false;
   story = d.story;
   if (d.battle) { begin(d.battle); log('已读档。'); }
@@ -1177,9 +1198,13 @@ function renderSaveList() {
   if (!el) return;
   const list = readSaveList();
   const canSave = !!currentSaveData();
+  const auto = readAutoSave();
+  const autoRow = `<div class="save-slot auto-slot${auto ? '' : ' empty'}"><span class="slot-no">自动</span>` +
+    `<span class="slot-info">${auto ? saveSummary(auto) : '— 尚无自动存档 —'}<br><span>每回合开始自动更新 · 不可手动覆盖或删除</span></span>` +
+    `<button class="btn" data-slot="auto" data-act="read"${auto ? '' : ' disabled'}>读取</button></div>`;
   el.innerHTML = `<div class="card saves"><h1>${saveMode === 'save' ? '存檔' : '讀取存檔'}</h1>` +
-    `<p class="sub">${saveMode === 'save' ? '選一個檔位寫入（已有存檔會被覆蓋）' : '選一個檔位讀取'}　共 ${SAVE_SLOTS} 格</p>` +
-    `<div class="save-slots">${list.slots.map((e, i) => {
+    `<p class="sub">${saveMode === 'save' ? '選一個檔位寫入（已有存檔會被覆蓋）' : '選一個檔位讀取'}　${SAVE_SLOTS} 个手动档 + 1 个自动档</p>` +
+    `<div class="save-slots">${autoRow}${list.slots.map((e, i) => {
       const del = pendingDelete === i;
       return `<div class="save-slot${e ? '' : ' empty'}"><span class="slot-no">檔 ${SLOT_NAMES[i]}</span>` +
         `<span class="slot-info">${e ? saveSummary(e) : '— 空 —'}</span>` +
@@ -1216,7 +1241,7 @@ function openSaveList(use: 'save' | 'load') {
         deleteSlot(i); pendingDelete = null; return renderSaveList();
       }
       if (act === 'write') { if (writeSlot(i)) closeSaveList(); return; }
-      if (act === 'read') { closeSaveList(); if (!loadSlot(i)) showTitle('没有可用的存档。'); return; }
+      if (act === 'read') { closeSaveList(); if (!loadSlot(btn.dataset.slot === 'auto' ? 'auto' : i)) showTitle('没有可用的存档。'); return; }
     });
   }
   el.hidden = false;
@@ -1362,7 +1387,7 @@ function renderTrainer() {
       `<label>Lv<input type="number" min="1" max="99" value="${r.level}" data-lv="${id}"></label>` +
       `<label>經驗<input type="number" min="0" max="99" value="${r.exp}" data-exp="${id}"></label>` +
       `<select data-cls="${id}" aria-label="兵種">${clsOptions(r.cls ?? o.cls)}</select>` +
-      `<button class="btn" data-equip="${id}">一鍵裝備</button></div>`;
+      `<button class="btn" data-equip="${id}" title="兵器 / 防具 / 馬取最強，並補一件玉璽">一鍵裝備</button></div>`;
   }).join('') || '<p class="note">先開始遊戲或讀取存檔，才有武將可改。</p>';
   const options = trainerItems().map(([label, list]) => `<optgroup label="${label}">` +
     list.map((id) => `<option value="${id}">${esc(itemName(id))}${itemEffect(id) ? `（${esc(itemEffect(id))}）` : ''}</option>`).join('') +
@@ -1378,7 +1403,7 @@ function renderTrainer() {
     '<button class="btn" data-gold="1000">＋1000</button><button class="btn" data-gold="10000">＋10000</button>' +
     '<button class="btn" data-gold="0">歸零</button></div>' +
     `<h2>武將（${party.length}）</h2><div class="tr-officers">${rows}</div>` +
-    '<div class="tr-acts"><button class="btn" data-tr="equip-all">全隊一鍵裝備</button>' +
+    '<div class="tr-acts"><button class="btn" data-tr="equip-all" title="每人兵器 / 防具 / 馬取最強，並各補一件玉璽">全隊一鍵裝備</button>' +
     '<button class="btn" data-tr="level-all">全隊 +10 級</button>' +
     (fighting ? '<button class="btn" data-tr="heal">我軍補滿</button>' : '') + '</div>' +
     `<h2>道具</h2><div class="tr-give"><select id="tr-item">${options}</select>` +
@@ -1677,7 +1702,7 @@ function begin(d: Battle | null, slots?: Record<string, [number, number]>) {
   void scene.setBattle(b).then(() => (void scene.focus(lord.x, lord.y, true), present(evs))).then(() => {
     mode = 'idle';
     renderTurn();
-    if (!d) log(`目标：${b.objective}`);
+    if (!d) { writeAutoSave(); log(`目标：${b.objective}`); }
   });
 }
 
@@ -1760,29 +1785,133 @@ const game = new Phaser.Game({
   scene: BattleScene,
 });
 
-/** 舞台等比放大到撑满窗口并居中；缩放后让 Phaser 重新量画布，输入坐标才对得上。 */
+/** 仍用原版内部坐标；安全区、浏览器工具栏和触屏操作条只影响外层可用空间。 */
+const touchLayout = matchMedia('(pointer: coarse)');
+function closeTouchSystem() {
+  document.body.classList.remove('system-open');
+  $('touch-system').setAttribute('aria-expanded', 'false');
+}
+$('touch-log').onclick = () => {
+  const open = document.body.classList.toggle('log-open');
+  $('touch-log').setAttribute('aria-expanded', String(open));
+};
+$('touch-system').onclick = () => {
+  const open = document.body.classList.toggle('system-open');
+  $('touch-system').setAttribute('aria-expanded', String(open));
+};
+$('touch-cancel').onclick = () => {
+  if (document.body.classList.contains('system-open')) return closeTouchSystem();
+  if (saveListEl()?.hidden === false) return closeSaveList();
+  if (trainerOpen) return closeTrainer();
+  cancel();
+};
+$('sys').addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('button:not(:disabled)')) closeTouchSystem(); });
 function fit() {
-  const s = Math.min(innerWidth / 640, innerHeight / 480);
+  const v = visualViewport;
+  const [width, height, x, y] = [v?.width ?? innerWidth, v?.height ?? innerHeight, v?.offsetLeft ?? 0, v?.offsetTop ?? 0];
+  const safe = getComputedStyle($('safe-area'));
+  const [left, right, top, bottom] = [safe.paddingLeft, safe.paddingRight, safe.paddingTop, safe.paddingBottom].map(parseFloat);
+  const touch = touchLayout.matches;
+  document.body.classList.toggle('touch', touch);
+  document.body.classList.toggle('portrait', touch && height > width);
+  const sys = $('sys');
+  if (touch && sys.parentElement !== document.body) document.body.append(sys);
+  else if (!touch && sys.parentElement !== $('side')) { $('side').append(sys); closeTouchSystem(); }
+  const availableW = Math.max(1, width - left - right);
+  const availableH = Math.max(1, height - top - bottom - (touch ? 56 : 0) - (touch && height > width ? 32 : 0));
+  const compact = touch && width > height && $('screen').hidden && $('duelplay').hidden && saveListEl()?.hidden !== false && !trainerOpen && !gateOpen;
+  document.body.classList.toggle('compact-battle', compact);
+  const stageH = compact ? 384 : 480;
+  const s = Math.min(availableW / 640, availableH / stageH);
   const st = $('stage').style;
+  st.setProperty('--stage-scale', String(s));
+  st.setProperty('--touch-size', `${44 / s}px`);
+  st.setProperty('--touch-font', `${14 / s}px`);
   st.transform = `scale(${s})`;
-  st.left = `${(innerWidth - 640 * s) / 2}px`;
-  st.top = `${(innerHeight - 480 * s) / 2}px`;
+  st.left = `${x + left + (availableW - 640 * s) / 2}px`;
+  st.top = `${y + top + (availableH - stageH * s) / 2}px`;
   game.scale.refresh();
 }
 addEventListener('resize', fit);
+visualViewport?.addEventListener('resize', fit);
+visualViewport?.addEventListener('scroll', fit);
+touchLayout.addEventListener('change', fit);
+let fitQueued = false;
+new MutationObserver(() => {
+  if (fitQueued) return;
+  fitQueued = true;
+  requestAnimationFrame(() => { fitQueued = false; fit(); });
+}).observe($('stage'), { attributes: true, subtree: true, attributeFilter: ['hidden'] });
+
+/** 小地图坐标取显示矩形，独立于舞台与高分辨率画布的缩放。 */
+const minimap = $('minimap') as HTMLCanvasElement;
+let mapGesture: { id: number; dx: number; dy: number } | undefined;
+const minimapPoint = (e: PointerEvent) => {
+  const r = minimap.getBoundingClientRect();
+  return { x: (e.clientX - r.left) / r.width * b.w * CELL, y: (e.clientY - r.top) / r.height * b.h * CELL };
+};
+minimap.addEventListener('pointerdown', (e) => {
+  if (e.button !== 0 || mapGesture || !scene.canPan()) return;
+  e.preventDefault();
+  const p = minimapPoint(e), cam = scene.cameras.main;
+  const inside = p.x >= cam.scrollX && p.x <= cam.scrollX + cam.width && p.y >= cam.scrollY && p.y <= cam.scrollY + cam.height;
+  mapGesture = { id: e.pointerId, dx: inside ? p.x - cam.scrollX : cam.width / 2, dy: inside ? p.y - cam.scrollY : cam.height / 2 };
+  minimap.setPointerCapture(e.pointerId);
+  // 金框内按下保留抓取偏移，点按松手时仍强制以该点居中。
+  if (!inside) scene.panTo(p.x - mapGesture.dx, p.y - mapGesture.dy);
+});
+let mapMoved = false;
+minimap.addEventListener('pointermove', (e) => {
+  if (mapGesture?.id !== e.pointerId) return;
+  mapMoved = true;
+  const p = minimapPoint(e);
+  scene.panTo(p.x - mapGesture.dx, p.y - mapGesture.dy);
+});
+minimap.addEventListener('pointerup', (e) => {
+  if (mapGesture?.id !== e.pointerId) return;
+  if (!mapMoved) { const p = minimapPoint(e), cam = scene.cameras.main; scene.panTo(p.x - cam.width / 2, p.y - cam.height / 2); }
+  mapGesture = undefined;
+  mapMoved = false;
+  if (minimap.hasPointerCapture(e.pointerId)) minimap.releasePointerCapture(e.pointerId);
+});
+const clearMapGesture = () => { mapGesture = undefined; mapMoved = false; };
+minimap.addEventListener('pointercancel', clearMapGesture);
+minimap.addEventListener('lostpointercapture', clearMapGesture);
+addEventListener('blur', clearMapGesture);
+minimap.addEventListener('keydown', (e) => {
+  const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+  if (!d) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const cam = scene.cameras.main;
+  scene.panTo(cam.scrollX + d[0] * CELL * 2, cam.scrollY + d[1] * CELL * 2);
+});
 
 game.events.once('ready', () => {
   scene = game.scene.getScene('battle') as BattleScene;
   const start = () => {
     scene.onCell = (x, y) => void onCell(x, y);
     scene.onCancel = cancel;
-    scene.onHover = (x, y) => (renderTile(x, y), renderUnit(unitAt(b, x, y) ?? sel ?? shown));
+    // 下令菜单、对白与演出进行中锁定手动镜头，避免菜单脱离部队或抢过自动跟随。
+    scene.canPan = () => (mode === 'idle' || mode === 'unit' || mode === 'target') && !answer && !trainerOpen && !gateOpen && $('screen').hidden && saveListEl()?.hidden !== false && !document.body.classList.contains('system-open');
+    scene.onCameraChange = () => scene.drawMinimap(minimap);
+    let minimapAt = 0;
+    scene.events.on('postupdate', () => {
+      if (scene.time.now - minimapAt < 80) return;
+      minimapAt = scene.time.now;
+      scene.drawMinimap(minimap);
+    });
+    scene.onHover = (x, y) => {
+      renderTile(x, y);
+      const u = unitAt(b, x, y) ?? sel ?? shown;
+      if (u !== shown) renderUnit(u);
+    };
     scene.setAnimSpeed(matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ANIM_SPEEDS[animSpeedIndex].v);
     scene.setCameraFollow(cameraFollow);
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
-      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxEnabled, duel: playDuel, banner, openSaveList, get trainerOpen() { return trainerOpen; }, get gateOpen() { return gateOpen; } } });
+      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxDiagnostics, sfxEnabled, duel: playDuel, banner, openSaveList, get trainerOpen() { return trainerOpen; }, get gateOpen() { return gateOpen; } } });
     }
     if (demo) {
       // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用

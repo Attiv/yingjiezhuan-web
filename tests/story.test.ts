@@ -79,14 +79,14 @@ describe('多关卡与队伍继承', () => {
   it('上一战的等级、经验、道具带进下一战；友军和敌军不受影响', () => {
     const first = newBattle(SISHUI, 1).b;
     const guan = first.units.find((u) => u.name === '关羽')!;
-    Object.assign(guan, { level: 4, exp: 37 });
+    Object.assign(guan, { level: 4, exp: 37, cls: 7 });
     guan.items.push(30);
     const roster = harvest(first);
     expect(Object.keys(roster).sort()).toEqual(['关羽', '刘备', '张飞'].sort());
 
     const second = newBattle(SISHUI, 2, roster).b;
     const g = second.units.find((u) => u.name === '关羽')!;
-    expect([g.level, g.exp, g.items]).toEqual([4, 37, [12, 30]]);
+    expect([g.level, g.exp, g.items, g.cls]).toEqual([4, 37, [12, 30], 7]);
     expect(g.hp).toBeGreaterThan(newBattle(SISHUI, 2).b.units.find((u) => u.name === '关羽')!.hp); // 满兵力按新等级算
     expect(second.units.find((u) => u.name === '公孙瓒')!.level).toBe(4);
     expect(second.units.find((u) => u.name === '华雄')!.level).toBe(5);

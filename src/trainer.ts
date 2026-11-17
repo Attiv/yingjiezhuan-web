@@ -15,6 +15,9 @@ export const EQUIP_SLOTS: EquipSlot[] = ['weapon', 'armor', 'horse'];
 /** 一键装备兜底的最强三件：霸者劍、孫子兵法、赤兎馬（包袱里没有时才发）。 */
 export const BEST_OF: Record<EquipSlot, number> = { weapon: 59, armor: 3, horse: 7 };
 
+/** 一键装备顺带补齐的宝物：玉璽（每回合 +10 兵力 +10 士气）。宝物不占三个装备位，可与兵器铠甲马同带。 */
+export const BEST_TREASURE = 8;
+
 /** 这件道具算哪个装备位。马是原版的「移动力加成」类饰品（玉璽、勅命書不算）。 */
 export function slotOf(id: number): EquipSlot | 'other' {
   const s = specOf(id);
@@ -58,13 +61,20 @@ export function bestInBag(bag: number[], slot: EquipSlot): number {
 
 /**
  * 一键装备：身上每个部位留最好的一件，其余装备放回包袱；
- * 再从包袱里挑更好的换上，包袱里没有这一部位就发最强的那件。
+ * 再从包袱里挑更好的换上，包袱里没有这一部位就发最强的那件；
+ * 顺带补齐玉璽（只留一件，多出来的回包袱）。
  * 已经穿着最好的装备时不会重复发（连点两次不会刷出一堆霸者劍）。
  */
 export function equipBest(items: number[], bag: number[]): number[] {
   const keep: number[] = [];
   const worn: Partial<Record<EquipSlot, number>> = {};
+  let seal = false;
   for (const id of items) {
+    if (id === BEST_TREASURE) {
+      if (seal) bag.push(id); // 多的玉璽回包袱，留着给别人
+      seal = true;
+      continue;
+    }
     const slot = slotOf(id);
     if (slot === 'other') {
       keep.push(id);
@@ -90,7 +100,12 @@ export function equipBest(items: number[], bag: number[]): number[] {
       worn[slot] = BEST_OF[slot];
     }
   }
-  return [...keep, ...EQUIP_SLOTS.map((s) => worn[s]).filter((v): v is number => v !== undefined)];
+  // 玉璽不占装备位：包袱里有就拿来，没有就发一件（同一件宝物只带一次）
+  if (!seal) {
+    const at = bag.indexOf(BEST_TREASURE);
+    if (at >= 0) bag.splice(at, 1);
+  }
+  return [...keep, ...EQUIP_SLOTS.map((s) => worn[s]).filter((v): v is number => v !== undefined), BEST_TREASURE];
 }
 
 /** 往包袱里塞 n 个同类道具（1–99）。 */

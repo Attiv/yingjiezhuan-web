@@ -1,5 +1,8 @@
 import * as Phaser from 'phaser';
 import { facesLeft } from './facing';
+import { TOKEN_COLUMNS, tokenColumn } from './token-art';
+import { playSfx } from './audio';
+import { sfxOf } from './sfx-map';
 import { strategySpec } from './data/strategies';
 import { TB, bySlot } from './rules/core';
 import { levelOf } from './rules/turn';
@@ -65,13 +68,15 @@ export class BattleScene extends Phaser.Scene {
   onCell: (x: number, y: number) => void = () => {};
   onHover: (x: number, y: number) => void = () => {};
   onCancel: () => void = () => {};
+  canPan: () => boolean = () => true;
+  onCameraChange: () => void = () => {};
   private tokens = new Map<number, Phaser.GameObjects.Image>();
   manifest: Manifest = {};
   private ready = new Map<Actor, string>(); // 图集已装好、帧表查过的演员 → 贴图键
   private map?: Phaser.GameObjects.Image;
   private mirror = true; // 棋子图本身朝右，朝左靠镜像；占位棋子上写着字，不镜像
   private perUnit = false; // 占位棋子按部队序号取帧；原版棋子图按兵种与阵营取帧
-  private static readonly TOKENS = 39; // tokens.png 每行 39 帧（兵种×2+阵营）；行 0/2 站立、行 1/3 行走
+  private tokenColumns = TOKEN_COLUMNS; // 从实际贴图读取列数，兼容旧版39列资源
   private hp = new Map<number, number>(); // 画面上显示的兵力：事件一条条播，数字跟着一步步变
   private breath = new Map<number, number>(); // 每个棋子上一次的待机帧，错开相位
   private marks!: Phaser.GameObjects.Graphics;
@@ -84,6 +89,12 @@ export class BattleScene extends Phaser.Scene {
   private pointerClientX = 0;
   private pointerClientY = 0;
   private autoFollowing = false;
+  private hoverCell = '';
+  private edgeCheckAt = -Infinity;
+  private edgeBlocked = false;
+  private pointerTouch = false;
+  private gesture?: { id: number; x: number; y: number; scrollX: number; scrollY: number; dragging: boolean };
+  private cameraPosition = '';
 
   constructor() {
     super('battle');
@@ -100,39 +111,119 @@ export class BattleScene extends Phaser.Scene {
     this.cursor = this.add.graphics().setDepth(1.5);
     this.keys = this.input.keyboard!.createCursorKeys();
     this.input.mouse?.disableContextMenu();
-    this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
-      if (p.rightButtonDown()) return this.onCancel();
-      this.onCell(Math.floor(p.worldX / CELL), Math.floor(p.worldY / CELL));
+    const canvas = this.game.canvas;
+    const position = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      return { x: (e.clientX - r.left) * VW / r.width, y: (e.clientY - r.top) * VH / r.height };
+    };
+    const down = (e: PointerEvent) => {
+      if (e.button === 2) { this.clearGesture(); return this.onCancel(); }
+      if (this.gesture || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      const p = position(e);
+      this.trackPointer(p.x, p.y, e.pointerType !== 'mouse');
+      const cam = this.cameras.main;
+      this.gesture = { id: e.pointerId, x: p.x, y: p.y, scrollX: cam.scrollX, scrollY: cam.scrollY, dragging: false };
+      canvas.setPointerCapture(e.pointerId);
+    };
+    const move = (e: PointerEvent) => {
+      if (this.gesture && this.gesture.id !== e.pointerId) return;
+      const p = position(e);
+      this.trackPointer(p.x, p.y, e.pointerType !== 'mouse');
+      const g = this.gesture;
+      if (g) {
+        // 阈值按实际屏幕像素计算，舞台放大或缩小时手感保持一致。
+        const r = canvas.getBoundingClientRect();
+        if (!g.dragging && Math.hypot((p.x - g.x) * r.width / VW, (p.y - g.y) * r.height / VH) >= 7) {
+          g.dragging = true;
+          if (this.canPan()) canvas.classList.add('dragging');
+        }
+        if (g.dragging && this.canPan()) this.panTo(g.scrollX - (p.x - g.x), g.scrollY - (p.y - g.y));
+      }
+      if (!g?.dragging) this.hoverPointer();
+    };
+    const up = (e: PointerEvent) => {
+      const g = this.gesture;
+      if (!g || g.id !== e.pointerId) return;
+      const p = position(e);
+      this.clearGesture();
+      this.trackPointer(p.x, p.y, e.pointerType !== 'mouse');
+      const r = canvas.getBoundingClientRect();
+      const distance = Math.hypot((p.x - g.x) * r.width / VW, (p.y - g.y) * r.height / VH);
+      if (g.dragging || distance >= 7 || p.x < 0 || p.y < 0 || p.x >= VW || p.y >= VH) return;
+      const world = this.cameras.main.getWorldPoint(p.x, p.y);
+      this.hover(Math.floor(world.x / CELL), Math.floor(world.y / CELL));
+      this.onCell(Math.floor(world.x / CELL), Math.floor(world.y / CELL));
+    };
+    const leave = () => { this.pointerOnCanvas = false; this.pointerTouch = false; this.clearGesture(); };
+    canvas.addEventListener('pointerdown', down);
+    canvas.addEventListener('pointermove', move);
+    canvas.addEventListener('pointerup', up);
+    canvas.addEventListener('pointercancel', leave);
+    canvas.addEventListener('lostpointercapture', leave);
+    const pointerLeave = () => { if (!this.gesture) { this.pointerOnCanvas = false; this.pointerTouch = false; } };
+    canvas.addEventListener('pointerleave', pointerLeave);
+    this.game.events.on(Phaser.Core.Events.BLUR, leave);
+    this.events.once('shutdown', () => {
+      canvas.removeEventListener('pointerdown', down);
+      canvas.removeEventListener('pointermove', move);
+      canvas.removeEventListener('pointerup', up);
+      canvas.removeEventListener('pointercancel', leave);
+      canvas.removeEventListener('lostpointercapture', leave);
+      canvas.removeEventListener('pointerleave', pointerLeave);
+      this.game.events.off(Phaser.Core.Events.BLUR, leave);
     });
-    this.input.on('pointermove', (p: Phaser.Input.Pointer) => {
-      this.pointerOnCanvas = true;
-      this.pointerX = p.x;
-      this.pointerY = p.y;
-      const event = p.event as MouseEvent;
-      this.pointerClientX = event.clientX;
-      this.pointerClientY = event.clientY;
-      this.hover(Math.floor(p.worldX / CELL), Math.floor(p.worldY / CELL));
-    });
-    this.input.on('pointerout', () => { this.pointerOnCanvas = false; });
     this.events.emit('ready');
   }
 
   update(_time: number, delta: number) {
     const cam = this.cameras.main;
     const step = 8 * RES * delta / 16.67;
-    if (this.keys.left.isDown) cam.scrollX -= step;
-    if (this.keys.right.isDown) cam.scrollX += step;
-    if (this.keys.up.isDown) cam.scrollY -= step;
-    if (this.keys.down.isDown) cam.scrollY += step;
-    if (this.pointerOnCanvas && !this.autoFollowing && !this.overlayBlocksEdgeScroll()) {
-      const edge = 28;
+    if (this.canPan()) {
+      if (this.keys.left.isDown) cam.scrollX -= step;
+      if (this.keys.right.isDown) cam.scrollX += step;
+      if (this.keys.up.isDown) cam.scrollY -= step;
+      if (this.keys.down.isDown) cam.scrollY += step;
+    }
+    const edge = 28;
+    const atEdge = this.pointerX < edge || this.pointerX > VW - edge || this.pointerY < edge || this.pointerY > VH - edge;
+    if (this.pointerOnCanvas && !this.pointerTouch && !this.gesture && atEdge && !this.autoFollowing && this.canPan() && !this.overlayBlocksEdgeScroll()) {
       const speed = 5 * RES * delta / 16.67;
       if (this.pointerX < edge) cam.scrollX -= speed;
       else if (this.pointerX > VIEW_W * RES - edge) cam.scrollX += speed;
       if (this.pointerY < edge) cam.scrollY -= speed;
       else if (this.pointerY > VIEW_H * RES - edge) cam.scrollY += speed;
     }
+    // 镜头卷动时鼠标即使停着也要更新世界格，普通帧由同格缓存直接返回。
+    if (this.b) {
+      cam.setScroll(Phaser.Math.Clamp(cam.scrollX, 0, Math.max(0, this.b.w * CELL - VW)), Phaser.Math.Clamp(cam.scrollY, 0, Math.max(0, this.b.h * CELL - VH)));
+      const position = `${cam.scrollX},${cam.scrollY}`;
+      if (position !== this.cameraPosition) { this.cameraPosition = position; this.onCameraChange(); }
+    }
+    if (this.pointerOnCanvas && !this.gesture?.dragging && !this.pointerTouch) this.hoverPointer();
     this.breathe();
+  }
+
+  private trackPointer(x: number, y: number, touch: boolean) {
+    this.pointerOnCanvas = true;
+    this.pointerX = x;
+    this.pointerY = y;
+    this.pointerTouch = touch;
+    const r = this.game.canvas.getBoundingClientRect();
+    this.pointerClientX = r.left + x * r.width / VW;
+    this.pointerClientY = r.top + y * r.height / VH;
+    this.edgeCheckAt = -Infinity;
+  }
+
+  private clearGesture() {
+    this.gesture = undefined;
+    this.game.canvas.classList.remove('dragging');
+  }
+
+  /** 手动定位一律夹在地图内；小地图强制居中，不受 focus 的可见性提前返回影响。 */
+  panTo(x: number, y: number) {
+    if (!this.b || !this.canPan()) return;
+    this.cameras.main.setScroll(Phaser.Math.Clamp(x, 0, Math.max(0, this.b.w * CELL - VW)), Phaser.Math.Clamp(y, 0, Math.max(0, this.b.h * CELL - VH)));
+    this.onCameraChange();
   }
 
   /** 演出时长倍率：越小动作越快，0 省去演出。系统菜单里改，存档不参与。 */
@@ -157,8 +248,17 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private overlayBlocksEdgeScroll() {
-    return [...document.elementsFromPoint(this.pointerClientX, this.pointerClientY)].some((el) =>
-      ['menu', 'talk', 'screen', 'clash', 'duel', 'banner'].includes((el as HTMLElement).id) && getComputedStyle(el).display !== 'none');
+    const now = performance.now();
+    if (now - this.edgeCheckAt >= 100) {
+      this.edgeCheckAt = now;
+      this.edgeBlocked = document.elementFromPoint(this.pointerClientX, this.pointerClientY) !== this.game.canvas;
+    }
+    return this.edgeBlocked;
+  }
+
+  private hoverPointer() {
+    const world = this.cameras.main.getWorldPoint(this.pointerX, this.pointerY);
+    this.hover(Math.floor(world.x / CELL), Math.floor(world.y / CELL));
   }
 
   /**
@@ -194,6 +294,8 @@ export class BattleScene extends Phaser.Scene {
    * 站立 / 行走 / 已行动各占一行。没有图时退化成每支部队一张占位图。
    */
   async setBattle(b: Battle) {
+    this.clearGesture();
+    this.pointerOnCanvas = false;
     this.b = b;
     this.tweens.killAll();
     const [mapKey, tokKey] = [`map:${b.level}`, `tokens:${b.level}`];
@@ -214,17 +316,55 @@ export class BattleScene extends Phaser.Scene {
     actors.forEach((ac) => this.prepare(ac));
     this.mirror = this.textures.exists(tokKey);
     this.perUnit = !this.mirror;
+    if (this.mirror) this.tokenColumns = Math.round(this.textures.get(tokKey).getSourceImage().width / CELL);
     this.placeholders(b, mapKey, tokKey);
     this.map?.destroy();
     this.map = this.add.image(0, 0, mapKey).setOrigin(0).setDisplaySize(b.w * CELL, b.h * CELL);
     this.tokens.forEach((s) => s.destroy());
     this.tokens.clear();
+    this.hoverCell = '';
+    this.cursor.clear();
     this.marks.clear();
     b.units.forEach((u) => this.tokens.set(u.slot, this.add.image(0, 0, tokKey, this.frameOf(u, false))));
     this.cameras.main.setBounds(0, 0, b.w * CELL, b.h * CELL);
     this.cameras.main.stopFollow();
     this.autoFollowing = false;
     this.sync();
+  }
+
+  /** 小地图沿用本关地图图像；兵点取演出中的实际位置，金框对应当前视野。 */
+  drawMinimap(canvas: HTMLCanvasElement) {
+    if (!this.b || !this.map) return;
+    const { w, h } = this.b;
+    if (canvas.width !== w * 4 || canvas.height !== h * 4) {
+      canvas.width = w * 4;
+      canvas.height = h * 4;
+      const scale = Math.min(122 / canvas.width, 64 / canvas.height);
+      canvas.style.width = `${canvas.width * scale}px`;
+      canvas.style.height = `${canvas.height * scale}px`;
+    }
+    const g = canvas.getContext('2d');
+    if (!g) return;
+    g.imageSmoothingEnabled = false;
+    g.drawImage(this.map.texture.getSourceImage() as HTMLImageElement, 0, 0, canvas.width, canvas.height);
+    for (const u of this.b.units) {
+      const t = this.tokens.get(u.slot);
+      if (!t?.visible) continue;
+      const x = Math.round(t.x / CELL * 4), y = Math.round(t.y / CELL * 4);
+      g.fillStyle = '#000000';
+      g.fillRect(x - 2, y - 2, 5, 5);
+      g.fillStyle = ['#8acfff', '#00ba75', '#ef6500'][sideOf(u)];
+      g.fillRect(x - 1, y - 1, 3, 3);
+    }
+    const cam = this.cameras.main;
+    const [x, y] = [cam.scrollX / CELL * 4, cam.scrollY / CELL * 4];
+    const [vw, vh] = [Math.min(VW / CELL * 4, canvas.width), Math.min(VH / CELL * 4, canvas.height)];
+    g.strokeStyle = '#000000';
+    g.lineWidth = 3;
+    g.strokeRect(x + 1.5, y + 1.5, vw - 3, vh - 3);
+    g.strokeStyle = '#ffcf55';
+    g.lineWidth = 1;
+    g.strokeRect(x + 0.5, y + 0.5, vw - 1, vh - 1);
   }
 
   /** 清单里没有图（或图没装上）的关卡：地图按地形涂色并写上地形名的头一个字，棋子是阵营色圆片加名字的头一个字。 */
@@ -353,17 +493,19 @@ export class BattleScene extends Phaser.Scene {
   }
 
   /** 棋子帧号：原版 HEXZCHR 每个兵种是站立 / 行走两帧，图集按行铺开：
-   * 0 站立、1 行走、2 已行动站立、3 已行动行走。列 = 兵种×2+阵营。 */
+   * 0 站立、1 行走、2 已行动站立、3 已行动行走。普通列 = 兵种×2+阵营，专属列见 tokenColumn。 */
   private frameOf(u: Unit, acted: boolean, walking = false) {
     if (this.perUnit) return this.b.units.findIndex((v) => v.slot === u.slot) + (acted ? this.b.units.length : 0);
     const row = (acted ? 2 : 0) + (walking ? 1 : 0);
-    // 图集最后一列（38）是原版给刘备的专属旗步兵，不是普通短兵；按兵种算列会永远取不到它。
-    const col = u.key === 'liu_bei' || u.name === '劉備' ? BattleScene.TOKENS - 1 : u.cls * 2 + (u.slot >= 15 ? 1 : 0);
-    return row * BattleScene.TOKENS + col;
+    const wanted = tokenColumn(u);
+    // 旧资源缺少专属列时安全回退；新图集完整保留原版编号。
+    const col = wanted < this.tokenColumns ? wanted : u.cls * 2 + (u.slot >= 15 ? 1 : 0);
+    return row * this.tokenColumns + col;
   }
 
   /** 把棋子对齐到当前状态：位置、是否在场；我军已行动的换成灰色那一帧，混乱的歪倒并发紫。 */
   sync() {
+    this.hoverCell = ''; // 单位走入 / 离开鼠标所在格后，下帧刷新该格信息。
     this.b.units.forEach((u) => {
       const done = u.acted && this.b.stage === 'player' && u.mode === 7;
       const s = this.tk(u.slot).setFrame(this.frameOf(u, done)).setPosition(mid(u.x), mid(u.y)).setDepth(2 + u.y / 100).setVisible(u.on).setAlpha(1).setScale(1);
@@ -378,6 +520,9 @@ export class BattleScene extends Phaser.Scene {
   hpOf = (slot: number) => this.hp.get(slot) ?? 0;
 
   private hover(x: number, y: number) {
+    const cell = `${x},${y}`;
+    if (cell === this.hoverCell) return;
+    this.hoverCell = cell;
     this.cursor.clear();
     if (!this.b || x < 0 || y < 0 || x >= this.b.w || y >= this.b.h) return;
     this.cursor.lineStyle(6, GOLD, 1).strokeRect(x * CELL + 3, y * CELL + 3, CELL - 6, CELL - 6);
@@ -579,12 +724,21 @@ export class BattleScene extends Phaser.Scene {
           this.cameras.main.startFollow(s, false, 0.2, 0.2);
         }
         s.setDepth(7); // 走子时提起来，压在别的棋子上面
-        // 按第一步的横向位移转身，不会倒退着移动；纯上下移动保持面向敌方
-        const dx = ev.path.length > 1 ? ev.path[1][0] - ev.path[0][0] : 0;
-        s.setFlipX(this.mirror && (dx < 0 ? true : dx > 0 ? false : facesLeft(b, u)));
+        if (!this.speed) {
+          playSfx('step', 0.85);
+          const [x, y] = ev.path[ev.path.length - 1];
+          s.setPosition(mid(x), mid(y)).setDepth(2 + y / 100).setFlipX(this.mirror && facesLeft(b, u));
+          this.cameras.main.stopFollow();
+          this.autoFollowing = false;
+          break;
+        }
         await this.tween({ targets: s, scale: 1.1, duration: 70 });
         // 原版棋盘上走一格是两帧交替：前半格迈步（略微抬起），后半格落脚回站立帧
-        for (const [x, y] of ev.path.slice(1)) {
+        for (let i = 1; i < ev.path.length; i++) {
+          const [x, y] = ev.path[i];
+          const dx = x - ev.path[i - 1][0];
+          if (dx && this.mirror) s.setFlipX(dx < 0);
+          playSfx('step', 0.85);
           const [tx, ty] = [mid(x), mid(y)];
           const [x0, y0] = [s.x, s.y];
           s.setFrame(this.frameOf(u, false, true));
@@ -594,7 +748,7 @@ export class BattleScene extends Phaser.Scene {
         }
         s.setFrame(this.frameOf(u, false, false));
         await this.tween({ targets: s, scale: 1, duration: 90, ease: 'Bounce.easeOut' });
-        s.setFlipX(this.mirror && facesLeft(b, u)); // 站定后转回面向敌方（棋子图本身朝右，朝左靠镜像）
+        s.setFlipX(this.mirror && facesLeft(b, u)); // 站定后保留规则层记录的最后移动朝向
         s.setDepth(2 + ev.path[ev.path.length - 1][1] / 100);
         this.cameras.main.stopFollow();
         this.autoFollowing = false;
@@ -605,9 +759,10 @@ export class BattleScene extends Phaser.Scene {
         this.hp.set(d.slot, this.hpOf(d.slot) - ev.dmg);
         // 有特写时横幅盖住战场，镜头不必再慢慢卷过去（那 300ms 全成了出手前的空等）。
         await this.focus(d.x, d.y, this.speed > 0 && this.hasCutin(a, d), true);
-        if (!this.speed) onImpact?.();
-        else if (this.hasCutin(a, d)) await this.cutin(a, d, onImpact);
-        else await this.strike(a, d, onImpact);
+        const impact = () => { const fx = sfxOf(ev, b); if (fx) playSfx(fx); onImpact?.(); };
+        if (!this.speed) impact();
+        else if (this.hasCutin(a, d)) await this.cutin(a, d, impact);
+        else await this.strike(a, d, impact);
         await this.float(d, `-${ev.dmg}`, '#ffcf55');
         break;
       }
@@ -625,10 +780,11 @@ export class BattleScene extends Phaser.Scene {
         // 单挑：你来我往三个回合，不扣兵力
         const [a, d] = [unit(ev.a), unit(ev.d)];
         await this.focus(d.x, d.y, false, true);
-        if (!this.speed) break;
-        await this.strike(d, a);
-        await this.strike(a, d);
-        await this.strike(a, d);
+        const clash = () => playSfx('hit_heavy');
+        if (!this.speed) { clash(); break; }
+        await this.strike(d, a, clash);
+        await this.strike(a, d, clash);
+        await this.strike(a, d, clash);
         break;
       }
       case 'retreat':

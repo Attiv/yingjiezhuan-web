@@ -6,6 +6,10 @@ import { open } from '../tools/browser.mjs';
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5274';
 const { browser, page, errors } = await open(`${BASE}/?seed=3`);
 await page.waitForSelector('[data-go="start"]');
+// 主流程按原版繁体断言；默认简体与切换另由 e2e 覆盖。
+await page.evaluate(() => localStorage.setItem('yjz.script', 'hant'));
+await page.reload();
+await page.waitForSelector('[data-go="start"]');
 assert.equal(await page.evaluate(() => typeof window.__yjz), 'undefined', '生产包不应带调试钩子');
 assert.match(await page.textContent('#screen h1'), /三國志英傑傳/);
 
@@ -40,11 +44,19 @@ for (let i = 0; i < 300; i++) {
 }
 assert.match(await page.textContent('#turn'), /第1回合/);
 assert.match(await page.textContent('#log'), /目标：一、殲滅華雄/);
+const autoStart = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')));
+assert.equal(autoStart.battle.round, 1, '生产版开战即写独立自动档');
+assert.equal(autoStart.battle.stage, 'player');
 
 // 结束回合：先确认（还有部队没行动），敌军行动完进入第 2 回合
 await page.click('#sys button:has-text("回合结束")');
 if (await page.$('#talk .ask')) await page.click('#talk .ask button:first-child');
-await page.waitForFunction(() => document.getElementById('turn').textContent.includes('第2回合'), null, { timeout: 90000 });
+await page.waitForFunction(() => document.getElementById('turn').textContent.includes('第2回合') &&
+  JSON.parse(localStorage.getItem('yjz.autosave.v1'))?.battle.round === 2, null, { timeout: 90000 });
+const autoNext = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')));
+assert.equal(autoNext.battle.level, autoStart.battle.level);
+assert.equal(autoNext.battle.stage, 'player', '生产版新回合完成结算后更新自动档');
+assert.ok(autoNext.at >= autoStart.at);
 await page.screenshot({ path: new URL('../docs/screenshots/13-production-build.png', import.meta.url).pathname });
 
 // 生产包里 21 个音效都在（运行时不依赖开发态调试对象）
@@ -73,5 +85,5 @@ assert.deepEqual([...new Set(story)], [200], '28 张剧情场景图都在生产�
 
 assert.deepEqual(errors, []);
 console.log('生产构建冒烟通过：标题 → 序章（含舞台式剧情）→ 营地 → 汜水關之戰 → 第 2 回合，' +
-  '21 个音效、10 首 BGM、4 张行军图与 28 张剧情场景图可加载，控制台无报错');
+  '独立自动档从第 1 回合更新至第 2 回合；21 个音效、10 首 BGM、4 张行军图与 28 张剧情场景图可加载，控制台无报错');
 await browser.close();

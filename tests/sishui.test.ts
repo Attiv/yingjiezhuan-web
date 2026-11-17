@@ -3,7 +3,7 @@ import { SISHUI } from '../src/data/sishui';
 import { facesLeft } from '../src/facing';
 import { TB, atk, def, moveCost } from '../src/rules/core';
 import { field } from '../src/rules/move';
-import { aiStep, autoPhase, doAttack, doItem, doMove, doWait, endPhase, itemTargets, newBattle } from '../src/rules/turn';
+import { aiStep, autoPhase, doAttack, doItem, doMove, doWait, endPhase, itemTargets, newBattle, undoMove } from '../src/rules/turn';
 import type { Battle, Unit } from '../src/rules/types';
 import { plan } from './bot';
 
@@ -17,6 +17,38 @@ describe('棋子朝向', () => {
   it('开局两军对峙：我军和友军在东，朝左；敌军在西，朝右', () => {
     const b = start();
     for (const u of b.units) expect(facesLeft(b, u), u.name).toBe(u.slot < 15);
+  });
+  it('移动后保留路线最后横向朝向，取消移动恢复原方向', () => {
+    const b = start();
+    const u = named(b, '关羽');
+    const f = field(b, u, u.x, u.y, 255, -1, true);
+    let tested = 0;
+    for (let y = 0; y < b.h && tested < 12; y++) for (let x = 0; x < b.w && tested < 12; x++) {
+      if (x === u.x || f.dist[y * b.w + x] === 255) continue;
+      let evs;
+      try { evs = doMove(b, u.slot, x, y); } catch { continue; }
+      const ev = evs.find((e) => e.t === 'move');
+      if (!ev || ev.t !== 'move') continue;
+      let lastDx = 0;
+      for (let i = 1; i < ev.path.length; i++) lastDx = ev.path[i][0] - ev.path[i - 1][0] || lastDx;
+      expect(facesLeft(b, u)).toBe(lastDx < 0);
+      expect(u.facingLeft).toBe(lastDx < 0);
+      expect(undoMove(b)).toBe(true);
+      expect(u.facingLeft).toBeUndefined();
+      tested++;
+    }
+    expect(tested).toBeGreaterThan(0);
+  });
+  it('保存的移动朝向不随敌方重心变化而翻转，旧档仍自动面向敌军', () => {
+    const b = start();
+    const u = named(b, '关羽');
+    expect(facesLeft(b, u)).toBe(true);
+    u.facingLeft = false;
+    expect(facesLeft(b, u)).toBe(false);
+    const copy: Battle = JSON.parse(JSON.stringify(b));
+    expect(facesLeft(copy, named(copy, '关羽'))).toBe(false);
+    delete u.facingLeft;
+    expect(facesLeft(b, u)).toBe(true);
   });
   it('绕到敌军身后就转过身来；敌方全部离场后按阵营', () => {
     const b = start();

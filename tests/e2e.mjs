@@ -377,8 +377,8 @@ await step('营地：500 金（曹操在序章拨的那笔）、三人编成（�
   await page.click('[data-go="camp-save"]');
   // 存档列表：六个槽位，空槽显示为空，营地存档只写流程
   await page.waitForSelector('#save-list:not([hidden]) .save-slot');
-  assert.equal(await page.$$eval('#save-list .save-slot', (els) => els.length), 6, '存档应有六个槽位');
-  assert.equal(await page.$$eval('#save-list [data-act="read"]', (els) => els.length), 0, '存档模式只给写入按钮');
+  assert.equal(await page.$$eval('#save-list .save-slot', (els) => els.length), 7, '存档应有六个槽位');
+  assert.equal(await page.$$eval('#save-list .save-slot:not(.auto-slot) [data-act="read"]', (els) => els.length), 0, '存档模式只给写入按钮');
   await page.click('#save-list [data-slot="0"][data-act="write"]');
   assert.equal(await page.evaluate(() => document.getElementById('save-list').hidden), true, '存档后列表收起');
   const saved = await page.evaluate(() => ({
@@ -449,9 +449,47 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
     liu: Number(window.__yjz.scene.tokens.get(a).frame.name),
     guan: Number(window.__yjz.scene.tokens.get(b2).frame.name),
   }), [liuSlot, g.slot]);
-  // 待机会在站立 / 迈步两帧间切换，所以只看列号（39 帧一行）
-  assert.equal(frames.liu % 39, 38, `刘备应取第 39 列旗步兵，实际帧 ${frames.liu}`);
-  assert.equal(frames.guan % 39, g.cls * 2, '其他武将仍按兵种取帧');
+  // 待机会在站立 / 迈步两帧间切换，所以只看列号（47 帧一行）
+  assert.equal(frames.liu % 47, 38, `刘备应取第 39 列旗步兵，实际帧 ${frames.liu}`);
+  assert.equal(frames.guan % 47, g.cls * 2, '其他武将仍按兵种取帧');
+  await step('战场拖动与小地图：短按保留点选，拖动无误触，点击/拖框可定位且不越界', async () => {
+    const before = await page.evaluate(() => {
+      const s = window.__yjz.scene;
+      s.panTo(300, 120);
+      return { scroll: [s.cameras.main.scrollX, s.cameras.main.scrollY], mode: window.__yjz.mode,
+        mini: [document.querySelector('#minimap').width, document.querySelector('#minimap').height],
+        viewport: [document.querySelector('#minimap-box').clientWidth, document.querySelector('#minimap-box').clientHeight] };
+    });
+    assert.ok(before.mini[0] > 0 && before.mini[1] > 0, '小地图已渲染战场图');
+    const canvas = await page.$eval('#map canvas', (el) => { const r = el.getBoundingClientRect(); return { x: r.left + r.width * 0.55, y: r.top + r.height * 0.55 }; });
+    await page.mouse.move(canvas.x, canvas.y);
+    await page.mouse.down();
+    await page.mouse.move(canvas.x - 35, canvas.y - 22, { steps: 4 });
+    await page.mouse.up();
+    const dragged = await page.evaluate(() => ({ scroll: [window.__yjz.scene.cameras.main.scrollX, window.__yjz.scene.cameras.main.scrollY], mode: window.__yjz.mode }));
+    assert.ok(dragged.scroll[0] > before.scroll[0] && dragged.scroll[1] > before.scroll[1], `拖动应反向平移镜头：${JSON.stringify(dragged)}`);
+    assert.equal(dragged.mode, 'idle', '拖动松开不执行点选');
+    await page.click('#minimap');
+    const jumped = await page.evaluate(() => { const s = window.__yjz.scene; return [s.cameras.main.scrollX, s.cameras.main.scrollY]; });
+    assert.ok(jumped[0] !== dragged.scroll[0] || jumped[1] !== dragged.scroll[1], '点击小地图强制定位');
+    await clickCell(g.x, g.y);
+    assert.equal(await mode(), 'unit', '未拖动的短按仍然选中单位');
+    await page.evaluate(() => window.__yjz.scene.onCancel());
+    const min = await page.evaluate(() => { const s = window.__yjz.scene; s.panTo(-10000, -10000); return [s.cameras.main.scrollX, s.cameras.main.scrollY]; });
+    assert.deepEqual(min, [0, 0], '镜头不能卷出地图左上边界');
+    const max = await page.evaluate(() => { const s = window.__yjz.scene; s.panTo(100000, 100000); return [s.cameras.main.scrollX, s.cameras.main.scrollY, s.b.w * 96 - 1248, s.b.h * 96 - 1152]; });
+    assert.equal(max[0], Math.max(0, max[2]));
+    assert.equal(max[1], Math.max(0, max[3]));
+    await page.evaluate(() => window.__yjz.scene.panTo(300, 120));
+    // 视野框拖动保持按下偏移，不会在金框内跳到指针中心。
+    const rect = await page.$eval('#minimap', (el) => { const r = el.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+    await page.mouse.move(rect.x + rect.w * 0.35, rect.y + rect.h * 0.5);
+    await page.mouse.down();
+    await page.mouse.move(rect.x + rect.w * 0.45, rect.y + rect.h * 0.55, { steps: 3 });
+    await page.mouse.up();
+    const boxDrag = await page.evaluate(() => [window.__yjz.scene.cameras.main.scrollX, window.__yjz.scene.cameras.main.scrollY]);
+    assert.ok(boxDrag[0] > 300 && boxDrag[1] > 120, `拖动视野框移动相机：${boxDrag}`);
+  });
   // 开战换成原版的战斗曲（此前一直没播过 battle.mp3）
   await page.waitForTimeout(400); // 换曲有 160ms 淡出
   assert.equal(await page.evaluate(() => window.__yjz.bgm), 'battle');
@@ -491,6 +529,82 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   for (let i = 0; i < 2; i++) await page.click(speedBtn);
   assert.deepEqual(await speedState(), { label: '移动速度 标准', v: 1, saved: '1' });
   await shot('03-battle-start');
+});
+
+await step('手机触屏：横屏布局、单指拖镜头、小地图定位、取消和系统菜单、竖屏旋转提示', async () => {
+  const session = await page.context().newCDPSession(page);
+  const desktop = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, dpr: devicePixelRatio }));
+  // 截图器会采用 Playwright 记录的视口，须与底层设备仿真同步，避免截图后恢复桌面尺寸。
+  await page.setViewportSize({ width: 844, height: 390 });
+  await session.send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: 2, mobile: true });
+  await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+  await page.evaluate(() => dispatchEvent(new Event('resize')));
+  await page.waitForFunction(() => document.body.classList.contains('compact-battle') &&
+    Math.abs(visualViewport.width - 844) < 1 && Math.abs(visualViewport.height - 390) < 1);
+  const layout = await page.evaluate(() => ({
+    stage: document.querySelector('#stage').getBoundingClientRect().toJSON(),
+    controls: [...document.querySelectorAll('#touch-controls button')].map((el) => el.getBoundingClientRect().toJSON()),
+  }));
+  assert.ok(layout.stage.left >= 0 && layout.stage.right <= 844 && layout.stage.bottom <= 334.1, '横屏战场留出触控条空间');
+  assert.ok(layout.controls.every((r) => r.width >= 44 && r.height >= 44 && r.bottom <= 390), '触屏操作键至少44px');
+  const touch = async (type, x, y) => session.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' || type === 'touchCancel' ? [] : [{ x, y }] });
+  const canvas = await page.$eval('#map canvas', (el) => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  await page.evaluate(() => window.__yjz.scene.panTo(350, 100));
+  await touch('touchStart', canvas.x, canvas.y);
+  await touch('touchMove', canvas.x - 50, canvas.y - 20);
+  await touch('touchEnd', canvas.x - 50, canvas.y - 20);
+  await page.waitForFunction(() => window.__yjz.scene.cameras.main.scrollX > 350);
+  assert.equal(await mode(), 'idle', '触屏拖动结束不点选格子');
+  const mini = await page.$eval('#minimap', (el) => { const r = el.getBoundingClientRect(); return { x: r.left + r.width * 0.2, y: r.top + r.height * 0.25 }; });
+  await touch('touchStart', mini.x, mini.y); await touch('touchEnd', mini.x, mini.y);
+  const at = await page.evaluate(() => window.__yjz.scene.cameras.main.scrollX);
+  assert.ok(at < 350, '触摸小地图跳到指定位置');
+  const g = await unit('關羽');
+  const p = await cellPoint(g.x, g.y);
+  await touch('touchStart', p.x, p.y); await touch('touchEnd', p.x, p.y);
+  await page.waitForFunction(() => window.__yjz.mode === 'unit');
+  await page.click('#touch-cancel');
+  assert.equal(await mode(), 'idle', '触屏取消可退回待选');
+  await page.click('#touch-system');
+  assert.equal(await page.getAttribute('#touch-system', 'aria-expanded'), 'true');
+  const sysRects = await page.$$eval('#sys button', (els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+  assert.ok(sysRects.every((r) => r.height >= 44 && r.width >= 44), '系统指令触控尺寸至少44px');
+  await page.click('#touch-cancel');
+  assert.equal(await page.getAttribute('#touch-system', 'aria-expanded'), 'false');
+  const mobileShot = async (name, width, height) => {
+    // 旋转后字体可能重新栅格化；等字体与两帧布局绘制完成再保存截图。
+    await page.evaluate(() => document.fonts.ready.then(() =>
+      new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(null))))));
+    const png = await shot(name);
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [width, height], '手机截图使用对应 CSS 视口');
+    const viewport = await page.evaluate(() => [visualViewport.width, visualViewport.height]);
+    assert.ok(Math.abs(viewport[0] - width) < 1 && Math.abs(viewport[1] - height) < 1, '截图不应恢复桌面视口');
+  };
+  await mobileShot('32-mobile-landscape', 844, 390);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await session.send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
+  await page.evaluate(() => dispatchEvent(new Event('resize')));
+  await page.waitForFunction(() => document.body.classList.contains('portrait') &&
+    !document.body.classList.contains('compact-battle') &&
+    Math.abs(visualViewport.width - 390) < 1 && Math.abs(visualViewport.height - 844) < 1);
+  assert.equal(await page.isVisible('#rotate-hint'), true);
+  const portrait = await page.evaluate(() => {
+    const r = document.querySelector('#stage').getBoundingClientRect();
+    const v = visualViewport;
+    const controls = [...document.querySelectorAll('#touch-controls button')].map((el) => el.getBoundingClientRect().toJSON());
+    return { rect: r.toJSON(), viewport: [v?.width ?? innerWidth, v?.height ?? innerHeight], controls };
+  });
+  assert.ok(portrait.rect.left >= 0 && portrait.rect.top >= 0 && portrait.rect.right <= portrait.viewport[0] + 0.1 && portrait.rect.bottom <= portrait.viewport[1] + 0.1,
+    `竖屏画面需完整留在可视视口中：${JSON.stringify(portrait)}`);
+  assert.ok(portrait.rect.width >= 389 && Math.abs(portrait.rect.width / portrait.rect.height - 4 / 3) < 0.01, '竖屏完整显示4:3舞台并利用屏幕宽度');
+  assert.ok(portrait.controls.every((r) => r.width >= 44 && r.height >= 44 && r.bottom <= 844), '竖屏操作键至少44px且不溢出');
+  await mobileShot('33-mobile-portrait', 390, 844);
+  await session.send('Emulation.setTouchEmulationEnabled', { enabled: false, maxTouchPoints: 1 });
+  await page.setViewportSize({ width: desktop.width, height: desktop.height });
+  await session.send('Emulation.setDeviceMetricsOverride', { width: desktop.width, height: desktop.height, deviceScaleFactor: desktop.dpr, mobile: false });
+  await session.detach();
+  await page.evaluate(() => dispatchEvent(new Event('resize')));
+  await page.waitForFunction(() => !document.body.classList.contains('touch') && document.querySelector('#sys').parentElement.id === 'side');
 });
 
 await step('道具指令：豆可以「给予 / 丢弃」，菜单里只有这三项', async () => {
@@ -589,12 +703,12 @@ await step('选中关羽：蓝格能走、橙格能打到，站着的部队会�
       const img = sc.tokens.get(slot);
       const f = Number(img.frame.name);
       window.__walkSeen.push(f);
-      if (window.__walkShot || window.__shotBusy || window.__shotTries > 40 || f < 39 || f >= 78) return;
+      if (window.__walkShot || window.__shotBusy || window.__shotTries > 40 || f < 47 || f >= 94) return;
       window.__shotBusy = true;
       window.__shotTries++;
       sc.game.renderer.snapshot((im) => {
         window.__shotBusy = false;
-        if (Number(sc.tokens.get(slot).frame.name) >= 39) window.__walkShot = im.src;
+        if (Number(sc.tokens.get(slot).frame.name) >= 47) window.__walkShot = im.src;
       });
     }, 12);
   }, guan.slot);
@@ -609,11 +723,11 @@ await step('选中关羽：蓝格能走、橙格能打到，站着的部队会�
   });
   assert.ok(walk.png, '应抓到棋子迈步中的一帧');
   writeFileSync(`${SHOTS}25-walking.png`, Buffer.from(walk.png.split(',')[1], 'base64'));
-  assert.equal(walk.total, 157, '棋子图集：39 列 × 4 行 + 整图帧');
+  assert.equal(walk.total, 189, '棋子图集：47 列 × 4 行 + 整图帧');
   const standing = guan.cls * 2;
   assert.ok(walk.frames.includes(standing), `出现站立帧 ${standing}`);
-  assert.ok(walk.frames.includes(standing + 39), `出现行走帧 ${standing + 39}`);
-  assert.ok(walk.frames.filter((f) => f === standing + 39).length >= 2, '行走帧反复出现（两帧交替）');
+  assert.ok(walk.frames.includes(standing + 47), `出现行走帧 ${standing + 47}`);
+  assert.ok(walk.frames.filter((f) => f === standing + 47).length >= 2, '行走帧反复出现（两帧交替）');
   assert.equal(await mode(), 'menu');
   assert.deepEqual([(await unit('關羽')).x, (await unit('關羽')).y], plan.to);
   await shot('05-command-menu');
@@ -622,6 +736,72 @@ await step('选中关羽：蓝格能走、橙格能打到，站着的部队会�
   assert.deepEqual([back.x, back.y, back.moved], [g.x, g.y, false]);
   await page.keyboard.press('Escape');
   assert.equal(await mode(), 'idle');
+});
+
+await step('战场全部角色映射：47列原图，刘备三兵种、吕布、曹操与所有关卡单位', async () => {
+  const result = await page.evaluate(async () => {
+    const { default: game } = await import('/src/data/game.json');
+    const sc = window.__yjz.scene;
+    const rows = Object.values(game.battles).flatMap((b) => [...b.units, ...Object.values(b.groups).flat()]);
+    const check = (u) => {
+      const unit = { ...u, slot: u.side === 'enemy' ? 15 : 0 };
+      return [u.key, u.cls, sc.frameOf(unit, false) % 47];
+    };
+    return { columns: sc.tokenColumns, rows: rows.map(check), specials: [
+      ...[0, 1, 2].map((cls) => check({ key: 'liu_bei', cls })),
+      check({ key: 'lu_bu', cls: 6, side: 'enemy' }), check({ key: 'cao_cao', cls: 8, side: 'enemy' }),
+    ] };
+  });
+  assert.equal(result.columns, 47);
+  assert.equal(result.rows.length, 1499);
+  assert.deepEqual(result.specials.map((r) => r[2]), [38, 39, 40, 45, 46]);
+  for (const [key, cls, col] of result.rows) {
+    assert.ok(col >= 0 && col < 47 && ![41, 42, 43, 44].includes(col), `${key}/${cls}形象有效`);
+    if (key === 'lu_bu') assert.equal(col, 45);
+    if (key === 'cao_cao') assert.equal(col, 46);
+  }
+});
+
+await step('移动逐格转向并逐步发声：先竖走后转弯，也不能倒退', async () => {
+  const r = await page.evaluate(async () => {
+    const sc = window.__yjz.scene;
+    const u = sc.b.units.find((u) => u.on && u.mode === 7);
+    const s = sc.tokens.get(u.slot);
+    const speed = sc.speed;
+    const tween = sc.tween.bind(sc);
+    const directions = [];
+    sc.tween = (cfg) => {
+      if (cfg.targets === s && typeof cfg.x === 'number' && Math.abs(cfg.x - s.x) > 1)
+        directions.push({ dx: cfg.x - s.x, left: s.flipX });
+      return tween(cfg);
+    };
+    sc.speed = 0.8;
+    const before = window.__yjz.sfx().filter((k) => k === 'step').length;
+    try {
+      await sc.play({ t: 'move', slot: u.slot, path: [[u.x, u.y], [u.x, u.y - 1], [u.x - 1, u.y - 1], [u.x - 1, u.y], [u.x, u.y]] });
+      return { directions, sounds: window.__yjz.sfx().filter((k) => k === 'step').length - before };
+    } finally { sc.tween = tween; sc.speed = speed; sc.sync(); }
+  });
+  assert.equal(r.sounds, 4, '移动四格启动四次脚步声');
+  assert.ok(r.directions.some((d) => d.dx < 0) && r.directions.some((d) => d.dx > 0));
+  assert.ok(r.directions.every((d) => d.left === (d.dx < 0)), '每个水平位移必须与图像朝向一致');
+});
+
+await step('鼠标同格响应：只刷新一次，镜头卷动后按新格更新', async () => {
+  const result = await page.evaluate(() => {
+    const sc = window.__yjz.scene;
+    let calls = 0;
+    const fn = sc.onHover;
+    sc.onHover = () => calls++;
+    sc.hoverCell = '';
+    const t = performance.now();
+    for (let i = 0; i < 100; i++) sc.hover(3, 2);
+    const ms = performance.now() - t;
+    sc.onHover = fn;
+    return { calls, ms };
+  });
+  assert.equal(result.calls, 1, '同格100次鼠标移动只能刷新一次信息栏');
+  console.log(`    同格100次光标事件 ${result.ms.toFixed(2)}ms`);
 });
 
 await step('查看敌军状态（不能下令）', async () => {
@@ -659,6 +839,19 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
   // 动态：每 16 毫秒记一次特写横幅里左右两个演员正在显示的帧号
   await page.evaluate(() => {
     window.__seen = [];
+    window.__impactSounds = [];
+    const sc = window.__yjz.scene;
+    const originalPlay = sc.play.bind(sc);
+    window.__restorePlay = () => { sc.play = originalPlay; };
+    sc.play = (ev, onImpact) => {
+      if (ev.t !== 'hit') return originalPlay(ev, onImpact);
+      const hitSounds = () => window.__yjz.sfx().filter((k) => ['hit', 'hit_heavy', 'arrow'].includes(k)).length;
+      const before = hitSounds();
+      return originalPlay(ev, () => {
+        window.__impactSounds.push(hitSounds() - before);
+        onImpact?.();
+      });
+    };
     window.__rec = setInterval(() => {
       const box = window.__yjz.scene.children.list.find((o) => o.type === 'Container' && o.depth === 20);
       if (!box) return;
@@ -677,7 +870,9 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
   }));
   writeFileSync(`${SHOTS}18-cutin.png`, Buffer.from(png.split(',')[1], 'base64'));
   await settle();
-  const seenFrames = await page.evaluate(() => (clearInterval(window.__rec), window.__seen));
+  const seenFrames = await page.evaluate(() => (clearInterval(window.__rec), window.__restorePlay(), window.__seen));
+  const impactSounds = await page.evaluate(() => window.__impactSounds);
+  assert.ok(impactSounds.length > 0 && impactSounds.every((n) => n === 1), `每次命中必须同步启动一个攻击音效，实际 ${impactSounds}`);
   assert.ok(seenFrames.length > 60, `特写应持续一会儿，只采到 ${seenFrames.length} 帧`);
   const att = seenFrames.map((f) => f[0]);
   const def = seenFrames.map((f) => f[1]);
@@ -697,26 +892,30 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
 });
 
 await step('存档列表：多槽写入、概要、覆盖、删除 → 读指定档恢复完整战况', async () => {
+  const autoBefore = await page.evaluate(() => localStorage.getItem('yjz.autosave.v1'));
+  assert.equal(JSON.parse(autoBefore).battle.round, 2, '每回合应保存新回合开局');
   await sys('存档');
+  assert.equal(await page.$$eval('.auto-slot [data-act="write"], .auto-slot [data-act="delete"]', (els) => els.length), 0, '自动档不可手动覆盖或删除');
   await page.waitForSelector('#save-list:not([hidden]) .save-slot');
   // 檔一还留着营地存档；这次写到檔二，两个槽互不影响
   await page.click('#save-list [data-slot="1"][data-act="write"]');
   const saved = await state();
   let list = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.saves.v1')));
+  assert.equal(await page.evaluate(() => localStorage.getItem('yjz.autosave.v1')), autoBefore, '手动保存不得覆盖自动档');
   assert.equal(list.last, 1, '最近存档指向檔二');
   assert.equal(list.slots[0].battle, undefined, '檔一仍是只含流程的营地存档');
   assert.equal(list.slots[1].battle.level, saved.level, '檔二带完整战况');
   // 概要里要能看出是哪一关、第几回合，而不是一片空白
   await sys('存档');
   await page.waitForSelector('#save-list:not([hidden]) .save-slot');
-  const text = await page.textContent('#save-list .save-slot:nth-child(2) .slot-info');
+  const text = await page.textContent('#save-list .save-slot:nth-child(3) .slot-info');
   assert.match(text, /第\d+回合/, `槽位应显示关卡与回合，实际「${text}」`);
   assert.match(text, /金/, '槽位应显示军资');
   await shot('30-save-list');
   await page.click('#save-list [data-slot="2"][data-act="write"]'); // 再占一格，用来验证删除
   await sys('存档');
   await page.waitForSelector('#save-list:not([hidden]) .save-slot');
-  assert.equal(await page.$$eval('#save-list .save-slot', (els) => els.length), 6);
+  assert.equal(await page.$$eval('#save-list .save-slot', (els) => els.length), 7);
   await page.click('#save-list [data-slot="2"][data-act="delete"]'); // 第一下只是变「確認刪除」
   assert.match(await page.textContent('#save-list [data-slot="2"][data-act="delete"]'), /確認刪除/);
   await page.click('#save-list [data-slot="2"][data-act="delete"]'); // 第二下才真的删
@@ -738,6 +937,15 @@ await step('存档列表：多槽写入、概要、覆盖、删除 → 读指定
   await page.click('#save-list [data-slot="1"][data-act="read"]'); // 明确选檔二，不是「最近一个」
   await settle();
   assert.deepEqual(await state(), saved, '读档应恢复完整战斗状态（含随机数、回合、行动标记、事件）');
+  const automatic = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')).battle);
+  assert.ok(automatic.round > 2, '下一回合自动更新自动档');
+  await sys('读档');
+  await page.click('#save-list [data-slot="auto"][data-act="read"]');
+  await settle();
+  assert.deepEqual(await state(), automatic, '独立自动档可恢复完整战况');
+  await sys('读档');
+  await page.click('#save-list [data-slot="1"][data-act="read"]');
+  await settle();
 });
 
 await step('从标题读战斗档：标题卡片必须收起，直接回到战场原状态', async () => {
@@ -930,6 +1138,10 @@ await step('音效：21 个资源可加载、按钮与战斗事件有声、静�
     'heal', 'morale_up', 'morale_down', 'confuse', 'levelup', 'retreat', 'treasure', 'phase', 'victory', 'defeat'];
   const codes = await page.evaluate(async (ks) => Promise.all(ks.map(async (k) => (await fetch(`/assets/sfx/${k}.wav`)).status)), keys);
   assert.deepEqual([...new Set(codes)], [200], '21 个音效都能加载');
+  const diagnostics = await page.evaluate(() => window.__yjz.sfxDiagnostics());
+  assert.equal(diagnostics.contextState, 'running', '音效设备应在第一次用户手势后真正解锁');
+  assert.equal(diagnostics.ready.length, 21, '21个音效应已解码，可立即播放');
+  assert.deepEqual(diagnostics.errors, [], '音效不可静默播放失败');
   const played = await page.evaluate(() => window.__yjz.sfx());
   assert.ok(played.includes('confirm'), '按钮有确认音');
   assert.ok(played.includes('phase'), '回合开始有提示音');
@@ -1032,12 +1244,13 @@ await step('修改器：左上角连点三下 → 密码 1122 → 军资 / 兵�
   assert.equal(unitNow.level, lv0 + 7, '等级应同步到战场');
   assert.ok(unitNow.hp > 0, '改完等级应补满兵力');
 
-  // 道具：全部各一件 → 一键装备取最好的三件（霸者劍 / 孫子兵法 / 赤兎馬）
+  // 道具：全部各一件 → 一键装备取最好的三件（霸者劍 / 孫子兵法 / 赤兎馬），另补一件玉璽
   await page.click('[data-tr="give-all"]');
   assert.ok((await storyNow()).bag.length >= 60, '包袱里应有全部道具');
   await page.click(`[data-equip="${who}"]`);
   const items = (await storyNow()).roster[who].items;
-  for (const id of [59, 3, 7]) assert.ok(items.includes(id), `一键装备应有 ${id}`);
+  for (const id of [59, 3, 7, 8]) assert.ok(items.includes(id), `一键装备应有 ${id}`);
+  assert.equal(items.filter((id) => id === 8).length, 1, '玉璽只带一件');
   assert.match(await page.textContent('.trainer .tr-bag'), /英雄之劍/, '包袱里应还剩没穿上的装备');
 
   await page.click('[data-tr="close"]');
@@ -1046,7 +1259,9 @@ await step('修改器：左上角连点三下 → 密码 1122 → 军资 / 兵�
 
 await step('简繁切换：默认简体，一键还原原版繁体，对白 / 菜单 / 标题一起变', async () => {
   await page.evaluate(() => localStorage.removeItem('yjz.script'));
-  await page.reload();
+  // 前面的战斗用例带 ?fast，reload 会继承自动跳过对白；文案检查须回到普通模式。
+  await page.goto(`${BASE}/`);
+  assert.equal(await page.evaluate(() => new URLSearchParams(location.search).has('fast')), false);
   await page.waitForSelector('[data-go="start"]');
   const hans = await page.evaluate(() => ({
     title: document.querySelector('#screen h1').textContent,
@@ -1127,7 +1342,7 @@ await step('读档浮层兜底：即使舞台节点被挪走，点开列表也�
     return out;
   });
   assert.equal(r.msg, '', `打开列表不应抛错，实际「${r.msg}」`);
-  assert.deepEqual([r.ok, r.parent, r.slots], [true, 'BODY', 6], `浮层应挂到 body 并列出六格，实际 ${JSON.stringify(r)}`);
+  assert.deepEqual([r.ok, r.parent, r.slots], [true, 'BODY', 7], `浮层应挂到 body 并列出六格，实际 ${JSON.stringify(r)}`);
 });
 
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');

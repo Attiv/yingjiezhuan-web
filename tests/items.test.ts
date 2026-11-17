@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ITEM_SPEC, PROMOTE, classChange, classUse, itemEffect, priceOf, promotion, specOf } from '../src/data/items';
 import { upkeep } from '../src/rules/combat';
 import { atk, bySlot, def, maxHp, moveBudget } from '../src/rules/core';
-import { doDrop, doGive, doItem, giveTargets, itemTargets, newBattle, type Level, type UnitInit } from '../src/rules/turn';
+import { doDrop, doGive, doItem, doMove, doWait, giveTargets, itemTargets, newBattle, type Level, type UnitInit } from '../src/rules/turn';
 import type { Battle } from '../src/rules/types';
 
 /** 道具表来自原版的 items.toml：价格、回复量、装备加成、转职条件都得对得上。 */
@@ -75,6 +75,22 @@ describe('装备效果', () => {
     expect(u.hp).toBe(maxHp(0, 5) - 90);
     expect(u.morale).toBe(60);
     expect(evs.some((e) => e.t === 'recover')).toBe(true);
+  });
+
+  it('地图宝物踩上去就归该部队，回血效果随后每回合生效', () => {
+    const { b } = newBattle(level([unit(0, 0, 5, 0, 0), unit(15, 0, 1, 5, 1)], {
+      treasures: [{ x: 1, y: 0, item: 8, gold: 0 }],
+    }), 5);
+    const u = bySlot(b, 0)!;
+    doMove(b, 0, 1, 0);
+    const evs = doWait(b, 0);
+    expect(evs.some((e) => e.t === 'gain' && /玉璽/.test(e.text))).toBe(true);
+    expect(u.items).toContain(8);
+    u.hp -= 100;
+    u.morale = 50;
+    upkeep(b, 0, []);
+    expect(u.hp).toBe(maxHp(0, 5) - 90);
+    expect(u.morale).toBe(60);
   });
 });
 

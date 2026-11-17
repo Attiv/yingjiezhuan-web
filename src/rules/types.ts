@@ -22,6 +22,7 @@ export interface Unit {
   confused: boolean;
   /** 策略造成的混乱还剩几个自己的阶段；0 / 缺省 = 没有时限，只按每回合判定恢复（士气跌落的混乱）。 */
   confusedTurns?: number;
+  facingLeft?: boolean; // 最后一次横向移动的朝向；缺省时开局面向敌军
   moved: boolean;
   acted: boolean;
   mode: number; // 7 = 玩家手动；0 向目标移动，1 攻击最近敌人，2 原地不动，3 待机，4 只移动不攻击
@@ -53,7 +54,7 @@ export interface Battle {
   vars: Record<string, Flag>; // 战场脚本标志，战后带回流程
   objective: string; // 当前胜利条件（事件可以改）
   queue: number[]; // 本阶段尚未行动的 AI 槽位
-  undo: { slot: number; x: number; y: number } | null; // 已移动未行动部队的原位
+  undo: { slot: number; x: number; y: number; facingLeft?: boolean } | null; // 已移动未行动部队的原位
   reason: string; // 结束原因
 }
 

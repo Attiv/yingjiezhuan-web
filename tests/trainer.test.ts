@@ -4,7 +4,7 @@ import { level, officers } from '../src/data/game';
 import { newBattle } from '../src/rules/turn';
 import type { Roster } from '../src/rules/types';
 import {
-  BEST_OF, EQUIP_SLOTS, TRAINER_PASSWORD, bestInBag, clampExp, clampGold, clampLevel,
+  BEST_OF, BEST_TREASURE, EQUIP_SLOTS, TRAINER_PASSWORD, bestInBag, clampExp, clampGold, clampLevel,
   equipBest, equipScore, giveItem, slotOf, syncUnit,
 } from '../src/trainer';
 
@@ -47,19 +47,41 @@ describe('修改器', () => {
     expect(equipScore(8)).toBe(0);
   });
 
-  it('一键装备：包袱空时发最强三件，手里的消耗品与玉璽留着', () => {
+  it('一键装备：包袱空时发最强三件与玉璽，手里的消耗品留着', () => {
     const bag: number[] = [];
     const items = equipBest([30, 8], bag); // 豆、玉璽
     expect(items).toContain(30);
-    expect(items).toContain(8);
+    expect(items.filter((id) => id === 8)).toHaveLength(1); // 已有的玉璽只留一件
     for (const slot of EQUIP_SLOTS) expect(items).toContain(BEST_OF[slot]);
+    expect(items).toContain(BEST_TREASURE);
     expect(bag).toEqual([]);
+  });
+
+  it('一键装备：没有玉璽就补一件，包袱里有的先拿来用', () => {
+    const granted: number[] = [];
+    expect(equipBest([], granted)).toContain(BEST_TREASURE);
+    expect(granted).toEqual([]); // 包袱空：发一件，不从包袱拿
+
+    const bag = [8];
+    const items = equipBest([], bag);
+    expect(items).toContain(BEST_TREASURE);
+    expect(bag).toEqual([]); // 包袱里那件被拿上来了，没有多發
+  });
+
+  it('一键装备：多余的玉璽放回包袱，不会越点越多', () => {
+    const bag: number[] = [];
+    const items = equipBest([8, 8], bag); // 带了两件
+    expect(items.filter((id) => id === 8)).toHaveLength(1);
+    expect(bag).toEqual([8]);
+    const again = equipBest(items, bag);
+    expect(again.filter((id) => id === 8)).toHaveLength(1);
+    expect(bag).toEqual([8]);
   });
 
   it('一键装备：旧装备放回包袱，包袱里更好的换上来', () => {
     const bag = [59, 3, 7]; // 一套更强的
     const items = equipBest([9, 60, 6], bag); // 倚天劍、六韜、的盧
-    expect(items.sort((a, b) => a - b)).toEqual([3, 7, 59].sort((a, b) => a - b));
+    expect(items.sort((a, b) => a - b)).toEqual([3, 7, 59, 8].sort((a, b) => a - b));
     expect(bag.sort((a, b) => a - b)).toEqual([6, 9, 60].sort((a, b) => a - b));
   });
 

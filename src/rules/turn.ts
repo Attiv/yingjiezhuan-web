@@ -512,7 +512,11 @@ function step(b: Battle, u: Unit, f: Field, x: number, y: number): Ev[] {
   const path = route(b, u, f, x, y);
   need(path && canStop(b, u, f, x, y), '没有可走的路线');
   if (path.length < 2) return [];
-  b.undo = u.mode === 7 ? { slot: u.slot, x: u.x, y: u.y } : null;
+  b.undo = u.mode === 7 ? { slot: u.slot, x: u.x, y: u.y, facingLeft: u.facingLeft } : null;
+  for (let i = 1; i < path.length; i++) {
+    const dx = path[i][0] - path[i - 1][0];
+    if (dx) u.facingLeft = dx < 0;
+  }
   u.x = x;
   u.y = y;
   u.moved = true;
@@ -525,6 +529,7 @@ export function undoMove(b: Battle): boolean {
   if (!b.undo || !u || u.acted) return false;
   u.x = b.undo.x;
   u.y = b.undo.y;
+  u.facingLeft = b.undo.facingLeft;
   u.moved = false;
   b.undo = null;
   return true;
@@ -780,4 +785,4 @@ export const script = {
 
 /** 战后把玩家部队的成长记下来，带进下一战（撤退的也算）。 */
 export const harvest = (b: Battle): Roster =>
-  Object.fromEntries(b.units.filter((u) => u.mode === 7 && friendly(u.slot)).map((u) => [u.key ?? u.name, { level: u.level, exp: u.exp, items: [...u.items] }]));
+  Object.fromEntries(b.units.filter((u) => u.mode === 7 && friendly(u.slot)).map((u) => [u.key ?? u.name, { level: u.level, exp: u.exp, items: [...u.items], cls: u.cls }]));
