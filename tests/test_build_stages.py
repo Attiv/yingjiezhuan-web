@@ -190,6 +190,65 @@ class StageGenerationTests(unittest.TestCase):
         choice = next(s for s in game["steps"][route_start:] if s["t"] == "choice")
         self.assertEqual([o["label"] for o in choice["options"]], ["回小沛城", "去泰山", "去夏丘", "去彭城"])
 
+    def test_xiaopei_return_keeps_reward_conditions_and_location_boundary(self):
+        stages = json.loads((ROOT / "src/data/stages.json").read_text())
+        info = stages["c1_s2_story6"]
+        scene = build.load_scenarios()[1]["scenes"][2]
+        block = next(b for b in scene["blocks"] if b["index"] == 6)
+        records = {r["index"]: r for r in block["records"]}
+        officers = build.officer_of()
+
+        # R0 returns control after the farmer leaves; f8/f9/f10 indicate
+        # completed bandit battles, so only their corresponding rewards apply.
+        first = "c1_s2_story6:b6g1"
+        first_pause = info["timeline"].index({"t": "room", "id": first})
+        expected_opening = build.original_timeline(
+            scene, [{**records[0], "code": records[0]["code"][:15]}], officers)
+        self.assertEqual(info["timeline"][1:1 + len(expected_opening)], expected_opening)
+        self.assertEqual(info["rooms"][first]["source"], {"block": 6, "group": 1})
+        self.assertEqual(set(info["rooms"][first]["talks"]), {"1", "2", "63"})
+        self.assertEqual(info["rooms"][first]["next"], {"who": 82, "label": "聽快使說明"})
+
+        # Original if_flags means "unless": skip the reward when the completed
+        # battle flag is clear. Restore uses room anchors, not these flags.
+        before_room = info["timeline"][:first_pause]
+        self.assertEqual([s for s in before_room if s["t"] == "if"], [
+            {"t": "if", "flag": "orig_f8", "is": 0, "goto": "skip_gold"},
+            {"t": "if", "flag": "orig_f9", "is": 0, "goto": "skip_archery_guide"},
+            {"t": "if", "flag": "orig_f10", "is": 0, "goto": "skip_scroll_torrent"},
+        ])
+        self.assertEqual([s for s in before_room if s["t"] == "gold"], [{"t": "gold", "n": 500}])
+        self.assertEqual([s for s in before_room if s["t"] == "item"], [
+            {"t": "item", "id": "archery_guide"},
+            {"t": "item", "id": "scroll_torrent"},
+        ])
+        self.assertEqual(info["rewardConditions"], {
+            "gold": {"flag": "orig_f8", "is": 0, "cmp": "ne", "n": 500},
+            "items": [
+                {"flag": "orig_f9", "is": 0, "cmp": "ne", "id": 16},
+                {"flag": "orig_f10", "is": 0, "cmp": "ne", "id": 38},
+            ],
+        })
+
+        second = "c1_s2_story6:b6g2"
+        second_pause = info["timeline"].index({"t": "room", "id": second})
+        self.assertEqual(info["timeline"][first_pause + 1:second_pause],
+                         build.original_timeline(scene, [records[4]], officers))
+        self.assertEqual(info["rooms"][second]["source"], {"block": 6, "group": 2})
+        self.assertEqual(info["rooms"][second]["talks"], {
+            "366": build.original_timeline(scene, [records[5]], officers),
+        })
+        self.assertEqual(info["rooms"][second]["next"], {"label": "前往徐州陶謙官邸"})
+
+        # R6 remains an explicit location trigger: its original target and
+        # destination record are data, rather than an implicit auto-transition.
+        self.assertEqual(info["location"], {
+            "source": {"block": 6, "record": 6, "trigger": "location"},
+            "rawArgs": [13, 0, 11, 0, 0, 0],
+            "timeline": build.original_timeline(scene, [records[6]], officers),
+            "adapter": "room_button",
+        })
+
     def test_prologue_records_and_all_coordinate_operations_survive(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())
         scene = build.load_scenarios()[0]["scenes"][0]

@@ -29,6 +29,22 @@ export interface StageOp {
   text?: string;
 }
 
+export interface RewardCondition {
+  flag: string;
+  is: number;
+  cmp: 'eq' | 'ne' | 'gt' | 'lt';
+  n?: number;
+  id?: number;
+}
+
+export interface LocationTriggerInfo {
+  source: { block: number; record: number; trigger: 'location' };
+  rawArgs: number[]; // 原始六字节；字段布局和语义尚待核对。
+  timeline: Step[];
+  /** Current runtime adapter; this does not claim town free-walk support. */
+  adapter: 'room_button';
+}
+
 export interface StageInfo {
   /** `palace/003`（宫殿内景）、`field`（完整行军地图）或 `battle/012`（战场插剧）。 */
   map?: string | null;
@@ -44,6 +60,10 @@ export interface StageInfo {
   room?: { battle: string; shop: number[]; talks: Record<string, { steps: Step[]; shop?: boolean; depart?: boolean; prompt?: string; after?: Step[] }> };
   /** 舞台动作已交错编入主线，不再按台词数重复执行。 */
   ordered?: boolean;
+  /** 原版奖励条件的可审计表示；执行条件仍在 game.json 的 timeline 中。 */
+  rewardConditions?: { gold: RewardCondition; items: RewardCondition[] };
+  /** 原版地点触发；当前通过 room_button 适配，不是城镇自由行走。 */
+  location?: LocationTriggerInfo;
   /** 原版各并行交谈阶段，使用独立房间ID保存和恢复进度。 */
   rooms?: Record<string, {
     after?: { who: string; text: string };

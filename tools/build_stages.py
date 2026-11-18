@@ -512,6 +512,97 @@ def add_xuzhou_second_scene(stages: dict, dyn: list[dict], officers: dict[int, s
     info.pop("talks", None)
 
 
+def add_xiaopei_return(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """小沛山贼战后：条件奖励 → 两组交谈 → 徐州官邸地点触发。
+
+    原版 R6 是 location trigger，而当前网页没有城镇自由行走，
+    因此第二房间的「前往徐州官邸」按钮作为明确的临时适配入口；R6 的原始触发数据
+    仍单独保存在 location，参数字段语义待核对，后续接入行走时不改舞台记录。
+    """
+    sid = "c1_s2_story6"
+    scene = dyn[1]["scenes"][2]
+    block = next(b for b in scene["blocks"] if b["index"] == 6)
+    records = {r["index"]: r for r in block["records"]}
+
+    def steps(r: int, start: int = 0, end: int | None = None) -> list[dict]:
+        rec = records[r]
+        return original_timeline(scene, [{**rec, "code": rec["code"][start:end]}], officers)
+
+    # R0 自动段在 input_control=0 前结束；奖励的 if_flags 必须保留为脚本条件，
+    # 不能由生成器在当前存档旗标未知时擅自发放。
+    opening = steps(0, 0, 15)
+    reward_caption = steps(0, 17, 18)
+    farewell = steps(0, 22)
+    first, second = f"{sid}:b6g1", f"{sid}:b6g2"
+    first_talks = {str(records[r]["trigger"]["args"][0] | records[r]["trigger"]["args"][1] << 8):
+                   steps(r) for r in (1, 2, 3)}
+    second_talks = {"366": steps(5)}
+
+    # f8/f9/f10 是三处剿匪完成标志；if_flags 为 unless：未完成才跳过奖励。
+    # 元数据保存发放条件（非零），timeline 使用相反的跳过条件（等于0）。
+    reward_conditions = {
+        "gold": {"flag": "orig_f8", "is": 0, "cmp": "ne", "n": 500},
+        "items": [
+            {"flag": "orig_f9", "is": 0, "cmp": "ne", "id": 16},
+            {"flag": "orig_f10", "is": 0, "cmp": "ne", "id": 38},
+        ],
+    }
+    # 原版 add_item 使用道具号16/38；Step 层使用 pack 道具 key。
+    item_keys = {16: "archery_guide", 38: "scroll_torrent"}
+    reward_steps: list[dict] = [
+        {"t": "if", "flag": "orig_f8", "is": 0, "goto": "skip_gold"},
+        {"t": "gold", "n": 500},
+        *reward_caption,
+        {"t": "label", "name": "skip_gold"},
+        {"t": "if", "flag": "orig_f9", "is": 0, "goto": "skip_archery_guide"},
+        {"t": "item", "id": item_keys[16]},
+        {"t": "label", "name": "skip_archery_guide"},
+        {"t": "if", "flag": "orig_f10", "is": 0, "goto": "skip_scroll_torrent"},
+        {"t": "item", "id": item_keys[38]},
+        {"t": "label", "name": "skip_scroll_torrent"},
+    ]
+
+    # 尚无格式依据证明六字节的字段语义；保留原始参数，不猜作地点或坐标。
+    location = {
+        "source": {"block": 6, "record": 6, "trigger": "location"},
+        "rawArgs": records[6]["trigger"]["args"].copy(),
+        "timeline": steps(6),
+        "adapter": "room_button",
+    }
+    names: dict[int, str] = {}
+    for r in (0, 4, 6):
+        for code in records[r]["code"]:
+            person = (code.get("resolved") or {}).get("person")
+            if person:
+                args_by_name = {a["name"]: a["value"] for a in code.get("args", [])}
+                names[args_by_name["person"]] = person.strip()
+
+    info = stages[sid]
+    info.update(
+        timeline=[
+            {"t": "bgm", "key": "peace"},
+            *opening,
+            *reward_steps,
+            *farewell,
+            {"t": "room", "id": first},
+            *steps(4),
+            {"t": "room", "id": second},
+            *steps(6),
+        ],
+        rooms={
+            first: {"talks": first_talks, "next": {"who": 82, "label": "聽快使說明"},
+                    "source": {"block": 6, "group": 1}},
+            second: {"talks": second_talks, "next": {"label": "前往徐州陶謙官邸"},
+                     "source": {"block": 6, "group": 2}},
+        },
+        rewardConditions=reward_conditions,
+        location=location,
+        source={"chapter": 1, "scene": 2, "block": 6, "records": [0, 4, 6]},
+        names=names,
+    )
+    info.pop("talks", None)
+
+
 def add_xuzhou_return(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
     """返回徐州的两组交谈、求和赠剑、孙乾入队，以及小沛点赵云告别。"""
     scene = dyn[1]["scenes"][1]
@@ -673,6 +764,7 @@ def main() -> None:
     add_beihai_room(stages, dyn, officers)
     add_xuzhou_rooms(stages, dyn, officers)
     add_xuzhou_second_scene(stages, dyn, officers)
+    add_xiaopei_return(stages, dyn, officers)
     add_xuzhou_return(stages, dyn, officers)
     towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
     campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]

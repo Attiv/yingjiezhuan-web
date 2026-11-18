@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
-import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms } from './story-rooms.mjs';
+import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
 const SHOTS = new URL('../docs/screenshots/', import.meta.url).pathname;
@@ -1453,6 +1453,11 @@ await step('小沛议事厅：简雍汇报、关羽取消/确认出征与山贼�
 await step('返回徐州：陶谦赠剑、孙乾入队行军与赵云告别', async () => {
   await page.goto(`${BASE}/`);
   assert.match(await verifyXuzhouReturnRooms(page), /赠剑/);
+});
+
+await step('小沛战后：剿匪奖励、快使报告、两房间存档与赴徐州', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyXiaopeiReturnRooms(page), /小沛战后/);
 });
 
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');

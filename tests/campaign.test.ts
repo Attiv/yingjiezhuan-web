@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SCRIPT, defaultDeploy, hasLevel, level, officers, scene, speakerFaces } from '../src/data/game';
+import { SCRIPT, defaultDeploy, hasLevel, itemId, level, officers, scene, speakerFaces } from '../src/data/game';
 import { StageScript, stageOf } from '../src/stage';
 import { MARCH_CHAPTERS, MARCH_MAPS, chapterOfName, chapterTitle, marchMap } from '../src/data/march';
 import type { Battle, Roster } from '../src/rules/types';
@@ -303,14 +303,91 @@ describe('整部剧本的数据', () => {
     }
   });
 
+  it('小沛战后按剿匪标志奖励，两阶段交谈及读档不重领奖，赴徐州后衔接陶谦', () => {
+    const id = 'c1_s2_story6', first = `${id}:b6g1`, second = `${id}:b6g2`;
+    const info = stageOf(id)!;
+    expect(info.rooms?.[first].next?.who).toBe(82);
+    expect(Object.keys(info.rooms![first].talks).sort()).toEqual(['1', '2', '63']);
+    expect(info.rooms?.[second].next).toEqual({ label: '前往徐州陶謙官邸' });
+    expect(info.rooms?.[second].talks['366']).toEqual([
+      { t: 'say', who: '文官', text: '劉備，請馬上去徐州官邸，分秒必爭，陶謙快不行了．' },
+    ]);
+    expect(info.location).toMatchObject({
+      source: { block: 6, record: 6, trigger: 'location' },
+      rawArgs: [13, 0, 11, 0, 0, 0], adapter: 'room_button',
+    });
+    // f8/f9/f10 分别在泰山/彭城/夏丘战后设为1，原版 unless 跳过未完成目标的奖励。
+    for (let mask = 0; mask < 9; mask++) {
+      const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei', 'sun_qian', 'jian_yong'], gold: 900 });
+      if (mask < 8) Object.assign(st.flags, { orig_f8: mask & 1 ? 1 : 0, orig_f9: mask & 2 ? 1 : 0, orig_f10: mask & 4 ? 1 : 0 });
+      st.bag = [30];
+      st.pc = SCRIPT.steps.findIndex(s => s.t === 'stage' && s.id === id) - 1;
+      const expectedGold = 900 + (mask < 8 && mask & 1 ? 500 : 0);
+      const expectedItems = [30, ...(mask < 8 && mask & 2 ? [16] : []), ...(mask < 8 && mask & 4 ? [38] : [])];
+      const api: StoryApi = { item(s, item) { s.bag.push(itemId(item)!); } };
+      const stage = new StageScript(info), lines: string[] = [];
+      const advance = () => {
+        for (let n = 0; n < 200; n++) {
+          const step = nextStep(SCRIPT, st, 0, api);
+          if (st.section !== id) return step;
+          if (step?.t === 'action') stage.run(step.op);
+          if (step?.t === 'say') lines.push(step.text);
+          if (!step || step.t === 'room') return step;
+        }
+        throw new Error('小沛战后阶段未结束');
+      };
+      const restoreAndTalk = (roomId: string) => {
+        const saved = structuredClone(st);
+        st.pc = -999;
+        expect(restoreStoryPosition(SCRIPT, st)).toBe(true);
+        expect(st).toEqual(saved);
+        for (let repeat = 0; repeat < 2; repeat++) for (const steps of Object.values(info.rooms![roomId].talks)) {
+          const local = { ...st, pc: -1, cast: [...st.cast] };
+          const talk = { id: 'talk', title: '', steps };
+          while (nextStep(talk, local, 0, api)) { /* 重复闲谈不推进主线或奖励 */ }
+          expect(local.gold).toBe(expectedGold);
+          expect(local.bag).toEqual(expectedItems);
+        }
+        expect(currentStep(SCRIPT, st)).toEqual({ t: 'room', id: roomId });
+        expect(st).toEqual(saved);
+      };
+      expect(advance(), `旗标组合 ${mask}`).toEqual({ t: 'room', id: first });
+      expect(st.gold).toBe(expectedGold);
+      expect(st.bag).toEqual(expectedItems);
+      expect(stage.map).toBe('palace/002');
+      expect([...stage.people.keys()].sort((a, b) => a - b)).toEqual([0, 1, 2, 63, 82]);
+      expect(stage.people.get(0)).toMatchObject({ x: 21, y: 8, sprite: 2 });
+      expect(lines.some(s => s.includes('病情惡化'))).toBe(false);
+      restoreAndTalk(first);
+
+      expect(advance()).toEqual({ t: 'room', id: second });
+      expect(stage.map).toBe('palace/002');
+      expect([...stage.people.keys()].sort((a, b) => a - b)).toEqual([0, 366]);
+      expect(stage.people.get(366)).toMatchObject({ x: 11, y: 13, dir: 0 });
+      expect(lines.filter(s => s.includes('病情惡化'))).toHaveLength(1);
+      restoreAndTalk(second);
+
+      expect(advance()).toMatchObject({ t: 'say', who: 'tao_qian' });
+      expect(st.section).toBe('c1_s2_story7');
+      expect(stage.map).toBe('palace/022');
+      expect([...stage.people.keys()].sort((a, b) => a - b)).toEqual([0, 1, 2, 64, 81]);
+      expect(stage.people.get(0)).toMatchObject({ x: 14, y: 6, dir: 0, sprite: 2 });
+      expect(lines.at(-1)).toBe('陶謙，請多保重．');
+      expect(st.gold).toBe(expectedGold);
+      expect(st.bag).toEqual(expectedItems);
+    }
+  });
+
   it('序章自由房间与后续69个营地都指向有出兵位的战斗', () => {
     const camps = SCRIPT.steps.filter((s): s is Extract<Step, { t: 'camp' }> => s.t === 'camp');
     expect(camps).toHaveLength(69);
     const rooms = SCRIPT.steps.filter((s) => s.t === 'room');
-    expect(rooms).toHaveLength(15);
+    expect(rooms).toHaveLength(17);
     expect(rooms).toContainEqual({ t: 'room', id: 'c0_s0_story4' });
     expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story1:b1g1' });
     expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story1:b1g2' });
+    expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story6:b6g1' });
+    expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story6:b6g2' });
     expect(new Set(rooms.map((s) => s.id)).size).toBe(rooms.length);
     for (const c of camps) {
       const lv = level(c.battle);
