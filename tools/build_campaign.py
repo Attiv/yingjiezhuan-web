@@ -434,7 +434,7 @@ def scene_steps(scenes: dict[str, list[dict]], sid: str) -> list[dict]:
             st["label"] = pre(st["label"])
         elif t == "if":
             st["goto"] = pre(st["goto"])
-        elif t == "choice":
+        elif t == "choice" or (t == "room" and st.get("options")):
             st["options"] = [dict(o, goto=pre(o["goto"])) if o.get("goto") else o for o in st["options"]]
         elif t == "end":
             # 幕内的 @end = 本幕到此为止：跳到幕末的 #end 空标签，后面的流程节点照常接上

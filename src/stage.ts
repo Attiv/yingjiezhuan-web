@@ -46,9 +46,9 @@ export interface StageInfo {
   ordered?: boolean;
   /** 原版各并行交谈阶段，使用独立房间ID保存和恢复进度。 */
   rooms?: Record<string, {
-    after: { who: string; text: string };
+    after?: { who: string; text: string };
     talks: Record<string, Step[]>;
-    next: { who?: number; label: string; prompt?: { who: string; text: string } };
+    next?: { who?: number; label: string; prompt?: { who: string; text: string } };
     shop?: { who: number; items: number[] };
   }>;
   world?: number;

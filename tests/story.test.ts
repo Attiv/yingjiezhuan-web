@@ -65,6 +65,9 @@ describe('剧情脚本', () => {
   it('装载时查出坏脚本：缺标签、没登记的关卡、空选择、重复标签', () => {
     const s = (steps: Script['steps']): Script => ({ id: 't', title: '', steps });
     expect(() => checkScript(s([{ t: 'goto', label: 'x' }]), known)).toThrow('找不到标签 x');
+    expect(() => checkScript(s([{ t: 'room', id: 'meeting', options: [
+      { who: 1, label: '出战', prompt: { who: 'hero', text: '出发吗？' }, goto: 'missing' },
+    ] }]), known)).toThrow('找不到标签 missing');
     expect(() => checkScript(s([{ t: 'battle', level: 'nowhere' }]), known)).toThrow('没有登记');
     expect(() => checkScript(s([{ t: 'choice', text: '?', options: [] }]), known)).toThrow('没有选项');
     expect(() => checkScript(s([{ t: 'label', name: 'a' }, { t: 'label', name: 'a' }]), known)).toThrow('重复');
@@ -205,7 +208,7 @@ describe('存档位置恢复', () => {
       let step = nextStep(SCRIPT, st);
       for (let n = 0; step && n < 20000; n++) {
         if (step.t === 'camp' && !reached.has(step.battle)) reached.set(step.battle, structuredClone(st));
-        const answer = step.t === 'choice' ? Math.floor(random() * step.options.length) : 0;
+        const answer = step.t === 'choice' || (step.t === 'room' && step.options?.length) ? Math.floor(random() * step.options!.length) : 0;
         step = nextStep(SCRIPT, st, answer);
       }
     }

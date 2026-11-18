@@ -279,7 +279,7 @@ def build_ops(rec, at: list[int], lines: list[str]) -> list[dict]:
 
 
 def original_timeline(scene: dict, records: list[dict], officers: dict[int, str]) -> list[dict]:
-    """序章直接保留指令先后，不再把动作压到台词计数上。未知操作码不猜语义。"""
+    """已核对的线性记录直接保留指令先后；未知操作码不猜语义。"""
     people = json.loads((EX / "text/officers.json").read_text(encoding="utf-8"))
     dialogues = {d["offset"]: d["lines"] for d in scene.get("dialogues", [])}
     songs = {2: "sad", 3: "peace", 11: "tension", 12: "camp"}
@@ -305,6 +305,8 @@ def original_timeline(scene: dict, records: list[dict], officers: dict[int, str]
                 out.append({"t": "bgm", "key": songs[a["song"]]})
             elif m == "data" and a.get("kind") == 2:
                 out.append({"t": "gold", "n": a["value"]})
+            elif m == "add_levels":
+                out.append({"t": "level", "id": officers[a["person"]], "n": a["levels"]})
             elif m == "set_flag":
                 out.append({"t": "set", "flag": f"orig_f{a['flag']}", "value": 0 if a["clear"] else 1})
             elif m == "load_map":
@@ -388,6 +390,132 @@ def add_free_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> N
         if b == 5:
             room["shop"] = {"who": 374, "items": next(c["bytes"] for c in record(5, 7)["code"] if c["mnemonic"] == "set_shop_items")}
         stages[sid].setdefault("rooms", {})[f"{sid}:b{talk_block}g{group}"] = room
+
+
+def add_beihai_room(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """北海战后：R0致谢赠金 → group1自由交谈 → R4升级友军并行军徐州。"""
+    sid = "c1_s1_story4"
+    room_id = f"{sid}:b4g1"
+    scene = dyn[1]["scenes"][1]
+    block = next(b for b in scene["blocks"] if b["index"] == 4)
+    records = {r["index"]: r for r in block["records"]}
+    before = original_timeline(scene, [records[0]], officers)
+    after = original_timeline(scene, [records[4]], officers)
+    prompt = original_timeline(scene, [records[3]], officers)[0]
+    # 本幕线性且完整核对，直接替换pack片段；500金不再从pack另加一次。
+    # song 5仍沿用pack的peace映射，其他已知音乐按原始指令切换。
+    timeline = [{"t": "bgm", "key": "peace"}, *before, {"t": "room", "id": room_id}, *after]
+    info = stages[sid]
+    info.update(timeline=timeline, source={"chapter": 1, "scene": 1, "block": 4, "records": [0, 4]})
+    info["rooms"] = {room_id: {
+        "after": {k: before[-1][k] for k in ("who", "text")},
+        "talks": {str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8):
+                  original_timeline(scene, [r], officers) for r in (records[1], records[2])},
+        "next": {"who": 1, "label": "準備出發", "prompt": {k: prompt[k] for k in ("who", "text")}},
+        "source": {"block": 4, "group": 1},
+    }}
+    info.pop("talks", None)
+
+
+def add_xuzhou_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """徐州R0/R1 → group2点陶谦R7 → group3分别找关羽R12或张飞R13。"""
+    sid = "c1_s1_story6"
+    scene = dyn[1]["scenes"][1]
+    block = next(b for b in scene["blocks"] if b["index"] == 6)
+    records = {r["index"]: r for r in block["records"]}
+
+    def steps(r: int, start: int = 0) -> list[dict]:
+        return original_timeline(scene, [{**records[r], "code": records[r]["code"][start:]}], officers)
+
+    def room(group: int, last: dict, talk_records: list[int]) -> dict:
+        return {"after": {k: last[k] for k in ("who", "text")},
+                "talks": {str(records[r]["trigger"]["args"][0] | records[r]["trigger"]["args"][1] << 8):
+                          steps(r) for r in talk_records}, "source": {"block": 6, "group": group}}
+
+    first, decision = f"{sid}:b6g2", f"{sid}:b6g3"
+    opening = steps(0) + [{"t": "bgm", "key": "peace"}] + steps(1)
+    discussion = steps(7)
+    options = [{"who": who, "label": label, "prompt": {k: steps(r)[0][k] for k in ("who", "text")},
+                "goto": target} for who, label, r, target in
+               [(1, "與關羽出戰", 12, "xuzhou_fight"), (2, "派張飛求和", 13, "xuzhou_peace")]]
+    info = stages[sid]
+    info["timeline"] = [
+        {"t": "set", "flag": "orig_route_c1_s1_b6", "value": 0},
+        *opening, {"t": "room", "id": first}, *discussion,
+        {"t": "room", "id": decision, "options": options},
+        {"t": "label", "name": "xuzhou_fight"}, *steps(12, 2),
+        {"t": "goto", "label": "xuzhou_done"},
+        {"t": "label", "name": "xuzhou_peace"}, *steps(13, 2),
+        # 原始goto_block8映射到pack已有路线，人物退场完成后才写入。
+        {"t": "set", "flag": "orig_route_c1_s1_b6", "value": 1},
+        {"t": "label", "name": "xuzhou_done"},
+    ]
+    info["rooms"] = {
+        first: {**room(2, next(s for s in reversed(opening) if s["t"] == "say"), list(range(2, 7))),
+                "next": {"who": 15, "label": "與陶謙議事"}},
+        decision: room(3, discussion[-1], list(range(8, 12))),
+    }
+    info["source"] = {"chapter": 1, "scene": 1, "block": 6, "records": [0, 1, 7, 12, 13],
+                      "confirmedCodeStart": {"12": 2, "13": 2}}
+    info.pop("talks", None)
+
+
+def add_xuzhou_return(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """返回徐州的两组交谈、求和赠剑、孙乾入队，以及小沛点赵云告别。"""
+    scene = dyn[1]["scenes"][1]
+    blocks = {b["index"]: {r["index"]: r for r in b["records"]} for b in scene["blocks"]}
+
+    def steps(b: int, r: int, start: int = 0, end: int | None = None) -> list[dict]:
+        rec = blocks[b][r]
+        return original_timeline(scene, [{**rec, "code": rec["code"][start:end]}], officers)
+
+    def room(b: int, group: int, records: list[int], who: int, label: str) -> dict:
+        return {"talks": {str(blocks[b][r]["trigger"]["args"][0] | blocks[b][r]["trigger"]["args"][1] << 8):
+                          steps(b, r) for r in records},
+                "next": {"who": who, "label": label}, "source": {"block": b, "group": group}}
+
+    # 这两幕没有交谈暂停或剧情副作用分支，直接保留原始出入场顺序。
+    for b in (8, 9):
+        stages[f"c1_s1_story{b}"]["timeline"] = steps(b, 0)
+
+    sid = "c1_s1_story10"
+    first, second = f"{sid}:b10g1", f"{sid}:b10g2"
+    # if_flags按原始指令数跳过，而非展开后的对白步数；仅编译已核对的两个条件。
+    assert blocks[10][0]["code"][17]["all_set"] == [97] and blocks[10][0]["code"][17]["skip"] == 1
+    assert blocks[10][6]["code"][1]["all_set"] == [97] and blocks[10][6]["code"][1]["skip"] == 3
+    assert blocks[10][6]["code"][4]["mnemonic"] == "add_item"
+    assert blocks[10][6]["code"][4]["args"][0]["value"] == 57
+    assert blocks[10][12]["code"][3]["mnemonic"] == "set_allegiance"
+    info = stages[sid]
+    info.update(map="palace/004", timeline=[
+        {"t": "bgm", "key": "peace"}, *steps(10, 0, 0, 17),
+        {"t": "if", "flag": "orig_f97", "is": 0, "goto": "xuzhou_thanked"},
+        *steps(10, 0, 18), {"t": "label", "name": "xuzhou_thanked"},
+        {"t": "room", "id": first},
+        {"t": "if", "flag": "orig_f97", "is": 0, "goto": "xuzhou_entrust"},
+        *steps(10, 6, 2, 4), {"t": "item", "id": "twin_swords"},
+        {"t": "label", "name": "xuzhou_entrust"}, *steps(10, 6, 5),
+        {"t": "room", "id": second},
+        *steps(10, 12, 0, 3), {"t": "join", "id": "sun_qian"}, *steps(10, 12, 4),
+    ], rooms={first: room(10, 1, list(range(1, 6)), 15, "與陶謙交談"),
+              second: room(10, 2, list(range(7, 12)), 63, "與孫乾前往小沛")},
+                source={"chapter": 1, "scene": 1, "block": 10, "records": [0, 6, 12]})
+    info["names"] = {a["value"]: c["resolved"]["person"].strip()
+                     for c in blocks[10][0]["code"] if c["mnemonic"] == "place_person"
+                     for a in c["args"] if a["name"] == "person"}
+    info.pop("talks", None)
+
+    sid = "c1_s1_story11"
+    room_id = f"{sid}:b11g1"
+    info = stages[sid]
+    info.update(map="palace/002", timeline=[*steps(11, 0), {"t": "room", "id": room_id},
+                                           *steps(11, 4), {"t": "away", "id": "zhao_yun"}],
+                rooms={room_id: room(11, 1, [1, 2, 3], 53, "與趙雲交談")},
+                source={"chapter": 1, "scene": 1, "block": 11, "records": [0, 4]})
+    info["names"] = {a["value"]: c["resolved"]["person"].strip()
+                     for c in blocks[11][0]["code"] if c["mnemonic"] == "place_person"
+                     for a in c["args"] if a["name"] == "person"}
+    info.pop("talks", None)
 
 
 def add_original_opening(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
@@ -490,6 +618,9 @@ def main() -> None:
             stages[sid] = stage
     add_original_opening(stages, dyn, officers)
     add_free_rooms(stages, dyn, officers)
+    add_beihai_room(stages, dyn, officers)
+    add_xuzhou_rooms(stages, dyn, officers)
+    add_xuzhou_return(stages, dyn, officers)
     towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
     campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]
     for sid, info in stages.items():
@@ -498,7 +629,8 @@ def main() -> None:
         maps = {}
         if sid in ("c1_s0_story1", "c1_s0_story2"):
             maps.update(stages["c1_s0_story0"].get("walk", {}))
-        for op in info["ops"] + [s["op"] for s in info.get("timeline", []) if s["t"] == "action"]:
+        map_ops = info["ops"] + [s["op"] for s in info.get("timeline", []) if s["t"] == "action"]
+        for op in map_ops:
             key = op.get("map", "")
             if key.startswith("palace/"):
                 i = int(key.split("/")[1])
@@ -507,7 +639,7 @@ def main() -> None:
                     maps[key] = m["walk"]
         if maps:
             info["walk"] = maps
-        if info.get("map") == "field" or any(o.get("map") == "field" for o in info["ops"]):
+        if info.get("map") == "field" or any(o.get("map") == "field" for o in map_ops):
             info["routes"] = campaign[info["world"]]["routes"]
     OUT.write_text(json.dumps(stages, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     maps = sum(1 for s in stages.values() if s["map"] is not None)

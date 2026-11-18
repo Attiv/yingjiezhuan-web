@@ -18,7 +18,7 @@ export type Step =
   | { t: 'stage'; id: string } // 这一幕的场景（地图 + 场上人物，见 data/stages.json）
   | { t: 'action'; op: StageOp } // 按原始顺序执行动作，完成后再往下演
   | { t: 'wait'; ms: number }
-  | { t: 'room'; id: string } // 自动剧情结束，等玩家交谈或确认出征
+  | { t: 'room'; id: string; options?: { who: number; label: string; prompt: { who: string; text: string }; set?: Record<string, Flag>; goto?: string }[] } // 自动剧情结束，等玩家交谈或确认路线
   | { t: 'bg'; key: string } // 换背景：界面层按 key 找图，空串 = 不用背景
   | { t: 'say'; who: string; text: string } // 对话，等玩家点一下
   | { t: 'text'; text: string } // 旁白，等玩家点一下
@@ -91,7 +91,7 @@ export function checkScript(s: Script, hasLevel: (id: string) => boolean): Scrip
   });
   s.steps.forEach((st, i) => {
     const targets = st.t === 'goto' ? [st.label] : st.t === 'if' ? [st.goto] : st.t === 'battle' ? [st.win, st.lose]
-      : st.t === 'choice' ? st.options.map((o) => o.goto) : [];
+      : st.t === 'choice' || st.t === 'room' ? (st.options ?? []).map((o) => o.goto) : [];
     for (const t of targets) if (t !== undefined && !labels.has(t)) throw bad(i, `找不到标签 ${t}`);
     if (st.t === 'choice' && !st.options.length) throw bad(i, '选择没有选项');
     if (st.t === 'battle' && !hasLevel(st.level)) throw bad(i, `关卡 ${st.level} 没有登记`);
@@ -190,8 +190,8 @@ export function restoreStoryPosition(s: Script, st: Story, battleId?: string): b
           path.touched.add(x.flag);
         }
         if (path.choiceSeen && x.t === 'if') path.touched.add(x.flag);
-        if (x.t === 'choice') {
-          for (const option of x.options) {
+        if (x.t === 'choice' || (x.t === 'room' && x.options?.length)) {
+          for (const option of x.options ?? []) {
             const flags = { ...path.flags, ...option.set };
             const touched = new Set([...path.touched, ...Object.keys(option.set ?? {})]);
             const visited = new Set(path.visited);
@@ -246,8 +246,8 @@ export function nextStep(s: Script, st: Story, answer = 0, api: StoryApi = {}): 
     if (label !== undefined) st.pc = s.steps.findIndex((x) => x.t === 'label' && x.name === label);
   };
   const cur = s.steps[st.pc];
-  if (cur?.t === 'choice') {
-    const o = cur.options[answer];
+  if (cur?.t === 'choice' || (cur?.t === 'room' && cur.options?.length)) {
+    const o = cur.options![answer];
     if (!o) throw new Error(`脚本「${s.id}」第 ${st.pc + 1} 步：没有第 ${answer + 1} 个选项`);
     Object.assign(st.flags, o.set);
     jump(o.goto);

@@ -460,7 +460,7 @@ let stageScript = new StageScript();
 let stageSection = ''; // 当前幕的 id
 let stageLine = 0; // 旧场景按台词数调度；原始 timeline 按指令逐条播放
 let storyRun = 0;
-let roomDone: (() => void) | null = null;
+let roomDone: ((answer?: number) => void) | null = null;
 let roomBusy = false;
 let storyCamera = { x: 0, y: 0 };
 const storyPoint = (p: { x: number; y: number }) => stageScript.map === 'field' ? fieldPoint(p.x, p.y) : mapPoint(p.x, p.y);
@@ -566,7 +566,7 @@ function renderStoryView() {
     e.stopPropagation();
     if (roomBusy || !roomDone) return;
     if (button.dataset.room === 'save') openSaveList('save');
-    else if (button.dataset.room === 'continue') void continueRoom();
+    else if (button.dataset.room === 'continue') void continueRoom(Number(button.dataset.answer ?? 0));
     else void roomCamp();
   }));
   el.querySelectorAll<HTMLElement>('.actor').forEach((b) => (b.onclick = (e) => (e.stopPropagation(), talkTo(Number(b.dataset.who)))));
@@ -645,23 +645,26 @@ function activeRoom() {
 }
 
 function roomControls() {
-  const room = activeRoom();
+  const room = activeRoom(), step = currentStep(CAMPAIGN, story);
+  const options = step?.t === 'room' ? step.options : undefined;
   return '<div class="room-controls"><span>點選人物交談</span>' +
-    (room ? `<button class="btn" data-room="continue">${esc(room.next.label)}</button>` :
-      '<button class="btn" data-room="prepare">編成・道具</button>') +
+    (options?.length ? options.map((o, i) => `<button class="btn" data-room="continue" data-answer="${i}">${esc(o.label)}</button>`).join('') :
+      room?.next ? `<button class="btn" data-room="continue">${esc(room.next.label)}</button>` :
+        room ? '' : '<button class="btn" data-room="prepare">編成・道具</button>') +
     '<button class="btn" data-room="save">存檔</button></div>';
 }
 
-async function continueRoom() {
-  const room = activeRoom();
-  if (!room || !roomDone || roomBusy) return;
+async function continueRoom(answer = 0) {
+  const room = activeRoom(), step = currentStep(CAMPAIGN, story);
+  const next = step?.t === 'room' && step.options?.length ? step.options[answer] : room?.next;
+  if (!next || !roomDone || roomBusy) return;
   roomBusy = true;
   renderStoryView();
   const run = storyRun;
   try {
-    const prompt = room.next.prompt;
+    const prompt = next.prompt;
     const yes = !prompt || await talk(nameOf(prompt.who), prompt.text, ['是', '否'], faceOf(prompt.who) ?? '', 1) === 0;
-    if (run === storyRun && yes) roomDone?.();
+    if (run === storyRun && yes) roomDone?.(answer);
   } finally {
     if (run === storyRun) { roomBusy = false; speaking = ''; renderStoryView(); }
   }
@@ -669,7 +672,7 @@ async function continueRoom() {
 
 async function roomSteps(steps: Step[]) {
   const script = { id: 'room-talk', title: '', steps };
-  const local = { ...story, pc: -1 };
+  const local = { ...story, pc: -1, cast: [...story.cast] };
   let step: Shown | null;
   const run = storyRun;
   while (run === storyRun && (step = nextStep(script, local, 0, API))) {
@@ -714,7 +717,10 @@ async function roomShop(items: number[]) {
 async function roomTalk(who: number) {
   if (!roomDone || roomBusy) return;
   const free = activeRoom();
-  if (free?.next.who === who) return continueRoom();
+  const step = currentStep(CAMPAIGN, story);
+  const answer = step?.t === 'room' ? step.options?.findIndex(o => o.who === who) ?? -1 : -1;
+  if (answer >= 0) return continueRoom(answer);
+  if (free?.next?.who === who) return continueRoom();
   if (free?.shop?.who === who) return roomShop(free.shop.items);
   const info = stageScript.info, entry = info?.room?.talks[String(who)] ??
     (free?.talks[String(who)] ? { steps: free.talks[String(who)] } : undefined);
@@ -745,11 +751,11 @@ async function roomTalk(who: number) {
   }
 }
 
-function enterRoom(): Promise<void> {
+function enterRoom(): Promise<number> {
   roomBusy = false;
   speaking = '';
   return new Promise((done) => {
-    roomDone = () => { roomDone = null; done(); };
+    roomDone = (answer = 0) => { roomDone = null; done(answer); };
     renderStoryView();
   });
 }
@@ -894,7 +900,12 @@ async function playStory(step: Shown | null) {
     switch (step.t) {
       case 'action': await playStageOp(step.op); break;
       case 'wait': await storyPause(step.ms); break;
-      case 'room': await enterRoom(); break;
+      case 'room': {
+        const answer = await enterRoom();
+        if (run !== storyRun) return;
+        step = nextStep(CAMPAIGN, story, answer, API);
+        continue;
+      }
       case 'say': await say(step.who, step.text); stageLine++; break;
       case 'text': {
         // 地名条不是台词：画面上已经写在左上角，停一下就走，不占对话框

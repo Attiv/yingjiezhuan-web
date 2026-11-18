@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
-import { verifyRooms } from './story-rooms.mjs';
+import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouReturnRooms } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
 const SHOTS = new URL('../docs/screenshots/', import.meta.url).pathname;
@@ -1210,7 +1210,7 @@ await step('后期关卡实机：大地图、民众护送、军乐队都能开�
   for (const lid of ['c1_s0_b6', 'c2_s3_b7', 'c4_s2_b4', 'c1_s0_b13']) {
     const pc = G.steps.findIndex((st) => st.t === 'battle' && st.level === lid);
     assert.ok(pc > 0, `${lid} 应在流程里`);
-    const story = { script: 'yingjiezhuan', pc, bg: '', picture: '', bgm: '', cast: [], flags: {}, roster, party, bag: [], deploy: [], gold: 10000 };
+    const story = { script: 'yingjiezhuan', pc, bg: '', picture: '', bgm: '', cast: [], flags: {}, roster, party, bag: [], deploy: [], gold: 10000, resume: { t: 'battle', id: lid } };
     await page.evaluate((st) => {
       localStorage.setItem('yjz.saves.v1', JSON.stringify({ slots: [{ story: st, at: Date.now() }], last: 0 }));
       localStorage.setItem('yjz.save.v3', JSON.stringify({ story: st }));
@@ -1433,6 +1433,21 @@ await step('界桥篇六阶段房间：人物、头像、商店、存档与出�
   await page.goto(`${BASE}/`); // 保持手动对白模式，逐阶段检查点击
   const { results } = await verifyRooms(page);
   assert.equal(results.length, 4);
+});
+
+await step('北海议事厅：赠金、原文闲谈、取消出发、存读档与徐州行军', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyBeihaiRoom(page), /北海/);
+});
+
+await step('徐州议事厅：陶谦议论、两阶段交谈、关张路线确认与存读档', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyXuzhouRooms(page), /徐州/);
+});
+
+await step('返回徐州：陶谦赠剑、孙乾入队行军与赵云告别', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyXuzhouReturnRooms(page), /赠剑/);
 });
 
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');

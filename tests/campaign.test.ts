@@ -4,7 +4,7 @@ import { StageScript, stageOf } from '../src/stage';
 import { MARCH_CHAPTERS, MARCH_MAPS, chapterOfName, chapterTitle, marchMap } from '../src/data/march';
 import type { Battle, Roster } from '../src/rules/types';
 import { aiStep, doWait, endPhase, newBattle } from '../src/rules/turn';
-import { checkScript, nextStep, startStory, testFlag, type Shown, type StoryApi, type Step } from '../src/story';
+import { checkScript, currentStep, nextStep, restoreStoryPosition, startStory, testFlag, type Shown, type StoryApi, type Step } from '../src/story';
 
 /**
  * 整部游戏的剧本数据：从原版盘转出来的 5491 步、610 幕插剧、70 场战斗。
@@ -30,7 +30,7 @@ function walk(rand: () => number) {
     const s = step as unknown as Step;
     if (s.t === 'battle') log.battles.push(s.level);
     // 选择随便挑一项；战斗多半打赢，偶尔按失败的分支走，两条线都走到
-    const a = s.t === 'choice' ? Math.floor(rand() * s.options.length) : s.t === 'battle' ? (rand() < 0.15 ? 1 : 0) : 0;
+    const a = s.t === 'choice' || (s.t === 'room' && s.options?.length) ? Math.floor(rand() * s.options!.length) : s.t === 'battle' ? (rand() < 0.15 ? 1 : 0) : 0;
     step = nextStep(SCRIPT, st, a, api) as Shown | null;
   }
   return { st, log, step, steps: n };
@@ -79,7 +79,7 @@ describe('整部剧本的数据', () => {
       '2': [{ t: 'say', who: '張飛', text: '有什麼事的話會去叫你．' }],
     });
     expect(first['c1_s0_story0:b1g0'].talks['1']).toEqual([{ t: 'say', who: 'guan_yu', text: '請兄長講話．' }]);
-    expect(stageOf('c1_s0_story1')!.rooms!['c1_s0_story1:b2g0'].next.who).toBe(364);
+    expect(stageOf('c1_s0_story1')!.rooms!['c1_s0_story1:b2g0'].next?.who).toBe(364);
     expect(stageOf('c1_s0_story2')!.rooms!['c1_s0_story2:b2g1'].talks['364']).toEqual([{ t: 'say', who: '使者', text: '劉備，請你盡快去支援吧．' }]);
   });
 
@@ -97,17 +97,217 @@ describe('整部剧本的数据', () => {
       }
       expect([...sc.people.keys()].sort((a, b) => a - b), sid).toEqual(expected);
       for (const who of Object.keys(room.talks)) expect(sc.people.has(Number(who))).toBe(true);
-      expect(room.next.prompt).toEqual({ who: 'guan_yu', text: '準備好了嗎？' });
+      expect(room.next?.prompt).toEqual({ who: 'guan_yu', text: '準備好了嗎？' });
       expect(steps.some((s) => s.t === 'say' && s.text === '準備好了嗎？')).toBe(false);
     }
     expect(stageOf('c1_s0_story5')!.rooms!['c1_s0_story5:b5g4'].shop?.who).toBe(374);
+  });
+
+  it('北海战后停留交谈，孔融赠金只执行一次，出发后才升级友军并行军徐州', () => {
+    const id = 'c1_s1_story4', roomId = `${id}:b4g1`;
+    const info = stageOf(id)!;
+    const room = info.rooms?.[roomId];
+    expect(room, '北海须有独立交谈阶段').toBeDefined();
+    expect(room!.talks).toEqual({
+      '7': [{ t: 'say', who: 'kong_rong', text: '努力啊．' }],
+      '149': [{ t: 'say', who: 'taishi_ci', text: '謝謝你，有劉備支援，徐州就萬無一失了．' }],
+    });
+    expect(room!.next).toMatchObject({ who: 1, prompt: { who: 'guan_yu', text: '準備好了嗎？' } });
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 733 });
+    st.pc = SCRIPT.steps.findIndex(s => s.t === 'stage' && s.id === id) - 1;
+    const stage = new StageScript(info), upgrades: [string, number][] = [];
+    const api: StoryApi = { level(s, who, n) {
+      upgrades.push([who, n]);
+      const r = (s.roster[who] ??= { level: officers[who].level, exp: 0, items: [] });
+      r.level += n;
+    } };
+    let step: Shown | null = null;
+    for (let i = 0; i < 100; i++) {
+      step = nextStep(SCRIPT, st, 0, api);
+      if (step?.t === 'action') stage.run(step.op);
+      if (!step || step.t === 'room' || step.t === 'camp') break;
+    }
+    expect(step).toEqual({ t: 'room', id: roomId });
+    expect(st.gold).toBe(1233);
+    expect(upgrades).toEqual([]);
+    expect(stage.map).toBe('palace/002');
+    expect([...stage.people.keys()].sort((a, b) => a - b)).toEqual([0, 1, 7, 149]);
+    expect(stage.people.get(0)).toMatchObject({ x: 7, y: 15, sprite: 2 });
+    expect(stage.people.get(1)).toMatchObject({ x: 8, y: 16, dir: 3 });
+    expect(stage.people.get(7)).toMatchObject({ x: 8, y: 15, dir: 2 });
+    expect(stage.people.get(149)).toMatchObject({ x: 14, y: 13, dir: 2 });
+    const saved = structuredClone(st);
+    saved.pc = -200;
+    expect(restoreStoryPosition(SCRIPT, saved)).toBe(true);
+    expect(saved).toEqual(st);
+    expect(currentStep(SCRIPT, saved)).toEqual(step);
+    // 闲谈使用独立步骤，不推进主线，也不能重复奖励或升级。
+    for (let repeat = 0; repeat < 2; repeat++) for (const steps of Object.values(room!.talks)) {
+      const local = { ...saved, pc: -1 };
+      const script = { id: 'talk', title: '', steps };
+      while (nextStep(script, local, 0, api)) { /* 读完闲谈 */ }
+      expect(local.gold).toBe(1233);
+    }
+    expect(upgrades).toEqual([]);
+    const after: string[] = [];
+    for (let i = 0; i < 100; i++) {
+      step = nextStep(SCRIPT, saved, 0, api);
+      if (!step || step.t === 'camp') break;
+      if (step.t === 'action') stage.run(step.op);
+      if (step.t === 'say') {
+        after.push(step.text);
+        expect(upgrades).toEqual([['taishi_ci', 4], ['tao_qian', 6]]);
+      }
+    }
+    expect(step).toMatchObject({ t: 'camp', battle: 'c1_s1_b5' });
+    expect(after).toEqual(['快去徐州吧．', '劉備，徐州在北海的南面，快去吧．']);
+    expect(stage.map).toBe('field');
+    expect(stage.people.get(0)).toMatchObject({ x: 40, y: 24, dir: 2, sprite: 3 });
+    expect(saved.gold).toBe(1233);
+    expect(saved.party).toEqual(st.party);
+    const b = newBattle(level('c1_s1_b5')!, 1, saved.roster).b;
+    expect(b.units.find(u => u.key === 'tao_qian')!.level).toBe(10);
+    expect(b.units.find(u => u.key === 'taishi_ci')!.level).toBe(13);
+  });
+
+  it('徐州先点陶谦议论，再由关羽或张飞确认路线，存读档保留阶段', () => {
+    const id = 'c1_s1_story6', first = `${id}:b6g2`, decision = `${id}:b6g3`;
+    const info = stageOf(id)!;
+    expect(info.rooms?.[first], '致谢后须先交还控制，点陶谦才议论').toBeDefined();
+    expect(info.rooms?.[first].next?.who).toBe(15);
+    expect(info.rooms?.[first].talks['1']).toEqual([{ t: 'say', who: 'guan_yu', text: '我們能來得及支援，太好了．' }]);
+    expect(info.rooms?.[decision].talks['15']).toEqual([{ t: 'say', who: 'tao_qian', text: '莫非要我投降才是上策？' }]);
+    for (const route of [0, 1]) {
+      const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 733 });
+      st.pc = SCRIPT.steps.findIndex(s => s.t === 'stage' && s.id === id) - 1;
+      const stage = new StageScript(info), lines: string[] = [];
+      let step: Shown | null;
+      const advance = () => {
+        for (let n = 0; n < 150; n++) {
+          step = nextStep(SCRIPT, st, route);
+          if (step?.t === 'action') stage.run(step.op);
+          if (step?.t === 'say') lines.push(step.text);
+          if (!step || step.t === 'room' || step.t === 'camp' || st.section !== id) return step;
+        }
+        throw new Error('徐州阶段未结束');
+      };
+      expect(advance()).toEqual({ t: 'room', id: first });
+      expect(lines.at(-1)).toBe('非常感謝．');
+      expect(stage.map).toBe('palace/004');
+      expect([...stage.people.keys()].sort((a, b) => a - b)).toEqual([0, 1, 2, 15, 63, 64, 65]);
+      expect(stage.people.get(64)).toMatchObject({ x: 11, y: 9, dir: 1 });
+      expect(stage.people.get(2)).toMatchObject({ x: 5, y: 14, dir: 0 });
+      const restore = () => {
+        const saved = structuredClone(st);
+        st.pc = -200;
+        expect(restoreStoryPosition(SCRIPT, st)).toBe(true);
+        expect(st).toEqual(saved);
+      };
+      restore();
+      const choice = advance();
+      expect(choice).toMatchObject({ t: 'room', id: decision, options: [
+        { who: 1, prompt: { who: 'guan_yu', text: '哦，兄長，決定出征了嗎？' } },
+        { who: 2, prompt: { who: '張飛', text: '大哥，派我去向曹操軍求和嗎？' } },
+      ] });
+      expect(lines.at(-1)).toContain('你想好的話，跟張飛或我說一下．');
+      expect(stage.people.get(2)).toMatchObject({ x: 5, y: 14, dir: 1 });
+      expect(st.flags.orig_f219).toBeUndefined();
+      expect(st.flags.orig_route_c1_s1_b6).toBe(0);
+      restore();
+      const next = advance();
+      expect(st.gold).toBe(733);
+      expect(st.party).toEqual(['liu_bei', 'guan_yu', 'zhang_fei']);
+      if (route === 0) {
+        expect(next).toMatchObject({ t: 'camp', battle: 'c1_s1_b7' });
+        expect(st.flags.orig_f219).toBe(1);
+        expect(st.flags.orig_route_c1_s1_b6).toBe(0);
+        expect(stage.map).toBe('field');
+        expect(stage.people.get(0)).toMatchObject({ x: 32, y: 30, dir: 3, sprite: 3 });
+        expect(stage.people.get(8)).toMatchObject({ x: 32, y: 30, dir: 2 });
+        expect(lines).not.toContain('這樣決定了的話就簡單了．好，我馬上就去．');
+      } else {
+        expect(st.section).toBe('c1_s1_story8');
+        expect(st.flags.orig_f219).toBeUndefined();
+        expect(st.flags.orig_route_c1_s1_b6).toBe(1);
+        expect(stage.people.has(2)).toBe(false);
+        expect(lines).toContain('這樣決定了的話就簡單了．好，我馬上就去．');
+        expect(lines).not.toContain('快做出征準備吧．');
+      }
+    }
+  });
+
+  it('返回徐州先点陶谦受托，再点孙乾入队，求和奖励只发一次，抵达小沛后点赵云告别', () => {
+    const id = 'c1_s1_story10', first = `${id}:b10g1`, second = `${id}:b10g2`, farewell = 'c1_s1_story11:b11g1';
+    const info = stageOf(id)!;
+    expect(info.rooms?.[first], '返回徐州须恢复交谈与原始站位').toBeDefined();
+    expect(info.rooms?.[first].next?.who).toBe(15);
+    expect(info.rooms?.[second].next?.who).toBe(63);
+    expect(info.rooms?.[first].talks['64']).toEqual([{ t: 'say', who: 'mi_zhu', text: '謝謝，這樣徐州得救了．' }]);
+    expect(info.rooms?.[second].talks['64']).toEqual([{ t: 'say', who: 'mi_zhu', text: '小沛就拜託你們了．' }]);
+    for (const peace of [0, 1]) {
+      const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei', 'zhao_yun'], gold: 733 });
+      st.flags.orig_f97 = peace;
+      st.bag = [30];
+      st.pc = SCRIPT.steps.findIndex(s => s.t === 'stage' && s.id === id) - 1;
+      let stage = new StageScript(), section = '';
+      const lines: string[] = [], effects: string[] = [];
+      const api: StoryApi = {
+        item(s, item) { effects.push(`item:${item}`); if (item === 'twin_swords') s.bag.push(57); },
+        join(s, who) { effects.push(`join:${who}`); if (!s.party.includes(who)) s.party.push(who); },
+        away(s, who) { effects.push(`away:${who}`); s.party = s.party.filter(x => x !== who); },
+      };
+      const advance = () => {
+        for (let n = 0; n < 200; n++) {
+          const step = nextStep(SCRIPT, st, 0, api);
+          if (section !== st.section) { section = st.section; stage = new StageScript(stageOf(section), stage); }
+          if (step?.t === 'action') stage.run(step.op);
+          if (step?.t === 'say') lines.push(step.text);
+          if (!step || step.t === 'room' || st.section === 'c1_s2_story0') return step;
+        }
+        throw new Error('徐州返回阶段未结束');
+      };
+      const restore = () => {
+        const expected = structuredClone(st), before = [...effects];
+        st.pc = -999;
+        expect(restoreStoryPosition(SCRIPT, st)).toBe(true);
+        expect(st).toEqual(expected);
+        expect(effects).toEqual(before);
+      };
+      expect(advance()).toEqual({ t: 'room', id: first });
+      expect([...stage.people.keys()].sort((a, b) => a - b)).toEqual([0, 1, 2, 15, 63, 64, 65]);
+      expect(stage.map).toBe('palace/004');
+      expect(stage.people.get(0)).toMatchObject({ x: 9, y: 14, dir: 0, sprite: 2 });
+      expect(stage.people.get(64)).toMatchObject({ x: 15, y: 7, dir: 1 });
+      expect(lines).toHaveLength(peace ? 3 : 1);
+      expect(effects).toEqual([]);
+      restore();
+      expect(advance()).toEqual({ t: 'room', id: second });
+      expect(st.bag).toEqual(peace ? [30, 57] : [30]);
+      expect(effects).toEqual(peace ? ['item:twin_swords'] : []);
+      expect(st.party).not.toContain('sun_qian');
+      expect(lines.some(s => s.includes('雌雄雙劍'))).toBe(!!peace);
+      restore();
+      expect(advance()).toEqual({ t: 'room', id: farewell });
+      expect(st.party).toContain('sun_qian');
+      expect(st.party).toContain('zhao_yun');
+      expect(stage.map).toBe('palace/002');
+      expect([...stage.people.keys()].sort((a, b) => a - b)).toEqual([0, 1, 2, 53, 63]);
+      expect(stage.people.get(53)).toMatchObject({ x: 12, y: 13, dir: 2 });
+      expect(stageOf('c1_s1_story11')!.rooms![farewell].next?.who).toBe(53);
+      restore();
+      advance();
+      expect(st.section).toBe('c1_s2_story0');
+      expect(st.party).not.toContain('zhao_yun');
+      expect(effects).toEqual([...(peace ? ['item:twin_swords'] : []), 'join:sun_qian', 'away:zhao_yun']);
+      expect(st.gold).toBe(733);
+    }
   });
 
   it('序章自由房间与后续69个营地都指向有出兵位的战斗', () => {
     const camps = SCRIPT.steps.filter((s): s is Extract<Step, { t: 'camp' }> => s.t === 'camp');
     expect(camps).toHaveLength(69);
     const rooms = SCRIPT.steps.filter((s) => s.t === 'room');
-    expect(rooms).toHaveLength(7);
+    expect(rooms).toHaveLength(13);
     expect(rooms).toContainEqual({ t: 'room', id: 'c0_s0_story4' });
     expect(new Set(rooms.map((s) => s.id)).size).toBe(rooms.length);
     for (const c of camps) {
@@ -137,7 +337,7 @@ describe('整部剧本的数据', () => {
       }
       steps.forEach((s, i) => {
         const targets = s.t === 'goto' ? [s.label] : s.t === 'if' ? [s.goto]
-          : s.t === 'choice' ? s.options.map((o) => o.goto) : [];
+          : s.t === 'choice' || s.t === 'room' ? (s.options ?? []).map((o) => o.goto) : [];
         for (const t of targets) expect(t === undefined || labels.has(t), `${id} 第 ${i + 1} 步找不到标签 ${t}`).toBe(true);
         if (s.t === 'say') expect(typeof s.text === 'string' && s.text.length > 0, `${id} 第 ${i + 1} 步空台词`).toBe(true);
       });
