@@ -9,14 +9,14 @@ import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { tally } from './result';
-import { StageScript, isSceneMap, mapPoint, mapSrc, stageOf, actorFrame, type Crowd } from './stage';
+import { StageScript, isSceneMap, mapPoint, fieldPoint, moveDirection, mapSrc, stageOf, actorFrame, type StageOp, type Crowd } from './stage';
 import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, syncUnit } from './trainer';
 import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, rangeCells, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doDrop, doGive, doItem, doItemAll, doMove, doWait, endPhase, giveTargets, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
 import type { Battle, Ev, Flag, Unit } from './rules/types';
 import { BattleScene, CELL, RES, VIEW_H, VIEW_W, sideOf } from './scene';
-import { checkScript, currentStep, nextStep, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
+import { checkScript, currentStep, nextStep, restoreStoryPosition, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
 import { initScript, scriptLabel, toggleScript } from './zh';
 
 const SAVE_KEY = 'yjz.save.v3'; // 流程进度 + 战斗状态
@@ -458,7 +458,71 @@ async function playDuel(aId: string, bId: string, acts: DuelAct[]) {
 /** 这一幕的舞台：地图、站在格子上的人、点人说话。原版的剧情画面就是这个。 */
 let stageScript = new StageScript();
 let stageSection = ''; // 当前幕的 id
-let stageLine = 0; // 本幕已经说过几句台词：舞台调度按它对表
+let stageLine = 0; // 旧场景按台词数调度；原始 timeline 按指令逐条播放
+let storyRun = 0;
+let roomDone: (() => void) | null = null;
+let roomBusy = false;
+let storyCamera = { x: 0, y: 0 };
+const storyPoint = (p: { x: number; y: number }) => stageScript.map === 'field' ? fieldPoint(p.x, p.y) : mapPoint(p.x, p.y);
+const storyPause = (ms: number) => new Promise<void>((r) => setTimeout(r, autoTalk ? 0 : ms * ANIM_SPEEDS[animSpeedIndex].v));
+
+function followStory(p?: Crowd) {
+  if (stageScript.map !== 'field' || !p) return;
+  const at = storyPoint(p);
+  const routes = stageScript.info?.routes;
+  const w = (routes?.[0]?.length ?? 48) * 40, h = (routes?.length ?? 48) * 40;
+  storyCamera = { x: Math.max(0, Math.min(w - 640, at.left - 320)), y: Math.max(0, Math.min(h - 400, at.top - 200)) };
+  const world = $('screen').querySelector<HTMLElement>('.story-world');
+  if (world) world.style.transform = `translate(${-storyCamera.x}px, ${-storyCamera.y}px)`;
+}
+
+/** 动作串行执行；下一句和 remove 必须等可见的逐格行走完成。 */
+async function playStageOp(op: StageOp, run = storyRun) {
+  if (run !== storyRun) return;
+  const p = op.who === undefined ? undefined : stageScript.people.get(op.who);
+  if (op.op !== 'move' || !p || op.x === undefined || op.y === undefined) {
+    stageScript.run(op);
+    if (op.op === 'map') storyCamera = { x: 0, y: 0 };
+    if (op.op === 'place') followStory(stageScript.people.get(op.who!));
+    renderStoryView();
+    return;
+  }
+  const path = stageScript.path(p.who, op.x, op.y);
+  const speed = autoTalk ? 0 : ANIM_SPEEDS[animSpeedIndex].v;
+  p.walking = true;
+  renderStoryView();
+  for (const to of path) {
+    if (run !== storyRun) return;
+    const from = { x: p.x, y: p.y };
+    p.dir = moveDirection(from, to, stageScript.map === 'field');
+    const actor = $('screen').querySelector<HTMLElement>(`.actor[data-who="${p.who}"]`);
+    const art = actor?.querySelector<HTMLElement>('i');
+    if (art) { art.style.cssText = actorStyle(p); art.classList.toggle('flip', actorFrame(p.sprite, p.dir).flip); }
+    const ms = 100 * speed;
+    if (ms) await new Promise<void>((done) => {
+      const start = performance.now();
+      const frame = (now: number) => {
+        if (run !== storyRun) return done();
+        const k = Math.min(1, (now - start) / ms);
+        p.x = from.x + (to.x - from.x) * k;
+        p.y = from.y + (to.y - from.y) * k;
+        // 宫殿的交错列位置须在两个端点之间插值，不能对小数列取奇偶。
+        const a = storyPoint(from), b = storyPoint(to);
+        if (actor) { actor.style.left = `${a.left + (b.left - a.left) * k}px`; actor.style.top = `${a.top + (b.top - a.top) * k}px`; }
+        followStory(p);
+        if (k < 1) requestAnimationFrame(frame); else done();
+      };
+      requestAnimationFrame(frame);
+    });
+    if (run !== storyRun) return;
+    p.x = to.x; p.y = to.y;
+    followStory(p);
+  }
+  if (run !== storyRun) return;
+  stageScript.run(op);
+  stageScript.people.get(p.who)!.walking = false;
+  renderStoryView();
+}
 
 /**
  * 剧情人物使用 BAKDATA 指定的 SSCCHR2 外观，不读取战场兵种。
@@ -485,15 +549,26 @@ function renderStoryView() {
     return;
   }
   const names = stageScript.info?.names ?? {};
-  const people = [...stageScript.people.values()].sort((a, b) => a.y - b.y || a.x - b.x);
+  const people = [...stageScript.people.values()].sort((a, b) => storyPoint(a).top - storyPoint(b).top || a.x - b.x);
   const place = stageScript.place ? `<div class="place">${esc(stageScript.place)}</div>` : '';
-  el.innerHTML = `<div class="scene"><img class="backdrop" src="${mapSrc(map)}" alt="">` + place +
+  const field = map === 'field';
+  const w = field ? (stageScript.info?.routes?.[0]?.length ?? 48) * 40 : 640;
+  const h = field ? (stageScript.info?.routes?.length ?? 48) * 40 : 400;
+  el.innerHTML = `<div class="scene${field ? ' field' : ''}"><div class="story-world" style="width:${w}px;height:${h}px;transform:translate(${-storyCamera.x}px,${-storyCamera.y}px)">` +
+    `<img class="backdrop" src="${mapSrc(map, stageScript.info?.world)}" alt="" style="width:${w}px;height:${h}px">` +
     people.map((p) => {
-      const { left, top } = mapPoint(p.x, p.y);
+      const { left, top } = storyPoint(p);
       const { flip } = actorFrame(p.sprite, p.dir);
-      return `<button class="actor${p.walking ? ' walking' : ''}" data-who="${p.who}" title="${esc(names[p.who] ?? '')}"` +
+      return `<button class="actor${p.walking ? ' walking' : ''}" data-who="${p.who}" title="${esc(names[p.who] ?? '')}" aria-label="${esc(names[p.who] ?? '人物')}"` +
         ` style="left:${left}px;top:${top}px"><i class="${flip ? 'flip' : ''}" style="${actorStyle(p)}"></i></button>`;
-    }).join('') + '</div>';
+    }).join('') + '</div>' + place + (roomDone && !roomBusy ? roomControls() : '') + '</div>';
+  el.querySelectorAll<HTMLElement>('[data-room]').forEach((button) => (button.onclick = (e) => {
+    e.stopPropagation();
+    if (roomBusy || !roomDone) return;
+    if (button.dataset.room === 'save') openSaveList('save');
+    else if (button.dataset.room === 'continue') void continueRoom();
+    else void roomCamp();
+  }));
   el.querySelectorAll<HTMLElement>('.actor').forEach((b) => (b.onclick = (e) => (e.stopPropagation(), talkTo(Number(b.dataset.who)))));
   spotSpeaker();
 }
@@ -507,13 +582,19 @@ function spotSpeaker(): void {
 }
 
 /** 剧情推进到下一句：按「本幕已说过几句」把舞台调度走一步。 */
-function storyFrame() {
+async function storyFrame(run: number) {
+  if (run !== storyRun) return;
   if (story.section !== stageSection) {
-    stageScript = new StageScript(stageOf(story.section), stageScript); // 同一处的后续段接着上一幕的人和地图
+    stageScript = new StageScript(stageOf(story.section), stageScript);
     stageSection = story.section;
     stageLine = 0;
+    storyCamera = { x: 0, y: 0 };
   }
-  stageScript.advance(stageLine);
+  if (!stageScript.info?.timeline && !stageScript.info?.ordered) for (const op of stageScript.take(stageLine)) {
+    if (run !== storyRun) return;
+    await playStageOp(op, run);
+  }
+  if (run !== storyRun) return;
   const el = $('screen');
   el.className = 'story';
   el.hidden = false;
@@ -527,6 +608,10 @@ function storyFrame() {
 async function talkTo(who: number): Promise<void> {
   const info = stageScript.info;
   const name = info?.names?.[who] ?? '';
+  if (info?.timeline || info?.ordered) {
+    if (roomDone && !roomBusy) await roomTalk(who);
+    return;
+  }
   if (!name) return;
   const lines = info?.talks?.[who] ?? [];
   const box = $('talk');
@@ -554,6 +639,137 @@ async function talkTo(who: number): Promise<void> {
     else box.innerHTML = saved;
   }
 }
+function activeRoom() {
+  const step = currentStep(CAMPAIGN, story);
+  return step?.t === 'room' ? stageScript.info?.rooms?.[step.id] : undefined;
+}
+
+function roomControls() {
+  const room = activeRoom();
+  return '<div class="room-controls"><span>點選人物交談</span>' +
+    (room ? `<button class="btn" data-room="continue">${esc(room.next.label)}</button>` :
+      '<button class="btn" data-room="prepare">編成・道具</button>') +
+    '<button class="btn" data-room="save">存檔</button></div>';
+}
+
+async function continueRoom() {
+  const room = activeRoom();
+  if (!room || !roomDone || roomBusy) return;
+  roomBusy = true;
+  renderStoryView();
+  const run = storyRun;
+  try {
+    const prompt = room.next.prompt;
+    const yes = !prompt || await talk(nameOf(prompt.who), prompt.text, ['是', '否'], faceOf(prompt.who) ?? '', 1) === 0;
+    if (run === storyRun && yes) roomDone?.();
+  } finally {
+    if (run === storyRun) { roomBusy = false; speaking = ''; renderStoryView(); }
+  }
+}
+
+async function roomSteps(steps: Step[]) {
+  const script = { id: 'room-talk', title: '', steps };
+  const local = { ...story, pc: -1 };
+  let step: Shown | null;
+  const run = storyRun;
+  while (run === storyRun && (step = nextStep(script, local, 0, API))) {
+    Object.assign(story, { flags: local.flags, gold: local.gold, roster: local.roster, party: local.party, bag: local.bag, deploy: local.deploy, bgm: local.bgm });
+    playBgm(local.bgm);
+    if (step.t === 'say') await say(step.who, step.text);
+    else if (step.t === 'text') await talk('', step.text);
+    else if (step.t === 'action') await playStageOp(step.op);
+    else if (step.t === 'wait') await storyPause(step.ms);
+  }
+  if (run === storyRun) {
+    Object.assign(story, { flags: local.flags, gold: local.gold, roster: local.roster, party: local.party, bag: local.bag, deploy: local.deploy, bgm: local.bgm });
+    playBgm(local.bgm);
+  }
+}
+
+async function roomCamp() {
+  const room = stageScript.info?.room;
+  if (!room || roomBusy || !roomDone) return;
+  roomBusy = true;
+  const run = storyRun;
+  await camp({ t: 'camp', battle: room.battle, title: `${lvOf(room.battle)?.name ?? ''} — 出兵準備`, shop: room.shop }, true);
+  if (run !== storyRun) return;
+  roomBusy = false;
+  $('screen').className = 'story';
+  $('screen').hidden = false;
+  renderStoryView();
+}
+
+async function roomShop(items: number[]) {
+  if (roomBusy || !roomDone) return;
+  roomBusy = true;
+  const run = storyRun;
+  await camp({ t: 'camp', battle: '', title: '道具屋', shop: items }, true, true);
+  if (run !== storyRun) return;
+  roomBusy = false;
+  $('screen').className = 'story';
+  $('screen').hidden = false;
+  renderStoryView();
+}
+
+async function roomTalk(who: number) {
+  if (!roomDone || roomBusy) return;
+  const free = activeRoom();
+  if (free?.next.who === who) return continueRoom();
+  if (free?.shop?.who === who) return roomShop(free.shop.items);
+  const info = stageScript.info, entry = info?.room?.talks[String(who)] ??
+    (free?.talks[String(who)] ? { steps: free.talks[String(who)] } : undefined);
+  if (!entry) return;
+  roomBusy = true;
+  renderStoryView();
+  const run = storyRun;
+  try {
+    await roomSteps(entry.steps);
+    if (run !== storyRun) return;
+    if (entry.shop) {
+      roomBusy = false;
+      return await roomCamp();
+    }
+    if (entry.depart) {
+      const name = info?.names?.[who] ?? '關羽';
+      const i = await talk(name, entry.prompt ?? '準備好了嗎？', ['是', '否'], faceOf('guan_yu') ?? '', 1);
+      if (run !== storyRun) return;
+      if (i === 0) {
+        await roomSteps(entry.after ?? []);
+        if (run !== storyRun) return;
+        if (!story.deploy.length) story.deploy = defaultDeploy(info!.room!.battle, story.party);
+        roomDone?.();
+      }
+    }
+  } finally {
+    if (run === storyRun) { roomBusy = false; speaking = ''; renderStoryView(); }
+  }
+}
+
+function enterRoom(): Promise<void> {
+  roomBusy = false;
+  speaking = '';
+  return new Promise((done) => {
+    roomDone = () => { roomDone = null; done(); };
+    renderStoryView();
+  });
+}
+
+/** 读剧情档只重建舞台动作，不重复发军资、设标志或播放对白。 */
+function rebuildStoryStage() {
+  stageScript = new StageScript(); stageSection = ''; stageLine = 0;
+  for (let i = 0; i <= story.pc; i++) {
+    const step = CAMPAIGN.steps[i];
+    if (step.t === 'stage') {
+      stageScript = new StageScript(stageOf(step.id), stageScript);
+      stageSection = step.id; stageLine = 0;
+    } else if (step.t === 'action') stageScript.run(step.op);
+    else if (!stageScript.info?.timeline && !stageScript.info?.ordered && (step.t === 'say' || step.t === 'text')) stageScript.advance(stageLine++);
+  }
+  for (const p of stageScript.people.values()) p.walking = false;
+  storyCamera = { x: 0, y: 0 };
+  followStory([...stageScript.people.values()].at(-1));
+}
+
 /** 章节标题：原版行军图铺满舞台（缓慢平移），中间压一条横幅，点一下或按回车继续。 */
 function chapter(text: string): Promise<void> {
   const el = $('screen');
@@ -667,11 +883,18 @@ async function captionBeat(): Promise<void> {
 
 /** 从某一步起把流程演下去：对话、旁白、选择在这里处理；遇到战斗先出战前说明，全部演完回标题。 */
 async function playStory(step: Shown | null) {
+  const run = ++storyRun;
+  const previousRoom = roomDone; roomDone = null; previousRoom?.();
+  roomBusy = false;
   mode = 'busy'; // 剧情期间战场不接受操作
-  while (step) {
+  while (step && run === storyRun) {
     while (aside) await new Promise((r) => setTimeout(r, 80)); // 正在点人问话：等他问完再往下演
-    storyFrame(); // 先把这一幕的舞台摆到这一句该有的样子，再开口
+    await storyFrame(run);
+    if (run !== storyRun) return;
     switch (step.t) {
+      case 'action': await playStageOp(step.op); break;
+      case 'wait': await storyPause(step.ms); break;
+      case 'room': await enterRoom(); break;
       case 'say': await say(step.who, step.text); stageLine++; break;
       case 'text': {
         // 地名条不是台词：画面上已经写在左上角，停一下就走，不占对话框
@@ -683,16 +906,19 @@ async function playStory(step: Shown | null) {
       case 'title': await chapter(step.text); break;
       case 'choice': {
         const i = await talk(step.who ? nameOf(step.who) : '', step.text, step.options.map((o) => o.label));
+        if (run !== storyRun) return;
         step = nextStep(CAMPAIGN, story, i, API);
         continue;
       }
       case 'duel': await playDuel(step.a, step.b, step.acts); break;
-      case 'camp': await camp(step); step = nextStep(CAMPAIGN, story, 0, API); continue;
+      case 'camp': await camp(step); if (run !== storyRun) return; step = nextStep(CAMPAIGN, story, 0, API); continue;
       case 'ending': return showEnding(step.text);
       case 'battle': hideStoryFrame(); return showBrief(step.level);
     }
+    if (run !== storyRun) return;
     step = nextStep(CAMPAIGN, story, 0, API);
   }
+  if (run !== storyRun) return;
   hideStoryFrame();
   mode = 'over';
   showEnding('');
@@ -716,14 +942,14 @@ function afterBattle() {
 const SEED = () => Number(params.get('seed')) || Date.now();
 
 /** 出兵准备：编成、买道具、给武将配道具。出发时把名单记进流程。 */
-function camp(step: Extract<Shown, { t: 'camp' }>) {
+function camp(step: Extract<Shown, { t: 'camp' }>, returnToRoom = false, shopOnly = false) {
   const lv = lvOf(step.battle);
-  if (!lv) throw new Error(`营地指向的关卡 ${step.battle} 没有数据`);
+  if (!lv && !shopOnly) throw new Error(`营地指向的关卡 ${step.battle} 没有数据`);
   const party = story.party.filter((id) => officers[id]);
-  if (!story.deploy.length) story.deploy = defaultDeploy(step.battle, party);
-  const required = lv.deploy?.required ?? [];
-  const forbidden = lv.deploy?.forbidden ?? [];
-  const max = lv.deploy?.max ?? party.length;
+  if (!shopOnly && !story.deploy.length) story.deploy = defaultDeploy(step.battle, party);
+  const required = lv?.deploy?.required ?? [];
+  const forbidden = lv?.deploy?.forbidden ?? [];
+  const max = lv?.deploy?.max ?? party.length;
   let pick = party[0] ?? '';
   const rosterOf = (id: string) => (story.roster[id] ??= blank(id));
   const clsOf = (id: string) => rosterOf(id).cls ?? officers[id].cls;
@@ -734,8 +960,8 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
     const locked = required.includes(id);
     return `<div class="row${pick === id ? ' on' : ''}"><button class="btn name" data-pick="${id}">` +
       `<b>${esc(o.name)}</b><span>Lv${story.roster[id]?.level ?? o.level}　${TB.classNames[clsOf(id)]}</span>` +
-      `<i>${out ? '出陣' : '待命'}${locked ? '（必須）' : ''}</i></button>` +
-      `<button class="btn tog" data-toggle="${id}"${locked || forbidden.includes(id) ? ' disabled' : ''}>${out ? '待命' : '出陣'}</button></div>`;
+      `${shopOnly ? '' : `<i>${out ? '出陣' : '待命'}${locked ? '（必須）' : ''}</i>`}</button>` +
+      (shopOnly ? '' : `<button class="btn tog" data-toggle="${id}"${locked || forbidden.includes(id) ? ' disabled' : ''}>${out ? '待命' : '出陣'}</button>`) + '</div>';
   }).join('');
   const bag = () => {
     const counts = new Map<number, number>();
@@ -781,12 +1007,12 @@ function camp(step: Extract<Shown, { t: 'camp' }>) {
     const top = el.scrollTop;
     el.className = '';
     el.innerHTML = `<div class="card camp"><h1 style="font-size:24px;line-height:30px">${esc(step.title)}</h1>` +
-      `<p class="sub">軍資 ${story.gold} 金　出征 ${story.deploy.length}/${max} 名</p>` +
-      `<div class="camp-cols"><section><h2>編成</h2>${rows()}</section>` +
+      `<p class="sub">軍資 ${story.gold} 金${shopOnly ? '' : `　出征 ${story.deploy.length}/${max} 名`}</p>` +
+      `<div class="camp-cols"><section><h2>${shopOnly ? '武將' : '編成'}</h2>${rows()}</section>` +
       `<section><h2>道具・${esc(officers[pick]?.name ?? '')}</h2><div class="items">${carried()}</div><h2>包袱</h2><div class="items">${bag()}</div>` +
       `${info()}<h2>商店</h2>${shop}</section></div>` +
       `<div class="row end"><button class="btn" data-go="camp-save">存檔</button>` +
-      `<button class="btn" data-go="camp-go"${story.deploy.length ? '' : ' disabled'}>出陣</button></div>`;
+      `<button class="btn" data-go="camp-go"${story.deploy.length || returnToRoom ? '' : ' disabled'}>${returnToRoom ? '返回' : '出陣'}</button></div>`;
     el.hidden = false;
     el.scrollTop = top;
     // 焦点给出陣，但不让它把卡片滚到底
@@ -1084,8 +1310,10 @@ function validSave(d: SaveData | null | undefined): SaveData | null {
   const st = d?.story;
   if (!st || st.script !== CAMPAIGN.id || !Array.isArray(st.party)) return null;
   const bt = d?.battle;
+  if (!restoreStoryPosition(CAMPAIGN, st, bt?.level)) return null;
+  const position = CAMPAIGN.steps[st.pc];
   if (!bt) return d!;
-  const step = CAMPAIGN.steps[st.pc];
+  const step = position;
   const ok = step?.t === 'battle' && step.level === bt.level && lvOf(bt.level) &&
     Array.isArray(bt.units) && Array.isArray(bt.terrain) && bt.terrain.length === bt.w * bt.h &&
     typeof bt.rng === 'number' && bt.stage === 'player' && !!bt.vars;
@@ -1151,6 +1379,9 @@ const saveSummary = (e: SaveEntry) => {
 function currentSaveData(): SaveData | null {
   if (mode === 'over') return null;
   if (mode === 'idle' && b.stage === 'player' && !b.undo) return { story, battle: b };
+  const step = currentStep(CAMPAIGN, story);
+  if (step?.t !== 'camp' && step?.t !== 'room') return null;
+  if (roomBusy && !$('screen').querySelector('.camp')) return null;
   return { story };
 }
 function writeSlot(i: number): boolean {
@@ -1182,9 +1413,14 @@ function deleteSlot(i: number) {
 function loadSlot(i: number | 'auto'): boolean {
   const d = validSave(i === 'auto' ? readAutoSave() : readSaveList().slots[i]);
   if (!d) return log('没有可用的存档。'), false;
+  if (d.battle) {
+    storyRun++;
+    const previousRoom = roomDone; roomDone = null; previousRoom?.();
+    answer = null; $('talk').hidden = true;
+  }
   story = d.story;
   if (d.battle) { begin(d.battle); log('已读档。'); }
-  else { $('screen').hidden = true; void playStory(currentStep(CAMPAIGN, story)); }
+  else { $('screen').hidden = true; $('screen').onclick = null; rebuildStoryStage(); void playStory(currentStep(CAMPAIGN, story)); }
   return true;
 }
 

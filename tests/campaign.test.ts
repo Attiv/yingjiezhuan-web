@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { SCRIPT, defaultDeploy, hasLevel, level, officers, scene } from '../src/data/game';
+import { SCRIPT, defaultDeploy, hasLevel, level, officers, scene, speakerFaces } from '../src/data/game';
+import { StageScript, stageOf } from '../src/stage';
 import { MARCH_CHAPTERS, MARCH_MAPS, chapterOfName, chapterTitle, marchMap } from '../src/data/march';
 import type { Battle, Roster } from '../src/rules/types';
 import { aiStep, doWait, endPhase, newBattle } from '../src/rules/turn';
@@ -49,9 +50,66 @@ describe('整部剧本的数据', () => {
     for (const b of battles) expect(level(b.level), b.level).toBeDefined();
   });
 
-  it('70 个营地都指向同一场战斗，且那场战斗有出兵位', () => {
+  it('平原议事厅按原始阶段交谈，不提前让简雍和使者登场或入队', () => {
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 733 });
+    st.pc = SCRIPT.steps.findIndex((s) => s.t === 'stage' && s.id === 'c1_s0_story0') - 1;
+    let stage = new StageScript(), section = '';
+    const rooms: { id: string; people: number[]; party: string[]; guan: unknown }[] = [];
+    const joins: string[] = [];
+    for (let i = 0; i < 300; i++) {
+      const step = nextStep(SCRIPT, st, 0, { join(st, id) { joins.push(id); st.party.push(id); } });
+      if (!step || step.t === 'camp') break;
+      if (section !== st.section) { section = st.section; stage = new StageScript(stageOf(section), stage); }
+      if (step.t === 'action') stage.run(step.op);
+      if (step.t === 'room') rooms.push({ id: step.id, people: [...stage.people.keys()].sort((a, b) => a - b), party: [...st.party], guan: stage.people.get(1) });
+    }
+    expect(rooms.map((r) => r.id)).toEqual(['c1_s0_story0:b0g2', 'c1_s0_story0:b1g0', 'c1_s0_story1:b2g0', 'c1_s0_story2:b2g1']);
+    expect(rooms[0].people).toEqual([0, 1, 2]);
+    expect(rooms[0].party).not.toContain('jian_yong');
+    expect(rooms[1].people).toEqual([0, 1, 2, 82]);
+    expect(rooms[1].guan).toMatchObject({ x: 6, y: 15, dir: 1 });
+    expect(rooms[1].party).not.toContain('jian_yong');
+    expect(rooms[2].people).toEqual([0, 1, 2, 82, 364]);
+    expect(rooms[2].party).toContain('jian_yong');
+    expect(joins).toEqual(['jian_yong']);
+    expect(st.gold).toBe(733);
+    const first = stageOf('c1_s0_story0')!.rooms!;
+    expect(first['c1_s0_story0:b0g2'].talks).toEqual({
+      '1': [{ t: 'say', who: 'guan_yu', text: '城裡有酒館等居民聚集的地方，想從居民那裡得到情報，還是去人多的地方好．' }],
+      '2': [{ t: 'say', who: '張飛', text: '有什麼事的話會去叫你．' }],
+    });
+    expect(first['c1_s0_story0:b1g0'].talks['1']).toEqual([{ t: 'say', who: 'guan_yu', text: '請兄長講話．' }]);
+    expect(stageOf('c1_s0_story1')!.rooms!['c1_s0_story1:b2g0'].next.who).toBe(364);
+    expect(stageOf('c1_s0_story2')!.rooms!['c1_s0_story2:b2g1'].talks['364']).toEqual([{ t: 'say', who: '使者', text: '劉備，請你盡快去支援吧．' }]);
+  });
+
+  it('广川和信都的交谈暂停保留真实在场人物，出发问句由确认框承担', () => {
+    for (const [sid, roomId, expected] of [
+      ['c1_s0_story5', 'c1_s0_story5:b5g4', [0, 1, 2, 82, 244, 245, 374]],
+      ['c1_s0_story8', 'c1_s0_story8:b8g1', [0, 1, 2, 82, 220]],
+    ] as const) {
+      const info = stageOf(sid)!, room = info.rooms![roomId];
+      const sc = new StageScript(info);
+      const steps = scene(sid);
+      for (const step of steps) {
+        if (step.t === 'room') break;
+        if (step.t === 'action') sc.run(step.op);
+      }
+      expect([...sc.people.keys()].sort((a, b) => a - b), sid).toEqual(expected);
+      for (const who of Object.keys(room.talks)) expect(sc.people.has(Number(who))).toBe(true);
+      expect(room.next.prompt).toEqual({ who: 'guan_yu', text: '準備好了嗎？' });
+      expect(steps.some((s) => s.t === 'say' && s.text === '準備好了嗎？')).toBe(false);
+    }
+    expect(stageOf('c1_s0_story5')!.rooms!['c1_s0_story5:b5g4'].shop?.who).toBe(374);
+  });
+
+  it('序章自由房间与后续69个营地都指向有出兵位的战斗', () => {
     const camps = SCRIPT.steps.filter((s): s is Extract<Step, { t: 'camp' }> => s.t === 'camp');
-    expect(camps).toHaveLength(70);
+    expect(camps).toHaveLength(69);
+    const rooms = SCRIPT.steps.filter((s) => s.t === 'room');
+    expect(rooms).toHaveLength(7);
+    expect(rooms).toContainEqual({ t: 'room', id: 'c0_s0_story4' });
+    expect(new Set(rooms.map((s) => s.id)).size).toBe(rooms.length);
     for (const c of camps) {
       const lv = level(c.battle);
       expect(lv, c.battle).toBeDefined();
@@ -104,6 +162,18 @@ describe('整部剧本的数据', () => {
     expect(seen.size).toBeGreaterThanOrEqual(60);
     const all = new Set(SCRIPT.steps.filter((s): s is Extract<Step, { t: 'battle' }> => s.t === 'battle').map((s) => s.level));
     for (const id of seen) expect(all.has(id)).toBe(true);
+  });
+
+  it('除刘备外，武将和说话人头像不会错误回退成刘备', () => {
+    const liuFaces = new Set(['liu_bei', '劉備']);
+    const wrongOfficers = Object.entries(officers)
+      .filter(([id, o]) => o.face === 'faces/000' && !liuFaces.has(id))
+      .map(([id, o]) => `${id}:${o.name}`);
+    expect(wrongOfficers).toEqual([]);
+    const wrongSpeakers = Object.entries(speakerFaces)
+      .filter(([who, face]) => face === 'faces/000' && !liuFaces.has(who))
+      .map(([who]) => who);
+    expect(wrongSpeakers).toEqual([]);
   });
 
   it('70 场战斗都能按关卡数据开打：出征名单不空、槽位不撞、地形对得上', () => {    const roster: Roster = {};
@@ -214,6 +284,16 @@ describe('首战：汜水關', () => {
     expect(b.units.filter((u) => u.mode === 7).map((u) => u.name)).toEqual(['關羽', '張飛']);
     expect(b.units.find((u) => u.commander)!.name).toBe('華雄');
     expect(b.objective).toContain('華雄');
+  });
+
+  it('交谈标志决定公孙瓒、陶谦是否实际参战', () => {
+    const lv = level('c0_s0_b5')!;
+    const allies = (flags: Record<string, number>) => newBattle(lv, 1, {}, { deploy: ['guan_yu', 'zhang_fei'], flags }).b.units
+      .filter((u) => u.on && u.slot < 15 && u.mode !== 7).map((u) => u.key);
+    expect(allies({})).toEqual([]);
+    expect(allies({ orig_f0: 1 })).toEqual(['gongsun_zan']);
+    expect(allies({ orig_f1: 1 })).toEqual(['tao_qian']);
+    expect(allies({ orig_f0: 1, orig_f1: 1 })).toEqual(['gongsun_zan', 'tao_qian']);
   });
 
   it('第一回合开场有插剧、关羽靠近华雄有单挑——两条事件都挂在关卡上', () => {

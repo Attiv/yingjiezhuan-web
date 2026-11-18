@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
+import { verifyRooms } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
 const SHOTS = new URL('../docs/screenshots/', import.meta.url).pathname;
@@ -30,18 +31,23 @@ const seen = () => page.evaluate(() => ({
   ask: !!document.querySelector('#talk:not([hidden]) .ask'),
   chapter: document.querySelector('#screen .chapter')?.textContent ?? '',
   camp: !!document.querySelector('[data-go="camp-go"]'),
+  room: !!document.querySelector('.room-controls'),
   brief: !!document.querySelector('[data-go="deploy"]'),
   deploy: !!document.querySelector('[data-go="battle"]'),
   card: document.querySelector('#screen:not([hidden]) .card')?.textContent ?? '',
 }));
 
 /** 一路点下去：章节横幅、对白、询问都点掉，直到营地或战前说明或战场待命。 */
-async function advance(limit = 600) {
+async function advance(limit = 5000) {
   for (let i = 0; i < limit; i++) {
     const s = await seen();
     if (s.chapter) { await page.click('#screen'); continue; } // 章节横幅点一下继续
     if (s.ask) { await page.click('#talk .ask button:first-child'); continue; }
     if (s.talk) { await page.click('#talk'); continue; }
+    if (s.room) {
+      await page.click(await page.$('[data-room="continue"]') ? '[data-room="continue"]' : '.actor[data-who="1"]');
+      continue;
+    }
     if (s.camp || s.brief || s.mode === 'idle') return s;
     await page.waitForTimeout(20);
   }
@@ -207,6 +213,22 @@ await step('标题画面：原版标题图、繁体菜单，没存档时「讀�
 });
 
 await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对白 → 汜水關出兵準備', async () => {
+  await page.evaluate(() => {
+    window.__storyTrace = [];
+    window.__traceStory = true;
+    const sample = () => {
+      if (!window.__traceStory) return;
+      const moving = document.querySelector('.actor.walking');
+      const backdrop = document.querySelector('.scene.field .backdrop');
+      if ((moving || backdrop) && window.__storyTrace.length < 10000) window.__storyTrace.push({
+        section: window.__yjz.story.section, pc: window.__yjz.story.pc,
+        who: moving?.dataset.who, x: moving?.style.left, y: moving?.style.top,
+        field: backdrop?.getAttribute('src'), camera: document.querySelector('.story-world')?.style.transform,
+      });
+      requestAnimationFrame(sample);
+    };
+    requestAnimationFrame(sample);
+  });
   await page.click('[data-go="start"]');
   await page.waitForSelector('#screen .chapter');
   assert.match(await page.textContent('#screen .chapter'), /序章/);
@@ -289,7 +311,7 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   await shot('29-story-stage');
   // 一路演到「陳留營帳」的第一句对白：这一幕的原版记录里，每个人身上都挂着台词
   let tent = null;
-  for (let i = 0; i < 260 && !tent; i++) {
+  for (let i = 0; i < 2000 && !tent; i++) {
     tent = await page.evaluate(() => {
       if (window.__yjz.story.section !== 'c0_s0_story4') return null;
       if (document.getElementById('talk').hidden) return null; // 还在地名条上，等它过去
@@ -307,7 +329,17 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   assert.ok(tent, '应演到陳留營帳的对白');
   assert.equal(tent.place, '陳留營帳', `这一幕的地名条，实际「${tent.place}」`);
   assert.ok(tent.actors.includes('袁紹'), `陳留營帳应站着袁紹，实际 ${tent.actors}`);
-  // 点场上的人：原版剧本记着他这一幕的台词，点一下就能听见，说完回到正在演的那句
+  // 自动对白结束后进入自由交谈，不在自动演出期间插播talk记录。
+  for (let i = 0; i < 1000 && !(await page.$('.room-controls')); i++) await next();
+  await page.waitForSelector('.room-controls');
+  const trace = await page.evaluate(() => { window.__traceStory = false; return window.__storyTrace; });
+  assert.ok(trace.some((f) => f.x && (!Number.isInteger(parseFloat(f.x)) || !Number.isInteger(parseFloat(f.y)))), '移动应有可见的中间帧');
+  const fieldTrace = trace.filter((f) => f.field);
+  assert.ok(fieldTrace.length > 0 && fieldTrace.every((f) => f.field === '/assets/maps/campaign/000.png'), '野外应铺完整原版行军图');
+  assert.ok(new Set(fieldTrace.map((f) => f.camera)).size > 2, '野外镜头应随人物移动');
+  assert.equal((await storyNow()).flags.orig_f0, undefined);
+  assert.equal((await storyNow()).flags.orig_f1, undefined);
+  // 点场上的人：执行原始talk记录，说完留在房间。
   // 棋子高过一格、彼此压着，先找一个真能点到他身上的点（原版也是这样点头脸）
   const spot = await page.evaluate(() => {
     const el = document.querySelector('#screen .scene .actor[title="袁紹"]');
@@ -330,23 +362,21 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   }));
   assert.equal(heard.who, '袁紹', '点谁就报谁的名');
   assert.match(heard.line, /華雄乃勇猛之人/, `说的是原版剧本里袁紹这一句，实际「${heard.line}」`);
-  // 他可能不止一句：一直点到回到原来那句为止
-  for (let k = 0; k < 8; k++) {
-    const now = await page.evaluate(() => ({
-      who: document.querySelector('#talk h3')?.textContent ?? '',
-      line: document.querySelector('#talk p')?.textContent ?? '',
-    }));
-    if (now.who === tent.speaker && now.line === tent.line) break;
+  await page.click('#talk');
+  await page.waitForSelector('.room-controls');
+  await page.click('.actor[data-who="1"]');
+  await page.waitForSelector('#talk .ask');
+  await page.click('#talk .ask button:last-child');
+  await page.waitForSelector('.room-controls');
+  assert.equal((await storyNow()).section, 'c0_s0_story4', '拒绝出征留在房间');
+  for (const who of [12, 15]) {
+    await page.click(`.actor[data-who="${who}"]`);
+    await page.waitForSelector('#talk:not([hidden])');
     await page.click('#talk');
-    await page.waitForTimeout(60);
+    await page.waitForSelector('.room-controls');
   }
-  const back = await page.evaluate(() => ({
-    who: document.querySelector('#talk h3')?.textContent ?? '',
-    line: document.querySelector('#talk p')?.textContent ?? '',
-  }));
-  assert.deepEqual([back.who, back.line], [tent.speaker, tent.line], '说完回到原来那句');
-  const s = await advance();
-  assert.equal(s.camp, true, '序章演完应到出兵准备');
+  await page.click('.actor[data-who="374"]');
+  await page.waitForSelector('[data-go="camp-go"]');
   const st = await storyNow();
   assert.deepEqual(st.party, ['liu_bei', 'guan_yu', 'zhang_fei'], '开局队伍是刘关张');
   assert.equal(st.flags.orig_f0, 1, '序章的标志应写进流程');
@@ -354,7 +384,7 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
 
 await step('营地：500 金（曹操在序章拨的那笔）、三人编成（关张必带）、买豆装给刘备、存档只存流程', async () => {
   const card = await page.textContent('#screen .card');
-  assert.match(card, /汜水關 — 出兵準備/);
+  assert.match(card, /汜水關之戰 — 出兵準備/);
   assert.match(card, /軍資 500 金/);
   assert.match(card, /出征 3\/3 名/);
   assert.match(card, /關羽[\s\S]*必須/);
@@ -402,6 +432,18 @@ await step('营地：500 金（曹操在序章拨的那笔）、三人编成（�
   await shot('28-trainer');
   await page.click('[data-tr="close"]');
   await page.click('[data-go="camp-go"]');
+  await page.waitForSelector('.room-controls');
+  await page.reload();
+  await page.waitForSelector('[data-go="load"]');
+  await page.click('[data-go="load"]');
+  await page.waitForSelector('#save-list:not([hidden])');
+  await page.click('#save-list [data-slot="0"][data-act="read"]');
+  await page.waitForSelector('.room-controls');
+  assert.equal((await storyNow()).gold, 400, '房间读档不重复发放军资');
+  assert.equal((await storyNow()).flags.orig_f1, 1);
+  assert.equal(await page.$$eval('.actor', (els) => els.length), 10, '读档重建原始舞台人物');
+  await page.click('.actor[data-who="1"]');
+  await advance();
 });
 
 await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位置开战', async () => {
@@ -823,7 +865,8 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
       const n = an.frames.map((f) => f.textureFrame ?? f.frame ?? f.index);
       return [n[0], n[n.length - 1], n.length];
     };
-    return { sheet: ac.sheet, sheetFrames: tex.frameTotal - 1, idle: anim('idle'), attack: anim('attack'), hurt: anim('hurt'), span: { idle: span(anim('idle')), attack: span(anim('attack')), hurt: span(anim('hurt')) } };
+    const summary = (n) => ({ frames: anim(n).frames.map((f) => f.textureFrame), frameRate: anim(n).frameRate });
+    return { sheet: ac.sheet, sheetFrames: tex.frameTotal - 1, idle: summary('idle'), attack: summary('attack'), hurt: summary('hurt'), span: { idle: span(anim('idle')), attack: span(anim('attack')), hurt: span(anim('hurt')) } };
   }));
   assert.equal(atlas.length, 3, '汜水关用到短兵、弓兵、轻骑兵三个兵种');
   for (const a of atlas) {
@@ -1327,6 +1370,47 @@ await step('简繁切换：默认简体，一键还原原版繁体，对白 / �
   assert.match(await page.textContent('#sys [data-script="1"]'), /文字 繁体/);
 });
 
+await step('旧档迁移：信都营地保留已选分支，旧战斗档按关卡定位', async () => {
+  const G = JSON.parse(readFileSync(new URL('../src/data/game.json', import.meta.url), 'utf8'));
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')));
+  assert.ok(saved?.battle, '前序战斗应留下完整自动档');
+  const campPc = G.steps.findIndex((s) => s.t === 'camp' && s.battle === 'c1_s0_b6');
+  const oldStory = await page.evaluate(async () => {
+    const { SCRIPT } = await import('/src/data/game.ts');
+    const { startStory, nextStep } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'] });
+    for (let step = nextStep(SCRIPT, st); step; step = nextStep(SCRIPT, st)) {
+      if (step.t === 'camp' && step.battle === 'c1_s0_b6') {
+        delete st.resume;
+        st.pc = -200;
+        st.gold = 765;
+        return st;
+      }
+    }
+    throw new Error('真实路线未到达信都营地');
+  });
+  const oldBattle = JSON.parse(JSON.stringify(saved));
+  oldBattle.story.pc = -1;
+  delete oldBattle.story.resume;
+  await page.evaluate(({ oldStory, oldBattle }) => {
+    localStorage.setItem('yjz.saves.v1', JSON.stringify({ slots: [{ story: oldStory, at: Date.now() }, oldBattle], last: 0 }));
+  }, { oldStory, oldBattle });
+  await page.reload();
+  await page.waitForSelector('[data-go="load"]');
+  await page.click('[data-go="load"]');
+  await page.click('#save-list [data-slot="0"][data-act="read"]');
+  await page.waitForSelector('[data-go="camp-go"]');
+  assert.match(await page.textContent('#screen .card'), /信都 — 出兵準備/);
+  assert.equal((await storyNow()).gold, 765);
+  assert.equal((await storyNow()).pc, campPc);
+  // 营地里加载旧战斗档，校验场景恢复且旧剧情不再覆盖战场。
+  await page.evaluate(() => window.__yjz.openSaveList('load'));
+  await page.click('#save-list [data-slot="1"][data-act="read"]');
+  await page.waitForFunction(() => window.__yjz.mode === 'idle');
+  assert.equal((await state()).level, oldBattle.battle.level);
+  assert.equal(await page.evaluate(() => document.querySelector('#screen').hidden), true);
+});
+
 await step('读档浮层兜底：即使舞台节点被挪走，点开列表也不能抛错', async () => {
   // 回归：曾出现 `$('stage')` 取不到时 openSaveList 抛 TypeError，浮层没插进去、画面毫无反应。
   const r = await page.evaluate(() => {
@@ -1343,6 +1427,12 @@ await step('读档浮层兜底：即使舞台节点被挪走，点开列表也�
   });
   assert.equal(r.msg, '', `打开列表不应抛错，实际「${r.msg}」`);
   assert.deepEqual([r.ok, r.parent, r.slots], [true, 'BODY', 7], `浮层应挂到 body 并列出六格，实际 ${JSON.stringify(r)}`);
+});
+
+await step('界桥篇六阶段房间：人物、头像、商店、存档与出发分支', async () => {
+  await page.goto(`${BASE}/`); // 保持手动对白模式，逐阶段检查点击
+  const { results } = await verifyRooms(page);
+  assert.equal(results.length, 4);
 });
 
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');

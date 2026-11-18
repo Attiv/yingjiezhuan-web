@@ -1,4 +1,5 @@
 import type { Roster } from './rules/types';
+import type { StageOp } from './stage';
 
 /**
  * 剧情与流程脚本：一份脚本从头演到尾，对话、旁白、选择、营地、单挑和战斗都只是其中的一步。
@@ -15,6 +16,9 @@ export interface DuelAct {
 
 export type Step =
   | { t: 'stage'; id: string } // 这一幕的场景（地图 + 场上人物，见 data/stages.json）
+  | { t: 'action'; op: StageOp } // 按原始顺序执行动作，完成后再往下演
+  | { t: 'wait'; ms: number }
+  | { t: 'room'; id: string } // 自动剧情结束，等玩家交谈或确认出征
   | { t: 'bg'; key: string } // 换背景：界面层按 key 找图，空串 = 不用背景
   | { t: 'say'; who: string; text: string } // 对话，等玩家点一下
   | { t: 'text'; text: string } // 旁白，等玩家点一下
@@ -40,7 +44,7 @@ export type Step =
   | { t: 'end' };
 
 /** 需要界面处理、要等玩家的步骤；其余步骤由 nextStep 自己走完。 */
-export type Shown = Extract<Step, { t: 'say' | 'text' | 'title' | 'choice' | 'battle' | 'camp' | 'duel' | 'ending' }>;
+export type Shown = Extract<Step, { t: 'say' | 'text' | 'title' | 'choice' | 'battle' | 'camp' | 'duel' | 'ending' | 'action' | 'wait' | 'room' }>;
 
 export interface Script {
   id: string;
@@ -72,6 +76,8 @@ export interface Story {
   bag: number[]; // 公共道具库
   deploy: string[]; // 下一战出征名单
   gold: number;
+  /** 可存档步骤的稳定位置，避免重新编译剧本后数组下标变化。 */
+  resume?: { t: 'battle' | 'camp' | 'room'; id: string };
 }
 
 /** 脚本是外来的数据，装载时先查一遍：跳转目标都得存在，要打的关卡都得已登记。 */
@@ -128,6 +134,109 @@ export function testFlag(flags: Record<string, Flag>, flag: string, is?: Flag, c
 }
 const condition = (st: Story, flag: string, is: Flag | undefined, cmp: Cmp = 'eq') => testFlag(st.flags, flag, is, cmp);
 
+/** 恢复存档位置，只更新 pc、section、resume；无法唯一定位时返回 false，原存档不变。
+ * 无锚点的旧档按营地档处理，使用已保存的最终标志，绝不重演奖励或选择。 */
+export function restoreStoryPosition(s: Script, st: Story, battleId?: string): boolean {
+  if (st.script !== s.id) return false;
+  const unique = (matches: (step: Step) => boolean): number => {
+    let found = -1;
+    for (let i = 0; i < s.steps.length; i++) {
+      if (!matches(s.steps[i])) continue;
+      if (found !== -1) return -1;
+      found = i;
+    }
+    return found;
+  };
+  let anchor = battleId !== undefined ? { t: 'battle' as const, id: battleId } : st.resume;
+  if (anchor === undefined && /^c0_s0_(story[0-4]|b5_before)$/.test(st.section)) {
+    anchor = { t: 'room', id: 'c0_s0_story4' };
+  }
+  let pc: number;
+  let resolvedSection: string | undefined;
+  if (anchor !== undefined) {
+    if (!anchor || typeof anchor.id !== 'string' || !anchor.id) return false;
+    pc = unique((x) => x.t === anchor.t && (
+      x.t === 'battle' ? x.level === anchor.id : x.t === 'camp' ? x.battle === anchor.id
+        : x.t === 'room' ? x.id === anchor.id : false
+    ));
+  } else {
+    if (!st.section) return false;
+    // 战斗变体可能复用同一段战后剧情；分别追踪全部入口，最终仍须汇合到唯一营地。
+    const starts = s.steps.flatMap((x, i) => x.t === 'stage' && x.id === st.section ? [i] : []);
+    if (!starts.length) return false;
+    type Candidate = { pc: number; section: string; flags: Record<string, Flag>; touched: Set<string>; visited: Set<number>; choiceSeen: boolean };
+    const pending: Candidate[] = starts.map((start) => ({ pc: start + 1, section: st.section, flags: { ...st.flags }, touched: new Set(), visited: new Set(), choiceSeen: false }));
+    const camps = new Map<number, Set<string>>();
+    let budget = s.steps.length * 16;
+    while (pending.length && budget > 0) {
+      const path = pending.pop()!;
+      let i = path.pc;
+      while (i >= 0 && i < s.steps.length && budget-- > 0) {
+        if (path.visited.has(i)) break;
+        path.visited.add(i);
+        const x = s.steps[i];
+        if (x.t === 'camp') {
+          if ([...path.touched].every((key) => path.flags[key] === st.flags[key])) {
+            if (!camps.has(i)) camps.set(i, new Set());
+            camps.get(i)!.add(path.section);
+          }
+          break;
+        }
+        if (x.t === 'battle' || x.t === 'ending' || x.t === 'end') break;
+        if (x.t === 'stage') path.section = x.id;
+        if (x.t === 'set' && path.choiceSeen) {
+          // 仅在候选分支的副本上验证其最终标志，绝不写回存档。
+          path.flags[x.flag] = x.value;
+          path.touched.add(x.flag);
+        }
+        if (path.choiceSeen && x.t === 'if') path.touched.add(x.flag);
+        if (x.t === 'choice') {
+          for (const option of x.options) {
+            const flags = { ...path.flags, ...option.set };
+            const touched = new Set([...path.touched, ...Object.keys(option.set ?? {})]);
+            const visited = new Set(path.visited);
+            const choiceSeen = true;
+            const label = option.goto;
+            if (label === undefined) pending.push({ pc: i + 1, section: path.section, flags, touched, visited, choiceSeen });
+            else {
+              const target = unique((step) => step.t === 'label' && step.name === label);
+              if (target >= 0) pending.push({ pc: target, section: path.section, flags, touched, visited, choiceSeen });
+            }
+          }
+          break;
+        }
+        if (x.t === 'goto' || (x.t === 'if' && testFlag(path.flags, x.flag, x.is, x.cmp))) {
+          const label = x.t === 'goto' ? x.label : x.goto;
+          i = unique((step) => step.t === 'label' && step.name === label);
+          if (i < 0) break;
+        } else i++;
+      }
+    }
+    if (budget <= 0 || camps.size !== 1) return false;
+    const [position, sections] = [...camps][0];
+    if (sections.size !== 1) return false;
+    pc = position;
+    resolvedSection = [...sections][0];
+  }
+  const target = s.steps[pc];
+  if (!target || (target.t !== 'battle' && target.t !== 'camp' && target.t !== 'room')) return false;
+  const resume: NonNullable<Story['resume']> = {
+    t: target.t, id: target.t === 'battle' ? target.level : target.t === 'camp' ? target.battle : target.id,
+  };
+  // 保证本次迁移写出的稳定锚点，在下次读档时仍能唯一定位。
+  if (!resume.id || unique((x) => x.t === resume.t && (
+    x.t === 'battle' ? x.level === resume.id : x.t === 'camp' ? x.battle === resume.id
+      : x.t === 'room' ? x.id === resume.id : false
+  )) !== pc) return false;
+  let section = resolvedSection ?? (target.t === 'camp' && s.steps.some((x) => x.t === 'stage' && x.id === st.section) ? st.section : '');
+  for (let i = section ? -1 : pc - 1; i >= 0; i--) {
+    const x = s.steps[i];
+    if (x.t === 'stage') { section = x.id; break; }
+  }
+  Object.assign(st, { pc, section, resume });
+  return true;
+}
+
 /**
  * 往下演，返回下一个需要界面处理的步骤（对话、旁白、标题、选择、营地、单挑、战斗、结局）；演完返回 null。
  * 当前步是选择时 answer 是选中的序号；是战斗时 answer 为 0 表示胜、1 表示败。
@@ -166,6 +275,7 @@ export function nextStep(s: Script, st: Story, answer = 0, api: StoryApi = {}): 
     else if (x.t === 'goto') jump(x.label);
     else if (x.t === 'if') condition(st, x.flag, x.is, x.cmp) && jump(x.goto);
     else if (x.t !== 'label') {
+      st.resume = x.t === 'battle' ? { t: 'battle', id: x.level } : x.t === 'camp' ? { t: 'camp', id: x.battle } : x.t === 'room' ? { t: 'room', id: x.id } : undefined;
       if (x.t === 'say' && x.who && !st.cast.includes(x.who)) {
         st.cast.push(x.who);
         while (st.cast.length > 2) st.cast.shift();

@@ -77,34 +77,34 @@ def section_lines(path: Path) -> dict[str, list[str]]:
     """
     sections: dict[str, list[str]] = {}
     cur: list[str] | None = None
-    narr = False  # 上一行是不是 @narr（续行只接旁白，不接对话）
+    text_kind: str | None = None  # 续行属于上一句旁白或对话，不增加台词步数。
     for raw in path.read_text(encoding="utf-8").splitlines():
         line = raw.rstrip()
         if not line.strip() or line.lstrip().startswith("#"):
             continue
         if line.startswith("== "):
             cur = sections.setdefault(line[3:].strip(), [])
-            narr = False
+            text_kind = None
             continue
         if cur is None:
             continue
         s = line.strip()
         if s.startswith("@narr"):
             cur.append(s[5:].strip())
-            narr = True
+            text_kind = "narr"
             continue
         if s.startswith("@"):
-            narr = False
+            text_kind = None
             continue
         if re.match(r"^-\s*.+?\s*->\s*[A-Za-z0-9_]+$", s):
-            narr = False  # @choice 的选项
+            text_kind = None  # @choice 的选项
             continue
         m = re.match(r"^([A-Za-z0-9_]+|[\u4e00-\u9fff]{1,8}):\s*(.*)$", s)
         if m:
             cur.append(m.group(2).strip())
-            narr = False
-        elif cur and narr:
-            cur[-1] += "\n" + s  # 旁白的续行
+            text_kind = "say"
+        elif cur and (text_kind == "narr" or (text_kind == "say" and line[:1].isspace())):
+            cur[-1] += "\n" + s
     return sections
 
 
@@ -239,6 +239,8 @@ def align(section: list[str], rec) -> list[int] | None:
 
 def section_target(sid: str) -> tuple[int, int, int] | None:
     """从节的 id 猜 (章, 场, block)。三种命名：cX_sY_storyN / cX_sY_bN_xxx / orig_cX_sY_bN_R。"""
+    if sid in ("c3_s4_b0_outro", "c3_s4_b0_defeat"):
+        return 3, 4, 1  # pack 用 b0 命名，胜负结算实际位于麦城 block 1。
     m = re.match(r"^(?:orig_)?c(\d+)_s(\d+)_(?:story(\d+)|b(\d+))", sid)
     if not m:
         return None
@@ -252,7 +254,7 @@ def block_talks(block: dict, dlg: dict[int, list[str]]) -> dict[str, list[str]]:
         t = r["trigger"]
         if t["kind_name"] != "talk":
             continue
-        who = t["args"][0]
+        who = t["args"][0] | t["args"][1] << 8
         lines: list[str] = []
         for c in r["code"]:
             if c["mnemonic"] != "dialogue":
@@ -276,13 +278,162 @@ def build_ops(rec, at: list[int], lines: list[str]) -> list[dict]:
     return ops
 
 
+def original_timeline(scene: dict, records: list[dict], officers: dict[int, str]) -> list[dict]:
+    """序章直接保留指令先后，不再把动作压到台词计数上。未知操作码不猜语义。"""
+    people = json.loads((EX / "text/officers.json").read_text(encoding="utf-8"))
+    dialogues = {d["offset"]: d["lines"] for d in scene.get("dialogues", [])}
+    songs = {2: "sad", 3: "peace", 11: "tension", 12: "camp"}
+    out: list[dict] = []
+    for rec in records:
+        for c in rec["code"]:
+            m = c["mnemonic"]
+            a = {a["name"]: a["value"] for a in c.get("args", [])}
+            resolved = c.get("resolved") or {}
+            if m == "input_control" and a["value"] == 0:
+                break  # 回到玩家自由交谈，talk records 单独导出
+            if m == "dialogue":
+                for line in dialogues.get(a["text"], []):
+                    out.append({"t": "say", "who": officers.get(line["speaker"], line["speaker_name"].strip()),
+                                "text": line["text"].strip()})
+            elif m == "narration":
+                out.append({"t": "text", "text": "\n".join(s.strip() for s in resolved.get("text", "").splitlines()).strip()})
+            elif m == "title":
+                out.append({"t": "title", "text": resolved["text"]})
+            elif m == "show_picture":
+                out.append({"t": "picture", "key": f"orig_{a['picture']:02d}"})
+            elif m == "play_music" and a["song"] in songs:
+                out.append({"t": "bgm", "key": songs[a["song"]]})
+            elif m == "data" and a.get("kind") == 2:
+                out.append({"t": "gold", "n": a["value"]})
+            elif m == "set_flag":
+                out.append({"t": "set", "flag": f"orig_f{a['flag']}", "value": 0 if a["clear"] else 1})
+            elif m == "load_map":
+                out += [{"t": "picture", "key": ""}, {"t": "action", "op": {"at": 0, "op": "map", "map": map_key(a["map"])}}]
+            elif m == "caption":
+                out += [{"t": "action", "op": {"at": 0, "op": "caption", "text": resolved["text"].strip()}},
+                        {"t": "wait", "ms": 1200}]
+            elif m in STAGE_OPS or m == "set_graphic":
+                op: dict = {"at": 0, "op": STAGE_OPS.get(m, "graphic")}
+                if "person" in a:
+                    op["who"] = a["person"]
+                    if op["op"] in ("place", "move", "graphic"):
+                        op["sprite"] = a.get("graphic", people[a["person"]]["sprite"])
+                    if a["person"] in officers:
+                        op["id"] = officers[a["person"]]
+                for key in ("x", "y", "dir"):
+                    if key in a:
+                        op[key] = a[key]
+                out.append({"t": "action", "op": op})
+    return out
+
+
+def add_free_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """已核对的界桥篇交谈阶段；明确 record/group 边界，不混入下一阶段对白。"""
+    scene = dyn[1]["scenes"][0]
+    blocks = {b["index"]: b for b in scene["blocks"]}
+    dialogues = {d["offset"]: d["lines"] for d in scene["dialogues"]}
+    sections = section_lines(PACK / "dramas/original_chapters.drama")
+    people = json.loads((EX / "text/officers.json").read_text(encoding="utf-8"))
+
+    def record(b: int, r: int) -> dict:
+        return next(x for x in blocks[b]["records"] if x["index"] == r)
+
+    def speech(b: int, r: int) -> list[dict]:
+        return [line for c in record(b, r)["code"] if c["mnemonic"] == "dialogue"
+                for line in dialogues[next(a["value"] for a in c["args"] if a["name"] == "text")]]
+
+    # 顺序已经人工核对；广川保留现有战斗副作用，只补战后run与出发record的舞台动作。
+    for b, records in {0: [0, 1, 4], 1: [2], 2: [3, 4], 5: [4, 5, 6, 12, 13], 8: [0, 1]}.items():
+        sid = f"c1_s0_story{b}"
+        rec = Merged([Rec(blocks[b], record(b, r), dialogue_map(scene), officers) for r in records])
+        at = align(sections[sid], rec)
+        if at is None:
+            raise ValueError(f"交谈场景 {sid} 原始记录未完整对齐")
+        info = stages.setdefault(sid, {})
+        ops = [{"at": at[chunk] if chunk < len(at) else len(sections[sid]), **op}
+               for chunk, group_ops in rec.groups for op in group_ops]
+        info.update(map=rec.map, lines=len(sections[sid]), ops=ops,
+                    source={"chapter": 1, "scene": 0, "block": b, "records": records}, ordered=True)
+        # 连续房间继承上幕人物，名字也必须能查到；不据此开放过期的talk。
+        info["names"] = rec.name | {i: p["name"].strip() for i, p in enumerate(people) if i in {0, 1, 2, 82, 220, 244, 245, 364, 374}}
+        info.pop("talks", None)
+
+    # sid/block, 暂停点record, 交谈block/group, 推进人物、文字、确认record。
+    phases = [
+        (0, 1, 0, 2, None, "繼續劇情", None),
+        (0, 4, 1, 0, 82, "與簡雍交談", None),
+        (1, 2, 2, 0, 364, "聽使者說明", None),
+        (2, 3, 2, 1, 1, "準備出發", 4),
+        (5, 6, 5, 4, 1, "準備出發", 12),
+        (8, 0, 8, 1, 1, "準備出發", 1),
+    ]
+    for b, r, talk_block, group, who, label, confirm in phases:
+        sid = f"c1_s0_story{b}"
+        last = speech(b, r)[-1]
+        room = {"after": {"who": officers.get(last["speaker"], last["speaker_name"].strip()), "text": last["text"].strip()},
+                "talks": {}, "next": {"label": label}, "source": {"block": talk_block, "group": group}}
+        if who is not None:
+            room["next"]["who"] = who
+        if confirm is not None:
+            line = speech(talk_block, confirm)[0]
+            room["next"]["prompt"] = {"who": officers.get(line["speaker"], line["speaker_name"].strip()), "text": line["text"].strip()}
+        for entry in blocks[talk_block]["records"]:
+            trigger = entry["trigger"]
+            if trigger["kind_name"] != "talk" or trigger["group"] != group:
+                continue
+            if any(c["mnemonic"] not in ("dialogue", "end") for c in entry["code"]):
+                continue
+            person = trigger["args"][0] | trigger["args"][1] << 8
+            room["talks"][str(person)] = original_timeline(scene, [entry], officers)
+        if b == 5:
+            room["shop"] = {"who": 374, "items": next(c["bytes"] for c in record(5, 7)["code"] if c["mnemonic"] == "set_shop_items")}
+        stages[sid].setdefault("rooms", {})[f"{sid}:b{talk_block}g{group}"] = room
+
+
+def add_original_opening(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    scene = dyn[0]["scenes"][0]
+    for block in scene["blocks"][:5]:
+        sid = f"c0_s0_story{block['index']}"
+        runs = [r for r in block["records"] if r["trigger"]["kind_name"] == "run"]
+        info = stages.setdefault(sid, {"map": None, "lines": 0, "ops": []})
+        info["timeline"] = original_timeline(scene, runs, officers)
+        if block["index"] == 0:
+            info["timeline"].append({"t": "picture", "key": ""})
+        if block["index"] != 4:
+            continue
+        talks = {}
+        shop = []
+        for rec in block["records"]:
+            if rec["trigger"]["kind_name"] != "talk":
+                continue
+            args = rec["trigger"]["args"]
+            who = args[0] | args[1] << 8
+            entry = {"steps": original_timeline(scene, [rec], officers)}
+            if any(c["mnemonic"] == "set_shop_items" for c in rec["code"]):
+                shop = next(c["bytes"] for c in rec["code"] if c["mnemonic"] == "set_shop_items")
+                entry["shop"] = True
+            if any(c["mnemonic"] == "battle_setup" for c in rec["code"]):
+                entry["depart"] = True
+                entry["prompt"] = entry["steps"][0]["text"]
+                entry["after"] = entry["steps"][1:]
+                entry["steps"] = []  # 问句由确认框显示，拒绝时不执行后续出征对白
+            talks[str(who)] = entry
+        info["room"] = {"battle": "c0_s0_b5", "shop": shop, "talks": talks}
+
+
 def main() -> None:
     dyn = load_scenarios()
     officers = officer_of()
     stages: dict[str, dict] = {}
     failed: list[str] = []
     for path in sorted((PACK / "dramas").glob("*.drama")):
-        for sid, lines in section_lines(path).items():
+        sections = section_lines(path)
+        silent = sum(not lines for lines in sections.values())
+        if silent:
+            print(f"{path.name}：无对白节点 {silent} 节（跳过舞台对齐）")
+        for sid, lines in sections.items():
+            if not lines:
+                continue
             tgt = section_target(sid)
             if not tgt or tgt[0] >= len(dyn):
                 failed.append(sid)
@@ -298,10 +449,18 @@ def main() -> None:
             for b in scene["blocks"]:
                 if b["index"] != block:
                     continue
-                for rec in candidates(b, dlg, officers):
+                choices = candidates(b, dlg, officers)
+                if sid == "c4_s1_b7_before":
+                    # pack 到黄忠告退为止；record 1 的 code[2] 起是调兵提示及出征换图。
+                    before = next(r for r in b["records"] if r["index"] == 1)
+                    choices = [Rec(b, {**before, "code": before["code"][:2]}, dlg, officers)]
+                for rec in choices:
                     # orig 节名明确带 record 编号，不能用同 block 的相似对白替换。
                     explicit = re.match(r"^orig_c\d+_s\d+_b\d+_(\d+)(?:_|$)", sid)
-                    if explicit and rec.record != int(explicit.group(1)):
+                    required = {"c3_s4_b0_outro": 8, "c3_s4_b0_defeat": 6}.get(sid)
+                    if required is None and explicit:
+                        required = int(explicit.group(1))
+                    if required is not None and rec.record != required:
                         continue
                     at = align(lines, rec)
                     if at is None:
@@ -318,6 +477,8 @@ def main() -> None:
             source_records = [r.record for r in rec.recs] if isinstance(rec, Merged) else [rec.record]
             stage: dict = {"map": rec.map, "lines": len(lines), "ops": ops,
                            "source": {"chapter": ch, "scene": sy, "block": block, "records": source_records}}
+            if sid == "c4_s1_b7_before":
+                stage["source"]["codeRange"] = [0, 2]  # 左闭右开，只覆盖 pack 已保留的前置片段。
             onStage = {o["who"] for o in ops if o["op"] == "place"}
             if rec.name and onStage:
                 stage["names"] = {w: n for w, n in rec.name.items() if w in onStage}
@@ -327,6 +488,27 @@ def main() -> None:
             if talks:
                 stage["talks"] = talks
             stages[sid] = stage
+    add_original_opening(stages, dyn, officers)
+    add_free_rooms(stages, dyn, officers)
+    towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
+    campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]
+    for sid, info in stages.items():
+        chapter = (section_target(sid) or (0, 0, 0))[0]
+        info["world"] = min(max(0, chapter - 1), len(campaign) - 1)
+        maps = {}
+        if sid in ("c1_s0_story1", "c1_s0_story2"):
+            maps.update(stages["c1_s0_story0"].get("walk", {}))
+        for op in info["ops"] + [s["op"] for s in info.get("timeline", []) if s["t"] == "action"]:
+            key = op.get("map", "")
+            if key.startswith("palace/"):
+                i = int(key.split("/")[1])
+                m = next((m for m in towns if m["source"] == "PMAP.R3" and m["index"] == i), None)
+                if m:
+                    maps[key] = m["walk"]
+        if maps:
+            info["walk"] = maps
+        if info.get("map") == "field" or any(o.get("map") == "field" for o in info["ops"]):
+            info["routes"] = campaign[info["world"]]["routes"]
     OUT.write_text(json.dumps(stages, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     maps = sum(1 for s in stages.values() if s["map"] is not None)
     places = sum(1 for s in stages.values() for o in s["ops"] if o["op"] == "place")

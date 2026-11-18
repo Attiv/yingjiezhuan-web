@@ -249,8 +249,8 @@ def parse_drama() -> dict[str, list[dict]]:
                 who, text = m.group(1), m.group(2).strip()
                 cur.append({"t": "say", "who": who, "text": clean(text)})
                 continue
-            # 没有标记的裸行：接到上一句旁白，保持原文的行内换行
-            if cur and cur[-1]["t"] == "text":
+            # 缩进对白续行仍属于同一个 say，保持原文换行及舞台台词计数。
+            if cur and (cur[-1]["t"] == "text" or (cur[-1]["t"] == "say" and line[:1].isspace())):
                 cur[-1]["text"] += "\n" + clean(s)
     return scenes
 
@@ -277,7 +277,7 @@ def convert_units(battle: dict, officers: dict, persons: dict) -> tuple[list[dic
             cls = person["cls"] if person else 0
             level = person["level"] if person else 1
             lead, str_, int_ = (person or {}).get("lead", 50), (person or {}).get("str", 50), (person or {}).get("int", 50)
-            face = person["face"] if person else "faces/000"
+            face = person["face"] if person else "portraits/_unknown"
             key = f"person_{pid}"
         else:
             name = clean(u.get("name", "部隊"))
@@ -442,7 +442,7 @@ def scene_steps(scenes: dict[str, list[dict]], sid: str) -> list[dict]:
             t = "goto"
         if t in ("bgm", "picture", "hide", "title", "text", "say", "choice", "set", "if",
                  "goto", "label", "join", "away", "level", "gold", "item", "class",
-                 "duel"):
+                 "duel", "action", "wait", "room"):
             out.append(st)
     if any(s["t"] == "end" for s in scenes[sid]):
         out.append({"t": "label", "name": pre("#end")})
@@ -464,8 +464,9 @@ def convert_campaign(scenes: dict[str, list[dict]], battles: dict[str, dict]) ->
             else:
                 steps.append({"t": "end"})
         elif typ == "camp":
-            steps.append({"t": "camp", "battle": n["battle"], "title": clean(n.get("title", "")),
-                          "shop": [ITEM[x] for x in n.get("shop", []) if x in ITEM]})
+            if n["id"] != "c0_s0_b5_camp":
+                steps.append({"t": "camp", "battle": n["battle"], "title": clean(n.get("title", "")),
+                              "shop": [ITEM[x] for x in n.get("shop", []) if x in ITEM]})
             steps.append({"t": "goto", "label": n["next"]})
         elif typ == "battle":
             b = battles.get(n["battle"])
@@ -670,21 +671,63 @@ def main() -> None:
     face_of = {p["officer"]: p["portrait"] for p in pack_json.get("portraits", [])}
 
     persons = bakdata()
+    pack_officer = {o["officer"]: o for o in pack_json.get("officers", [])}
     officers: dict[str, dict] = {}
     for o in officers_toml:
         oid = o["id"]
         portrait = face_of.get(oid)
+        # 新增的原版人物没有独立的 portraits 记录，但 pack 仍保留了其 BAKDATA 编号。
+        # 按该编号回查原始 FACEDAT；不能把缺失映射误当成头像 000（刘备）。
+        if portrait is None:
+            raw_id = pack_officer.get(oid, {}).get("bakdata")
+            portrait = persons.get(raw_id, {}).get("portrait") if raw_id is not None else None
         officers[oid] = {
             "id": oid,
             "name": o.get("hanja") or clean(o.get("name", oid)),
             "cls": CLASS.get(o.get("class", "short_infantry"), 0),
             "level": o.get("level", 1),
             "lead": o.get("lead", 50), "str": o.get("str", 50), "int": o.get("int", 50),
-            "face": f"faces/{portrait:03d}" if portrait is not None else "faces/000",
+            "face": f"faces/{portrait:03d}" if portrait is not None else "portraits/_unknown",
             "portrait": portrait,
         }
 
     scenes = parse_drama()
+    # 序章直接消费原始record编译的时间线；先生成舞台数据，避免依赖陈旧JSON。
+    from build_stages import main as build_stages
+    build_stages()
+    stages = json.loads((OUT / "stages.json").read_text(encoding="utf-8"))
+    for sid, info in stages.items():
+        if "timeline" in info:
+            scenes[sid] = info["timeline"] + ([{"t": "room", "id": sid}] if info.get("room") else [])
+        if info.get("ordered"):
+            # 保留pack里的奖励、入队与分支，只将已核对的动作交错写入时间线。
+            # 暂停插在上一句之后，下一段动作等玩家继续才开始。
+            out, line, op_index = [], 0, 0
+            ops = info["ops"]
+            rooms = info.get("rooms", {})
+            inserted = set()
+            for step in scenes[sid]:
+                if step["t"] in ("say", "text"):
+                    while op_index < len(ops) and ops[op_index]["at"] <= line:
+                        out.append({"t": "action", "op": ops[op_index]})
+                        op_index += 1
+                    line += 1
+                # 原版出发问句由房间的确认框承担，取消时留在原处。
+                prompts = [room["next"].get("prompt") for room in rooms.values()]
+                if not any(p and step == {"t": "say", **p} for p in prompts):
+                    out.append(step)
+                for room_id, room in rooms.items():
+                    if step == {"t": "say", **room["after"]}:
+                        if room_id in inserted:
+                            raise ValueError(f"自由交谈停顿点 {room_id} 不唯一")
+                        inserted.add(room_id)
+                        out.append({"t": "room", "id": room_id})
+            if inserted != set(rooms):
+                raise ValueError(f"自由交谈停顿点 {sid} 缺少对应主线对白")
+            out.extend({"t": "action", "op": op} for op in ops[op_index:])
+            scenes[sid] = out
+    # 出征问答和出兵准备现在在room内完成，保留旧节点标签作为稳定流程锚点。
+    scenes["c0_s0_b5_before"] = []
     battle_files = sorted((PACK / "battles").glob("*.toml"))
     battles: dict[str, dict] = {}
     for f in battle_files:
@@ -693,6 +736,14 @@ def main() -> None:
             continue
         battles[b["id"]] = convert_battle(b["id"], b, officers, persons)
 
+    # 原始首战setup的条件参战字段，不能把两名友军无条件加入。
+    source = json.loads((ROOT / "original/extract/text/snr0.json").read_text(encoding="utf-8"))
+    setup = next(c for r in source["scenes"][0]["blocks"][4]["records"] for c in r["code"] if c["mnemonic"] == "battle_setup")
+    officer_ids = {o["bakdata"]: o["officer"] for o in pack_json.get("officers", [])}
+    required = {officer_ids[u["person"]]: f"orig_f{u['requires_flag']}" for u in setup["units"] if "requires_flag" in u}
+    for u in battles["c0_s0_b5"]["units"]:
+        if u["key"] in required:
+            u["requiresFlag"] = required[u["key"]]
     maps = load_maps()
     steps, start = convert_campaign(scenes, battles)
 
@@ -705,7 +756,12 @@ def main() -> None:
         if o.get("face"):
             by_name.setdefault(o["name"], o["face"])
     speakers, faces = {}, {}
-    for sid, sc in scenes.items():
+    spoken_scenes = list(scenes.values())
+    for info in stages.values():
+        spoken_scenes.extend(entry["steps"] for entry in info.get("room", {}).get("talks", {}).values())
+        for room in info.get("rooms", {}).values():
+            spoken_scenes.extend(room["talks"].values())
+    for sc in spoken_scenes:
         for st in sc:
             if st["t"] != "say":
                 continue
@@ -716,7 +772,7 @@ def main() -> None:
             elif w.startswith(("person_", "orig_p")):
                 pid = int(w.split("_")[-1])
                 speakers[w] = persons.get(pid, {}).get("name", w)
-                faces[w] = persons.get(pid, {}).get("face", "faces/000")
+                faces[w] = persons.get(pid, {}).get("face", "portraits/_unknown")
             else:
                 speakers[w] = w
                 if w in by_name:

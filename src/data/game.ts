@@ -4,7 +4,7 @@ import raw from './game.json';
 
 /** game.json 的结构：生成脚本的输出，字段按下面的接口读，多出来的键不用管。 */
 interface BUnitData {
-  side: string; key: string; name: string; face: string; cls: number; level: number;
+  side: string; key: string; name: string; face: string; cls: number; level: number; requiresFlag?: string;
   lead: number; str: number; int: number; x: number; y: number; mode: number;
   goal: [number, number] | null; target: string | null; commander: boolean; items: number[];
 }
@@ -55,7 +55,7 @@ function init(u: BUnit, slot: number, group?: string): UnitInit {
     slot, key: u.key, name: u.name, face: u.face, cls: u.cls, level: u.level,
     lead: u.lead, str: u.str, int: u.int, x: u.x, y: u.y, mode: u.mode,
     goal: u.goal ?? undefined, items: u.items,
-    commander: u.commander, group, off: !!group,
+    commander: u.commander, group, off: !!group, requiresFlag: u.requiresFlag,
   };
 }
 
@@ -111,6 +111,8 @@ export const scene = (id: string): Step[] => G.scenes[id] ?? [];
 
 /** 说话人头像（相对 assets 的路径）。查不到就没有头像。 */
 export const faceOf = (who: string): string | undefined => G.faces[who];
+/** 所有已生成的说话人头像映射，供数据校验使用。 */
+export const speakerFaces = G.faces;
 /** 说话人显示名：剧本里写的是 id，显示时换成中文名。 */
 export const nameOf = (who: string): string => G.speakers[who] ?? who;
 

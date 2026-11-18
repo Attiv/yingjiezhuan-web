@@ -16,6 +16,24 @@ class StageGenerationTests(unittest.TestCase):
         self.assertIsNone(build.align(["第一句", "错误的下一句"], rec))
         self.assertEqual(build.align(["第一句", "第二句"], rec), [0])
 
+    def test_first_chapter_rooms_keep_original_record_groups(self):
+        stages = json.loads((ROOT / "src/data/stages.json").read_text())
+        scene = build.load_scenarios()[1]["scenes"][0]
+        for sid in ["c1_s0_story0", "c1_s0_story1", "c1_s0_story2", "c1_s0_story5", "c1_s0_story8"]:
+            info = stages[sid]
+            for room in info["rooms"].values():
+                source = room["source"]
+                block = next(b for b in scene["blocks"] if b["index"] == source["block"])
+                expected = {}
+                for rec in block["records"]:
+                    t = rec["trigger"]
+                    if t["kind_name"] == "talk" and t["group"] == source["group"] and all(c["mnemonic"] in ("dialogue", "end") for c in rec["code"]):
+                        who = str(t["args"][0] | t["args"][1] << 8)
+                        expected[who] = build.original_timeline(scene, [rec], build.officer_of())
+                self.assertEqual(room["talks"], expected, sid)
+        self.assertEqual(stages["c1_s0_story0"]["source"]["records"], [0, 1, 4])
+        self.assertEqual(stages["c1_s0_story5"]["rooms"]["c1_s0_story5:b5g4"]["shop"]["items"], [27, 30, 52])
+
     def test_prologue_records_and_all_coordinate_operations_survive(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())
         scene = build.load_scenarios()[0]["scenes"][0]

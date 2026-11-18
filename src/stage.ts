@@ -1,4 +1,5 @@
 import RAW from './data/stages.json';
+import type { Step } from './story';
 
 /**
  * 剧情场景：原版每一幕先 `load_map` 换一张等距视角的城郭/宫殿地图，再把人摆到格子上，
@@ -6,12 +7,12 @@ import RAW from './data/stages.json';
  *
  * 坐标是原版的交错列步行格：每格 16px，偶数列比奇数列低一格。
  * MAIN 图像偏移 0x1DAA6 / 0x1F0F3：绘制 y = y + (x 为偶数 ? 1 : 0)。
- * 野外（`field`）那一张底图只铺景不摆人：原版野外会跟着人滚屏，我们只截了一屏。
+ * 野外（`field`）使用完整行军地图与道路坐标，镜头跟随正在移动的人物。
  */
 export interface StageOp {
   /** 这一幕里已经说过几句台词之前，执行这个动作。 */
   at: number;
-  op: 'place' | 'move' | 'remove' | 'clear' | 'caption' | 'map';
+  op: 'place' | 'move' | 'remove' | 'clear' | 'caption' | 'map' | 'graphic';
   /** record 中途换图，必须在对应台词前清场。 */
   map?: string;
   /** 原版 BAKDATA 的人物号。 */
@@ -29,7 +30,7 @@ export interface StageOp {
 }
 
 export interface StageInfo {
-  /** `palace/003`（宫殿内景）、`field`（野外，只铺景不摆人）或 `battle/012`（战场图，剧情层不画）。 */
+  /** `palace/003`（宫殿内景）、`field`（完整行军地图）或 `battle/012`（战场插剧）。 */
   map?: string | null;
   /** 这一幕的台词数：构建时按它把动作对到第几句上（见 `tools/build_stages.py`）。 */
   lines: number;
@@ -38,6 +39,21 @@ export interface StageInfo {
   names?: Record<string, string>;
   /** 人物号 → 点他时说的话（原版剧本里 `talk` 触发的那几句）。 */
   talks?: Record<string, string[]>;
+  /** 已直接编译原始指令的场景，不再按台词数定位动作。 */
+  timeline?: Step[];
+  room?: { battle: string; shop: number[]; talks: Record<string, { steps: Step[]; shop?: boolean; depart?: boolean; prompt?: string; after?: Step[] }> };
+  /** 舞台动作已交错编入主线，不再按台词数重复执行。 */
+  ordered?: boolean;
+  /** 原版各并行交谈阶段，使用独立房间ID保存和恢复进度。 */
+  rooms?: Record<string, {
+    after: { who: string; text: string };
+    talks: Record<string, Step[]>;
+    next: { who?: number; label: string; prompt?: { who: string; text: string } };
+    shop?: { who: number; items: number[] };
+  }>;
+  world?: number;
+  walk?: Record<string, string[]>;
+  routes?: string[];
 }
 
 export const STAGES = RAW as unknown as Record<string, StageInfo>;
@@ -57,8 +73,16 @@ export interface Crowd {
 
 /** 只有宫殿与野外才铺场景；战场里插播的幕还是原来那样盖在战场上。 */
 export const isSceneMap = (key?: string | null) => !!key && (key.startsWith('palace/') || key === 'field');
-export const mapSrc = (key?: string | null) =>
-  !key ? '' : key === 'field' ? '/assets/story/field-00.png' : `/assets/story/${key.replace('palace/', 'pmap-')}.png`;
+export const mapSrc = (key?: string | null, world = 0) =>
+  !key ? '' : key === 'field' ? `/assets/maps/campaign/${String(world).padStart(3, '0')}.png` : `/assets/story/${key.replace('palace/', 'pmap-')}.png`;
+
+/** 原始道路格为32px；与宫殿保持1.25倍舞台缩放，显示为40px。 */
+export const fieldPoint = (x: number, y: number) => ({ left: (x + 0.5) * 40, top: (y + 0.5) * 40 });
+export const moveDirection = (from: { x: number; y: number }, to: { x: number; y: number }, field = false) => {
+  const a = field ? fieldPoint(from.x, from.y) : mapPoint(from.x, from.y);
+  const b = field ? fieldPoint(to.x, to.y) : mapPoint(to.x, to.y);
+  return Math.abs(b.left - a.left) > Math.abs(b.top - a.top) ? (b.left > a.left ? 1 : 3) : (b.top > a.top ? 2 : 0);
+};
 
 /**
  * 一幕的舞台调度：按台词进度往前走，只前进不后退。
@@ -71,6 +95,48 @@ export class StageScript {
   place = '';
   people = new Map<number, Crowd>();
   private idx = 0;
+  private graphics = new Map<number, number>();
+
+  /** 剧情路径走原版网格；宫殿使用交错列的四邻点，行军地图使用道路八邻点。 */
+  path(who: number, x: number, y: number): { x: number; y: number }[] {
+    const from = this.people.get(who);
+    if (!from || (from.x === x && from.y === y)) return [];
+    const field = this.map === 'field';
+    const grid = field ? this.info?.routes : this.info?.walk?.[this.map];
+    const end = `${x},${y}`, start = `${from.x},${from.y}`;
+    const queue = [{ x: from.x, y: from.y }];
+    const parent = new Map<string, string | null>([[start, null]]);
+    for (let i = 0; i < queue.length && i < 20000; i++) {
+      const p = queue[i];
+      const dirs = field ? [[-1,-1], [0,-1], [1,-1], [-1,0], [1,0], [-1,1], [0,1], [1,1]]
+        : [[-1, p.x % 2 === 0 ? 0 : -1], [1, p.x % 2 === 0 ? 0 : -1], [-1, p.x % 2 === 0 ? 1 : 0], [1, p.x % 2 === 0 ? 1 : 0]];
+      for (const [dx, dy] of dirs) {
+        const n = { x: p.x + dx, y: p.y + dy }, key = `${n.x},${n.y}`;
+        if (parent.has(key)) continue;
+        if (grid ? grid[n.y]?.[n.x] !== '#' : n.x < 0 || n.y < 0 || n.x > 63 || n.y > 63) continue;
+        parent.set(key, `${p.x},${p.y}`);
+        if (key === end) {
+          const out = [n];
+          let k = parent.get(key);
+          while (k && k !== start) {
+            const [px, py] = k.split(',').map(Number);
+            out.push({ x: px, y: py }); k = parent.get(k);
+          }
+          return out.reverse();
+        }
+        queue.push(n);
+      }
+    }
+    // 某些脚本终点在门外，不把角色丢掉；保留明确的原始终点。
+    return [{ x, y }];
+  }
+
+  take(n: number): StageOp[] {
+    const out: StageOp[] = [];
+    const ops = this.info?.ops ?? [];
+    while (this.idx < ops.length && ops[this.idx].at <= n) out.push(ops[this.idx++]);
+    return out;
+  }
 
   /** prev：上一幕。同一处场景的后续段（不再 load_map）要接着用上一幕的场面和人。 */
   constructor(info?: StageInfo, prev?: StageScript) {
@@ -78,7 +144,8 @@ export class StageScript {
     const map = info?.map ?? (prev && !info?.map ? prev.map : '');
     if (isSceneMap(map)) this.map = map;
     if (prev && !info?.map) {
-      this.people = new Map(prev.people);
+      this.people = new Map([...prev.people].map(([who, p]) => [who, { ...p }]));
+      this.graphics = new Map(prev.graphics);
       this.place = prev.place;
     }
   }
@@ -100,12 +167,13 @@ export class StageScript {
   /** 一幕演完/重开：人全部清掉，地图留着（下一幕常常不重新 load_map）。 */
   reset(): void {
     this.people.clear();
+    this.graphics.clear();
     this.place = '';
     if (this.info?.map) this.map = isSceneMap(this.info.map) ? this.info.map : '';
     this.idx = 0;
   }
 
-  private run(op: StageOp): void {
+  run(op: StageOp): void {
     if (op.op === 'map') {
       this.map = isSceneMap(op.map) ? op.map! : '';
       this.people.clear();
@@ -118,15 +186,20 @@ export class StageScript {
     }
     if (op.op === 'clear') return void this.people.clear();
     if (op.who === undefined) return;
-    // 野外需要相机滚动，当前只显示底图；保留数据，不能按坐标范围删人。
-    if (this.map === 'field' || !this.map) return;
+    if (op.op === 'graphic') {
+      this.graphics.set(op.who, op.sprite ?? 0);
+      const p = this.people.get(op.who);
+      if (p) p.sprite = op.sprite ?? 0;
+      return;
+    }
+    if (!this.map) return;
     if (op.op === 'remove') return void this.people.delete(op.who);
     this.people.set(op.who, {
       who: op.who,
       x: op.x ?? 0,
       y: op.y ?? 0,
       dir: op.dir ?? 2,
-      sprite: op.sprite ?? this.people.get(op.who)?.sprite ?? 0,
+      sprite: this.graphics.get(op.who) ?? op.sprite ?? this.people.get(op.who)?.sprite ?? 0,
       id: op.id ?? this.people.get(op.who)?.id,
       walking: op.op === 'move',
     });

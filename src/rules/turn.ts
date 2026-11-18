@@ -9,6 +9,7 @@ import type { Ev } from './types';
 
 export interface UnitInit {
   slot: number;
+  requiresFlag?: string; // 原始 battle_setup 的条件参战标志
   key?: string; // 武将 id（原版 officer id）；杂兵没有，按名字认
   name: string;
   face: string;
@@ -216,7 +217,7 @@ export function newBattle(level: Level, seed: number, roster: Roster = {}, opts:
     u.mp = maxMp(u);
     return u;
   };
-  const units = level.units.map(mk);
+  const units = level.units.filter((u) => !u.requiresFlag || !!opts.flags?.[u.requiresFlag]).map(mk);
   // 出征名单：把我军按顺序摆进出征位，槽位从 0 起
   const picked = (opts.deploy ?? []).slice(0, level.deploy?.max ?? 0);
   picked.forEach((key, i) => {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { scene } from '../src/data/game';
 import {
   MAP_H,
   MAP_W,
@@ -11,6 +12,8 @@ import {
   mapSrc,
   stageOf,
   actorFrame,
+  fieldPoint,
+  moveDirection,
   type StageInfo,
 } from '../src/stage';
 
@@ -23,10 +26,11 @@ describe('剧情舞台：地图', () => {
     expect(isSceneMap(null)).toBe(false);
   });
 
-  it('地图取原版 512×320 的城郭图 / 野外地平', () => {
+  it('宫殿使用原版城郭图，野外使用完整行军图', () => {
     expect(mapSrc('palace/000')).toBe('/assets/story/pmap-000.png');
     expect(mapSrc('palace/014')).toBe('/assets/story/pmap-014.png');
-    expect(mapSrc('field')).toBe('/assets/story/field-00.png');
+    expect(mapSrc('field')).toBe('/assets/maps/campaign/000.png');
+    expect(mapSrc('field', 2)).toBe('/assets/maps/campaign/002.png');
     expect(mapSrc('')).toBe('');
     expect([MAP_W, MAP_H]).toEqual([512, 320]);
   });
@@ -149,10 +153,43 @@ describe('剧情舞台：一幕的调度', () => {
     expect(s.people.has(3)).toBe(true);
     s.advance(1);
     expect(s.map).toBe('field');
-    expect(s.people.size).toBe(0);
+    expect([...s.people.keys()]).toEqual([5]);
+    expect(s.people.get(5)).toMatchObject({ x: 1, y: 26 });
     s.advance(2);
     expect(s.map).toBe('palace/014');
     expect([...s.people.keys()]).toEqual([8]);
+  });
+
+  it('逐条取动作可在移动完成后再退场，不能提前删除人物', () => {
+    const s = new StageScript({ map: 'palace/007', lines: 1, ops: [
+      { at: 0, op: 'place', who: 1, x: 4, y: 5 },
+      { at: 1, op: 'move', who: 1, x: 8, y: 5 },
+      { at: 1, op: 'remove', who: 1 },
+    ] });
+    s.take(0).forEach((op) => s.run(op));
+    const [move, remove] = s.take(1);
+    const path = s.path(1, move.x!, move.y!);
+    expect(path.length).toBeGreaterThan(1);
+    expect(path.at(-1)).toEqual({ x: 8, y: 5 });
+    expect(s.people.has(1)).toBe(true);
+    s.run(move);
+    expect(s.people.get(1)).toMatchObject({ x: 8, y: 5 });
+    s.run(remove);
+    expect(s.people.has(1)).toBe(false);
+    expect(s.take(1)).toEqual([]);
+  });
+
+  it('行军道路路径不穿过非道路格，镜头坐标使用原始32px格', () => {
+    const info = stageOf('c0_s0_story3')!;
+    const s = new StageScript(info);
+    s.run({ at: 0, op: 'map', map: 'field' });
+    s.run({ at: 0, op: 'place', who: 8, x: 1, y: 26 });
+    const path = s.path(8, 15, 33);
+    expect(path.length).toBeGreaterThan(1);
+    expect(path.at(-1)).toEqual({ x: 15, y: 33 });
+    for (const p of path) expect(info.routes?.[p.y]?.[p.x]).toBe('#');
+    expect(fieldPoint(1, 26)).toEqual({ left: 60, top: 1060 });
+    expect(moveDirection({ x: 1, y: 1 }, { x: 2, y: 1 }, true)).toBe(1);
   });
 
   it('reset 清人、清地名，保留地图', () => {
@@ -168,6 +205,50 @@ describe('剧情舞台：一幕的调度', () => {
 });
 
 describe('剧情舞台：从原版剧本转出来的数据', () => {
+  it('白帝城托孤对白保留缩进续行，仍按同一个说话步骤对齐', () => {
+    const steps = scene('c3_s4_story7');
+    expect(steps).toContainEqual({
+      t: 'say', who: 'liu_bei',
+      text: '孔明，多虧了你，我才能奪得漢中，才有今天這樣的局面．\n這次，我沒聽你的勸告而去討伐東吳，以致遭到如此慘敗，這是報應啊．',
+    });
+    const stage = stageOf('c3_s4_story7');
+    expect(stage).toMatchObject({
+      map: 'palace/022',
+      lines: steps.filter((step) => step.t === 'say' || step.t === 'text').length,
+      source: { chapter: 3, scene: 4, block: 7, records: [0] },
+    });
+    expect(stage?.ops).toContainEqual(expect.objectContaining({ at: 5, op: 'move', who: 125, x: 14, y: 6 }));
+  });
+
+  it('麦城胜负结算精确定位 block 1 的各自记录', () => {
+    expect(stageOf('c3_s4_b0_outro')).toMatchObject({
+      lines: 2, source: { chapter: 3, scene: 4, block: 1, records: [8] },
+    });
+    expect(stageOf('c3_s4_b0_defeat')).toMatchObject({
+      lines: 2, source: { chapter: 3, scene: 4, block: 1, records: [6] },
+    });
+  });
+
+  it('许昌前置对白只覆盖原记录前段，不提前加载出征战场', () => {
+    expect(stageOf('c4_s1_b7_before')).toMatchObject({
+      map: null, lines: 11, ops: [],
+      source: { chapter: 4, scene: 1, block: 7, records: [1], codeRange: [0, 2] },
+    });
+    expect(scene('c4_s1_b7_before').filter((step) => step.t === 'say' || step.t === 'text')).toHaveLength(11);
+  });
+
+  it('只有控制指令的无对白节点不生成伪舞台', () => {
+    const silent = [
+      'c1_s0_b6_outro', 'c1_s1_b7_before', 'c3_s2_b10_outro', 'c3_s2_b10_before',
+      'c3_s4_b4_before', 'c4_s1_b6_before', 'orig_c4_s0_b5_6_2',
+    ];
+    for (const id of silent) {
+      expect(scene(id).length).toBeGreaterThan(0);
+      expect(scene(id).filter((step) => step.t === 'say' || step.t === 'text')).toEqual([]);
+      expect(stageOf(id)).toBeUndefined();
+    }
+  });
+
   it('序章第一幕就摆了陈留宫殿的十个人', () => {
     const s = stageOf('c0_s0_story1');
     expect(s?.map).toBe('palace/000');
@@ -179,6 +260,17 @@ describe('剧情舞台：从原版剧本转出来的数据', () => {
     // 人名都能报出来（不是无名占位）
     for (const p of sc.people.values()) expect(s?.names?.[p.who]).toBeTruthy();
     expect(Object.values(s?.names ?? {})).toContain('董卓');
+  });
+
+  it('原始序章有序执行动作，交谈效果与自动对白分离', () => {
+    for (let i = 0; i < 5; i++) expect(stageOf(`c0_s0_story${i}`)?.timeline?.length).toBeGreaterThan(0);
+    const info = stageOf('c0_s0_story4')!;
+    expect(info.timeline?.some((s) => s.t === 'set' && ['orig_f0', 'orig_f1'].includes(s.flag))).toBe(false);
+    expect(info.room?.shop).toEqual([27, 28, 29, 30, 31, 32, 52, 53, 54]);
+    expect(info.room?.talks['12'].steps).toContainEqual({ t: 'set', flag: 'orig_f0', value: 1 });
+    expect(info.room?.talks['15'].steps).toContainEqual({ t: 'set', flag: 'orig_f1', value: 1 });
+    expect(info.room?.talks['374'].shop).toBe(true);
+    expect(info.room?.talks['1'].depart).toBe(true);
   });
 
   it('点人说的话取自原版剧本的 talk 记录', () => {
@@ -222,7 +314,7 @@ describe('剧情舞台：从原版剧本转出来的数据', () => {
         }
         if (op.op === 'caption') expect(op.text).toBeTruthy();
       }
-      // 野外动作保留在数据中；当前无滚屏相机，由 StageScript 暂不展示。
+      // 野外保留原始道路坐标，运行时由完整行军地图承载并滚屏。
       // 场上有人才谈得上「点他说话」，报得出名字的人才点得到
       if (mine) withPeople++;
       if (info.talks) {

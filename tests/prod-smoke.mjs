@@ -1,56 +1,74 @@
 // 生产构建冒烟：先 npm run build && npm run preview -- --port 5274，再 node tests/prod-smoke.mjs
 // 生产包里没有调试钩子，所以这里只用画面上看得见的东西判断。
 import assert from 'node:assert/strict';
-import { open } from '../tools/browser.mjs';
+import { pathToFileURL } from 'node:url';
 
-const BASE = process.env.BASE ?? 'http://127.0.0.1:5274';
-const { browser, page, errors } = await open(`${BASE}/?seed=3`);
+export async function verifyProduction(page, base = 'http://127.0.0.1:5274') {
+const exists = selector => page.evaluate(s => !!document.querySelector(s), selector);
+const text = selector => page.evaluate(s => document.querySelector(s)?.textContent ?? '', selector);
+await page.goto(`${base}/?seed=3`);
 await page.waitForSelector('[data-go="start"]');
 // 主流程按原版繁体断言；默认简体与切换另由 e2e 覆盖。
 await page.evaluate(() => localStorage.setItem('yjz.script', 'hant'));
 await page.reload();
 await page.waitForSelector('[data-go="start"]');
 assert.equal(await page.evaluate(() => typeof window.__yjz), 'undefined', '生产包不应带调试钩子');
-assert.match(await page.textContent('#screen h1'), /三國志英傑傳/);
+assert.match(await text('#screen h1'), /三國志英傑傳/);
 
 await page.click('[data-go="start"]');
-// 点完开场：章节横幅、对白一路点掉，直到出兵准备
-for (let i = 0; i < 400; i++) {
-  if (await page.$('#screen .chapter')) { await page.click('#screen'); continue; }
-  if (await page.$('[data-go="camp-go"]')) break;
-  if (await page.$('#talk .ask')) { await page.click('#talk .ask button:first-child'); continue; }
-  if (await page.$('#talk:not([hidden])')) { await page.click('#talk'); continue; }
+// 点完自动开场，停在原版自由交谈房间。
+for (let i = 0; i < 5000; i++) {
+  if (await exists('#screen .chapter')) { await page.click('#screen'); continue; }
+  if (await exists('.room-controls')) break;
+  if (await exists('#talk .ask')) { await page.click('#talk .ask button:first-child'); continue; }
+  if (await exists('#talk:not([hidden])')) { await page.click('#talk'); continue; }
   await page.waitForTimeout(20);
 }
-assert.match(await page.textContent('#screen .card'), /汜水關 — 出兵準備/);
-assert.match(await page.textContent('#screen .card'), /軍資 500 金/); // 曹操在序章拨的那 500
+await page.waitForSelector('.room-controls');
+assert.equal(await page.evaluate(() => document.querySelectorAll('.actor').length), 10, '自由房间保留原始十名人物');
+await page.click('.actor[data-who="1"]');
+await page.waitForSelector('#talk .ask');
+assert.match(await text('#talk'), /準備好了嗎？/);
+await page.click('#talk .ask button:last-child');
+await page.waitForSelector('.room-controls');
+await page.click('.actor[data-who="374"]');
+await page.waitForSelector('[data-go="camp-go"]');
+assert.match(await text('#screen .card'), /汜水關之戰 — 出兵準備/);
+assert.match(await text('#screen .card'), /軍資 500 金/); // 曹操在序章拨的那 500
 await page.click('[data-buy="30"]'); // 买一袋豆（原版 100 金），看看商店与军资
-assert.match(await page.textContent('#screen .card'), /軍資 400 金/);
+assert.match(await text('#screen .card'), /軍資 400 金/);
 await page.click('[data-go="camp-go"]');
+await page.waitForSelector('.room-controls');
+await page.click('.actor[data-who="1"]');
+await page.waitForSelector('#talk .ask');
+await page.click('#talk .ask button:first-child');
+await page.waitForSelector('#talk:not([hidden])');
+assert.match(await text('#talk'), /出征！/);
+await page.click('#talk');
 
 await page.waitForSelector('[data-go="deploy"]');
-assert.match(await page.textContent('#screen .card'), /汜水關之戰/);
+assert.match(await text('#screen .card'), /汜水關之戰/);
 await page.click('[data-go="deploy"]');
 await page.waitForSelector('[data-go="battle"]');
-assert.match(await page.textContent('#screen .card'), /部隊配置/);
+assert.match(await text('#screen .card'), /部隊配置/);
 await page.click('[data-go="auto"]'); // 按原版出兵位摆好
 await page.click('[data-go="battle"]');
 // 开场插剧要点几下
 for (let i = 0; i < 300; i++) {
-  if (await page.$('#talk .ask')) { await page.click('#talk .ask button:first-child'); continue; }
-  if (await page.$('#talk:not([hidden])')) { await page.click('#talk'); continue; }
-  if ((await page.textContent('#log')).includes('目标')) break;
+  if (await exists('#talk .ask')) { await page.click('#talk .ask button:first-child'); continue; }
+  if (await exists('#talk:not([hidden])')) { await page.click('#talk'); continue; }
+  if ((await text('#log')).includes('目标')) break;
   await page.waitForTimeout(20);
 }
-assert.match(await page.textContent('#turn'), /第1回合/);
-assert.match(await page.textContent('#log'), /目标：一、殲滅華雄/);
+assert.match(await text('#turn'), /第1回合/);
+assert.match(await text('#log'), /目标：一、殲滅華雄/);
 const autoStart = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')));
 assert.equal(autoStart.battle.round, 1, '生产版开战即写独立自动档');
 assert.equal(autoStart.battle.stage, 'player');
 
 // 结束回合：先确认（还有部队没行动），敌军行动完进入第 2 回合
 await page.click('#sys button:has-text("回合结束")');
-if (await page.$('#talk .ask')) await page.click('#talk .ask button:first-child');
+if (await exists('#talk .ask')) await page.click('#talk .ask button:first-child');
 await page.waitForFunction(() => document.getElementById('turn').textContent.includes('第2回合') &&
   JSON.parse(localStorage.getItem('yjz.autosave.v1'))?.battle.round === 2, null, { timeout: 90000 });
 const autoNext = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')));
@@ -83,7 +101,16 @@ const story = await page.evaluate(async () => {
 });
 assert.deepEqual([...new Set(story)], [200], '28 张剧情场景图都在生产包里');
 
-assert.deepEqual(errors, []);
-console.log('生产构建冒烟通过：标题 → 序章（含舞台式剧情）→ 营地 → 汜水關之戰 → 第 2 回合，' +
-  '独立自动档从第 1 回合更新至第 2 回合；21 个音效、10 首 BGM、4 张行军图与 28 张剧情场景图可加载，控制台无报错');
-await browser.close();
+return '生产构建冒烟通过：标题 → 序章动作 → 自由交谈 → 商店购买并返回 → 关羽确认出征 → 汜水關之戰 → 第 2 回合；' +
+  '独立自动档从第 1 回合更新至第 2 回合；21 个音效、10 首 BGM、4 张行军图与 28 张剧情场景图可加载';
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const { open } = await import('../tools/browser.mjs');
+  const base = process.env.BASE ?? 'http://127.0.0.1:5274';
+  const { browser, page, errors } = await open(base);
+  try {
+    console.log(await verifyProduction(page, base));
+    assert.deepEqual(errors, []);
+  } finally { await browser.close(); }
+}
