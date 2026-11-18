@@ -19,7 +19,8 @@ export interface ItemSpec {
   def: number;
   /** 移动力加成格数 */
   move: number;
-  /** 每回合恢复的兵力 / 士气 */
+  /** 参考 pack 的历史字段；非零标识被动兵力/士气恢复，不是点数或百分比。
+   * 实际公式与不叠加规则在 combat.upkeep，按原版程序核对。 */
   regenHp: number;
   regenMorale: number;
   /** 商店价格；null = 原版不卖（武器、铠甲、马、宝物、转职书） */
@@ -60,7 +61,7 @@ export const isEquipment = (id: number): boolean => {
   return k === 'weapon' || k === 'armor' || k === 'accessory';
 };
 
-/** 装备的一行说明，如「攻擊 +14%」「移動 +3」「每回合兵力 +10」。 */
+/** 装备的一行说明，如「攻擊 +14%」「移動 +3」「每回合兵力 +150～250」。 */
 export function itemEffect(id: number): string {
   const s = specOf(id);
   if (!s) return '';
@@ -68,8 +69,8 @@ export function itemEffect(id: number): string {
   if (s.atk) out.push(`攻擊 +${s.atk}%`);
   if (s.def) out.push(`防禦 +${s.def}%`);
   if (s.move) out.push(`移動 +${s.move}`);
-  if (s.regenHp) out.push(`每回合兵力 +${s.regenHp}`);
-  if (s.regenMorale) out.push(`每回合士氣 +${s.regenMorale}`);
+  if (s.regenHp) out.push('每回合兵力 +150～250');
+  if (s.regenMorale) out.push('每回合士氣 +統御÷10＋1～5');
   if (s.heal) out.push(`兵力 +${s.heal}`);
   if (s.morale) out.push(`士氣 +${s.morale}`);
   if (s.promote) out.push('兵種升級');

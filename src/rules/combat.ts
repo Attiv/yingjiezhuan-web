@@ -1,5 +1,5 @@
 import { TB, atk, bySlot, def, foes, friendly, idiv, isRain, knownStrategies, maxHp, rand, rangeCells, terrainAt, terrainDef, unitAt } from './core';
-import { specOf, type ItemSpec } from '../data/items';
+import type { ItemSpec } from '../data/items';
 import { strategySpec } from '../data/strategies';
 import type { Battle, Ev, Unit } from './types';
 
@@ -238,8 +238,9 @@ export function castSupport(b: Battle, a: Unit, d: Unit | undefined, id: number)
   return evs;
 }
 
-/** 回合开始的地形恢复：村庄、鹿砦回兵力和士气，兵营只回兵力。两次随机数无论是否在场都会消耗。
- * 携带的宝物（玉玺、援军报告、勅命书）每回合另回一点，和站在什么地形上无关。 */
+/** 原版 MAIN.EXE 0x2a7d0：地形和宝物只启用恢复位，不累加恢复量。
+ * 村庄/鹿砦、玉玺启用兵力与士气，兵营/援军报告只启用兵力，勅命书只启用士气。
+ * 两次随机数无论是否在场都会消耗；同类宝物或恢复地形不叠加。 */
 export function upkeep(b: Battle, slot: number, evs: Ev[]): void {
   const troopRoll = rand(b, 11);
   const moraleRoll = rand(b, 5);
@@ -248,12 +249,13 @@ export function upkeep(b: Battle, slot: number, evs: Ev[]): void {
   const max = maxHp(u.cls, u.level);
   let hpGain = 0;
   let moraleGain = 0;
-  for (const id of u.items) {
-    const s = specOf(id);
-    if (s) (hpGain += s.regenHp), (moraleGain += s.regenMorale);
-  }
   const terrain = terrainAt(b, u.x, u.y);
-  const flags = terrain === 8 || terrain === 13 ? 3 : terrain === 14 ? 1 : 0;
+  let flags = terrain === 8 || terrain === 13 ? 3 : terrain === 14 ? 1 : 0;
+  for (const id of u.items) {
+    if (id === 55) flags |= 2; // 勅命书
+    if (id === 56) flags |= 1; // 援军报告
+    if (id === 8) flags |= 3; // 玉玺；原版 0x2a8c6..0x2a8e0 的道具立即数
+  }
   if (flags & 1) {
     let gain = (troopRoll + 15) * 10;
     // 回完只差不到 10 就直接补满

@@ -605,6 +605,8 @@ def item_specs() -> dict:
             "atk": (it.get("atk_pct") or 100) - 100,
             "def": (it.get("def_pct") or 100) - 100,
             "move": it.get("move_bonus", 0),
+            # 保留参考 pack 的字段；非零标记被动恢复，10 不代表回复点数或百分比。
+            # 原版程序以道具 8/55/56 启用地形恢复位，实际公式见 combat.upkeep。
             "regenHp": it.get("regen_hp", 0),
             "regenMorale": it.get("regen_morale", 0),
             "price": None if price >= NO_PRICE else price,

@@ -15,7 +15,7 @@ export const EQUIP_SLOTS: EquipSlot[] = ['weapon', 'armor', 'horse'];
 /** 一键装备兜底的最强三件：霸者劍、孫子兵法、赤兎馬（包袱里没有时才发）。 */
 export const BEST_OF: Record<EquipSlot, number> = { weapon: 59, armor: 3, horse: 7 };
 
-/** 一键装备顺带补齐的宝物：玉璽（每回合 +10 兵力 +10 士气）。宝物不占三个装备位，可与兵器铠甲马同带。 */
+/** 一键装备顺带补齐的宝物：玉璽（每回合恢复 150～250 兵力及统御÷10＋1～5 士气）。宝物不占三个装备位，可与兵器铠甲马同带。 */
 export const BEST_TREASURE = 8;
 
 /** 这件道具算哪个装备位。马是原版的「移动力加成」类饰品（玉璽、勅命書不算）。 */

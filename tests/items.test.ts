@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ITEM_SPEC, PROMOTE, classChange, classUse, itemEffect, priceOf, promotion, specOf } from '../src/data/items';
 import { upkeep } from '../src/rules/combat';
-import { atk, bySlot, def, maxHp, moveBudget } from '../src/rules/core';
+import { atk, bySlot, def, maxHp, moveBudget, rand } from '../src/rules/core';
 import { doDrop, doGive, doItem, doMove, doWait, giveTargets, itemTargets, newBattle, type Level, type UnitInit } from '../src/rules/turn';
 import type { Battle } from '../src/rules/types';
 
@@ -42,7 +42,9 @@ describe('道具表（对照原版 items.toml）', () => {
     expect(itemEffect(10)).toBe('攻擊 +20%');
     expect(itemEffect(60)).toBe('防禦 +15%');
     expect(itemEffect(7)).toBe('移動 +3');
-    expect(itemEffect(8)).toBe('每回合兵力 +10　每回合士氣 +10');
+    expect(itemEffect(8)).toBe('每回合兵力 +150～250　每回合士氣 +統御÷10＋1～5');
+    expect(itemEffect(56)).toBe('每回合兵力 +150～250');
+    expect(itemEffect(55)).toBe('每回合士氣 +統御÷10＋1～5');
     expect(itemEffect(54)).toBe('兵力 +1800　士氣 +50');
   });
 });
@@ -65,16 +67,64 @@ describe('装备效果', () => {
     expect(atk(bySlot(b([10, 11, 12]), 0)!)).toBe(one);
   });
 
-  it('每回合恢复：玉玺 +10 兵力 +10 士气，勅命书只回士气', () => {
+  it('玉玺启用原版恢复：兵力 (rand(11)+15)×10，士气 统御÷10+rand(5)+1', () => {
+    for (const lv of [5, 25]) {
+      const battle = start([unit(0, 0, lv, 0, 0, { items: [8] }), unit(15, 0, 1, 5, 1)]);
+      const u = bySlot(battle, 0)!;
+      u.hp = 1;
+      u.morale = 50;
+      const rng = { rng: battle.rng };
+      const hp = (rand(rng, 11) + 15) * 10;
+      const morale = Math.trunc(u.lead / 10) + rand(rng, 5) + 1;
+      const evs: Parameters<typeof upkeep>[2] = [];
+      upkeep(battle, 0, evs);
+      expect(u.hp, `Lv${lv} 玉玺回复`).toBe(1 + hp);
+      expect(u.morale).toBe(50 + morale);
+      expect(battle.rng).toBe(rng.rng);
+      expect(evs).toContainEqual({ t: 'recover', slot: 0, hp, morale });
+    }
+  });
+
+  it('援军报告只回兵力，勅命书只回士气；重复宝物及恢复地形不叠加', () => {
+    for (const [items, terrain, heal, rally] of [
+      [[56], 0, true, false], [[55], 0, false, true],
+      [[8], 0, true, true], [[8, 8, 55, 56], 0, true, true],
+      [[8, 55, 56], 8, true, true], [[8, 8], 14, true, true],
+    ] as const) {
+      const battle = start([unit(0, 0, 25, 0, 0, { items: [...items] }), unit(15, 0, 1, 5, 1)]);
+      const u = bySlot(battle, 0)!;
+      battle.terrain[0] = terrain;
+      u.hp = 1;
+      u.morale = 40;
+      const rng = { rng: battle.rng };
+      const hp = (rand(rng, 11) + 15) * 10;
+      const morale = Math.trunc(u.lead / 10) + rand(rng, 5) + 1;
+      upkeep(battle, 0, []);
+      expect(u.hp, `道具 ${items} 地形 ${terrain}`).toBe(heal ? 1 + hp : 1);
+      expect(u.morale).toBe(rally ? 40 + morale : 40);
+      expect(battle.rng).toBe(rng.rng);
+    }
+  });
+
+  it('宝物恢复不超过上限，差不到10补满，满状态不产生虚假恢复事件', () => {
     const battle = start([unit(0, 0, 5, 0, 0, { items: [8] }), unit(15, 0, 1, 5, 1)]);
     const u = bySlot(battle, 0)!;
-    u.hp -= 100;
-    u.morale = 50;
+    const rng = { rng: battle.rng };
+    const hp = (rand(rng, 11) + 15) * 10;
+    const morale = Math.trunc(u.lead / 10) + rand(rng, 5) + 1;
+    u.hp = maxHp(u.cls, u.level) - hp - 5;
+    u.morale = 100 - morale - 5;
+    upkeep(battle, 0, []);
+    expect(u.hp).toBe(maxHp(u.cls, u.level));
+    expect(u.morale).toBe(100);
     const evs: Parameters<typeof upkeep>[2] = [];
     upkeep(battle, 0, evs);
-    expect(u.hp).toBe(maxHp(0, 5) - 90);
-    expect(u.morale).toBe(60);
-    expect(evs.some((e) => e.t === 'recover')).toBe(true);
+    expect(evs).toEqual([]);
+    u.hp--;
+    u.morale--;
+    upkeep(battle, 0, []);
+    expect(u.hp).toBe(maxHp(u.cls, u.level));
+    expect(u.morale).toBe(100);
   });
 
   it('地图宝物踩上去就归该部队，回血效果随后每回合生效', () => {
@@ -88,9 +138,12 @@ describe('装备效果', () => {
     expect(u.items).toContain(8);
     u.hp -= 100;
     u.morale = 50;
+    const rng = { rng: b.rng };
+    rand(rng, 11);
+    const morale = Math.trunc(u.lead / 10) + rand(rng, 5) + 1;
     upkeep(b, 0, []);
-    expect(u.hp).toBe(maxHp(0, 5) - 90);
-    expect(u.morale).toBe(60);
+    expect(u.hp).toBe(maxHp(0, 5));
+    expect(u.morale).toBe(50 + morale);
   });
 });
 
