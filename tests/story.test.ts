@@ -54,6 +54,31 @@ describe('剧情脚本', () => {
     expect(currentStep(CAMPAIGN, st)).toBeNull();
   });
 
+  it('小沛第二组交谈以稳定房间锚点暂停，恢复后继续到原始出发提示', () => {
+    const roomId = 'c1_s2_story1:b1g2';
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei', 'sun_qian'] });
+    let step = nextStep(SCRIPT, st);
+    for (let n = 0; step && n < 20000 && !(step.t === 'room' && step.id === roomId); n++) {
+      step = nextStep(SCRIPT, st, 0);
+    }
+    expect(step).toEqual({ t: 'room', id: roomId });
+    expect(st.resume).toEqual({ t: 'room', id: roomId });
+
+    const saved: Story = JSON.parse(JSON.stringify(st));
+    expect(restoreStoryPosition(SCRIPT, saved)).toBe(true);
+    expect(currentStep(SCRIPT, saved)).toEqual(step);
+    expect(saved).toEqual(st);
+
+    const lines: string[] = [];
+    for (let n = 0; n < 100; n++) {
+      step = nextStep(SCRIPT, saved);
+      if (!step) break;
+      if (step.t === 'say') lines.push(step.text);
+      if (step.t === 'say' && step.text === '大哥，去哪裡？') break;
+    }
+    expect(lines.filter((text) => text === '大哥，去哪裡？')).toHaveLength(1);
+  });
+
   it('进度是纯数据：序列化再读回，接下去演的内容一样', () => {
     const st = startStory(CAMPAIGN);
     nextStep(CAMPAIGN, st);

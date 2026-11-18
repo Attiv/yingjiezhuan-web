@@ -307,8 +307,10 @@ describe('整部剧本的数据', () => {
     const camps = SCRIPT.steps.filter((s): s is Extract<Step, { t: 'camp' }> => s.t === 'camp');
     expect(camps).toHaveLength(69);
     const rooms = SCRIPT.steps.filter((s) => s.t === 'room');
-    expect(rooms).toHaveLength(13);
+    expect(rooms).toHaveLength(15);
     expect(rooms).toContainEqual({ t: 'room', id: 'c0_s0_story4' });
+    expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story1:b1g1' });
+    expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story1:b1g2' });
     expect(new Set(rooms.map((s) => s.id)).size).toBe(rooms.length);
     for (const c of camps) {
       const lv = level(c.battle);

@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
-import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouReturnRooms } from './story-rooms.mjs';
+import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
 const SHOTS = new URL('../docs/screenshots/', import.meta.url).pathname;
@@ -1443,6 +1443,11 @@ await step('北海议事厅：赠金、原文闲谈、取消出发、存读档�
 await step('徐州议事厅：陶谦议论、两阶段交谈、关张路线确认与存读档', async () => {
   await page.goto(`${BASE}/`);
   assert.match(await verifyXuzhouRooms(page), /徐州/);
+});
+
+await step('小沛议事厅：简雍汇报、关羽取消/确认出征与山贼路线', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyXuzhouSecondScene(page), /小沛/);
 });
 
 await step('返回徐州：陶谦赠剑、孙乾入队行军与赵云告别', async () => {

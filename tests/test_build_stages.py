@@ -132,6 +132,64 @@ class StageGenerationTests(unittest.TestCase):
                                                                {"t": "say", "who": "張飛", "text": "今晚是趙雲的歡送會，喝！"},
                                                                {"t": "away", "id": "zhao_yun"}])
 
+    def test_xuzhou_second_scene_keeps_two_rooms_and_confirmed_field_departure(self):
+        stages = json.loads((ROOT / "src/data/stages.json").read_text())
+        info = stages["c1_s2_story1"]
+        scene = build.load_scenarios()[1]["scenes"][2]
+        records = {r["index"]: r for r in next(b for b in scene["blocks"] if b["index"] == 1)["records"]}
+        officers = build.officer_of()
+        first, second = "c1_s2_story1:b1g1", "c1_s2_story1:b1g2"
+        first_pause = info["timeline"].index({"t": "room", "id": first})
+        second_pause = info["timeline"].index({"t": "room", "id": second})
+
+        # R0 自动段只包含议事厅开场；group 1 由点击人物触发，简雍才是推进人物。
+        self.assertEqual(info["source"], {"chapter": 1, "scene": 2, "block": 1, "records": [0, 4, 8, 9]})
+        self.assertEqual(info["timeline"][1:first_pause], build.original_timeline(scene, [records[0]], officers))
+        self.assertEqual(info["rooms"][first]["source"], {"block": 1, "group": 1})
+        self.assertEqual(info["rooms"][first]["talks"], {
+            str(records[r]["trigger"]["args"][0]): build.original_timeline(scene, [records[r]], officers)
+            for r in [1, 2, 3]
+        })
+        self.assertEqual(info["rooms"][first]["next"], {"who": 82, "label": "聽簡雍彙報"})
+        self.assertEqual(info["timeline"][first_pause + 1:second_pause], build.original_timeline(scene, [records[4]], officers))
+
+        # group 2 的三名闲谈不推进；关羽点击才弹出原版确认问句。
+        self.assertEqual(info["rooms"][second]["source"], {"block": 1, "group": 2})
+        self.assertEqual(info["rooms"][second]["talks"], {
+            str(records[r]["trigger"]["args"][0]): build.original_timeline(scene, [records[r]], officers)
+            for r in [5, 6, 7]
+        })
+        self.assertEqual(info["rooms"][second]["next"], {
+            "who": 1, "label": "準備出征", "prompt": {"who": "guan_yu", "text": "準備好了嗎？"},
+        })
+        self.assertFalse(any(s.get("text") == "準備好了嗎？" for s in info["timeline"]))
+
+        confirmed = info["timeline"][second_pause + 1:]
+        expected_confirmed = build.original_timeline(
+            scene, [{**records[8], "code": records[8]["code"][2:]}], officers)
+        expected_confirmed += build.original_timeline(scene, [records[9]], officers)
+        self.assertEqual(confirmed, expected_confirmed)
+        self.assertEqual([s["op"]["map"] for s in confirmed if s["t"] == "action" and s["op"]["op"] == "map"], ["field"])
+        self.assertEqual([s["op"]["sprite"] for s in confirmed if s["t"] == "action" and s["op"]["op"] == "graphic"], [3])
+        self.assertEqual([(s["op"]["who"], s["op"]["x"], s["op"]["y"]) for s in confirmed
+                          if s["t"] == "action" and s["op"]["op"] == "place"],
+                         [(0, 32, 30), (230, 29, 24), (223, 36, 30), (228, 36, 25)])
+        self.assertEqual(confirmed[-1], {"t": "say", "who": "guan_yu", "text": "大哥，去哪裡？"})
+
+        game = json.loads((ROOT / "src/data/game.json").read_text())
+        main_scene = game["scenes"]["c1_s2_story1"]
+        self.assertEqual([s["id"] for s in main_scene if s["t"] == "room"], [first, second])
+        self.assertEqual([s for s in main_scene if s.get("text") == "準備好了嗎？"], [])
+        self.assertEqual([s for s in main_scene if s.get("text") == "大哥，去哪裡？"],
+                         [{"t": "say", "who": "guan_yu", "text": "大哥，去哪裡？"}])
+
+        route = game["scenes"]["c1_s2_story2"]
+        self.assertFalse(any(s.get("text") == "大哥，去哪裡？" for s in route))
+        route_start = next(i for i, s in enumerate(game["steps"])
+                           if s == {"t": "label", "name": "c1_s2_story2"})
+        choice = next(s for s in game["steps"][route_start:] if s["t"] == "choice")
+        self.assertEqual([o["label"] for o in choice["options"]], ["回小沛城", "去泰山", "去夏丘", "去彭城"])
+
     def test_prologue_records_and_all_coordinate_operations_survive(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())
         scene = build.load_scenarios()[0]["scenes"][0]

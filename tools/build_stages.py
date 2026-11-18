@@ -460,6 +460,58 @@ def add_xuzhou_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) ->
     info.pop("talks", None)
 
 
+def add_xuzhou_second_scene(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """小沛议事厅：R0开场 → 简雍汇报房间 → 关羽出征确认 → 野外摆放山贼。"""
+    sid = "c1_s2_story1"
+    scene = dyn[1]["scenes"][2]
+    block = next(b for b in scene["blocks"] if b["index"] == 1)
+    records = {r["index"]: r for r in block["records"]}
+    first, second = f"{sid}:b1g1", f"{sid}:b1g2"
+
+    def steps(r: int, start: int = 0) -> list[dict]:
+        rec = records[r]
+        return original_timeline(scene, [{**rec, "code": rec["code"][start:]}], officers)
+
+    # R8 的前两条指令是对白与 if_answer；由可取消的房间确认框替代。
+    assert records[8]["code"][0]["mnemonic"] == "dialogue"
+    assert records[8]["code"][1]["mnemonic"] == "if_answer"
+    assert records[8]["code"][1]["args"][0]["value"] == 0
+    assert records[8]["code"][1]["args"][1]["value"] == 6
+    assert records[9]["trigger"]["kind_name"] == "run"
+
+    first_talks = {str(records[r]["trigger"]["args"][0] | records[r]["trigger"]["args"][1] << 8):
+                   steps(r) for r in (1, 2, 3)}
+    second_talks = {str(records[r]["trigger"]["args"][0] | records[r]["trigger"]["args"][1] << 8):
+                    steps(r) for r in (5, 6, 7)}
+    prompt = steps(8)[0]
+    timeline = [
+        {"t": "bgm", "key": "peace"},
+        *steps(0),
+        {"t": "room", "id": first},
+        *steps(4),
+        {"t": "room", "id": second},
+        *steps(8, 2),
+        *steps(9),
+    ]
+    names = {}
+    for r in (0, 4, 8, 9):
+        for code in records[r]["code"]:
+            person = (code.get("resolved") or {}).get("person")
+            if person:
+                args = {a["name"]: a["value"] for a in code.get("args", [])}
+                names[args["person"]] = person.strip()
+
+    info = stages[sid]
+    info.update(timeline=timeline, rooms={
+        first: {"talks": first_talks, "next": {"who": 82, "label": "聽簡雍彙報"},
+                "source": {"block": 1, "group": 1}},
+        second: {"talks": second_talks,
+                 "next": {"who": 1, "label": "準備出征", "prompt": {k: prompt[k] for k in ("who", "text")}},
+                 "source": {"block": 1, "group": 2}},
+    }, source={"chapter": 1, "scene": 2, "block": 1, "records": [0, 4, 8, 9]}, names=names)
+    info.pop("talks", None)
+
+
 def add_xuzhou_return(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
     """返回徐州的两组交谈、求和赠剑、孙乾入队，以及小沛点赵云告别。"""
     scene = dyn[1]["scenes"][1]
@@ -620,6 +672,7 @@ def main() -> None:
     add_free_rooms(stages, dyn, officers)
     add_beihai_room(stages, dyn, officers)
     add_xuzhou_rooms(stages, dyn, officers)
+    add_xuzhou_second_scene(stages, dyn, officers)
     add_xuzhou_return(stages, dyn, officers)
     towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
     campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]

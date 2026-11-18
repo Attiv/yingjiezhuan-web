@@ -367,6 +367,95 @@ export async function verifyXuzhouRooms(page) {
   return '徐州两阶段交谈、陶谦议论、关张原文头像、两种取消、存读档、关羽小沛出战与张飞求和路线';
 }
 
+export async function verifyXuzhouSecondScene(page) {
+  const first = 'c1_s2_story1:b1g1';
+  const second = 'c1_s2_story1:b1g2';
+  const fixture = await page.evaluate(async ({ first }) => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, nextStep } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei', 'sun_qian'] });
+    const api = {
+      join(s, id) { if (!s.party.includes(id)) s.party.push(id); s.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] }; },
+      away(s, id) { s.party = s.party.filter(x => x !== id); },
+      level(s, id, n) { const r = s.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] }; r.level += n; },
+      item(s, id) { s.bag.push(Number(id)); },
+    };
+    for (let n = 0, step = nextStep(SCRIPT, st, 0, api); step && n < 10000; n++, step = nextStep(SCRIPT, st, step.t === 'choice' ? 0 : 0, api)) {
+      if (step.t !== 'room' || step.id !== first) continue;
+      for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      list.slots[5] = { story: st, at: Date.now() };
+      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      localStorage.setItem('yjz.script', 'hant');
+      localStorage.setItem('yjz.anim-speed', '0');
+      return st;
+    }
+    throw new Error('真实路线未到达小沛第一组交谈');
+  }, { first });
+  await loadSlot(page, 5);
+  let s = await state(page);
+  assert.equal(s.story.resume.id, first);
+  assert.deepEqual(s.people, [0, 1, 2, 63, 82]);
+  const opening = await page.evaluate(() => ({
+    actors: [...document.querySelectorAll('.actor')].map(e => ({
+      who: e.dataset.who, x: e.style.left, y: e.style.top, art: e.querySelector('i')?.getAttribute('style'),
+    })),
+    liuArt: document.querySelector('.actor[data-who="0"] i')?.getAttribute('style'),
+  }));
+
+  await page.click('.actor[data-who="1"]');
+  await page.waitForSelector('#talk:not([hidden])');
+  assert.equal((await state(page)).line, '大哥，請聽簡雍彙報．');
+  await until(page, first);
+  assert.deepEqual((await state(page)).story, fixture, '闲谈不推进或改变剧情状态');
+  await page.click('.actor[data-who="82"]');
+  await until(page, second);
+  s = await state(page);
+  assert.equal(s.story.resume.id, second);
+  assert.equal(s.line, '大哥，作出征準備吧．');
+  assert.deepEqual(s.people, [0, 1, 2, 63, 82]);
+  const secondOpening = await page.evaluate(() => ({
+    actors: [...document.querySelectorAll('.actor')].map(e => ({
+      who: e.dataset.who, x: e.style.left, y: e.style.top, art: e.querySelector('i')?.getAttribute('style'),
+    })),
+    liuArt: document.querySelector('.actor[data-who="0"] i')?.getAttribute('style'),
+  }));
+  await page.click('.actor[data-who="2"]');
+  await page.waitForSelector('#talk:not([hidden])');
+  assert.match((await state(page)).line, /幾個毛賊/);
+  await until(page, second);
+
+  const beforeCancel = (await state(page)).story;
+  await page.click('[data-room="continue"]');
+  await page.waitForSelector('#talk .ask');
+  assert.equal((await state(page)).line, '準備好了嗎？');
+  await page.click('#talk .ask button:last-child');
+  await page.waitForSelector('.room-controls');
+  assert.deepEqual((await state(page)).story, beforeCancel, '取消不换图、不摆放山贼、留在原房间');
+  assert.deepEqual(await page.evaluate(() => ({
+    actors: [...document.querySelectorAll('.actor')].map(e => ({
+      who: e.dataset.who, x: e.style.left, y: e.style.top, art: e.querySelector('i')?.getAttribute('style'),
+    })),
+    liuArt: document.querySelector('.actor[data-who="0"] i')?.getAttribute('style'),
+  })), secondOpening);
+
+  await page.click('.actor[data-who="1"]');
+  await page.waitForSelector('#talk .ask');
+  await page.click('#talk .ask button:first-child');
+  await page.waitForFunction(() => !document.getElementById('talk').hidden &&
+    document.querySelector('#talk p')?.textContent === '大哥，去哪裡？');
+  s = await state(page);
+  assert.equal(s.story.section, 'c1_s2_story1');
+  assert.deepEqual(s.people, [0, 223, 228, 230]);
+  assert.match(await page.$eval('#screen .scene .backdrop', e => e.getAttribute('src')), /campaign\/000\.png/);
+  assert.notEqual(await page.$eval('.actor[data-who="0"] i', e => e.getAttribute('style')), secondOpening.liuArt, '确认后刘备应切换为出征造型');
+  await page.click('#talk');
+  await page.waitForSelector('#talk .ask');
+  assert.deepEqual(await page.$$eval('#talk .ask button', els => els.map(e => e.textContent.trim())),
+    ['回小沛城', '去泰山', '去夏丘', '去彭城']);
+  return '小沛简雍汇报、两组闲谈、关羽取消/确认、野外山贼摆放与四路线衔接';
+}
+
 export async function verifyXuzhouReturnRooms(page) {
   const first = 'c1_s1_story10:b10g1';
   const second = 'c1_s1_story10:b10g2';
