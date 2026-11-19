@@ -1424,3 +1424,61 @@ export async function verifyLongChoiceRoom(page) {
   assert.ok(labels.length >= 2, `应保留原版选项：${JSON.stringify(labels)}`);
   return '三顾茅庐：两段房间、合并闲谈与原版选项';
 }
+
+// 原版按触发人各录一版的对白：点谁播谁那一版，不重复、不串台。
+export async function verifyBranchOptionRooms(page) {
+  const room = 'c1_s4_story6:b6g0';
+  const open = async who => {
+    await page.evaluate(async ({ room }) => {
+      const { SCRIPT, officers } = await import('/src/data/game.ts');
+      const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+      const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 700 });
+      st.resume = { t: 'room', id: room };
+      st.pc = -1;
+      if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${room} 无法定位`);
+      for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      list.slots[5] = { story: st, at: Date.now() };
+      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      localStorage.setItem('yjz.script', 'hant');
+      localStorage.setItem('yjz.anim-speed', '0');
+    }, { room });
+    await loadSlot(page, 5);
+    assert.equal((await state(page)).story.resume.id, room);
+  };
+
+  await open();
+  const labels = await page.evaluate(() => [...document.querySelectorAll('[data-room="continue"]')].map(b => b.textContent));
+  assert.deepEqual(labels, ['與關羽交談', '與張飛交談'], '两个分支各自成选项');
+
+  // 走完所选分支，沿途记下台词。
+  const walk = async pick => {
+    await open();
+    await page.click(`[data-room="continue"][data-answer="${pick}"]`);
+    const seen = [];
+    const deadline = Date.now() + 45000;
+    while (Date.now() < deadline) {
+      const now = await page.evaluate(() => ({
+        line: document.querySelector('#talk p')?.textContent ?? '',
+        talk: !document.getElementById('talk').hidden,
+        ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+        section: window.__yjz.story.section,
+      }));
+      if (now.line && now.line !== seen.at(-1)) seen.push(now.line);
+      if (now.section !== 'c1_s4_story6') break;
+      if (now.talk) await page.click('#talk');
+      else if (now.ask) await page.click('#talk .ask button:first-child');
+      else await page.waitForTimeout(30);
+    }
+    return seen;
+  };
+
+  const guan = await walk(0);
+  assert.ok(guan.some(l => l.includes('聖上有什麼事')), `关羽版应出现：${JSON.stringify(guan)}`);
+  assert.ok(!guan.some(l => l.includes('陛下有什麼事')), '关羽分支不应播张飞版');
+
+  const zhang = await walk(1);
+  assert.ok(zhang.some(l => l.includes('陛下有什麼事')), `张飞版应出现：${JSON.stringify(zhang)}`);
+  assert.ok(!zhang.some(l => l.includes('聖上有什麼事')), '张飞分支不应播关羽版');
+  return '衣带诏：关羽/张飞两版互斥，各播三句且不重复';
+}

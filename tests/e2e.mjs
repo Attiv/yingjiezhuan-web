@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
-import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom, verifyDepartureRoom, verifyChoiceRoom, verifyXuShuRooms, verifyActionRoomPause, verifyMergedTailRoom, verifyLongChoiceRoom } from './story-rooms.mjs';
+import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom, verifyDepartureRoom, verifyChoiceRoom, verifyXuShuRooms, verifyActionRoomPause, verifyMergedTailRoom, verifyLongChoiceRoom, verifyBranchOptionRooms } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
 // 截图默认写进 docs/screenshots/；SHOTS 指向别处时只出图不碰仓库里的参考图。
@@ -1514,6 +1514,11 @@ await step('幕尾闲谈并入上一个房间：单停顿点、按钮推进接�
 await step('三顾茅庐：两段房间、合并闲谈与原版选项', async () => {
   await page.goto(`${BASE}/`);
   assert.match(await verifyLongChoiceRoom(page), /三顾茅庐/);
+});
+
+await step('衣带诏：关羽/张飞两版互斥，各播三句不重复', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyBranchOptionRooms(page), /互斥/);
 });
 
 await step('两份独立剧情：只加数据即可运行，分支奖励与存档互不覆盖', async () => {

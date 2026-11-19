@@ -667,6 +667,58 @@ def campaign_specs() -> dict:
 
 
 # ---------------------------------------------------------------- 主流程 ----
+
+def split_branch_lines(scenes: dict[str, list[dict]], stages: dict) -> None:
+    """原版把同一段话按触发人各录一版，pack 里两版并列，线性播会重复。
+
+    改成互斥房间：点谁就播谁那一版，两条分支汇合后继续。
+    只处理已逐句核对过的两幕，不做通用规则——其它幕里相邻的同文对白是「两人同时应答」，
+    连说两次才是对的。
+    """
+    def branch(sid: str, room: str, steps: list[dict], at: int, span: int,
+               options: list[tuple[int, str, int, int]]) -> list[dict]:
+        """把 steps[at:at+span] 拆成 options 指定的几段，各自成标签分支。"""
+        out = steps[:at] + [{"t": "room", "id": room, "options": [
+            {"who": who, "label": label, "goto": f"{sid}~{tag_of(options, n)}"}
+            for n, (who, label, _, _) in enumerate(options)]}]
+        for n, (_, _, start, end) in enumerate(options):
+            out.append({"t": "label", "name": f"{sid}~{tag_of(options, n)}"})
+            out.extend(steps[at + start:at + end])
+            out.append({"t": "goto", "label": f"{sid}~join"})
+        out.append({"t": "label", "name": f"{sid}~join"})
+        return out + steps[at + span:]
+
+    def tag_of(options: list[tuple[int, str, int, int]], n: int) -> str:
+        return ["a", "b"][n]
+
+    # 衣带诏：整幕只有 stage + 六句对白，关羽版三句、张飞版三句。
+    sid = "c1_s4_story6"
+    steps = scenes.get(sid) or []
+    says = [s for s in steps if s["t"] == "say"]
+    if len(says) == 6 and len(steps) == 6:
+        room = f"{sid}:b6g0"
+        scenes[sid] = branch(sid, room, steps, 0, 6,
+                             [(1, "與關羽交談", 0, 3), (2, "與張飛交談", 3, 6)])
+        stages[sid]["rooms"] = {room: {
+            "talks": {}, "next": {"label": "繼續"},
+            "source": {"block": 6, "group": 0, "adapter": "branch_options"}}}
+        stages[sid]["ordered"] = True
+
+    # 涪城：庞统与黄忠各问一次「那麼出征嗎？」，同一句、不同人。
+    sid = "c3_s2_story9"
+    steps = scenes.get(sid) or []
+    for i in range(len(steps) - 1):
+        a, b = steps[i], steps[i + 1]
+        if a["t"] == "say" and b["t"] == "say" and a.get("text") == b.get("text") and a.get("who") != b.get("who"):
+            room = f"{sid}:b9g4"
+            scenes[sid] = branch(sid, room, steps, i, 2,
+                                 [(132, "與龐統交談", 0, 1), (169, "與黃忠交談", 1, 2)])
+            stages[sid].setdefault("rooms", {})[room] = {
+                "talks": {}, "next": {"label": "繼續"},
+                "source": {"block": 9, "group": 4, "adapter": "branch_options"}}
+            break
+
+
 def main() -> None:
     officers_toml = tomllib.loads((PACK / "officers.toml").read_text(encoding="utf-8"))["officer"]
     pack_json = json.loads((PACK / "original-pack.json").read_text(encoding="utf-8"))
@@ -738,6 +790,10 @@ def main() -> None:
                 raise ValueError(f"自由交谈停顿点 {sid} 缺少对应主线对白")
             out.extend({"t": "action", "op": op} for op in ops[op_index:])
             scenes[sid] = out
+    split_branch_lines(scenes, stages)
+    # 这两幕的房间由本脚本补，写回 stages.json（build_stages 是另一个写者，这里保持同样的序列化格式）。
+    (OUT / "stages.json").write_text(
+        json.dumps(stages, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     # 出征问答和出兵准备现在在room内完成，保留旧节点标签作为稳定流程锚点。
     scenes["c0_s0_b5_before"] = []
     battle_files = sorted((PACK / "battles").glob("*.toml"))
