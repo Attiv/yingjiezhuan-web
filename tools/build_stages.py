@@ -803,7 +803,7 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
             continue
         scene = dyn[ch]["scenes"][sy]
         block = next((b for b in scene["blocks"] if b["index"] == bi), None)
-        if not block or any(r["trigger"]["kind_name"] == "location" for r in block["records"]):
+        if not block:
             continue
         ops = {c["mnemonic"] for r in block["records"] for c in r["code"]}
         if ops & GENERIC_BLOCKERS:
@@ -817,40 +817,58 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
         progs: dict[int, dict] = {}
         for g in talk_groups:
             rs = groups[g]
-            if any(r["trigger"]["kind_name"] != "talk" for r in rs):
-                progs = {}
-                break
-            prog = [r for r in rs if any(c["mnemonic"] == "leave_parallel" for c in r["code"])]
-            if len(prog) != 1:
-                progs = {}
-                break
-            progs[g] = prog[0]
+            # 推进可以是带 leave_parallel 的谈话，也可以是组末的 location（走到某处换景）。
+            located = [r for r in rs if r["trigger"]["kind_name"] == "location"]
+            if located:
+                if len(located) != 1 or rs[-1] is not located[0]:
+                    progs = {}
+                    break
+                progs[g] = located[0]
+            else:
+                prog = [r for r in rs if any(c["mnemonic"] == "leave_parallel" for c in r["code"])]
+                if len(prog) != 1:
+                    progs = {}
+                    break
+                progs[g] = prog[0]
         if not progs:
             continue
+        # 地点只能作为某个谈话组的推进；别处出现地点触发就整幕跳过。
+        located = {r["index"] for r in block["records"] if r["trigger"]["kind_name"] == "location"}
+        if located - {p["index"] for p in progs.values()}:
+            continue
         # 闲谈只能是对白，否则点一下就会带上副作用。
-        if any(c["mnemonic"] not in ("dialogue", "end")
-               for g in talk_groups for r in groups[g] if r["index"] != progs[g]["index"]
-               for c in r["code"]):
+        if any(r["trigger"]["kind_name"] != "talk" or any(c["mnemonic"] not in ("dialogue", "end") for c in r["code"])
+               for g in talk_groups for r in groups[g] if r["index"] != progs[g]["index"]):
             continue
 
         steps: list[dict] = []
         rooms: dict[str, dict] = {}
+        locations: list[dict] = []
         for g in sorted(groups):
             rs = groups[g]
             if g not in talk_groups:
                 steps += original_timeline(scene, rs, officers)
                 continue
             prog = progs[g]
-            who = prog["trigger"]["args"][0] | prog["trigger"]["args"][1] << 8
             room_id = f"{sid}:b{bi}g{g}"
             steps.append({"t": "room", "id": room_id})
+            if prog["trigger"]["kind_name"] == "talk":
+                who = prog["trigger"]["args"][0] | prog["trigger"]["args"][1] << 8
+                room_next = {"who": who, "label": f"與{prog.get('trigger_person') or '將領'}交談"}
+            else:
+                room_next = {"label": "前往"}
             rooms[room_id] = {
                 "talks": {str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8):
                           original_timeline(scene, [r], officers)
                           for r in rs if r["index"] != prog["index"]},
-                "next": {"who": who, "label": f"與{prog.get('trigger_person') or '將領'}交談"},
+                "next": room_next,
                 "source": {"block": bi, "group": g},
             }
+            if prog["trigger"]["kind_name"] == "location":
+                locations.append({"block": bi, "record": prog["index"], "group": g,
+                                  "rawArgs": prog["trigger"]["args"].copy(),
+                                  "timeline": original_timeline(scene, [prog], officers),
+                                  "adapter": "room_button"})
             steps += original_timeline(scene, [prog], officers)
 
         caps = {norm(s["op"]["text"]) for s in steps if s["t"] == "action" and s["op"]["op"] == "caption"}
@@ -868,6 +886,8 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
         info.update(timeline=steps, rooms=rooms, names=names,
                     source={"chapter": ch, "scene": sy, "block": bi,
                             "records": sorted({r["index"] for r in block["records"]})})
+        if locations:
+            info["locations"] = locations
         info.pop("talks", None)
         made.append(sid)
     if made:

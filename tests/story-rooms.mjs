@@ -1012,3 +1012,62 @@ export async function verifyXuchangRoom(page) {
   assert.equal(await page.evaluate(() => window.__yjz.story.section), 'c1_s3_story0');
   return '许昌两轮闲谈、曹操两次推进、官邸按钮、谋士议事与刘备退场';
 }
+
+// 通用规则编出的房间：用稳定锚点直接载入，验证闲谈、人物推进与地点按钮换景。
+export async function verifyGenericGroupRoom(page) {
+  const first = 'c2_s0_story1:b1g1', second = 'c2_s0_story1:b1g2';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'sun_qian', 'mi_zhu'], gold: 800 });
+    st.resume = { t: 'room', id: first };
+    st.pc = -1;
+    if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
+    for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story: st, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    localStorage.setItem('yjz.script', 'hant');
+    localStorage.setItem('yjz.anim-speed', '0');
+    return st;
+  }, first);
+
+  await loadSlot(page, 5);
+  let s = await state(page);
+  assert.equal(s.story.resume.id, first);
+  assert.deepEqual(s.people, [0, 63, 64]);
+  assert.deepEqual(s.story, fixture);
+
+  // 糜竺只是闲谈，不改流程。
+  await page.click('.actor[data-who="64"]');
+  await page.waitForSelector('#talk:not([hidden])');
+  assert.equal((await state(page)).line, '主公，不用那麼擔心，關羽和張飛一定還在什麼地方活著．');
+  await page.click('#talk');
+  await until(page, first);
+  assert.deepEqual((await state(page)).story, fixture);
+
+  // 点孙乾：报文与糜竺离场，进入只有按钮的第二组。
+  await page.click('.actor[data-who="63"]');
+  await until(page, second);
+  s = await state(page);
+  assert.deepEqual(s.people, [0, 63]);
+
+  // 「前往」由地点触发承接：换白马议事厅、摆八人、袁绍开口。
+  await page.click('[data-room="continue"]');
+  await page.waitForFunction(() => document.querySelector('#talk p')?.textContent === '是劉備嗎，哼，你來得正好．');
+  s = await state(page);
+  assert.deepEqual(s.people, [0, 9, 50, 52, 54, 91, 92, 102]);
+  assert.equal(await page.evaluate(() => document.querySelector('.place')?.textContent), '白馬議事廳');
+  assert.match(await page.evaluate(() => document.querySelector('.backdrop')?.getAttribute('src')), /story\/pmap-002\.png/);
+
+  // 演完后接下一幕（白马议事厅的质询）。
+  const deadline = Date.now() + 45000;
+  while (Date.now() < deadline) {
+    const now = await page.evaluate(() => ({ section: window.__yjz.story.section, talk: !document.getElementById('talk').hidden }));
+    if (now.section === 'c2_s0_story2' && now.talk) break;
+    if (now.talk) await page.click('#talk');
+    else await page.waitForTimeout(30);
+  }
+  assert.equal(await page.evaluate(() => window.__yjz.story.section), 'c2_s0_story2');
+  return '通用房间：闲谈、孙乾推进、糜竺离场、地点按钮换景与下一幕衔接';
+}

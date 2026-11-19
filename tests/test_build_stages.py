@@ -393,7 +393,9 @@ class StageGenerationTests(unittest.TestCase):
     def test_generic_group_rooms_match_original_talk_records(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())
         sections = build.section_lines(ROOT / "original/pack/dramas/original_chapters.drama")
-        sids = ["c2_s1_story11", "c2_s1_story5", "c3_s1_story1", "c3_s1_story11", "c3_s1_story7", "c3_s2_story1"]
+        sids = ["c1_s4_story2", "c1_s4_story3", "c2_s0_story1", "c2_s0_story3", "c2_s0_story5", "c2_s0_story6",
+                "c2_s1_story1", "c2_s1_story11", "c2_s1_story14", "c2_s1_story5", "c2_s2_story2",
+                "c3_s1_story1", "c3_s1_story11", "c3_s1_story7", "c3_s2_story1", "c3_s2_story4"]
         for sid in sids:
             with self.subTest(section=sid):
                 info = stages[sid]
@@ -415,11 +417,20 @@ class StageGenerationTests(unittest.TestCase):
                     self.assertEqual(len(prog), 1)
                     room = info["rooms"][f"{sid}:b{bi}g{g}"]
                     self.assertEqual(room["source"], {"block": bi, "group": g})
-                    self.assertEqual(room["next"]["who"], prog[0]["trigger"]["args"][0] | prog[0]["trigger"]["args"][1] << 8)
+                    if prog[0]["trigger"]["kind_name"] == "talk":
+                        self.assertEqual(room["next"]["who"], prog[0]["trigger"]["args"][0] | prog[0]["trigger"]["args"][1] << 8)
+                    else:
+                        self.assertEqual(room["next"], {"label": "前往"})
                     self.assertEqual(room["talks"], {
                         str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8): build.original_timeline(scene, [r], officers)
                         for r in rs if r["index"] != prog[0]["index"]
                     })
+                # 地点推进保留原始触发参数，供后续城镇行走替换按钮。
+                located = [r for g in talk_groups for r in groups[g] if r["trigger"]["kind_name"] == "location"]
+                self.assertEqual(len(info.get("locations", [])), len(located))
+                for loc in info.get("locations", []):
+                    self.assertEqual(loc["adapter"], "room_button")
+                    self.assertEqual(loc["rawArgs"], next(r for r in located if r["index"] == loc["record"])["trigger"]["args"])
                 # 通用规则只在文本逐句对得上时生效。
                 caps = {build.norm(s["op"]["text"]) for s in info["timeline"]
                         if s["t"] == "action" and s["op"]["op"] == "caption"}
