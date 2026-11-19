@@ -703,7 +703,8 @@ def main() -> None:
             scenes[sid] = info["timeline"] + ([{"t": "room", "id": sid}] if info.get("room") else [])
         if info.get("ordered"):
             # 保留pack里的奖励、入队与分支，只将已核对的动作交错写入时间线。
-            # 暂停插在上一句之后，下一段动作等玩家继续才开始。
+            # 暂停插在上一句之后、下一段动作之前：玩家点人时人还站在原处，
+            # 点完才播下一组的进场、走位或离场。
             out, line, op_index = [], 0, 0
             ops = info["ops"]
             rooms = info.get("rooms", {})

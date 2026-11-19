@@ -1223,27 +1223,108 @@ export async function verifyXuShuRooms(page) {
   assert.equal(s.story.resume.id, first);
   assert.ok(s.story.party.includes('xu_shu'));
 
-  // 徐庶这时还没走到场上（他的进场在同一 record 里），用房间按钮推进；
-  // 后面不再插房间，away 仍由 pack 执行。
+  // 徐庶离队前有四段告别（原版就是这样），每段都是点击推进；away 仍由 pack 执行。
   await page.click('[data-room="continue"]');
   const deadline = Date.now() + 45000;
   let seen = '', left = false;
+  const visited = [];
   while (Date.now() < deadline) {
     const now = await page.evaluate(() => ({
       line: document.querySelector('#talk p')?.textContent ?? '',
       talk: !document.getElementById('talk').hidden,
       ask: !!document.querySelector('#talk:not([hidden]) .ask'),
       party: window.__yjz.story.party,
+      room: document.querySelector('.room-controls') ? window.__yjz.story.resume?.id : '',
     }));
     if (now.line.includes('請您一定要請孔明來')) seen = now.line;
     if (!now.party.includes('xu_shu')) { left = true; break; }
     if (now.ask) await page.click('#talk .ask button:first-child');
     else if (now.talk) await page.click('#talk');
-    else await page.waitForTimeout(30);
+    else if (now.room) {
+      if (visited.at(-1) !== now.room) visited.push(now.room);
+      await page.click('[data-room="continue"]');
+    } else await page.waitForTimeout(30);
   }
   assert.match(seen, /孔明/);
   assert.ok(left, '告别后徐庶离队');
+  assert.ok(visited.length >= 2, `离队前应有多段告别：${JSON.stringify(visited)}`);
   s = await state(page);
   assert.equal(s.story.gold, fixture.gold);
   return '徐庶离队：有序房间推进、pack 的 away 保留、军资不变';
+}
+
+// 推进组自带进退场：房间插在动作之前，流程照原顺序走完，不被走位打断。
+export async function verifyActionRoomPause(page) {
+  const first = 'c2_s3_story8:b8g1';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei', 'zhuge_liang'], gold: 1200 });
+    st.resume = { t: 'room', id: first };
+    st.pc = -1;
+    if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
+    for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story: st, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    localStorage.setItem('yjz.script', 'hant');
+    localStorage.setItem('yjz.anim-speed', '0');
+    return st;
+  }, first);
+
+  await loadSlot(page, 5);
+  let s = await state(page);
+  assert.equal(s.story.resume.id, first);
+  assert.ok(s.people.includes(0), '刘备在场上');
+
+  // 这一幕的推进人（刘琦、鲁肃）在原版没有立绘，靠房间按钮推进；记下沿途台词以核对顺序。
+  const seen = [];
+  const walk = async target => {
+    const deadline = Date.now() + 45000;
+    while (Date.now() < deadline) {
+      const now = await page.evaluate(() => ({
+        room: document.querySelector('.room-controls') ? window.__yjz.story.resume?.id : '',
+        line: document.querySelector('#talk p')?.textContent ?? '',
+        talk: !document.getElementById('talk').hidden,
+        ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+        chapter: !!document.querySelector('.chapter'),
+      }));
+      if (now.line && now.line !== seen.at(-1)) seen.push(now.line);
+      if (now.room === target) return;
+      if (now.ask) await page.click('#talk .ask button:first-child');
+      else if (now.talk) await page.click('#talk');
+      else if (now.chapter) await page.click('#screen');
+      else if (now.room) await page.click('[data-room="continue"]');
+      else await page.waitForTimeout(30);
+    }
+    throw new Error(`未到达 ${target}`);
+  };
+
+  await walk('c2_s3_story8:b8g2');
+  await walk('c2_s3_story8:b8g3');
+  // 最后一段接下一幕。
+  const deadline = Date.now() + 45000;
+  while (Date.now() < deadline) {
+    const now = await page.evaluate(() => ({
+      section: window.__yjz.story.section,
+      line: document.querySelector('#talk p')?.textContent ?? '',
+      talk: !document.getElementById('talk').hidden,
+      ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+      room: !!document.querySelector('.room-controls'),
+    }));
+    if (now.line && now.line !== seen.at(-1)) seen.push(now.line);
+    if (now.section === 'c2_s3_story9') break;
+    if (now.ask) await page.click('#talk .ask button:first-child');
+    else if (now.talk) await page.click('#talk');
+    else if (now.room) await page.click('[data-room="continue"]');
+    else await page.waitForTimeout(30);
+  }
+  assert.equal(await page.evaluate(() => window.__yjz.story.section), 'c2_s3_story9', '三段房间后接下一幕');
+
+  // 锚点在第一段之后，所以只核对后两段的先后：鲁肃告退 → 众人议论。
+  const at = text => seen.findIndex(l => l.includes(text));
+  const leave = at('我告辭了'), doubt = at('孫權真被說服');
+  assert.ok(leave >= 0 && doubt > leave, `台词顺序应保持原样：${JSON.stringify(seen.slice(0, 8))}`);
+  assert.equal((await state(page)).story.gold, fixture.gold, '交谈不发军资');
+  return '进退场幕：三段房间按原顺序推进，鲁肃引荐→告退→诸葛亮应答，末段接下一幕';
 }

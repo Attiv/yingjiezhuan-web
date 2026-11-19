@@ -468,7 +468,7 @@ class StageGenerationTests(unittest.TestCase):
         # 选项幕里能补停顿的都在这里；少一个说明锚点或推进记录退化了。
         self.assertGreaterEqual(checked, 18)
         ordered = [sid for sid, info in stages.items() if info.get("ordered") and info.get("rooms")]
-        self.assertGreaterEqual(len(ordered), 41)
+        self.assertGreaterEqual(len(ordered), 53)
         # 徐庶离队这一幕用 ordered 保住 pack 的 away，房间不能改队伍。
         xu = game["scenes"]["c2_s2_story1"]
         self.assertEqual([s for s in xu if s["t"] == "away"], [{"t": "away", "id": "xu_shu"}])

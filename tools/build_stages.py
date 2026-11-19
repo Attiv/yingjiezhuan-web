@@ -980,10 +980,8 @@ def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, s
             if sum(1 for x in sections[sid] if x.strip() == text) != 1:
                 bad = True
                 break
-            # 推进记录里若带进退场/换装，动作会在这一句之前结算，房间会落在人走之后；
-            # 这种组不插房间，交给原来的自动演出。
-            if any(c["mnemonic"] in STAGE_OPS or c["mnemonic"] == "set_graphic" for c in prog["code"]):
-                continue
+            # 推进记录自带的进退场/换装由 build_campaign 排在房间之后执行：
+            # 玩家点人时人还站在原处，点完才走进来或离开。
             who = prog["trigger"]["args"][0] | prog["trigger"]["args"][1] << 8
             rooms[f"{sid}:b{bi}g{g}"] = {
                 "after": {"who": officers.get(last["speaker"], last["speaker_name"].strip()), "text": text},
@@ -1179,13 +1177,13 @@ def main() -> None:
     add_xuzhou_return(stages, dyn, officers)
     add_group_rooms(stages, dyn, officers)
     add_ordered_group_rooms(stages, dyn, officers)
-    # ordered 幕如果到很晚（≥25 句）才换图，说明开场沿用上一幕的房间；
-    # 保留 info.map 会把舞台清空，改为继承上一幕的地图与人物，换图动作仍照原时序执行。
+    # ordered 幕若开头不换图（首个 map 动作在第 6 句之后），说明仍沿用上一幕的房间：
+    # 保留 info.map 会把舞台和人一并清空，改成继承上一幕；换图动作照原时序执行。
     for info in stages.values():
         if not info.get("ordered") or not info.get("map"):
             continue
         maps = [a for a in info.get("ops", []) if a.get("op") == "map"]
-        if maps and maps[0].get("at", 0) >= 25:
+        if maps and maps[0].get("at", 0) >= 6:
             info["map"] = None
     towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
     campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]

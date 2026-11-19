@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
-import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom, verifyDepartureRoom, verifyChoiceRoom, verifyXuShuRooms } from './story-rooms.mjs';
+import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom, verifyDepartureRoom, verifyChoiceRoom, verifyXuShuRooms, verifyActionRoomPause } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
 // 截图默认写进 docs/screenshots/；SHOTS 指向别处时只出图不碰仓库里的参考图。
@@ -1499,6 +1499,11 @@ await step('选项幕：闲谈停顿后仍是原版选项与生路分支', async
 await step('徐庶离队：有序房间推进并保留 pack 的 away', async () => {
   await page.goto(`${BASE}/`);
   assert.match(await verifyXuShuRooms(page), /徐庶离队/);
+});
+
+await step('进退场幕：三段房间按原顺序推进，不被走位打断', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyActionRoomPause(page), /鲁肃引荐/);
 });
 
 await step('两份独立剧情：只加数据即可运行，分支奖励与存档互不覆盖', async () => {
