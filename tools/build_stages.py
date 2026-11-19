@@ -939,10 +939,10 @@ def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, s
     """有副作用的幕：保留 pack 步骤与分支，只把各组交谈的停顿插进去。
 
     timeline 会整幕替换，选项、条件奖励和阵营变化会丢；这里改用 ordered——pack 的
-    步骤、跳转和副作用都留着，房间挂在「上一组最后一句」之后。锚点必须全幕唯一。
+    步骤、跳转和副作用都留着，房间挂在上一组最后一句之后。末句在全幕重复时改用
+    下一组首句定位；幕尾没有台词的组并进上一个房间，避免多点一次。
     """
     sections = section_lines(PACK / "dramas/original_chapters.drama")
-    # ordered 只插房间、不动 pack 步骤，选项后的奖励/入队/换景都由 pack 原样执行。
     made: list[str] = []
     for sid, info in sorted(stages.items()):
         m = re.fullmatch(r"c\d+_s\d+_story\d+", sid)
@@ -956,42 +956,91 @@ def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, s
         if not block:
             continue
         dlg = {d["offset"]: d["lines"] for d in scene["dialogues"]}
+
+        def line_of(code: dict) -> list[dict]:
+            if code["mnemonic"] != "dialogue":
+                return []
+            off = next((a["value"] for a in code["args"] if a["name"] == "text"), None)
+            return dlg.get(off, [])
+
+        def say_of(line: dict) -> dict:
+            name = line["speaker_name"].strip() if line.get("speaker_name") else ""
+            return {"who": officers.get(line["speaker"], name), "text": line["text"].strip()}
+
+        def unique(text: str) -> bool:
+            return sum(1 for x in sections[sid] if x.strip() == text) == 1
+
         groups: dict[int, list[dict]] = {}
         for r in block["records"]:
             groups.setdefault(r["trigger"]["group"], []).append(r)
-        rooms: dict[str, dict] = {}
-        bad = False
-        for g, rs in groups.items():
-            talks = [r for r in rs if r["trigger"]["kind_name"] == "talk"]
-            if not talks:
-                continue
-            prog = [r for r in rs if any(c["mnemonic"] == "leave_parallel" for c in r["code"])]
+        talk_groups = [g for g in sorted(groups)
+                       if any(r["trigger"]["kind_name"] == "talk" for r in groups[g])]
+        if not talk_groups:
+            continue
+        # 每组第一句：末句重复时用它给房间定位。
+        first_line: dict[int, dict] = {}
+        for g in talk_groups:
+            # 这一组是从「点某个人」开始的，所以用推进记录的第一句，而不是闲谈里的某句。
+            prog = [r for r in groups[g] if any(c["mnemonic"] == "leave_parallel" for c in r["code"])]
             if len(prog) != 1:
+                continue
+            got = next((ls[0] for c in prog[0]["code"] for ls in [line_of(c)] if ls), None)
+            if got:
+                first_line[g] = got
+        rooms: dict[str, dict] = {}
+        merged: list[int] = []
+        bad = False
+        for pos, g in enumerate(talk_groups):
+            rs = groups[g]
+            talks = [r for r in rs if r["trigger"]["kind_name"] == "talk"]
+            prog = [r for r in rs if any(c["mnemonic"] == "leave_parallel" for c in r["code"])]
+            if len(prog) > 1:
                 bad = True
                 break
-            prog = prog[0]
-            lines = [line for c in prog["code"] if c["mnemonic"] == "dialogue"
-                     for line in dlg.get(next(a["value"] for a in c["args"] if a["name"] == "text"), [])]
-            if not lines:
-                bad = True
-                break
-            last = lines[-1]
-            text = last["text"].strip()
-            if sum(1 for x in sections[sid] if x.strip() == text) != 1:
-                bad = True
-                break
-            # 推进记录自带的进退场/换装由 build_campaign 排在房间之后执行：
-            # 玩家点人时人还站在原处，点完才走进来或离开。
-            who = prog["trigger"]["args"][0] | prog["trigger"]["args"][1] << 8
+            p = prog[0] if prog else None
+            if p is None and rooms:
+                # 没有推进记录的纯闲谈组：并进上一个房间，不单独占一个停顿点。
+                # 若它就是第一组，仍建一个房间，用下一组首句定位。
+                merged.append(g)
+                continue
+            lines = [line for c in (p["code"] if p else []) for line in line_of(c)]
+            anchor = None
+            if lines:
+                tail = say_of(lines[-1])
+                if unique(tail["text"]):
+                    anchor = {"after": tail}
+            if anchor is None:
+                nxt = talk_groups[pos + 1] if pos + 1 < len(talk_groups) else None
+                head = first_line.get(nxt) if nxt is not None else None
+                if not head and pos + 1 == len(talk_groups):
+                    # 幕尾这一组没有台词：它的闲谈并进上一个房间。
+                    merged.append(g)
+                    continue
+                if not head or not unique(head["text"].strip()):
+                    bad = True
+                    break
+                anchor = {"before": say_of(head)}
+            who = (p["trigger"]["args"][0] | p["trigger"]["args"][1] << 8) if p else None
             rooms[f"{sid}:b{bi}g{g}"] = {
-                "after": {"who": officers.get(last["speaker"], last["speaker_name"].strip()), "text": text},
+                **anchor,
                 "talks": {str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8):
-                          original_timeline(scene, [r], officers) for r in talks if r is not prog},
-                "next": {"who": who, "label": f"與{prog.get('trigger_person') or '將領'}交談"},
+                          original_timeline(scene, [r], officers) for r in talks if r is not p},
+                "next": ({"who": who, "label": f"與{p.get('trigger_person') or '將領'}交談"}
+                         if who is not None else {"label": "繼續"}),
                 "source": {"block": bi, "group": g},
             }
         if bad or not rooms:
             continue
+        if merged:
+            # 幕尾的闲谈没有自己的停顿点，直接挂到最后一个房间上。
+            last = rooms[list(rooms)[-1]]
+            for g in merged:
+                for r in groups[g]:
+                    if r["trigger"]["kind_name"] != "talk":
+                        continue
+                    last["talks"][str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8)] = \
+                        original_timeline(scene, [r], officers)
+                last["source"].setdefault("mergedGroups", []).append(g)
         names: dict[int, str] = {}
         for r in block["records"]:
             for code in r["code"]:

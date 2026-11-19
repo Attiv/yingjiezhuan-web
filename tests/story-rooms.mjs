@@ -1328,3 +1328,99 @@ export async function verifyActionRoomPause(page) {
   assert.equal((await state(page)).story.gold, fixture.gold, '交谈不发军资');
   return '进退场幕：三段房间按原顺序推进，鲁肃引荐→告退→诸葛亮应答，末段接下一幕';
 }
+
+// 幕尾没有台词的闲谈组并进上一个房间：只出现一个停顿点，流程照原顺序走完。
+export async function verifyMergedTailRoom(page) {
+  const first = 'c2_s1_story4:b4g0';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 900 });
+    st.resume = { t: 'room', id: first };
+    st.pc = -1;
+    if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
+    for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story: st, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    localStorage.setItem('yjz.script', 'hant');
+    localStorage.setItem('yjz.anim-speed', '0');
+    return st;
+  }, first);
+
+  await loadSlot(page, 5);
+  let s = await state(page);
+  assert.equal(s.story.resume.id, first, '幕尾闲谈不另开房间');
+  assert.ok(s.people.length > 0, '房间里有可见人物');
+
+  // 点「與劉封交談」推进：他没有立绘，按钮承接同样的动作。
+  await page.click('[data-room="continue"]');
+  const deadline = Date.now() + 45000;
+  while (Date.now() < deadline) {
+    const now = await page.evaluate(() => ({
+      section: window.__yjz.story.section,
+      talk: !document.getElementById('talk').hidden,
+      ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+    }));
+    if (now.section === 'c2_s1_story5') break;
+    if (now.ask) await page.click('#talk .ask button:first-child');
+    else if (now.talk) await page.click('#talk');
+    else await page.waitForTimeout(30);
+  }
+  assert.equal(await page.evaluate(() => window.__yjz.story.section), 'c2_s1_story5', '幕尾并入后仍接下一幕');
+  assert.equal((await state(page)).story.gold, fixture.gold, '交谈不发军资');
+  return '幕尾闲谈并入上一个房间：单停顿点、按钮推进、接下一幕';
+}
+
+// 三顾茅庐：两段房间之后仍是原版选项；中间闲谈组已经并进第二个房间。
+export async function verifyLongChoiceRoom(page) {
+  const first = 'c2_s2_story3:b3g0', second = 'c2_s2_story3:b3g1';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 500 });
+    st.resume = { t: 'room', id: first };
+    st.pc = -1;
+    if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
+    for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story: st, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    localStorage.setItem('yjz.script', 'hant');
+    localStorage.setItem('yjz.anim-speed', '0');
+    return st;
+  }, first);
+
+  await loadSlot(page, 5);
+  assert.equal((await state(page)).story.resume.id, first);
+
+  // 有立绘就点人，没有就用房间按钮——两者在原版里是同一个触发。
+  const advance = async (target) => {
+    const deadline = Date.now() + 60000;
+    while (Date.now() < deadline) {
+      const now = await page.evaluate(() => ({
+        room: document.querySelector('.room-controls') ? window.__yjz.story.resume?.id : '',
+        talk: !document.getElementById('talk').hidden,
+        ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+        choice: !!document.querySelector('#talk .ask'),
+      }));
+      if (now.room === target) return;
+      if (now.choice) return;
+      if (now.talk) await page.click('#talk');
+      else if (now.room) await page.click('[data-room="continue"]');
+      else await page.waitForTimeout(30);
+    }
+    throw new Error(`未到达 ${target}`);
+  };
+
+  await advance(second);
+  const s = await state(page);
+  assert.equal(s.story.resume.id, second);
+  assert.equal(s.story.gold, fixture.gold, '房间不发放军资');
+
+  // 第二个房间合并了两组幕尾闲谈，点关羽推进后进入原版选项。
+  await advance('choice');
+  const labels = await page.evaluate(() => [...document.querySelectorAll('#talk .ask button')].map(b => b.textContent));
+  assert.ok(labels.length >= 2, `应保留原版选项：${JSON.stringify(labels)}`);
+  return '三顾茅庐：两段房间、合并闲谈与原版选项';
+}

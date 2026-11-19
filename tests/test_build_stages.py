@@ -463,8 +463,9 @@ class StageGenerationTests(unittest.TestCase):
             # 选项与分支必须原样留在 pack 步骤里。
             self.assertTrue(any(s["t"] == "label" for s in steps), sid)
             for room in info["rooms"].values():
-                self.assertIn("after", room)
-                self.assertTrue(room["next"].get("who"))
+                # 末句在全幕重复时房间改用下一组首句定位。
+                self.assertTrue("after" in room or "before" in room, sid)
+                self.assertTrue(room["next"].get("who"), sid)
         # 选项幕里能补停顿的都在这里；少一个说明锚点或推进记录退化了。
         self.assertGreaterEqual(checked, 18)
         ordered = [sid for sid, info in stages.items() if info.get("ordered") and info.get("rooms")]

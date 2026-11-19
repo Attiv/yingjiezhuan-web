@@ -711,6 +711,15 @@ def main() -> None:
             inserted = set()
             for step in scenes[sid]:
                 if step["t"] in ("say", "text"):
+                    # 上一组末句在全幕重复时，房间挂在下一组首句之前；
+                    # 这一步要排在该组的动作之前，玩家点完才看人进场。
+                    for room_id, room in rooms.items():
+                        before = room.get("before")
+                        if before and step == {"t": "say", **before}:
+                            if room_id in inserted:
+                                raise ValueError(f"自由交谈停顿点 {room_id} 不唯一")
+                            inserted.add(room_id)
+                            out.append({"t": "room", "id": room_id})
                     while op_index < len(ops) and ops[op_index]["at"] <= line:
                         out.append({"t": "action", "op": ops[op_index]})
                         op_index += 1
@@ -720,7 +729,7 @@ def main() -> None:
                 if not any(p and step == {"t": "say", **p} for p in prompts):
                     out.append(step)
                 for room_id, room in rooms.items():
-                    if step == {"t": "say", **room["after"]}:
+                    if room.get("after") and step == {"t": "say", **room["after"]}:
                         if room_id in inserted:
                             raise ValueError(f"自由交谈停顿点 {room_id} 不唯一")
                         inserted.add(room_id)
