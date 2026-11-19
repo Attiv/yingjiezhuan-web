@@ -261,6 +261,10 @@ export class BattleScene extends Phaser.Scene {
     this.hover(Math.floor(world.x / CELL), Math.floor(world.y / CELL));
   }
 
+  private moveUnavailable(u: Unit) {
+    return u.moved || u.acted || u.confused;
+  }
+
   /**
    * 原版待机不是把棋子拉长、上下抖动，而是 HEXZCHR 的两张站立帧交替。
    * 每支部队错开半拍，画面有轻微生命感但脚底和比例始终不变。
@@ -278,7 +282,7 @@ export class BattleScene extends Phaser.Scene {
       }
       if (!u) return;
       const acted = u.acted && this.b.stage === 'player' && u.mode === 7;
-      const phase = (frame + slot) % 2;
+      const phase = this.moveUnavailable(u) ? 0 : (frame + slot) % 2;
       const row = (acted ? 2 : 0) + phase;
       if (this.breath.get(slot) !== row) {
         s.setFrame(this.frameOf(u, acted, phase === 1));
@@ -353,7 +357,7 @@ export class BattleScene extends Phaser.Scene {
       const x = Math.round(t.x / CELL * 4), y = Math.round(t.y / CELL * 4);
       g.fillStyle = '#000000';
       g.fillRect(x - 2, y - 2, 5, 5);
-      g.fillStyle = ['#8acfff', '#00ba75', '#ef6500'][sideOf(u)];
+      g.fillStyle = this.moveUnavailable(u) ? '#8c8c8c' : ['#8acfff', '#00ba75', '#ef6500'][sideOf(u)];
       g.fillRect(x - 1, y - 1, 3, 3);
     }
     const cam = this.cameras.main;
@@ -559,13 +563,13 @@ export class BattleScene extends Phaser.Scene {
     this.marks.clear();
   }
 
-  /** 镜头移到能看见该格的位置。 */
-  focus(x: number, y: number, instant = false, automatic = false): Promise<void> {
-    if (automatic && !this.cameraFollow) return Promise.resolve();
+  /** 行动定位始终生效；镜头跟随开关只控制移动中的连续追踪。 */
+  focus(x: number, y: number, instant = false, target?: Unit): Promise<void> {
     const cam = this.cameras.main;
-    const tx = Phaser.Math.Clamp(mid(x) - VW / 2, 0, this.b.w * CELL - VW);
-    const ty = Phaser.Math.Clamp(mid(y) - VH / 2, 0, this.b.h * CELL - VH);
-    const visible = x * CELL >= cam.scrollX + CELL && x * CELL <= cam.scrollX + VW - 2 * CELL && y * CELL >= cam.scrollY + CELL && y * CELL <= cam.scrollY + VH - 2 * CELL;
+    const [x2, y2] = [target?.x ?? x, target?.y ?? y];
+    const tx = Phaser.Math.Clamp(mid((x + x2) / 2) - VW / 2, 0, Math.max(0, this.b.w * CELL - VW));
+    const ty = Phaser.Math.Clamp(mid((y + y2) / 2) - VH / 2, 0, Math.max(0, this.b.h * CELL - VH));
+    const visible = Math.min(x, x2) * CELL >= cam.scrollX + CELL && Math.max(x, x2) * CELL <= cam.scrollX + VW - 2 * CELL && Math.min(y, y2) * CELL >= cam.scrollY + CELL && Math.max(y, y2) * CELL <= cam.scrollY + VH - 2 * CELL;
     if (visible) return Promise.resolve();
     if (instant || !this.speed) return cam.setScroll(tx, ty), Promise.resolve();
     return this.tween({ targets: cam, scrollX: tx, scrollY: ty, duration: 300, ease: 'Sine.easeInOut' });
@@ -718,8 +722,8 @@ export class BattleScene extends Phaser.Scene {
       case 'move': {
         const s = this.tk(ev.slot);
         const u = unit(ev.slot);
-        await this.focus(ev.path[0][0], ev.path[0][1], false, true);
-        if (this.cameraFollow) {
+        await this.focus(ev.path[0][0], ev.path[0][1]);
+        if (this.cameraFollow && this.speed) {
           this.autoFollowing = true;
           this.cameras.main.startFollow(s, false, 0.2, 0.2);
         }
@@ -728,6 +732,7 @@ export class BattleScene extends Phaser.Scene {
           playSfx('step', 0.85);
           const [x, y] = ev.path[ev.path.length - 1];
           s.setPosition(mid(x), mid(y)).setDepth(2 + y / 100).setFlipX(this.mirror && facesLeft(b, u));
+          await this.focus(x, y, true);
           this.cameras.main.stopFollow();
           this.autoFollowing = false;
           break;
@@ -736,6 +741,7 @@ export class BattleScene extends Phaser.Scene {
         // 原版棋盘上走一格是两帧交替：前半格迈步（略微抬起），后半格落脚回站立帧
         for (let i = 1; i < ev.path.length; i++) {
           const [x, y] = ev.path[i];
+          if (!this.cameraFollow) await this.focus(x, y, true);
           const dx = x - ev.path[i - 1][0];
           if (dx && this.mirror) s.setFlipX(dx < 0);
           playSfx('step', 0.85);
@@ -758,7 +764,7 @@ export class BattleScene extends Phaser.Scene {
         const [a, d] = [unit(ev.a), unit(ev.d)];
         this.hp.set(d.slot, this.hpOf(d.slot) - ev.dmg);
         // 有特写时横幅盖住战场，镜头不必再慢慢卷过去（那 300ms 全成了出手前的空等）。
-        await this.focus(d.x, d.y, this.speed > 0 && this.hasCutin(a, d), true);
+        await this.focus(a.x, a.y, this.speed > 0 && this.hasCutin(a, d), d);
         const impact = () => { const fx = sfxOf(ev, b); if (fx) playSfx(fx); onImpact?.(); };
         if (!this.speed) impact();
         else if (this.hasCutin(a, d)) await this.cutin(a, d, impact);
@@ -766,20 +772,23 @@ export class BattleScene extends Phaser.Scene {
         await this.float(d, `-${ev.dmg}`, '#ffcf55');
         break;
       }
-      case 'castbegin':
-        await this.castBegin(unit(ev.slot), ev.id);
+      case 'castbegin': {
+        const a = unit(ev.slot);
+        await this.focus(a.x, a.y);
+        await this.castBegin(a, ev.id);
         break;
+      }
       case 'cast': {
         const d = unit(ev.d);
         this.hp.set(d.slot, this.hpOf(d.slot) - ev.dmg);
-        await this.focus(d.x, d.y, false, true);
+        await this.focus(d.x, d.y);
         await Promise.all([this.castHit(d, ev.id, ev.ok), this.float(d, ev.ok ? `-${ev.dmg}` : '识破', ev.ok ? '#ffcf55' : '#8acfff')]);
         break;
       }
       case 'duel': {
         // 单挑：你来我往三个回合，不扣兵力
         const [a, d] = [unit(ev.a), unit(ev.d)];
-        await this.focus(d.x, d.y, false, true);
+        await this.focus(d.x, d.y);
         const clash = () => playSfx('hit_heavy');
         if (!this.speed) { clash(); break; }
         await this.strike(d, a, clash);
@@ -799,7 +808,7 @@ export class BattleScene extends Phaser.Scene {
         // 策略补给：命中后按家族画一遍受术（回复绿光 / 振气金光 / 扰心紫旋 / 丧气压顶），再飘数值
         const d = unit(ev.d);
         if (ev.ok) this.hp.set(d.slot, this.hpOf(d.slot) + ev.hp);
-        await this.focus(d.x, d.y, false, true);
+        await this.focus(d.x, d.y);
         if (ev.ok) {
           const label = ev.hp ? `+${ev.hp}` : ev.morale ? `士气${ev.morale > 0 ? '+' : ''}${ev.morale}` : '回復';
           const bright = ev.hp > 0 || ev.morale > 0;

@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
+import { verifyCamera } from './camera.mjs';
 import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom, verifyDepartureRoom, verifyChoiceRoom, verifyXuShuRooms, verifyActionRoomPause, verifyMergedTailRoom, verifyLongChoiceRoom, verifyBranchOptionRooms } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
@@ -537,7 +538,7 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   await page.waitForTimeout(400); // 换曲有 160ms 淡出
   assert.equal(await page.evaluate(() => window.__yjz.bgm), 'battle');
   assert.match(await page.evaluate(() => window.__yjz.bgmSrc), /battle\.mp3/);
-  // 镜头跟随可在战场设置中关闭；关闭后角色演出不接管镜头，但画布边缘仍可卷屏。
+  // 关闭后只停止持续跟随，行动定位仍生效；空闲时画布边缘仍可卷屏。
   assert.equal(await page.evaluate(() => window.__yjz.scene.isCameraFollowEnabled()), true);
   await sys('镜头跟随 开');
   assert.deepEqual(await page.evaluate(() => ({ enabled: window.__yjz.scene.isCameraFollowEnabled(), saved: localStorage.getItem('yjz.camera-follow') })), { enabled: false, saved: '0' });
@@ -572,6 +573,10 @@ await step('战前说明 → 部隊配置：自己摆位，開始后按所摆位
   for (let i = 0; i < 2; i++) await page.click(speedBtn);
   assert.deepEqual(await speedState(), { label: '移动速度 标准', v: 1, saved: '1' });
   await shot('03-battle-start');
+});
+
+await step('自动行动镜头：友军与敌军逐格跟随、瞬时终点、交战双方、施策与关闭跟随', async () => {
+  await verifyCamera(page);
 });
 
 await step('手机触屏：横屏布局、单指拖镜头、小地图定位、取消和系统菜单、竖屏旋转提示', async () => {

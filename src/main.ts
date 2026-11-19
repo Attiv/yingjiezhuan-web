@@ -76,6 +76,7 @@ const START_PARTY = ['liu_bei', 'guan_yu', 'zhang_fei'];
 const params = new URLSearchParams(location.search);
 
 const $ = (id: string) => document.getElementById(id)!;
+$('stage').addEventListener('dragstart', (e) => e.preventDefault());
 const esc = (s: unknown) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 /** 头像路径；杂兵没有武将头像（face 是 clsN），用一张通用像。 */
 const faceStyle = (face?: string) => `background-image:url(/assets/${!face || face.startsWith('cls') ? 'portraits/_unknown' : face}.png)`;
@@ -1466,6 +1467,21 @@ function writeSlot(i: number): boolean {
     return false;
   }
 }
+let saveNoticeTimer = 0;
+function showSaveNotice(text: string) {
+  clearTimeout(saveNoticeTimer);
+  const el = $('save-notice');
+  el.textContent = text;
+  el.hidden = false;
+  saveNoticeTimer = window.setTimeout(() => { el.hidden = true; }, 1800);
+}
+
+function quickSave() {
+  if (answer || saveListEl()?.hidden === false) return;
+  if (!currentSaveData()) return showSaveNotice('当前状态暂不可存档。');
+  showSaveNotice(writeSlot(0) ? '已快速存入檔一。' : '存档失败，请检查浏览器本地存储。');
+}
+
 function deleteSlot(i: number) {
   if (!Number.isInteger(i) || i < 0 || i >= SAVE_SLOTS) return;
   try {
@@ -2149,6 +2165,12 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && saveListEl()?.hidden === false) return closeSaveList();
   if (e.key === 'Escape' && trainerOpen) return closeTrainer();
   if (gateOpen || trainerOpen || guideOpen) return; // 浮层打开时不把按键传给战场
+  if (e.key.toLowerCase() === 's' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const target = e.target;
+    if (e.repeat || e.isComposing || target instanceof HTMLElement && (target.isContentEditable || target.closest('input, textarea, select'))) return;
+    e.preventDefault();
+    return quickSave();
+  }
   if (e.key === 'Escape') cancel();
   else if ((e.key === 'Enter' || e.key === ' ') && answer && !$('talk').querySelector('.ask')) answer(0); // 键盘翻对话
   else if (e.key === 'Enter' && !answer && mode === 'idle' && !(document.activeElement instanceof HTMLButtonElement)) void endTurn();
