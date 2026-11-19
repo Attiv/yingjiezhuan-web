@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { ITEM_SPEC } from '../src/data/items';
 import { level, officers } from '../src/data/game';
-import { newBattle } from '../src/rules/turn';
+import { harvest, newBattle } from '../src/rules/turn';
 import type { Roster } from '../src/rules/types';
 import {
   BEST_OF, BEST_TREASURE, EQUIP_SLOTS, TRAINER_PASSWORD, bestInBag, clampExp, clampGold, clampLevel,
-  equipBest, equipScore, giveItem, slotOf, syncUnit,
+  equipBest, equipScore, giveItem, maxStats, slotOf, syncUnit,
 } from '../src/trainer';
 
 /**
@@ -107,6 +107,20 @@ describe('修改器', () => {
     giveItem(bag, 30, 0); // 至少 1 个
     giveItem(bag, 30, 500); // 最多 99 个
     expect(bag.filter((id) => id === 30)).toHaveLength(1 + 3 + 99);
+  });
+
+  it('全队三项能力一键设为 100，并延续到下一战', () => {
+    const r = roster();
+    maxStats(r.liu_bei);
+    expect([r.liu_bei.lead, r.liu_bei.str, r.liu_bei.int]).toEqual([100, 100, 100]);
+    const lv = level('c1_s0_b11')!;
+    const { b } = newBattle(lv, 1, r, { deploy: ['liu_bei'] });
+    const unit = b.units.find((x) => x.key === 'liu_bei')!;
+    expect([unit.lead, unit.str, unit.int]).toEqual([100, 100, 100]);
+    const saved = harvest(b);
+    expect(saved.liu_bei).toMatchObject({ lead: 100, str: 100, int: 100 });
+    const next = newBattle(lv, 2, saved, { deploy: ['liu_bei'] }).b.units.find((x) => x.key === 'liu_bei')!;
+    expect([next.lead, next.str, next.int]).toEqual([100, 100, 100]);
   });
 
   it('战场同步：等级 / 兵种 / 道具照搬，兵力与策略值补满', () => {

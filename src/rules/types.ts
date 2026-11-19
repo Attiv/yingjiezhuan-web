@@ -34,7 +34,7 @@ export interface Unit {
 }
 
 /** 跨战斗保留的成长：按武将 id 记等级、经验和道具（转职还记兵种）。 */
-export type Roster = Record<string, { level: number; exp: number; items: number[]; cls?: number }>;
+export type Roster = Record<string, { level: number; exp: number; items: number[]; cls?: number; lead?: number; str?: number; int?: number }>;
 
 export type Stage = 'player' | 'ally' | 'enemy' | 'won' | 'lost';
 

@@ -334,6 +334,27 @@ button { touch-action: manipulation; }
 .trainer .tr-bag { margin: 4px 0 0; color: var(--blue-hi); max-height: 54px; overflow-y: auto; }
 .trainer .note { margin: 8px 0 0; color: var(--dim); }
 
+/* 关卡攻略：保持原版蓝金面板语言，战斗中可随时查看后继续行动。 */
+#guide[hidden] { display: none; }
+#guide { position: absolute; inset: 0; z-index: 72; display: grid; place-items: center; padding: 12px;
+  background: rgba(3, 5, 12, 0.78); }
+#guide .guide-card { width: min(560px, 100%); max-height: 440px; overflow: auto; padding: 14px 18px; }
+.guide-head { display: flex; align-items: center; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--blue); }
+.guide-head h1 { flex: 1; min-width: 0; font-size: 22px; line-height: 28px; }
+.guide-close { flex: none; width: 32px; padding: 2px; text-align: center; }
+.guide-objective { display: grid; grid-template-columns: 84px 1fr; gap: 8px; margin: 12px 0 4px !important; }
+.guide-objective b, .guide-card h2 { color: var(--gold); font-weight: normal; }
+.guide-objective span { color: var(--white); }
+.guide-limit { margin: 4px 0 8px !important; color: var(--blue-hi); }
+.guide-enemy { margin: 0 0 12px !important; color: var(--dim); }
+.guide-card h2 { margin: 10px 0 5px; font-size: 16px; line-height: 20px; }
+.guide-duels { display: grid; gap: 5px; list-style: none; margin: 0; padding: 0; }
+.guide-duels li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 6px 8px;
+  border-left: 2px solid var(--gold); background: rgba(0, 0, 0, 0.24); }
+.guide-duels li b { color: var(--white); font-weight: normal; }
+.guide-duels li span { color: var(--dim); text-align: right; }
+.guide-empty, .guide-note { margin: 6px 0 0 !important; color: var(--dim); }
+
 /* 触屏保持游戏像素坐标，把系统指令移到视口浮层；舞台按钮按实际缩放补足触控尺寸。 */
 body.touch #touch-controls { position: fixed; display: flex; gap: 8px; z-index: 90;
   left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); bottom: max(4px, env(safe-area-inset-bottom));

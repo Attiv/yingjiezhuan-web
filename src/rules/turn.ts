@@ -209,7 +209,7 @@ export function newBattle(level: Level, seed: number, roster: Roster = {}, opts:
     const cls = kept?.cls ?? i.cls;
     const u: Unit = {
       slot: i.slot, key: i.key ?? i.name, name: i.name, face: i.face, cls, level: lv, exp: kept?.exp ?? 0,
-      lead: i.lead, str: i.str, int: i.int, hp: maxHp(cls, lv), mp: 0, morale: 100,
+      lead: kept?.lead ?? i.lead, str: kept?.str ?? i.str, int: kept?.int ?? i.int, hp: maxHp(cls, lv), mp: 0, morale: 100,
       x: i.x, y: i.y, on: !i.off, confused: false, confusedTurns: 0, moved: false, acted: false,
       mode: i.mode, target: i.target ?? null, goal: i.goal ?? null, items: [...(kept?.items ?? i.items ?? [])],
       commander: !!i.commander, group: i.group,
@@ -786,4 +786,6 @@ export const script = {
 
 /** 战后把玩家部队的成长记下来，带进下一战（撤退的也算）。 */
 export const harvest = (b: Battle): Roster =>
-  Object.fromEntries(b.units.filter((u) => u.mode === 7 && friendly(u.slot)).map((u) => [u.key ?? u.name, { level: u.level, exp: u.exp, items: [...u.items], cls: u.cls }]));
+  Object.fromEntries(b.units.filter((u) => u.mode === 7 && friendly(u.slot)).map((u) => [u.key ?? u.name, {
+    level: u.level, exp: u.exp, items: [...u.items], cls: u.cls, lead: u.lead, str: u.str, int: u.int,
+  }]));

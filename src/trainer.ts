@@ -44,6 +44,13 @@ export const clampLevel = (n: number) => Math.max(1, Math.min(99, Math.round(Num
 export const clampExp = (n: number) => Math.max(0, Math.min(99, Math.round(Number.isFinite(n) ? n : 0)));
 export const clampGold = (n: number) => Math.max(0, Math.min(9_999_999, Math.floor(Number.isFinite(n) ? n : 0)));
 
+/** 修改一名我军武将的三项基础能力。 */
+export function maxStats(r: Roster[string]): void {
+  r.lead = 100;
+  r.str = 100;
+  r.int = 100;
+}
+
 /** 包袱里该部位最好的一件；没有返回 -1。 */
 export function bestInBag(bag: number[], slot: EquipSlot): number {
   let at = -1;
@@ -122,6 +129,9 @@ export function syncUnit(u: Unit, r: Roster[string]): void {
   u.level = r.level;
   u.exp = r.exp;
   if (r.cls !== undefined) u.cls = r.cls;
+  u.lead = r.lead ?? u.lead;
+  u.str = r.str ?? u.str;
+  u.int = r.int ?? u.int;
   u.items = [...r.items];
   u.hp = maxHp(u.cls, u.level);
   u.mp = maxMp(u);

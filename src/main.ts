@@ -3,14 +3,14 @@ import './style.css';
 import { playSfx, preloadSfx, sfxDiagnostics, sfxEnabled, sfxLog, toggleSfx, unlockSfx } from './audio';
 import { sfxOf } from './sfx-map';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';
-import { SCRIPT, TITLE, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
+import { SCRIPT, TITLE, battleGuide, defaultDeploy, faceOf, hasLevel, itemId, level, nameOf, officers, scene as gameScene } from './data/game';
 import { ITEM_SPEC, PROMOTE, classUse, isEquipment, itemEffect, priceOf, specOf } from './data/items';
 import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { tally } from './result';
 import { StageScript, isSceneMap, mapPoint, fieldPoint, moveDirection, mapSrc, stageOf, registerStoryStage, actorFrame, type StageOp, type Crowd, type StageSnapshot } from './stage';
-import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, syncUnit } from './trainer';
+import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, maxStats, syncUnit } from './trainer';
 import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, rangeCells, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doDrop, doGive, doItem, doItemAll, doMove, doWait, endPhase, giveTargets, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
@@ -94,7 +94,10 @@ let autoTalk = false; // 仅开发模式的 ?fast：对话不等点击
 let aside = false; // 正在点人问话：此时的点击只翻那一句
 
 /** 武将的初始成长：等级取原版数据，其余空白。 */
-const blank = (id: string) => ({ level: officers[id]?.level ?? 1, exp: 0, items: [] as number[] });
+const blank = (id: string) => ({
+  level: officers[id]?.level ?? 1, exp: 0, items: [] as number[],
+  lead: officers[id]?.lead ?? 0, str: officers[id]?.str ?? 0, int: officers[id]?.int ?? 0,
+});
 
 /** 剧情要改队伍时的落地：加入、离队、升级、得道具、转职。 */
 const API: StoryApi = {
@@ -1560,6 +1563,7 @@ const TRAINER_TAP_MS = 1400;
 let taps: number[] = [];
 let gateOpen = false;
 let trainerOpen = false;
+let guideOpen = false;
 /** 营地的重画回调：修改器改完数值后让营地跟着刷新（不在营地时为空）。 */
 let uiRefresh: (() => void) | null = null;
 
@@ -1665,6 +1669,16 @@ function syncBattleUnit(id: string) {
   for (const u of b.units) if (u.key === id && friendly(u.slot)) syncUnit(u, r);
 }
 
+function syncBattleStats(id: string) {
+  const r = story.roster[id];
+  if (!r || !b?.units) return;
+  for (const u of b.units) if (u.key === id && friendly(u.slot)) {
+    u.lead = r.lead ?? u.lead;
+    u.str = r.str ?? u.str;
+    u.int = r.int ?? u.int;
+  }
+}
+
 /** 数值改完：营地重画、战场信息栏重画、棋子按新兵种重绘。 */
 function syncAfterTrainer() {
   uiRefresh?.();
@@ -1708,6 +1722,7 @@ function renderTrainer() {
     '<button class="btn" data-gold="0">歸零</button></div>' +
     `<h2>武將（${party.length}）</h2><div class="tr-officers">${rows}</div>` +
     '<div class="tr-acts"><button class="btn" data-tr="equip-all" title="每人兵器 / 防具 / 馬取最強，並各補一件玉璽">全隊一鍵裝備</button>' +
+    '<button class="btn" data-tr="stats-all" title="武力、智力、統率全部設為 100">全隊三項能力 100</button>' +
     '<button class="btn" data-tr="level-all">全隊 +10 級</button>' +
     (fighting ? '<button class="btn" data-tr="heal">我軍補滿</button>' : '') + '</div>' +
     `<h2>道具</h2><div class="tr-give"><select id="tr-item">${options}</select>` +
@@ -1762,7 +1777,13 @@ function renderTrainer() {
     }
     if (!tr) return;
     if (tr === 'close') return closeTrainer();
-    if (tr === 'equip-all') {
+    if (tr === 'stats-all') {
+      for (const id of story.party) {
+        const r = (story.roster[id] ??= blank(id));
+        maxStats(r);
+        syncBattleStats(id);
+      }
+    } else if (tr === 'equip-all') {
       for (const id of story.party) {
         const r = (story.roster[id] ??= blank(id));
         r.items = equipBest(r.items, story.bag);
@@ -1817,6 +1838,10 @@ $('screen').addEventListener('click', (e) => {
     void playStory(nextStep(CAMPAIGN, story, 0, API));
   }
   if (go === 'new') ($('screen').hidden = true), begin(null);
+  if (go === 'guide') {
+    const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
+    if (step) openGuide(step.level);
+  }
   if (go === 'deploy') {
     const step = currentStep(CAMPAIGN, story) as Extract<Shown, { t: 'battle' }> | null;
     if (step) showDeploy(step.level);
@@ -1839,6 +1864,55 @@ function showTitle(note = '') {
     `<button class="btn" data-go="script" data-script-label>${scriptLabel()}</button></div>` +
     (note ? `<p class="sub" style="margin:10px 0 0">${esc(note)}</p>` : ''));
 }
+function closeGuide() {
+  guideOpen = false;
+  const el = $('guide');
+  el.hidden = true;
+  el.innerHTML = '';
+  el.onclick = null;
+  fit();
+}
+
+function openGuide(levelId?: string) {
+  const step = currentStep(CAMPAIGN, story);
+  const id = levelId ?? (b?.units?.length && isFighting(b.stage) && $('screen').hidden
+    ? b.level
+    : step?.t === 'battle' ? step.level : b?.level);
+  const levelData = id ? lvOf(id) : undefined;
+  const guide = (id ? battleGuide(id) : undefined) ?? (levelData ? {
+    name: levelData.name, goal: levelData.goal, turnLimit: levelData.turnLimit, duels: [],
+  } : undefined);
+  if (!guide || !levelData) return;
+  const currentBattle = b?.level === id && $('screen').hidden ? b : undefined;
+  const enemies = currentBattle
+    ? currentBattle.units.filter((unit) => unit.slot >= 15 && unit.on)
+    : levelData.units.filter((unit) => unit.slot >= 15 && !unit.off);
+  const commander = enemies.find((unit) => unit.commander);
+  const objective = currentBattle?.objective || guide.goal || '击破敌军主将';
+  const el = $('guide');
+  const duels = guide.duels.length
+    ? `<ul class="guide-duels">${guide.duels.map((duel) =>
+      `<li><b>${esc(duel.a)}　VS　${esc(duel.b)}</b><span>${esc(duel.trigger)}</span></li>`).join('')}</ul>`
+    : '<p class="guide-empty">关卡资料未收录单挑事件；按当前胜利目标推进即可。</p>';
+  el.innerHTML = '<section class="card guide-card" role="dialog" aria-modal="true" aria-labelledby="guide-title">' +
+    `<div class="guide-head"><h1 id="guide-title">${esc(guide.name)}・攻略</h1>` +
+    '<button class="btn guide-close" data-guide="close" aria-label="关闭攻略">✕</button></div>' +
+    `<p class="guide-objective"><b>胜利目标</b><span>${esc(objective)}</span></p>` +
+    `<p class="guide-limit">${currentBattle ? `当前第 ${currentBattle.round} 回合　` : ''}回合上限：${guide.turnLimit}</p>` +
+    `<p class="guide-enemy">敌军 ${enemies.length} 队${commander ? `；主将：${esc(commander.name)}` : ''}</p>` +
+    '<h2>本关单挑</h2>' + duels +
+    (guide.duels.length ? '<p class="guide-note">单挑按列表条件触发；让指定武将与对手相邻，或满足所列剧情条件。</p>' : '') +
+    '</section>';
+  el.hidden = false;
+  guideOpen = true;
+  fit();
+  el.onclick = (event) => {
+    const target = event.target as HTMLElement;
+    if (target === el || target.closest('[data-guide="close"]')) closeGuide();
+  };
+  (el.querySelector('[data-guide="close"]') as HTMLButtonElement | null)?.focus();
+}
+
 /** 战前说明：列出这一关的胜利条件、失败条件与出征名单。 */
 function showBrief(levelId: string) {
   mode = 'over';
@@ -1855,7 +1929,7 @@ function showBrief(levelId: string) {
     `<ul><li>勝利：${esc(lv.goal || '擊破敵軍主將')}</li><li>失敗：${esc(lose)}</li><li>出征：${esc(who)}</li>` +
     `<li>敵情：${esc(intel)}</li></ul>` +
     '<p class="sub" style="margin:0">左键选择部队、移动、下令；右键或 Esc 取消；方向键卷动地图；回车结束回合。</p>' +
-    '<div class="row"><button class="btn" data-go="deploy">部隊配置</button></div>');
+    '<div class="row"><button class="btn" data-go="guide">本关攻略</button><button class="btn" data-go="deploy">部隊配置</button></div>');
 }
 
 /** 布阵：把出征的各部队亲手摆进出兵位（原版的「部隊配置」），摆完才开战。
@@ -2044,6 +2118,7 @@ const sysButtons: [string, string, () => void][] = [
   [cameraFollow ? '镜头跟随 开' : '镜头跟随 关', 'camera-toggle', toggleCameraFollow],
   [`移动速度 ${ANIM_SPEEDS[animSpeedIndex].label}`, 'speed-toggle', cycleAnimSpeed],
   [scriptLabel(), 'script-toggle', toggleScriptMode],
+  ['本关攻略', 'guide-toggle', () => openGuide()],
   ['胜利条件', '', () => void talk('', `胜利：${b.objective}。失败：主将撤退，或 ${levelOf(b).turnLimit} 回合内未能取胜。`)],
   ['全军撤退', '', async () => {
     if (mode !== 'idle') return;
@@ -2070,9 +2145,10 @@ $('sys').replaceChildren(...sysButtons.map(([label, cls, on]) => {
 initScript();
 
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && guideOpen) return closeGuide();
   if (e.key === 'Escape' && saveListEl()?.hidden === false) return closeSaveList();
   if (e.key === 'Escape' && trainerOpen) return closeTrainer();
-  if (gateOpen || trainerOpen) return; // 密码框与修改器自己处理按键
+  if (gateOpen || trainerOpen || guideOpen) return; // 浮层打开时不把按键传给战场
   if (e.key === 'Escape') cancel();
   else if ((e.key === 'Enter' || e.key === ' ') && answer && !$('talk').querySelector('.ask')) answer(0); // 键盘翻对话
   else if (e.key === 'Enter' && !answer && mode === 'idle' && !(document.activeElement instanceof HTMLButtonElement)) void endTurn();
@@ -2107,6 +2183,7 @@ $('touch-cancel').onclick = () => {
   if (document.body.classList.contains('system-open')) return closeTouchSystem();
   if (saveListEl()?.hidden === false) return closeSaveList();
   if (trainerOpen) return closeTrainer();
+  if (guideOpen) return closeGuide();
   cancel();
 };
 $('sys').addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('button:not(:disabled)')) closeTouchSystem(); });
@@ -2123,7 +2200,7 @@ function fit() {
   else if (!touch && sys.parentElement !== $('side')) { $('side').append(sys); closeTouchSystem(); }
   const availableW = Math.max(1, width - left - right);
   const availableH = Math.max(1, height - top - bottom - (touch ? 56 : 0) - (touch && height > width ? 32 : 0));
-  const compact = touch && width > height && $('screen').hidden && $('duelplay').hidden && saveListEl()?.hidden !== false && !trainerOpen && !gateOpen;
+  const compact = touch && width > height && $('screen').hidden && $('duelplay').hidden && saveListEl()?.hidden !== false && !trainerOpen && !guideOpen && !gateOpen;
   document.body.classList.toggle('compact-battle', compact);
   const stageH = compact ? 384 : 480;
   const s = Math.min(availableW / 640, availableH / stageH);

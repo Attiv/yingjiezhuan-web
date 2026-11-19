@@ -8,11 +8,16 @@ interface BUnitData {
   lead: number; str: number; int: number; x: number; y: number; mode: number;
   goal: [number, number] | null; target: string | null; commander: boolean; items: number[];
 }
+interface BattleEventData {
+  trigger: { type: string; turn?: number; side?: string; a?: string; b?: string; who?: string | null; pos?: [number, number]; radius?: number; target?: string };
+  actions: BattleActionData[];
+}
+interface BattleActionData { op: string; scene?: string; actions?: BattleActionData[] }
 interface BattleData {
   id: string; name: string; goal: string; turnLimit: number; map: string; reward: number;
   deploy: { max: number; required: string[]; forbidden: string[]; slots: [number, number][] };
   units: BUnitData[]; groups: Record<string, BUnitData[]>;
-  victory: unknown[]; defeat: unknown[]; events: unknown[]; treasures: { x: number; y: number; item: number | null; gold: number }[];
+  victory: unknown[]; defeat: unknown[]; events: BattleEventData[]; treasures: { x: number; y: number; item: number | null; gold: number }[];
   bgm?: string; bgmEnemy?: string;
 }
 interface GameData {
@@ -115,6 +120,60 @@ export const faceOf = (who: string): string | undefined => G.faces[who];
 export const speakerFaces = G.faces;
 /** 说话人显示名：剧本里写的是 id，显示时换成中文名。 */
 export const nameOf = (who: string): string => G.speakers[who] ?? who;
+
+export interface DuelGuide {
+  a: string;
+  b: string;
+  trigger: string;
+}
+export interface BattleGuide {
+  name: string;
+  goal: string;
+  turnLimit: number;
+  duels: DuelGuide[];
+}
+
+const displayTrigger = (trigger: BattleEventData['trigger']): string => {
+  switch (trigger.type) {
+    case 'turn_start':
+      return `第 ${trigger.turn ?? '?'} 回合${trigger.side === 'player' ? '我军' : trigger.side === 'ally' ? '友军' : '敌军'}行动开始时`;
+    case 'adjacent':
+      return `${nameOf(trigger.a ?? '我军武将')}与${nameOf(trigger.b ?? '敌将')}相邻时`;
+    case 'reach': {
+      const [x, y] = trigger.pos ?? [0, 0];
+      return `${trigger.who ? nameOf(trigger.who) : '我方部队'}到达坐标（${x}，${y}）时`;
+    }
+    case 'unit_defeated':
+      return `击破${nameOf(trigger.target ?? '指定敌将')}时`;
+    default:
+      return '剧情推进时';
+  }
+};
+
+/** 从关卡事件引用的剧情场景中提取实际单挑步骤，不手工维护重复名单。 */
+export function battleGuide(id: string): BattleGuide | undefined {
+  const battle = G.battles[id];
+  if (!battle) return undefined;
+  const duels: DuelGuide[] = [];
+  const seen = new Set<string>();
+  const scenesIn = (actions: BattleActionData[]): string[] => actions.flatMap((action) => [
+    ...(action.op === 'drama' && action.scene ? [action.scene] : []),
+    ...(action.actions ? scenesIn(action.actions) : []),
+  ]);
+  for (const event of battle.events) {
+    for (const sceneId of scenesIn(event.actions)) {
+      for (const step of G.scenes[sceneId] ?? []) {
+        if (step.t !== 'duel') continue;
+        const trigger = displayTrigger(event.trigger);
+        const key = `${step.a}:${step.b}:${trigger}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        duels.push({ a: nameOf(step.a), b: nameOf(step.b), trigger });
+      }
+    }
+  }
+  return { name: battle.name, goal: battle.goal, turnLimit: battle.turnLimit, duels };
+}
 
 /** 默认出征名单：必带的先排，再按队伍顺序补满。 */
 export function defaultDeploy(id: string, party: string[]): string[] {
