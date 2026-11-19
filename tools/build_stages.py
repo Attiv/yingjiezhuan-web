@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -47,12 +48,27 @@ def map_key(n: int | None) -> str | None:
 
 
 def officer_of() -> dict[int, str]:
-    """BAKDATA 人物号 → 武将 id（原版 pack 里的对照表，只有 114 名有记录的武将）。"""
+    """BAKDATA 人物号 → 武将 id。
+
+    pack 的 original-pack.json 只列了 114 名有改动记录的武将；其余按 BAKDATA 的汉字名与
+    officers.toml 对齐，否则刘备、张飞这类没被 pack 列出的说话人会退化成显示名，
+    头像查不到而落到通用像。使者这类群众角色没有武将 id，仍保留显示名。
+    """
+    out: dict[int, str] = {}
     p = PACK / "original-pack.json"
-    if not p.exists():
-        return {}
-    d = json.loads(p.read_text(encoding="utf-8"))
-    return {o["bakdata"]: o["officer"] for o in d.get("officers", []) if "bakdata" in o}
+    if p.exists():
+        d = json.loads(p.read_text(encoding="utf-8"))
+        out = {o["bakdata"]: o["officer"] for o in d.get("officers", []) if "bakdata" in o}
+    spec = PACK / "officers.toml"
+    people = EX / "text" / "officers.json"
+    if spec.exists() and people.exists():
+        table = tomllib.loads(spec.read_text(encoding="utf-8"))["officer"]
+        by_name = {(o.get("hanja") or o.get("name")): o["id"] for o in table}
+        for person in json.loads(people.read_text(encoding="utf-8")):
+            oid = by_name.get(person.get("name"))
+            if oid and person["index"] not in out:
+                out[person["index"]] = oid
+    return out
 
 
 def norm(s: str) -> str:
@@ -603,6 +619,113 @@ def add_xiaopei_return(stages: dict, dyn: list[dict], officers: dict[int, str]) 
     info.pop("talks", None)
 
 
+def add_lubu_arrival(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """吕布来投：三组点击（糜竺请进 → 吕布说明 → 吕布再请求）后重摆议事厅。
+
+    原版三个 group 各自以 talk record 收尾；这里把每组闲谈放进房间，
+    只有指定人物的点击才会推进到下一组，和 story1/story6 的停顿点一致。
+    """
+    sid = "c1_s2_story8"
+    scene = dyn[1]["scenes"][2]
+    block = next(b for b in scene["blocks"] if b["index"] == 8)
+    records = {r["index"]: r for r in block["records"]}
+
+    def steps(r: int) -> list[dict]:
+        return original_timeline(scene, [records[r]], officers)
+
+    opening = steps(0)
+    # song 5 在两句旁白之后、地名条之前；映射表没有 5，按 pack 的 @bgm peace 补在这里。
+    map_at = next(i for i, step in enumerate(opening) if step["t"] == "action" and step["op"]["op"] == "map")
+    opening.insert(map_at, {"t": "bgm", "key": "peace"})
+    first, second, third = f"{sid}:b8g1", f"{sid}:b8g2", f"{sid}:b8g3"
+
+    def talks(ids: tuple[int, ...]) -> dict[str, list[dict]]:
+        return {str(records[r]["trigger"]["args"][0] | records[r]["trigger"]["args"][1] << 8): steps(r)
+                for r in ids}
+
+    names = {}
+    for r in (0, 4, 11, 18, 19):
+        for code in records[r]["code"]:
+            person = (code.get("resolved") or {}).get("person")
+            if person:
+                names[{a["name"]: a["value"] for a in code.get("args", [])}["person"]] = person.strip()
+
+    info = stages[sid]
+    info.update(map="palace/004", timeline=[
+        *opening,
+        {"t": "room", "id": first},
+        *steps(4),
+        {"t": "room", "id": second},
+        *steps(11),
+        {"t": "room", "id": third},
+        *steps(18),
+        # R19 重摆议事厅，接上下一幕钦差来使。
+        {"t": "bgm", "key": "peace"},
+        *steps(19),
+    ], rooms={
+        first: {"talks": talks((1, 2, 3)), "next": {"who": 64, "label": "請呂布進來"},
+                "source": {"block": 8, "group": 1}},
+        second: {"talks": talks((5, 6, 7, 8, 9, 10)), "next": {"who": 4, "label": "聽呂布說明"},
+                 "source": {"block": 8, "group": 2}},
+        third: {"talks": talks((12, 13, 14, 15, 16, 17)), "next": {"who": 4, "label": "答覆呂布"},
+                "source": {"block": 8, "group": 3}},
+    }, source={"chapter": 1, "scene": 2, "block": 8, "records": [0, 4, 11, 18, 19]}, names=names)
+    info.pop("talks", None)
+
+
+def add_envoy_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """徐州议事厅钦差到访：糜芳报信 → 孙乾引入 → 使者宣旨 → 糜竺议论 → 出征对白。
+
+    R24 的 if_answer/battle_setup 属于出征准备，营地与战斗由后续节点承担；
+    这里只保留「準備好了嗎／請點兵派將／出兵」三句，不重复建战斗。
+    """
+    sid = "c1_s2_story9"
+    scene = dyn[1]["scenes"][2]
+    block = next(b for b in scene["blocks"] if b["index"] == 9)
+    records = {r["index"]: r for r in block["records"]}
+
+    assert records[24]["code"][1]["mnemonic"] == "if_answer"
+    assert records[24]["code"][6]["mnemonic"] == "battle_setup"
+
+    def steps(r: int, end: int | None = None) -> list[dict]:
+        return original_timeline(scene, [{**records[r], "code": records[r]["code"][:end]}], officers)
+
+    first, second, third, fourth = (f"{sid}:b9g{i}" for i in range(4))
+    talks = lambda ids: {str(records[r]["trigger"]["args"][0] | records[r]["trigger"]["args"][1] << 8): steps(r)
+                         for r in ids}
+    names = dict(stages["c1_s2_story8"].get("names", {}))
+    for r in (3, 8, 14):
+        for code in records[r]["code"]:
+            person = (code.get("resolved") or {}).get("person")
+            if person:
+                names[{a["name"]: a["value"] for a in code.get("args", [])}["person"]] = person.strip()
+
+    info = stages[sid]
+    # 不写 map：这一幕就在 story8 重摆好的徐州议事厅里接着演，
+    # 舞台要沿用上一幕的地图与在场人物（story8 R19 已把五人摆好）。
+    info.update(timeline=[
+        {"t": "room", "id": first},
+        *steps(3),
+        {"t": "room", "id": second},
+        *steps(8),
+        {"t": "room", "id": third},
+        *steps(14),
+        {"t": "room", "id": fourth},
+        *steps(19),
+        *steps(24, 9),
+    ], rooms={
+        first: {"talks": talks((0, 1, 2)), "next": {"who": 81, "label": "讓孫乾進來"},
+                "source": {"block": 9, "group": 0}},
+        second: {"talks": talks((4, 5, 6, 7)), "next": {"who": 63, "label": "聽孫乾說明"},
+                 "source": {"block": 9, "group": 1}},
+        third: {"talks": talks((9, 10, 11, 12, 13)), "next": {"who": 364, "label": "聽欽差宣旨"},
+                "source": {"block": 9, "group": 2}},
+        fourth: {"talks": talks((15, 16, 17, 18)), "next": {"who": 64, "label": "與糜竺商議"},
+                 "source": {"block": 9, "group": 3}},
+    }, source={"chapter": 1, "scene": 2, "block": 9, "records": [3, 8, 14, 19, 24]}, names=names)
+    info.pop("talks", None)
+
+
 def add_xuzhou_return(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
     """返回徐州的两组交谈、求和赠剑、孙乾入队，以及小沛点赵云告别。"""
     scene = dyn[1]["scenes"][1]
@@ -765,6 +888,8 @@ def main() -> None:
     add_xuzhou_rooms(stages, dyn, officers)
     add_xuzhou_second_scene(stages, dyn, officers)
     add_xiaopei_return(stages, dyn, officers)
+    add_lubu_arrival(stages, dyn, officers)
+    add_envoy_rooms(stages, dyn, officers)
     add_xuzhou_return(stages, dyn, officers)
     towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
     campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]

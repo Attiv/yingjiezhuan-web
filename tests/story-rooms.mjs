@@ -812,3 +812,123 @@ export async function verifyXiaopeiReturnRooms(page) {
   assert.match(s.face, /faces\/189/);
   return '小沛战后真实胜利路线、剿匪奖励、三人闲谈与头像、快使进退场、两房间存读档、赴徐州按钮及陶谦衔接';
 }
+
+// 吕布来投与钦差到访：三组／四组真实点击链，议事厅重摆后的舞台继承与中途读档。
+export async function verifyLubuEnvoyRooms(page) {
+  const first = 'c1_s2_story8:b8g1';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, nextStep } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei', 'sun_qian', 'jian_yong'], gold: 1400 });
+    // 三处剿匪都已完成：返城只走交谈，不再发条件奖励。
+    Object.assign(st.flags, { orig_f8: 1, orig_f9: 1, orig_f10: 1 });
+    st.pc = SCRIPT.steps.findIndex(s => s.t === 'battle' && s.level === 'c1_s2_b5');
+    if (st.pc < 0) throw new Error('缺少夏丘战斗入口');
+    const api = {
+      join(s, id) { if (!s.party.includes(id)) s.party.push(id); },
+      away(s, id) { s.party = s.party.filter(x => x !== id); },
+      level(s, id, n) {
+        const r = (s.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] });
+        r.level += n;
+      },
+    };
+    for (let n = 0, step = nextStep(SCRIPT, st, 0, api); step && n < 600; n++, step = nextStep(SCRIPT, st, 0, api)) {
+      if (step.t !== 'room' || step.id !== first) continue;
+      for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      list.slots[5] = { story: st, at: Date.now() };
+      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      localStorage.setItem('yjz.script', 'hant');
+      localStorage.setItem('yjz.anim-speed', '0');
+      return st;
+    }
+    throw new Error('夏丘胜利路线未到达吕布来投第一组交谈');
+  }, first);
+  assert.ok(fixture.party.includes('mi_zhu') && fixture.party.includes('mi_fang'), '陶谦托付后糜竺、糜芳入队');
+  const layout = () => page.evaluate(() => ({
+    map: document.querySelector('#screen .scene .backdrop')?.getAttribute('src'),
+    place: document.querySelector('.place')?.textContent ?? '',
+    actors: [...document.querySelectorAll('.actor')].map(e => `${e.dataset.who}:${e.style.left},${e.style.top}`).sort(),
+  }));
+
+  await loadSlot(page, 5);
+  let s = await state(page);
+  assert.equal(s.story.resume.id, first);
+  assert.deepEqual(s.people, [0, 1, 2, 64, 81]);
+  const opening = await layout();
+  assert.match(opening.map, /story\/pmap-004\.png/);
+  assert.equal(opening.place, '徐州議事廳');
+
+  // 闲谈不推进：点张飞说一句，回房间后流程与站位都不变。
+  await page.click('.actor[data-who="2"]');
+  await page.waitForSelector('#talk:not([hidden])');
+  assert.equal((await state(page)).line, '為了陶謙一定要守住徐州，是吧，大哥．');
+  await page.click('#talk');
+  await until(page, first);
+  assert.deepEqual((await state(page)).story, fixture, '闲谈不得改变流程');
+  assert.deepEqual(await layout(), opening);
+
+  // 点糜竺：吕布、陈宫、张辽从门口进场。
+  await page.click('.actor[data-who="64"]');
+  await until(page, 'c1_s2_story8:b8g2');
+  assert.deepEqual((await state(page)).people, [0, 1, 2, 4, 64, 75, 79, 81]);
+  // 点吕布：只有他原先的请求，不提前接受。
+  await page.click('.actor[data-who="4"]');
+  await page.waitForSelector('#talk:not([hidden])');
+  assert.equal((await state(page)).line, '自從我們敗給曹操以來，長時間到處流浪，當時聽說你在徐州，就來了，請收留我們吧，求求你．');
+  await until(page, 'c1_s2_story8:b8g3');
+
+  // 中途存档：读回后仍是重摆前的议事厅与同一组人。
+  await saveSlot(page, 5);
+  const saved = await layout();
+  await loadSlot(page, 5);
+  assert.deepEqual(await layout(), saved, '读档保留吕布在場的站位与地名');
+  assert.equal((await state(page)).walking, 0);
+
+  // 再点吕布：接受请求；刘备的台词必须用自己的头像，不能再落到通用像。
+  await page.click('.actor[data-who="4"]');
+  await page.waitForFunction(() => document.querySelector('#talk p')?.textContent === '劉備，請給我們一個好的答覆．');
+  assert.match((await state(page)).face, /faces\/148/);
+  await page.click('#talk');
+  await page.waitForFunction(() => document.querySelector('#talk p')?.textContent === '我知道了，現在允許你在小沛落腳．');
+  assert.match((await state(page)).face, /faces\/000/);
+  // 张飞发作、吕布陈宫退场、张辽告别，然后 R19 重摆议事厅进入下一幕。
+  await until(page, 'c1_s2_story9:b9g0');
+  s = await state(page);
+  assert.equal(s.story.section, 'c1_s2_story9');
+  assert.deepEqual(s.people, [0, 1, 2, 64, 81]);
+  const resettled = await layout();
+  assert.equal(resettled.place, '徐州議事廳');
+  assert.match(resettled.map, /story\/pmap-004\.png/);
+  assert.notDeepEqual(resettled.actors, opening.actors, '重摆后刘备换到议事厅主位');
+
+  // 糜芳报信 → 孙乾进门。
+  await page.click('.actor[data-who="81"]');
+  await until(page, 'c1_s2_story9:b9g1');
+  assert.deepEqual((await state(page)).people, [0, 1, 2, 63, 64, 81]);
+  // 孙乾说明 → 使者进门。
+  await page.click('.actor[data-who="63"]');
+  await until(page, 'c1_s2_story9:b9g2');
+  assert.deepEqual((await state(page)).people, [0, 1, 2, 63, 64, 81, 364]);
+  // 使者宣旨后原路离开。
+  await page.click('.actor[data-who="364"]');
+  await until(page, 'c1_s2_story9:b9g3');
+  assert.deepEqual((await state(page)).people, [0, 1, 2, 63, 64, 81]);
+
+  // 糜竺议论 → 出征对白 → 淮南议事厅。
+  await page.click('.actor[data-who="64"]');
+  const deadline = Date.now() + 45000;
+  while (Date.now() < deadline) {
+    const now = await page.evaluate(() => ({
+      section: window.__yjz.story.section,
+      talk: !document.getElementById('talk').hidden,
+      ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+    }));
+    if (now.section === 'c1_s2_story10') break;
+    if (now.ask) await page.click('#talk .ask button:first-child');
+    else if (now.talk) await page.click('#talk');
+    else await page.waitForTimeout(30);
+  }
+  assert.equal(await page.evaluate(() => window.__yjz.story.section), 'c1_s2_story10', '议论后接淮南议事厅');
+  return '吕布来投三组交谈与张飞发作、钦差四组到访、重摆议事厅、舞台继承与中途读档、刘备头像';
+}

@@ -124,12 +124,12 @@ class StageGenerationTests(unittest.TestCase):
         room_id = "c1_s1_story11:b11g1"
         self.assertEqual(farewell["rooms"][room_id]["next"]["who"], 53)
         pause = farewell["timeline"].index({"t": "room", "id": room_id})
-        self.assertEqual(farewell["timeline"][pause + 1:], [{"t": "say", "who": "趙雲", "text": "劉備，徐州之圍好像已解，我想回公孫瓚那裡．"},
-                                                               {"t": "say", "who": "劉備", "text": "是嗎？趙雲，這次你幫了大忙，我相信我們還能在一起為朝廷出力．"},
+        self.assertEqual(farewell["timeline"][pause + 1:], [{"t": "say", "who": "zhao_yun", "text": "劉備，徐州之圍好像已解，我想回公孫瓚那裡．"},
+                                                               {"t": "say", "who": "liu_bei", "text": "是嗎？趙雲，這次你幫了大忙，我相信我們還能在一起為朝廷出力．"},
                                                                {"t": "say", "who": "guan_yu", "text": "趙雲，希望再見到你．"},
-                                                               {"t": "say", "who": "張飛", "text": "你雖不像我這樣厲害，但也相當了不起，希望還能見到你．"},
-                                                               {"t": "say", "who": "趙雲", "text": "不勝感謝，我也還想和大家在一起建功立業，請多珍重．"},
-                                                               {"t": "say", "who": "張飛", "text": "今晚是趙雲的歡送會，喝！"},
+                                                               {"t": "say", "who": "zhang_fei", "text": "你雖不像我這樣厲害，但也相當了不起，希望還能見到你．"},
+                                                               {"t": "say", "who": "zhao_yun", "text": "不勝感謝，我也還想和大家在一起建功立業，請多珍重．"},
+                                                               {"t": "say", "who": "zhang_fei", "text": "今晚是趙雲的歡送會，喝！"},
                                                                {"t": "away", "id": "zhao_yun"}])
 
     def test_xuzhou_second_scene_keeps_two_rooms_and_confirmed_field_departure(self):
@@ -248,6 +248,119 @@ class StageGenerationTests(unittest.TestCase):
             "timeline": build.original_timeline(scene, [records[6]], officers),
             "adapter": "room_button",
         })
+
+    def test_lubu_arrival_keeps_three_talk_groups_and_rearranges_hall(self):
+        stages = json.loads((ROOT / "src/data/stages.json").read_text())
+        info = stages["c1_s2_story8"]
+        scene = build.load_scenarios()[1]["scenes"][2]
+        block = next(b for b in scene["blocks"] if b["index"] == 8)
+        records = {r["index"]: r for r in block["records"]}
+        officers = build.officer_of()
+
+        self.assertEqual(info["source"], {"chapter": 1, "scene": 2, "block": 8, "records": [0, 4, 11, 18, 19]})
+        self.assertEqual(info["map"], "palace/004")
+        timeline = info["timeline"]
+        pauses = [timeline.index({"t": "room", "id": f"c1_s2_story8:b8g{i}"}) for i in (1, 2, 3)]
+        self.assertEqual(pauses, sorted(pauses))
+
+        opening = timeline[:pauses[0]]
+        self.assertEqual(opening[0], {"t": "picture", "key": "orig_07"})
+        self.assertIn({"t": "bgm", "key": "peace"}, opening)
+        self.assertEqual([s["op"]["who"] for s in opening if s["t"] == "action" and s["op"]["op"] == "place"],
+                         [0, 1, 2, 64, 81])
+        self.assertIn({"t": "action", "op": {"at": 0, "op": "caption", "text": "徐州議事廳"}}, opening)
+
+        # 点糜竺：原文一句 → 吕布在门口出现并走近，陈宫、张辽随后进场。
+        entered = timeline[pauses[0] + 1:pauses[1]]
+        self.assertEqual(entered[0], build.original_timeline(scene, [records[4]], officers)[0])
+        self.assertEqual([(s["op"]["op"], s["op"]["who"]) for s in entered if s["t"] == "action"],
+                         [("place", 4), ("move", 4), ("place", 75), ("place", 79), ("move", 75), ("move", 79)])
+        # 点吕布：只有他的原版请求。
+        self.assertEqual(timeline[pauses[1] + 1:pauses[2]], build.original_timeline(scene, [records[11]], officers))
+
+        # 再点吕布：接受请求、张飞发作、吕布陈宫退场、关羽与张辽的对话。
+        resolved = timeline[pauses[2] + 1:]
+        self.assertEqual(resolved[:len(build.original_timeline(scene, [records[18]], officers))],
+                         build.original_timeline(scene, [records[18]], officers))
+        clear_at = resolved.index({"t": "action", "op": {"at": 0, "op": "clear"}})
+        places = [s for s in resolved if s["t"] == "action" and s["op"]["op"] == "place"]
+        self.assertEqual([s["op"]["who"] for s in places], [0, 1, 2, 64, 81])
+        self.assertEqual(places[0]["op"]["x"], 25)
+        self.assertGreater(resolved.index(places[0]), clear_at)
+
+        groups = {1: {"1", "2", "81"}, 2: {"1", "2", "64", "75", "79", "81"}, 3: {"1", "2", "64", "75", "79", "81"}}
+        nexts = {1: {"who": 64, "label": "請呂布進來"}, 2: {"who": 4, "label": "聽呂布說明"},
+                 3: {"who": 4, "label": "答覆呂布"}}
+        for i in (1, 2, 3):
+            room = info["rooms"][f"c1_s2_story8:b8g{i}"]
+            self.assertEqual(room["source"], {"block": 8, "group": i})
+            self.assertEqual(set(room["talks"]), groups[i])
+            self.assertEqual(room["next"], nexts[i])
+        self.assertEqual(info["rooms"]["c1_s2_story8:b8g1"]["talks"]["81"],
+                         build.original_timeline(scene, [records[3]], officers))
+
+    def test_envoy_rooms_keep_four_groups_and_stop_before_battle_setup(self):
+        stages = json.loads((ROOT / "src/data/stages.json").read_text())
+        info = stages["c1_s2_story9"]
+        scene = build.load_scenarios()[1]["scenes"][2]
+        block = next(b for b in scene["blocks"] if b["index"] == 9)
+        records = {r["index"]: r for r in block["records"]}
+        officers = build.officer_of()
+
+        self.assertEqual(info["source"], {"chapter": 1, "scene": 2, "block": 9, "records": [3, 8, 14, 19, 24]})
+        # 同一间徐州议事厅：不另写 map，舞台沿用上一幕的地图与五人。
+        self.assertIsNone(info["map"])
+        timeline = info["timeline"]
+        pauses = [timeline.index({"t": "room", "id": f"c1_s2_story9:b9g{i}"}) for i in range(4)]
+        self.assertEqual(pauses, sorted(pauses))
+
+        # 糜芳报信 → 孙乾进门。
+        self.assertEqual(timeline[pauses[0] + 1:pauses[1]], build.original_timeline(scene, [records[3]], officers))
+        # 孙乾说明 → 关羽让进 → 使者进门。
+        self.assertEqual(timeline[pauses[1] + 1:pauses[2]], build.original_timeline(scene, [records[8]], officers))
+        # 使者宣旨后原路退场。
+        self.assertEqual(timeline[pauses[2] + 1:pauses[3]], build.original_timeline(scene, [records[14]], officers))
+        # 糜竺议论后接出征对白；battle_setup / 野外换图留给后续营地节点。
+        tail = timeline[pauses[3] + 1:]
+        self.assertEqual(tail[:3], build.original_timeline(scene, [records[19]], officers))
+        self.assertEqual(tail[3:], [{"t": "say", "who": "guan_yu", "text": "準備好了嗎？"},
+                                    {"t": "bgm", "key": "camp"},
+                                    {"t": "say", "who": "guan_yu", "text": "請點兵派將．"},
+                                    {"t": "say", "who": "guan_yu", "text": "出兵．"}])
+        self.assertFalse(any(s["t"] == "battle" for s in timeline))
+
+        rooms = {f"c1_s2_story9:b9g{i}": info["rooms"][f"c1_s2_story9:b9g{i}"] for i in range(4)}
+        self.assertEqual({k: v["next"] for k, v in rooms.items()}, {
+            "c1_s2_story9:b9g0": {"who": 81, "label": "讓孫乾進來"},
+            "c1_s2_story9:b9g1": {"who": 63, "label": "聽孫乾說明"},
+            "c1_s2_story9:b9g2": {"who": 364, "label": "聽欽差宣旨"},
+            "c1_s2_story9:b9g3": {"who": 64, "label": "與糜竺商議"},
+        })
+        self.assertEqual({k: set(v["talks"]) for k, v in rooms.items()}, {
+            "c1_s2_story9:b9g0": {"1", "2", "64"},
+            "c1_s2_story9:b9g1": {"1", "2", "64", "81"},
+            "c1_s2_story9:b9g2": {"1", "2", "63", "64", "81"},
+            "c1_s2_story9:b9g3": {"1", "2", "63", "81"},
+        })
+
+    def test_lubu_and_envoy_acts_keep_every_pack_line_in_order(self):
+        sections = build.section_lines(ROOT / "original/pack/dramas/original_chapters.drama")
+        game = json.loads((ROOT / "src/data/game.json").read_text())
+        for sid in ("c1_s2_story7", "c1_s2_story8", "c1_s2_story9"):
+            # 地名条在网页里由 caption 动作播放，不是等玩家的文本步。
+            want = [build.norm(x) for x in sections[sid] if x.strip() and build.norm(x) != "徐州議事廳"]
+            got = [build.norm(s["text"]) for s in game["scenes"][sid]
+                   if s["t"] in ("say", "text") and build.norm(s["text"]) != "徐州議事廳"]
+            self.assertEqual(got, want, sid)
+
+    def test_bakdata_names_map_to_officer_ids(self):
+        officers = build.officer_of()
+        # pack 只列改动过的 114 人；刘备、张飞这类要靠姓名补全，否则头像会落到通用像。
+        self.assertEqual(officers[0], "liu_bei")
+        self.assertEqual(officers[1], "guan_yu")
+        self.assertEqual(officers[2], "zhang_fei")
+        # 使者是群众角色，没有武将 id，保留显示名而不是误配到别人。
+        self.assertNotIn(364, officers)
 
     def test_prologue_records_and_all_coordinate_operations_survive(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())

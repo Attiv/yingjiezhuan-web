@@ -76,7 +76,7 @@ describe('整部剧本的数据', () => {
     const first = stageOf('c1_s0_story0')!.rooms!;
     expect(first['c1_s0_story0:b0g2'].talks).toEqual({
       '1': [{ t: 'say', who: 'guan_yu', text: '城裡有酒館等居民聚集的地方，想從居民那裡得到情報，還是去人多的地方好．' }],
-      '2': [{ t: 'say', who: '張飛', text: '有什麼事的話會去叫你．' }],
+      '2': [{ t: 'say', who: 'zhang_fei', text: '有什麼事的話會去叫你．' }],
     });
     expect(first['c1_s0_story0:b1g0'].talks['1']).toEqual([{ t: 'say', who: 'guan_yu', text: '請兄長講話．' }]);
     expect(stageOf('c1_s0_story1')!.rooms!['c1_s0_story1:b2g0'].next?.who).toBe(364);
@@ -207,7 +207,7 @@ describe('整部剧本的数据', () => {
       const choice = advance();
       expect(choice).toMatchObject({ t: 'room', id: decision, options: [
         { who: 1, prompt: { who: 'guan_yu', text: '哦，兄長，決定出征了嗎？' } },
-        { who: 2, prompt: { who: '張飛', text: '大哥，派我去向曹操軍求和嗎？' } },
+        { who: 2, prompt: { who: 'zhang_fei', text: '大哥，派我去向曹操軍求和嗎？' } },
       ] });
       expect(lines.at(-1)).toContain('你想好的話，跟張飛或我說一下．');
       expect(stage.people.get(2)).toMatchObject({ x: 5, y: 14, dir: 1 });
@@ -382,12 +382,15 @@ describe('整部剧本的数据', () => {
     const camps = SCRIPT.steps.filter((s): s is Extract<Step, { t: 'camp' }> => s.t === 'camp');
     expect(camps).toHaveLength(69);
     const rooms = SCRIPT.steps.filter((s) => s.t === 'room');
-    expect(rooms).toHaveLength(17);
+    expect(rooms).toHaveLength(24);
     expect(rooms).toContainEqual({ t: 'room', id: 'c0_s0_story4' });
     expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story1:b1g1' });
     expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story1:b1g2' });
     expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story6:b6g1' });
     expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story6:b6g2' });
+    // 吕布来投三组、钦差到访四组，都按原始 talk record 停顿。
+    for (const tag of ['b8g1', 'b8g2', 'b8g3']) expect(rooms).toContainEqual({ t: 'room', id: `c1_s2_story8:${tag}` });
+    for (const tag of ['b9g0', 'b9g1', 'b9g2', 'b9g3']) expect(rooms).toContainEqual({ t: 'room', id: `c1_s2_story9:${tag}` });
     expect(new Set(rooms.map((s) => s.id)).size).toBe(rooms.length);
     for (const c of camps) {
       const lv = level(c.battle);
