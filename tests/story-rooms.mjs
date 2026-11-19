@@ -1115,3 +1115,44 @@ export async function verifyDepartureRoom(page) {
   assert.equal(s.story.gold, fixture.gold, '出征不能顺手发军资');
   return '出征房间：问句、列队、出兵与下邳营地衔接';
 }
+
+// 选项幕：闲谈房间之后仍是原版选项，选「不是關羽」走生路。
+export async function verifyChoiceRoom(page) {
+  const first = 'c2_s0_story2:b2g0';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 600 });
+    st.resume = { t: 'room', id: first };
+    st.pc = -1;
+    if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
+    for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story: st, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    localStorage.setItem('yjz.script', 'hant');
+    localStorage.setItem('yjz.anim-speed', '0');
+    return st;
+  }, first);
+
+  await loadSlot(page, 5);
+  assert.equal((await state(page)).story.resume.id, first);
+  await page.click('.actor[data-who="50"]');
+  await page.waitForSelector('#talk:not([hidden])');
+  assert.match((await state(page)).line, /顏良被關羽殺了/);
+  await page.click('#talk');
+  await until(page, first);
+  assert.deepEqual((await state(page)).story, fixture, '闲谈不改变流程');
+
+  // 点袁绍：他先说完指控，再出现原版选项。
+  await page.click('.actor[data-who="9"]');
+  await page.waitForSelector('#talk .ask');
+  const labels = await page.evaluate(() => [...document.querySelectorAll('#talk .ask button')].map(b => b.textContent));
+  assert.deepEqual(labels, ['是，那人是關羽！', '不，那人不是關羽．']);
+  await page.click('#talk .ask button:nth-child(2)');
+  await page.waitForFunction(() => document.querySelector('#talk p')?.textContent === '什麼，你說不是關羽？');
+  const s = await state(page);
+  assert.equal(s.story.gold, fixture.gold);
+  assert.equal(s.story.flags['c2_s0_story2.won'], undefined);
+  return '选项幕：闲谈停顿、袁绍指控、两个选项与生路分支';
+}

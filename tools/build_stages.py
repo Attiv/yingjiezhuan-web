@@ -924,6 +924,81 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
     return made
 
 
+def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> list[str]:
+    """带选项的幕：保留 pack 步骤与选项分支，只把各组交谈的停顿插进去。
+
+    timeline 会整幕替换，选项和条件副作用会丢；这里改用 ordered——pack 的步骤、
+    选项跳转和奖励都留着，房间挂在「上一组最后一句」之后。锚点必须全幕唯一。
+    """
+    sections = section_lines(PACK / "dramas/original_chapters.drama")
+    forbidden = {"if_flags", "set_allegiance", "location", "battle_setup", "if_answer",
+                 "add_item", "op_3d", "op_23", "op_3b", "op_3c"}
+    made: list[str] = []
+    for sid, info in sorted(stages.items()):
+        m = re.fullmatch(r"c\d+_s\d+_story\d+", sid)
+        if not m or info.get("timeline") or info.get("rooms") or not sections.get(sid):
+            continue
+        ch, sy, bi = map(int, re.fullmatch(r"c(\d+)_s(\d+)_story(\d+)", sid).groups())
+        if ch >= len(dyn) or sy >= len(dyn[ch]["scenes"]):
+            continue
+        scene = dyn[ch]["scenes"][sy]
+        block = next((b for b in scene["blocks"] if b["index"] == bi), None)
+        if not block:
+            continue
+        ops = {c["mnemonic"] for r in block["records"] for c in r["code"]}
+        if "choice" not in ops or ops & forbidden:
+            continue
+        dlg = {d["offset"]: d["lines"] for d in scene["dialogues"]}
+        groups: dict[int, list[dict]] = {}
+        for r in block["records"]:
+            groups.setdefault(r["trigger"]["group"], []).append(r)
+        rooms: dict[str, dict] = {}
+        bad = False
+        for g, rs in groups.items():
+            talks = [r for r in rs if r["trigger"]["kind_name"] == "talk"]
+            if not talks:
+                continue
+            prog = [r for r in rs if any(c["mnemonic"] == "leave_parallel" for c in r["code"])]
+            if len(prog) != 1:
+                bad = True
+                break
+            prog = prog[0]
+            lines = [line for c in prog["code"] if c["mnemonic"] == "dialogue"
+                     for line in dlg.get(next(a["value"] for a in c["args"] if a["name"] == "text"), [])]
+            if not lines:
+                bad = True
+                break
+            last = lines[-1]
+            text = last["text"].strip()
+            if sum(1 for x in sections[sid] if x.strip() == text) != 1:
+                bad = True
+                break
+            who = prog["trigger"]["args"][0] | prog["trigger"]["args"][1] << 8
+            rooms[f"{sid}:b{bi}g{g}"] = {
+                "after": {"who": officers.get(last["speaker"], last["speaker_name"].strip()), "text": text},
+                "talks": {str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8):
+                          original_timeline(scene, [r], officers) for r in talks if r is not prog},
+                "next": {"who": who, "label": f"與{prog.get('trigger_person') or '將領'}交談"},
+                "source": {"block": bi, "group": g},
+            }
+        if bad or not rooms:
+            continue
+        names: dict[int, str] = {}
+        for r in block["records"]:
+            for code in r["code"]:
+                person = (code.get("resolved") or {}).get("person")
+                if person:
+                    names[{a["name"]: a["value"] for a in code.get("args", [])}["person"]] = person.strip()
+        info.update(rooms=rooms, ordered=True, names=names,
+                    source={"chapter": ch, "scene": sy, "block": bi,
+                            "records": sorted({r["index"] for r in block["records"]})})
+        info.pop("talks", None)
+        made.append(sid)
+    if made:
+        print(f"选项停顿 {len(made)} 幕：" + " ".join(made))
+    return made
+
+
 def add_xuzhou_return(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
     """返回徐州的两组交谈、求和赠剑、孙乾入队，以及小沛点赵云告别。"""
     scene = dyn[1]["scenes"][1]
@@ -1091,6 +1166,7 @@ def main() -> None:
     add_xuchang_rooms(stages, dyn, officers)
     add_xuzhou_return(stages, dyn, officers)
     add_group_rooms(stages, dyn, officers)
+    add_ordered_group_rooms(stages, dyn, officers)
     towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
     campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]
     for sid, info in stages.items():
