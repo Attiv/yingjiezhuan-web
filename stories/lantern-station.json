@@ -1,0 +1,57 @@
+{
+  "id": "lantern-station",
+  "title": "灯塔驿站",
+  "entry": "arrival",
+  "actors": {"501": "守灯人", "502": "摆渡人", "503": "巡路人"},
+  "phases": {
+    "arrival": {
+      "enter": [
+        {"t": "caption", "text": "灯塔驿站"},
+        {"t": "place", "who": 501, "x": 8, "y": 6},
+        {"t": "place", "who": 502, "x": 15, "y": 7},
+        {"t": "say", "who": "守灯人", "text": "灯已经点亮，到屋里来，我给你看看路图。"}
+      ],
+      "room": {
+        "talks": {"502": [{"t": "say", "who": "摆渡人", "text": "今夜退潮晚，别急着下水。"}]},
+        "exits": [{"who": 501, "label": "查看路图", "to": "crossroads"}]
+      }
+    },
+    "crossroads": {
+      "enter": [
+        {"t": "move", "who": 501, "x": 9, "y": 6},
+        {"t": "place", "who": 503, "x": 22, "y": 7},
+        {"t": "say", "who": "守灯人", "text": "水路近，山路稳。你选一条吧。"}
+      ],
+      "room": {
+        "exits": [
+          {"who": 502, "label": "走水路", "confirm": {"who": "摆渡人", "text": "要走水路吗？"}, "to": "water"},
+          {"who": 503, "label": "走山路", "confirm": {"who": "巡路人", "text": "要走山路吗？"}, "to": "hill"}
+        ]
+      }
+    },
+    "water": {
+      "enter": [
+        {"t": "set", "flag": "route", "value": "water"},
+        {"t": "caption", "text": "潮汐码头"},
+        {"t": "remove", "who": 503}
+      ],
+      "next": "checkpoint"
+    },
+    "hill": {
+      "enter": [
+        {"t": "set", "flag": "route", "value": "hill"},
+        {"t": "caption", "text": "风鸣山口"},
+        {"t": "remove", "who": 502}
+      ],
+      "next": "checkpoint"
+    },
+    "checkpoint": {
+      "enter": [
+        {"t": "when", "flag": "route", "is": "water", "then": [{"t": "gold", "n": 50}]},
+        {"t": "text", "text": "路标就在前面。"}
+      ],
+      "room": {"exits": [{"label": "继续上路", "to": "finish"}]}
+    },
+    "finish": {"end": "你沿着远处的灯光继续前行。"}
+  }
+}

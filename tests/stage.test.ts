@@ -192,6 +192,29 @@ describe('剧情舞台：一幕的调度', () => {
     expect(moveDirection({ x: 1, y: 1 }, { x: 2, y: 1 }, true)).toBe(1);
   });
 
+  it('快照还原人物、外观覆盖与动作进度，不重播已经执行的动作', () => {
+    const stage = new StageScript(PLAY);
+    stage.advance(1);
+    stage.run({ at: 1, op: 'graphic', who: 3, sprite: 9 });
+    const snapshot = JSON.parse(JSON.stringify(stage.snapshot()));
+    const loaded = StageScript.fromSnapshot(PLAY, snapshot)!;
+    expect(loaded.snapshot()).toEqual(snapshot);
+    expect(loaded.people.get(2)).toMatchObject({ x: 6, y: 5, dir: 3, walking: false });
+    expect(loaded.take(1)).toEqual([]);
+    stage.people.get(2)!.x = 99;
+    expect(loaded.people.get(2)?.x).toBe(6);
+    loaded.advance(3);
+    expect([...loaded.people.values()]).toMatchObject([{ who: 3, sprite: 9 }]);
+  });
+
+  it('缺失或损坏的快照可以回退到旧档恢复', () => {
+    const snapshot = new StageScript(PLAY).snapshot();
+    expect(StageScript.fromSnapshot(PLAY, undefined)).toBeNull();
+    expect(StageScript.fromSnapshot(PLAY, { ...snapshot, map: 'palace/invalid' })).toBeNull();
+    expect(StageScript.fromSnapshot(PLAY, { ...snapshot, nextOp: PLAY.ops.length + 1 })).toBeNull();
+    expect(StageScript.fromSnapshot(PLAY, { ...snapshot, people: [{ who: 2, x: NaN, y: 0, dir: 2, sprite: 3 }] })).toBeNull();
+  });
+
   it('reset 清人、清地名，保留地图', () => {
     const s = new StageScript(PLAY);
     s.advance(1);

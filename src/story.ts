@@ -18,7 +18,7 @@ export type Step =
   | { t: 'stage'; id: string } // 这一幕的场景（地图 + 场上人物，见 data/stages.json）
   | { t: 'action'; op: StageOp } // 按原始顺序执行动作，完成后再往下演
   | { t: 'wait'; ms: number }
-  | { t: 'room'; id: string; options?: { who: number; label: string; prompt: { who: string; text: string }; set?: Record<string, Flag>; goto?: string }[] } // 自动剧情结束，等玩家交谈或确认路线
+  | { t: 'room'; id: string; options?: { who?: number; label: string; prompt?: { who: string; text: string }; set?: Record<string, Flag>; goto?: string }[] } // 自动剧情结束，等玩家交谈或确认路线
   | { t: 'bg'; key: string } // 换背景：界面层按 key 找图，空串 = 不用背景
   | { t: 'say'; who: string; text: string } // 对话，等玩家点一下
   | { t: 'text'; text: string } // 旁白，等玩家点一下

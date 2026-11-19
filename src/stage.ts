@@ -77,7 +77,12 @@ export interface StageInfo {
 }
 
 export const STAGES = RAW as unknown as Record<string, StageInfo>;
-export const stageOf = (id: string): StageInfo | undefined => (id ? STAGES[id] : undefined);
+const STORY_STAGES: Record<string, StageInfo> = {};
+export function registerStoryStage(id: string, info: StageInfo): void {
+  if (!id.startsWith('story:')) throw new Error(`自定义剧情场景 ${id} 必须使用 story: 前缀`);
+  STORY_STAGES[id] = info;
+}
+export const stageOf = (id: string): StageInfo | undefined => id ? STORY_STAGES[id] ?? STAGES[id] : undefined;
 
 /** 场上的一个人。 */
 export interface Crowd {
@@ -89,6 +94,14 @@ export interface Crowd {
   id?: string;
   /** 这一句刚走过一步：待机的两帧交替加快，像原版迈步。 */
   walking?: boolean;
+}
+
+export interface StageSnapshot {
+  map: string;
+  place: string;
+  people: Crowd[];
+  graphics: [number, number][];
+  nextOp: number;
 }
 
 /** 只有宫殿与野外才铺场景；战场里插播的幕还是原来那样盖在战场上。 */
@@ -168,6 +181,37 @@ export class StageScript {
       this.graphics = new Map(prev.graphics);
       this.place = prev.place;
     }
+  }
+
+  /** 只存可停留时的舞台位置，不存正在播放的动画帧。 */
+  snapshot(): StageSnapshot {
+    return {
+      map: this.map,
+      place: this.place,
+      people: [...this.people.values()].map((p) => ({ ...p, walking: false })),
+      graphics: [...this.graphics],
+      nextOp: this.idx,
+    };
+  }
+
+  static fromSnapshot(info: StageInfo | undefined, saved: StageSnapshot | undefined): StageScript | null {
+    if (!saved || typeof saved.map !== 'string' || (saved.map && !/^(field|palace\/\d{3})$/.test(saved.map)) ||
+      typeof saved.place !== 'string' || !Number.isInteger(saved.nextOp) || saved.nextOp < 0 || saved.nextOp > (info?.ops.length ?? 0) ||
+      !Array.isArray(saved.people) || !Array.isArray(saved.graphics)) return null;
+    const stage = new StageScript(info);
+    for (const p of saved.people) {
+      if (!p || ![p.who, p.x, p.y, p.dir, p.sprite].every(Number.isFinite) ||
+        (p.id !== undefined && typeof p.id !== 'string')) return null;
+      stage.people.set(p.who, { ...p, walking: false });
+    }
+    for (const pair of saved.graphics) {
+      if (!Array.isArray(pair) || pair.length !== 2 || !pair.every(Number.isFinite)) return null;
+      stage.graphics.set(...pair);
+    }
+    stage.map = saved.map;
+    stage.place = saved.place;
+    stage.idx = saved.nextOp;
+    return stage;
   }
 
   /** 应用到第 n 句台词之前的调度；返回有没有变化（没变化就不用重画）。 */

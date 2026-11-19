@@ -4,10 +4,11 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
-import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms } from './story-rooms.mjs';
+import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
-const SHOTS = new URL('../docs/screenshots/', import.meta.url).pathname;
+// 截图默认写进 docs/screenshots/；SHOTS 指向别处时只出图不碰仓库里的参考图。
+const SHOTS = (process.env.SHOTS ?? new URL('../docs/screenshots/', import.meta.url).pathname).replace(/\/?$/, '/');
 const SAVE = 'yjz.save.v3';
 mkdirSync(SHOTS, { recursive: true });
 
@@ -1460,6 +1461,14 @@ await step('小沛战后：剿匪奖励、快使报告、两房间存档与赴�
   assert.match(await verifyXiaopeiReturnRooms(page), /小沛战后/);
 });
 
+await step('分支房间读档保留地图、人物、镜头与奖励', async () => {
+  await verifyBranchStageSave(page, BASE);
+});
+
+await step('两份独立剧情：只加数据即可运行，分支奖励与存档互不覆盖', async () => {
+  await verifyImportedStories(page, BASE);
+});
+
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');
-console.log(`\n全部 ${steps.length} 项通过，截图在 docs/screenshots/`);
+console.log(`\n全部 ${steps.length} 项通过，截图在 ${SHOTS}`);
 await browser.close();

@@ -85,6 +85,184 @@ async function saveSlot(page, slot, shop = false) {
   await page.click(`#save-list [data-slot="${slot}"][data-act="write"]`);
 }
 
+// 自创小剧本，仅替换开发模式的演示流程。两条路线汇合到同一个存档锚点。
+export async function verifyBranchStageSave(page, base) {
+  const url = `${base}/?demo`;
+  const install = () => page.evaluate(async () => {
+    // 复用页面的入口模块，保留 Vite 热更新时附加的版本参数。
+    const entry = document.querySelector('script[src*="/src/main.ts"]');
+    const { CAMPAIGN } = await import(entry.src);
+    const action = (op, fields) => ({ t: 'action', op: { at: 0, op, ...fields } });
+    const prompt = { who: '', text: '沿这条路走吗？' };
+    CAMPAIGN.steps.splice(0, CAMPAIGN.steps.length,
+      { t: 'stage', id: 'save-test-start' },
+      action('map', { map: 'palace/000' }),
+      { t: 'room', id: 'save-test-crossroads', options: [
+        { who: 501, label: '东路', prompt, goto: 'east' },
+        { who: 502, label: '西路', prompt, goto: 'west' },
+      ] },
+      { t: 'label', name: 'east' },
+      { t: 'stage', id: 'save-test-east' },
+      action('map', { map: 'field' }),
+      action('caption', { text: '东路' }),
+      action('place', { who: 501, x: 5, y: 5, sprite: 2 }),
+      action('place', { who: 502, x: 20, y: 15, sprite: 3 }),
+      action('move', { who: 501, x: 25, y: 18, dir: 1 }),
+      { t: 'gold', n: 50 },
+      { t: 'goto', label: 'stop' },
+      { t: 'label', name: 'west' },
+      { t: 'stage', id: 'save-test-west' },
+      action('map', { map: 'palace/001' }),
+      action('place', { who: 503, x: 7, y: 8, sprite: 4 }),
+      { t: 'label', name: 'stop' },
+      { t: 'room', id: 'save-test-stop' },
+      { t: 'end' },
+    );
+  });
+  const stageState = () => page.evaluate(() => ({
+    map: document.querySelector('.backdrop').getAttribute('src'),
+    place: document.querySelector('.place')?.textContent ?? '',
+    camera: document.querySelector('.story-world').style.transform,
+    people: [...document.querySelectorAll('.actor')].map(e => [e.dataset.who, e.style.left, e.style.top, e.querySelector('i').className, e.querySelector('i').style.cssText]),
+    walking: document.querySelectorAll('.actor.walking').length,
+    story: JSON.parse(JSON.stringify(window.__yjz.story)),
+  }));
+  await page.goto(url);
+  await page.waitForSelector('[data-go="start"]');
+  await install();
+  await page.click('[data-go="start"]');
+  await page.click('[data-room="continue"][data-answer="0"]');
+  await page.click('#talk .ask button:first-child');
+  await until(page, 'save-test-stop');
+  const before = await stageState();
+  assert.match(before.map, /campaign\/000\.png$/);
+  assert.equal(before.camera, 'translate(-700px, -540px)');
+  assert.deepEqual(before.people.map(([who]) => who).sort(), ['501', '502']);
+  assert.equal(before.story.gold, 50);
+  await saveSlot(page, 0);
+  await page.reload();
+  await page.waitForSelector('[data-go="load"]');
+  await install();
+  // 标题先于测试剧本装载，用同一个存档面板入口刷新列表。
+  await page.evaluate(() => window.__yjz.openSaveList('load'));
+  await page.click('#save-list [data-slot="0"][data-act="read"]');
+  await page.waitForSelector('.room-controls');
+  const after = await stageState();
+  assert.equal(after.map, before.map, '读档必须保留所选路线的地图');
+  assert.deepEqual(after, before, '同一锚点须恢复实际走过的舞台、镜头与剧情进度');
+  return '分支剧情读档后保留地图、人物、镜头和奖励';
+}
+
+// 两份 JSON 走正式加载入口；在同一测试 origin 验证档位按剧本隔离。
+export async function verifyImportedStories(page, base) {
+  const launch = query => page.goto(`${base}/${query}`);
+  await launch('');
+  const fixtures = await roomFixtures(page);
+  const originalRoom = 'c1_s0_story0:b0g2';
+  await page.evaluate(story => {
+    // 独立剧本的存档键带 @剧本id；先清掉，回归才能反复跑，也才算「别的剧本看不到」。
+    for (const key of Object.keys(localStorage)) if (key.includes('@')) localStorage.removeItem(key);
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    localStorage.setItem('yjz.script', 'hans');
+  }, fixtures[originalRoom]);
+  await loadSlot(page, 5);
+  await saveSlot(page, 5);
+  await page.waitForSelector('#save-list', { state: 'hidden' });
+  const campaignStorage = () => page.evaluate(() => ['yjz.saves.v1', 'yjz.save.v3', 'yjz.autosave.v1'].map(k => localStorage.getItem(k)));
+  const original = await campaignStorage();
+  assert.ok(original[0] && original[1]);
+
+  const configs = [
+    {
+      id: 'lantern-station', talker: 502, line: /今夜退潮晚/, firstExit: '.actor[data-who="501"]',
+      stop: 'checkpoint', map: '/assets/story/pmap-000.png', ending: /你沿着远处的灯光继续前行/,
+      routes: [
+        { id: 'water', who: 502, question: /要走水路吗/, gold: 50, place: '潮汐码头', people: [501, 502] },
+        { id: 'hill', question: /要走山路吗/, gold: 0, place: '风鸣山口', people: [501, 503] },
+      ],
+    },
+    {
+      id: 'watchpost', talker: 602, line: /东边近但路窄/, firstExit: '[data-room="continue"]',
+      stop: 'arrival-point', map: '/assets/story/pmap-001.png', ending: /你抵达了北门外的接应处/,
+      routes: [
+        { id: 'east', who: 602, question: /确定走东道吗/, gold: 30, place: '狭长东道', people: [601] },
+        { id: 'west', question: /确定走西道吗/, gold: 0, place: '平坦西道', people: [602] },
+      ],
+    },
+  ];
+  const scene = () => page.evaluate(() => ({
+    map: document.querySelector('.backdrop').getAttribute('src'),
+    place: document.querySelector('.place').textContent,
+    camera: document.querySelector('.story-world').style.transform,
+    cast: [...document.querySelectorAll('.actor')].map(e => [e.dataset.who, e.style.cssText, e.querySelector('i').style.cssText]),
+  }));
+  for (const config of configs) {
+    await launch(`?story=${config.id}`);
+    await page.waitForSelector('#screen [data-go="start"]');
+    assert.match(await page.evaluate(() => document.querySelector('#screen .sub').textContent), /独立剧情/, '标题要点明这是哪部独立剧情');
+    assert.ok(await page.evaluate(() => document.querySelector('#screen [data-go="load"]').disabled), `${config.id} 不应看到其他剧本的存档`);
+    for (const [i, route] of config.routes.entries()) {
+      await page.click('#screen [data-go="start"]');
+      await until(page, `${config.id}:arrival`);
+      if (i === 0) {
+        const initial = (await state(page)).story;
+        for (let repeat = 0; repeat < 2; repeat++) {
+          await page.click(`.actor[data-who="${config.talker}"]`);
+          await page.waitForSelector('#talk:not([hidden])');
+          const chatting = await state(page);
+          assert.match(chatting.line, config.line);
+          assert.equal(chatting.room, false);
+          await until(page, `${config.id}:arrival`);
+          assert.deepEqual((await state(page)).story, initial, '重复闲谈不应改变进度或奖励');
+        }
+      }
+      await page.click(config.firstExit);
+      await until(page, `${config.id}:crossroads`);
+      const crossroads = (await state(page)).story;
+      const choose = route.who ? `.actor[data-who="${route.who}"]` : `[data-room="continue"][data-answer="${i}"]`;
+      await page.click(choose);
+      await page.waitForSelector('#talk .ask');
+      assert.match((await state(page)).line, route.question);
+      await page.click('#talk .ask button:last-child');
+      await page.waitForSelector('.room-controls');
+      assert.deepEqual((await state(page)).story, crossroads, '取消路线不得改变剧情、旗标或军资');
+      await page.click(choose);
+      await page.click('#talk .ask button:first-child');
+      await until(page, `${config.id}:${config.stop}`);
+      const before = await state(page);
+      const view = await scene();
+      assert.equal(before.story.flags.route, route.id);
+      assert.equal(before.story.gold, route.gold);
+      assert.deepEqual(before.people, route.people);
+      assert.equal(view.place, route.place);
+      assert.equal(view.map, config.map);
+      await saveSlot(page, i);
+      await page.waitForSelector('#save-list', { state: 'hidden' });
+      assert.deepEqual(await campaignStorage(), original, '独立剧情写档不得碰原战役的手动档、最近档或自动档');
+      await loadSlot(page, i);
+      assert.deepEqual((await state(page)).story, before.story, '读档须保留所选路线，且奖励不重发');
+      assert.deepEqual(await scene(), view, '读档须保留地名、地图、人物外观与镜头');
+      await page.click('[data-room="continue"]');
+      await page.waitForSelector('[data-go="title"]');
+      assert.match(await page.evaluate(() => document.querySelector('#screen .sub').textContent), config.ending);
+      await page.click('[data-go="title"]');
+    }
+  }
+  // 第二个剧本用了同样的两个槽位；第一个剧本仍应读出它自己的两条路线。
+  await launch('?story=lantern-station');
+  for (const [i, route] of configs[0].routes.entries()) {
+    await loadSlot(page, i);
+    assert.equal((await state(page)).story.flags.route, route.id);
+    assert.equal((await state(page)).story.gold, route.gold);
+  }
+  await launch('');
+  await loadSlot(page, 5);
+  assert.equal((await state(page)).story.resume.id, originalRoom);
+  assert.deepEqual(await campaignStorage(), original);
+}
+
 async function cancelDeparture(page) {
   const before = (await state(page)).story;
   await page.click('.actor[data-who="1"]');
@@ -447,11 +625,16 @@ export async function verifyXuzhouSecondScene(page) {
   s = await state(page);
   assert.equal(s.story.section, 'c1_s2_story1');
   assert.deepEqual(s.people, [0, 223, 228, 230]);
-  assert.match(await page.$eval('#screen .scene .backdrop', e => e.getAttribute('src')), /campaign\/000\.png/);
-  assert.notEqual(await page.$eval('.actor[data-who="0"] i', e => e.getAttribute('style')), secondOpening.liuArt, '确认后刘备应切换为出征造型');
+  const march = await page.evaluate(() => ({
+    map: document.querySelector('#screen .scene .backdrop')?.getAttribute('src'),
+    art: document.querySelector('.actor[data-who="0"] i')?.getAttribute('style'),
+  }));
+  assert.match(march.map, /campaign\/000\.png/);
+  assert.ok(march.art);
+  assert.notEqual(march.art, secondOpening.liuArt, '确认后刘备应切换为出征造型');
   await page.click('#talk');
   await page.waitForSelector('#talk .ask');
-  assert.deepEqual(await page.$$eval('#talk .ask button', els => els.map(e => e.textContent.trim())),
+  assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll('#talk .ask button')].map(e => e.textContent.trim())),
     ['回小沛城', '去泰山', '去夏丘', '去彭城']);
   return '小沛简雍汇报、两组闲谈、关羽取消/确认、野外山贼摆放与四路线衔接';
 }

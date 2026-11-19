@@ -1,0 +1,92 @@
+{
+  "id": "watchpost",
+  "title": "北门驿站",
+  "map": "palace/001",
+  "entry": "arrival",
+  "actors": {
+    "601": "驿卒",
+    "602": "守门兵"
+  },
+  "sprites": {
+    "601": 9,
+    "602": 1
+  },
+  "phases": {
+    "arrival": {
+      "enter": [
+        { "t": "caption", "text": "北门驿站" },
+        { "t": "place", "who": 601, "x": 8, "y": 6 },
+        { "t": "place", "who": 602, "x": 15, "y": 7 },
+        { "t": "say", "who": "驿卒", "text": "前面道路分成两支，先听守门兵说说情况。" }
+      ],
+      "room": {
+        "talks": {
+          "602": [
+            { "t": "say", "who": "守门兵", "text": "东边近但路窄，西边远些却平坦。" }
+          ]
+        },
+        "exits": [
+          { "label": "查看路线", "to": "crossroads" }
+        ]
+      }
+    },
+    "crossroads": {
+      "enter": [
+        { "t": "say", "who": "驿卒", "text": "决定好了就出发。" }
+      ],
+      "room": {
+        "exits": [
+          {
+            "who": 602,
+            "label": "走东道",
+            "confirm": { "who": "守门兵", "text": "确定走东道吗？" },
+            "to": "east"
+          },
+          {
+            "who": 601,
+            "label": "走西道",
+            "confirm": { "who": "驿卒", "text": "确定走西道吗？" },
+            "to": "west"
+          }
+        ]
+      }
+    },
+    "east": {
+      "enter": [
+        { "t": "set", "flag": "route", "value": "east" },
+        { "t": "caption", "text": "狭长东道" },
+        { "t": "remove", "who": 602 }
+      ],
+      "next": "arrival-point"
+    },
+    "west": {
+      "enter": [
+        { "t": "set", "flag": "route", "value": "west" },
+        { "t": "caption", "text": "平坦西道" },
+        { "t": "remove", "who": 601 }
+      ],
+      "next": "arrival-point"
+    },
+    "arrival-point": {
+      "enter": [
+        {
+          "t": "when",
+          "flag": "route",
+          "is": "east",
+          "then": [
+            { "t": "gold", "n": 30 }
+          ]
+        },
+        { "t": "text", "text": "驿站的接应人就在前方。" }
+      ],
+      "room": {
+        "exits": [
+          { "label": "结束行程", "to": "finish" }
+        ]
+      }
+    },
+    "finish": {
+      "end": "你抵达了北门外的接应处。"
+    }
+  }
+}

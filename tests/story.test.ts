@@ -5,6 +5,83 @@ import { SISHUI } from '../src/data/sishui';
 import { doAttack, harvest, levelById, newBattle, registerLevel } from '../src/rules/turn';
 import { SCRIPT } from '../src/data/game';
 import { checkScript, currentStep, nextStep, restoreStoryPosition, startStory, type Script, type Story } from '../src/story';
+import lanternStation from '../stories/lantern-station.json';
+import watchpost from '../stories/watchpost.json';
+import { compileStory } from '../src/story-source';
+
+it.each([[0, 'water', 50], [1, 'hill', 0]] as const)('导入驿站剧情，可从第 %i 个出口走到同一存档点', (answer, route, gold) => {
+  const { script } = compileStory(lanternStation);
+  checkScript(script, () => false);
+  const story = startStory(script);
+  const advance = (pick = 0) => nextStep(script, story, pick);
+  const toRoom = () => {
+    for (let i = 0; i < script.steps.length; i++) {
+      const step = currentStep(script, story);
+      if (step?.t === 'room') return step;
+      if (!advance()) break;
+    }
+    throw new Error('没有到达房间');
+  };
+  advance();
+  expect(toRoom()).toMatchObject({ id: 'lantern-station:arrival', options: [{ who: 501, label: '查看路图' }] });
+  advance();
+  expect(toRoom()).toMatchObject({ id: 'lantern-station:crossroads', options: [
+    { who: 502, prompt: { text: '要走水路吗？' } }, { who: 503, prompt: { text: '要走山路吗？' } },
+  ] });
+  advance(answer);
+  expect(toRoom().id).toBe('lantern-station:checkpoint');
+  expect(story.flags.route).toBe(route);
+  expect(story.gold).toBe(gold);
+  const saved = JSON.parse(JSON.stringify(story)) as Story;
+  saved.pc = -1;
+  expect(restoreStoryPosition(script, saved)).toBe(true);
+  expect(nextStep(script, saved)).toMatchObject({ t: 'ending', text: '你沿着远处的灯光继续前行。' });
+  expect(saved.gold).toBe(gold);
+});
+
+it.each([[0, 'east', 30], [1, 'west', 0]] as const)('第二份剧情不改代码也能跑：第 %i 个出口结算到 %i 金', (answer, route, gold) => {
+  const compiled = compileStory(watchpost);
+  checkScript(compiled.script, () => false);
+  // 只登记自己那一幕，不碰原战役的 stage 表。
+  expect(Object.keys(compiled.stages)).toEqual(['story:watchpost']);
+  expect(compiled.stage).toMatchObject({ map: 'palace/001', ordered: true });
+  const { script } = compiled;
+  const story = startStory(script);
+  const advance = (pick = 0) => nextStep(script, story, pick);
+  const toRoom = () => {
+    for (let i = 0; i < script.steps.length; i++) {
+      const step = currentStep(script, story);
+      if (step?.t === 'room') return step;
+      if (!advance()) break;
+    }
+    throw new Error('没有到达房间');
+  };
+  advance();
+  expect(toRoom()).toMatchObject({ id: 'watchpost:arrival', options: [{ label: '查看路线' }] });
+  advance();
+  expect(toRoom()).toMatchObject({ id: 'watchpost:crossroads', options: [
+    { who: 602, prompt: { text: '确定走东道吗？' } }, { who: 601, prompt: { text: '确定走西道吗？' } },
+  ] });
+  advance(answer);
+  expect(toRoom().id).toBe('watchpost:arrival-point');
+  expect(story.flags.route).toBe(route);
+  expect(story.gold).toBe(gold);
+});
+
+it('导入数据的错误带字段路径，坏数据进不了运行时', () => {
+  const broken = (change: (data: any) => void) => {
+    const data = JSON.parse(JSON.stringify(lanternStation));
+    change(data);
+    return () => compileStory(data);
+  };
+  expect(broken((s) => { s.phases.arrival.enter[0].tone = 'warm'; })).toThrow(/arrival\.enter\[0\]\.tone/);
+  expect(broken((s) => { s.phases.arrival.room.exits[0].to = 'nowhere'; })).toThrow(/找不到阶段 nowhere/);
+  expect(broken((s) => { s.phases.arrival.enter[1].who = 777; })).toThrow(/未声明人物 777/);
+  expect(broken((s) => { s.sprites = { '502': 29 }; })).toThrow(/0 至 28/);
+  expect(broken((s) => { s.phases.arrival.room.talks = { '501': [{ t: 'say', who: '守灯人', text: '嗯。' }] }; })).toThrow(/重复触发/);
+  expect(broken((s) => { s.phases.arrival.room.exits = []; })).toThrow(/至少需要一个出口/);
+  expect(broken((s) => { s.phases.arrival.next = 'crossroads'; })).toThrow(/只能声明/);
+});
 
 registerLevel(SISHUI);
 const known = (id: string) => !!levelById(id);

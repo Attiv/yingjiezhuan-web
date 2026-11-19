@@ -9,7 +9,7 @@ import { chapterTitle, marchMap } from './data/march';
 import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { tally } from './result';
-import { StageScript, isSceneMap, mapPoint, fieldPoint, moveDirection, mapSrc, stageOf, actorFrame, type StageOp, type Crowd } from './stage';
+import { StageScript, isSceneMap, mapPoint, fieldPoint, moveDirection, mapSrc, stageOf, registerStoryStage, actorFrame, type StageOp, type Crowd, type StageSnapshot } from './stage';
 import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, syncUnit } from './trainer';
 import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, rangeCells, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
@@ -18,6 +18,7 @@ import type { Battle, Ev, Flag, Unit } from './rules/types';
 import { BattleScene, CELL, RES, VIEW_H, VIEW_W, sideOf } from './scene';
 import { checkScript, currentStep, nextStep, restoreStoryPosition, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
 import { initScript, scriptLabel, toggleScript } from './zh';
+import { compileStory } from './story-source';
 
 const SAVE_KEY = 'yjz.save.v3'; // 流程进度 + 战斗状态
 const CAMERA_FOLLOW_KEY = 'yjz.camera-follow';
@@ -41,9 +42,32 @@ const readAnimSpeed = () => {
 };
 let animSpeedIndex = readAnimSpeed();
 /** 仅开发模式：?demo 换成不带任何图的演示流程，用来验证框架本身。 */
-const demo = import.meta.env.DEV && new URLSearchParams(location.search).has('demo');
+const requestedStory = import.meta.env.DEV ? new URLSearchParams(location.search).get('story') : null;
+const storyModules = import.meta.glob('/stories/*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
+const importedStories = new Map<string, ReturnType<typeof compileStory>>();
+const storyImportErrors = new Map<string, string>();
+for (const [path, data] of Object.entries(storyModules)) {
+  const name = path.replace(/^.*\//, '').replace(/\.json$/, '');
+  try {
+    const compiled = compileStory(data);
+    if (importedStories.has(compiled.script.id)) {
+      console.warn(`剧情文件 ${path} 与已载入的剧本同 ID（${compiled.script.id}），本份忽略`);
+      continue;
+    }
+    Object.entries(compiled.stages).forEach(([id, stage]) => registerStoryStage(id, stage));
+    importedStories.set(compiled.script.id, compiled);
+  } catch (error) {
+    // 一份数据写错不该拖垮原战役：记下原因，按 ID 点名时才报出来。
+    const message = `剧情文件 ${path} 导入失败：${error instanceof Error ? error.message : String(error)}`;
+    storyImportErrors.set(name, message);
+    console.warn(message);
+  }
+}
+const selectedStory = requestedStory ? importedStories.get(requestedStory) : undefined;
+if (requestedStory && !selectedStory) throw new Error(storyImportErrors.get(requestedStory) ?? `找不到独立剧情：${requestedStory}`);
+const demo = import.meta.env.DEV && !selectedStory && new URLSearchParams(location.search).has('demo');
 if (demo) DEMO_LEVELS.forEach(registerLevel);
-export const CAMPAIGN = checkScript(demo ? DEMO : SCRIPT, demo ? (id) => !!levelById(id) : hasLevel);
+export const CAMPAIGN = checkScript(selectedStory?.script ?? (demo ? DEMO : SCRIPT), selectedStory ? () => false : demo ? (id) => !!levelById(id) : hasLevel);
 const lvOf = (id: string) => (demo ? levelById(id) : level(id));
 
 const SIDE = [['player', '我军'], ['ally', '友军'], ['enemy', '敌军']] as const;
@@ -760,7 +784,30 @@ function enterRoom(): Promise<number> {
   });
 }
 
-/** 读剧情档只重建舞台动作，不重复发军资、设标志或播放对白。 */
+interface StoryStageSave {
+  section: string;
+  line: number;
+  camera: { x: number; y: number };
+  scene: StageSnapshot;
+}
+
+function restoreSavedStoryStage(saved?: StoryStageSave): boolean {
+  if (!saved || typeof saved.section !== 'string' ||
+    (saved.section && !CAMPAIGN.steps.some((step) => step.t === 'stage' && step.id === saved.section)) ||
+    !Number.isInteger(saved.line) || saved.line < 0 ||
+    !saved.camera || ![saved.camera.x, saved.camera.y].every(Number.isFinite)) return false;
+  const restored = StageScript.fromSnapshot(stageOf(saved.section), saved.scene);
+  if (!restored) return false;
+  // 分支可从不同的幕跳到同一个房间。锚点定位步骤，存档里的幕用于继续演出。
+  stageSection = story.section = saved.section;
+  stageLine = saved.line;
+  storyCamera = { ...saved.camera };
+  stageScript = restored;
+  speaking = '';
+  return true;
+}
+
+/** 兼容无舞台快照的旧档：只重建舞台动作，不重复发军资、设标志或播放对白。 */
 function rebuildStoryStage() {
   stageScript = new StageScript(); stageSection = ''; stageLine = 0;
   for (let i = 0; i <= story.pc; i++) {
@@ -1307,12 +1354,14 @@ async function onCell(x: number, y: number) {
 }
 
 // ---------------------------------------------------------------- 存档 ----
-const SAVE_LIST_KEY = 'yjz.saves.v1'; // 六格存档表；SAVE_KEY 仍作「最近存档」镜像，兼容旧版
-const AUTO_SAVE_KEY = 'yjz.autosave.v1'; // 独立只读槽：仅由新战斗 / 新回合写入
+/** 独立剧情与原战役共用这套存档逻辑，但键名各带剧本 id：写档不会覆盖别人的六格表。 */
+const scopedKey = (key: string) => (selectedStory ? `${key}@${CAMPAIGN.id}` : key);
+const SAVE_LIST_KEY = scopedKey('yjz.saves.v1'); // 六格存档表；SAVE_KEY 仍作「最近存档」镜像，兼容旧版
+const AUTO_SAVE_KEY = scopedKey('yjz.autosave.v1'); // 独立只读槽：仅由新战斗 / 新回合写入
 const SAVE_SLOTS = 6;
 const SLOT_NAMES = ['一', '二', '三', '四', '五', '六'];
 
-interface SaveData { story: Story; battle?: Battle }
+interface SaveData { story: Story; battle?: Battle; storyStage?: StoryStageSave }
 interface SaveEntry extends SaveData { at: number } // 存档时间，只用于列表显示
 interface SaveList { slots: (SaveEntry | null)[]; last: number | null }
 
@@ -1336,9 +1385,10 @@ const blankList = (): SaveList => ({ slots: Array(SAVE_SLOTS).fill(null), last: 
 function writeSaveList(list: SaveList) {
   localStorage.setItem(SAVE_LIST_KEY, JSON.stringify(list));
   // 旧入口 / 自动化测试仍从 yjz.save.v3 找「最近一次存档」，这里保持同步。
+  const mirror = scopedKey(SAVE_KEY);
   const cur = list.last === null ? null : list.slots[list.last];
-  if (cur) localStorage.setItem(SAVE_KEY, JSON.stringify({ story: cur.story, battle: cur.battle }));
-  else localStorage.removeItem(SAVE_KEY);
+  if (cur) localStorage.setItem(mirror, JSON.stringify({ story: cur.story, battle: cur.battle, storyStage: cur.storyStage }));
+  else localStorage.removeItem(mirror);
 }
 
 /** 读六格表；列表还空时把旧版单槽存档（或外部预置的单槽）接到檔一。 */
@@ -1350,12 +1400,12 @@ function readSaveList(): SaveList {
       for (let i = 0; i < SAVE_SLOTS; i++) {
         const e = raw.slots[i] as SaveEntry | null | undefined;
         const ok = e && validSave(e);
-        list.slots[i] = ok ? { story: ok.story, battle: ok.battle, at: Number(e!.at) || Date.now() } : null;
+        list.slots[i] = ok ? { story: ok.story, battle: ok.battle, storyStage: ok.storyStage, at: Number(e!.at) || Date.now() } : null;
       }
       list.last = Number.isInteger(raw.last) && list.slots[raw.last as number] ? raw.last as number : null;
     }
     if (!list.slots.some(Boolean)) {
-      const legacy = validSave(JSON.parse(localStorage.getItem(SAVE_KEY) ?? 'null') as SaveData | null);
+      const legacy = validSave(JSON.parse(localStorage.getItem(scopedKey(SAVE_KEY)) ?? 'null') as SaveData | null);
       if (legacy) {
         list.slots[0] = { ...legacy, at: Date.now() };
         list.last = 0;
@@ -1386,14 +1436,16 @@ const saveSummary = (e: SaveEntry) => {
   return `${where}<br><span>${e.story.gold} 金 · ${e.story.party.length} 名武將　${esc(when)}</span>`;
 };
 
-/** 当前能存什么：战斗中带完整战况，其余只存流程；标题 / 结局不能存。 */
+/** 战斗档保存战况，营地和房间档同时保存流程与舞台。 */
 function currentSaveData(): SaveData | null {
   if (mode === 'over') return null;
   if (mode === 'idle' && b.stage === 'player' && !b.undo) return { story, battle: b };
   const step = currentStep(CAMPAIGN, story);
   if (step?.t !== 'camp' && step?.t !== 'room') return null;
   if (roomBusy && !$('screen').querySelector('.camp')) return null;
-  return { story };
+  return { story, storyStage: {
+    section: stageSection, line: stageLine, camera: { ...storyCamera }, scene: stageScript.snapshot(),
+  } };
 }
 function writeSlot(i: number): boolean {
   if (!Number.isInteger(i) || i < 0 || i >= SAVE_SLOTS) return false;
@@ -1431,7 +1483,12 @@ function loadSlot(i: number | 'auto'): boolean {
   }
   story = d.story;
   if (d.battle) { begin(d.battle); log('已读档。'); }
-  else { $('screen').hidden = true; $('screen').onclick = null; rebuildStoryStage(); void playStory(currentStep(CAMPAIGN, story)); }
+  else {
+    $('screen').hidden = true;
+    $('screen').onclick = null;
+    if (!restoreSavedStoryStage(d.storyStage)) rebuildStoryStage();
+    void playStory(currentStep(CAMPAIGN, story));
+  }
   return true;
 }
 
@@ -1754,7 +1811,7 @@ $('screen').addEventListener('click', (e) => {
   const go = btn?.dataset.go;
   if (!btn) playSfx('cursor', 0.55); // 章节横幅：点一下继续
   if (go === 'start') {
-    story = startStory(CAMPAIGN, { party: [...START_PARTY] });
+    story = startStory(CAMPAIGN, { party: selectedStory ? [] : [...START_PARTY] });
     // 开局一分钱没有：原版序章里曹操当场拨 500 金（剧本的 @gold 500），
     // 那笔钱正好赶在第一次进道具屋之前，所以这里不再另给。
     void playStory(nextStep(CAMPAIGN, story, 0, API));
@@ -1776,7 +1833,7 @@ function showTitle(note = '') {
   playBgm(TITLE_BGM, true);
   screen(
     '<div class="seal">非官方<br>復刻</div><h1>三國志英傑傳</h1>' +
-    '<p class="sub">PC DOS 繁體中文版 全流程復刻</p>' +
+    `<p class="sub">${selectedStory ? `獨立劇情：${esc(CAMPAIGN.title)}` : 'PC DOS 繁體中文版 全流程復刻'}</p>` +
     '<p class="credit">畫面、劇本、地圖、兵種、頭像與音樂均取自原版《三國志英傑傳》DOS 版，逐像素還原。詳見 docs/assets.md。</p>' +
     `<div class="row"><button class="btn" data-go="start">開始新遊戲</button><button class="btn" data-go="load"${hasSaves() ? '' : ' disabled'}>讀取存檔</button>` +
     `<button class="btn" data-go="script" data-script-label>${scriptLabel()}</button></div>` +
@@ -2169,8 +2226,8 @@ game.events.once('ready', () => {
       scene.manifest = { cutin: { actors: { '*': DEMO_ACTOR } } };
     }
     // 开局先找到第一场战斗，把它的地图摆在标题画面背后
-    const first = CAMPAIGN.steps.find((s) => s.t === 'battle') as Extract<Step, { t: 'battle' }>;
-    const lv = lvOf(first.level)!;
+    const first = CAMPAIGN.steps.find((s) => s.t === 'battle') as Extract<Step, { t: 'battle' }> | undefined;
+    const lv = (first ? lvOf(first.level) : level('sishui')) ?? DEMO_LEVELS[0];
     b = newBattle(lv, 1).b;
     void scene.setBattle(b);
     renderUnit(null);
