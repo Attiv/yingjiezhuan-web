@@ -451,19 +451,24 @@ class StageGenerationTests(unittest.TestCase):
     def test_choice_scenes_keep_branches_and_gain_talk_pauses(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())
         game = json.loads((ROOT / "src/data/game.json").read_text())
-        for sid, groups in {"c2_s0_story2": 2, "c2_s0_story4": 2, "c1_s4_story10": 2, "c3_s1_story2": 1}.items():
-            with self.subTest(section=sid):
-                info = stages[sid]
-                self.assertTrue(info.get("ordered"), sid)
-                self.assertEqual(len(info["rooms"]), groups, sid)
-                steps = game["scenes"][sid]
-                self.assertEqual([s["id"] for s in steps if s["t"] == "room"], list(info["rooms"]), sid)
-                # 选项与分支必须原样留在 pack 步骤里。
-                self.assertTrue(any(s["t"] == "choice" for s in steps), sid)
-                self.assertTrue(any(s["t"] == "label" for s in steps), sid)
-                for room in info["rooms"].values():
-                    self.assertIn("after", room)
-                    self.assertTrue(room["next"].get("who"))
+        checked = 0
+        for sid, info in stages.items():
+            if not info.get("ordered") or not info.get("rooms"):
+                continue
+            steps = game["scenes"].get(sid, [])
+            if not any(s["t"] == "choice" for s in steps):
+                continue
+            checked += 1
+            self.assertEqual([s["id"] for s in steps if s["t"] == "room"], list(info["rooms"]), sid)
+            # 选项与分支必须原样留在 pack 步骤里。
+            self.assertTrue(any(s["t"] == "label" for s in steps), sid)
+            for room in info["rooms"].values():
+                self.assertIn("after", room)
+                self.assertTrue(room["next"].get("who"))
+        # 选项幕里能补停顿的都在这里；少一个说明锚点或推进记录退化了。
+        self.assertGreaterEqual(checked, 19)
+        self.assertIn("c1_s3_story5:b5g1", stages["c1_s3_story5"]["rooms"])
+        self.assertIn("c4_s0_story4:b4g1", stages["c4_s0_story4"]["rooms"])
 
     def test_every_story_section_keeps_pack_text_in_order(self):
         """全部 story 幕的正文逐句对齐 pack；只允许出发问句被房间确认框替代。

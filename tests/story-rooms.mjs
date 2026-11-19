@@ -1154,5 +1154,47 @@ export async function verifyChoiceRoom(page) {
   const s = await state(page);
   assert.equal(s.story.gold, fixture.gold);
   assert.equal(s.story.flags['c2_s0_story2.won'], undefined);
-  return '选项幕：闲谈停顿、袁绍指控、两个选项与生路分支';
+
+  // 下邳处置吕布：宽恕分支同样保留原版选项。
+  const trial = 'c1_s3_story5:b5g1';
+  const trialFixture = await page.evaluate(async trial => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 600 });
+    st.resume = { t: 'room', id: trial };
+    st.pc = -1;
+    if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${trial} 无法定位`);
+    for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story: st, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    return st;
+  }, trial);
+  await loadSlot(page, 5);
+  assert.equal((await state(page)).story.resume.id, trial);
+  await page.click('.actor[data-who="4"]');
+  await page.waitForSelector('#talk:not([hidden])');
+  assert.match((await state(page)).line, /戰場上我還不會輸/);
+  await page.click('#talk');
+  await until(page, trial);
+  assert.deepEqual((await state(page)).story, trialFixture, '吕布闲谈不改变流程');
+  // 第一个房间用按钮推进（曹操不在场上），吕布说完后再点他一次进选项。
+  await page.click('[data-room="continue"]');
+  await until(page, 'c1_s3_story5:b5g2');
+  await page.click('.actor[data-who="4"]');
+  for (let i = 0; i < 30; i++) {
+    const now = await page.evaluate(() => ({
+      ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+      talk: !document.getElementById('talk').hidden,
+    }));
+    if (now.ask) break;
+    if (now.talk) await page.click('#talk');
+    else await page.waitForTimeout(50);
+  }
+  await page.waitForSelector('#talk .ask');
+  assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll('#talk .ask button')].map(b => b.textContent)),
+    ['寬恕呂布', '不寬恕呂布']);
+  await page.click('#talk .ask button:nth-child(1)');
+  await page.waitForFunction(() => document.querySelector('#talk p')?.textContent?.startsWith('呂布確實反叛無常'));
+  return '选项幕：袁绍指控与生路分支、下邳宽恕吕布';
 }

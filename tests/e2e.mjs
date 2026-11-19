@@ -654,6 +654,12 @@ await step('道具指令：豆可以「给予 / 丢弃」，菜单里只有这�
   const bei = await unit('劉備');
   assert.ok((await unit('劉備')).items.includes(30), '营地买的豆应在刘备身上');
   await clickCell(bei.x, bei.y);
+  if ((await mode()) !== 'unit') {
+    // 刚把视口从手机尺寸切回来时，Phaser 的画布尺寸可能晚一帧生效，点到的格子会偏。
+    await page.waitForTimeout(150);
+    const again = await unit('劉備');
+    await clickCell(again.x, again.y);
+  }
   assert.equal(await mode(), 'unit');
   await clickCell(bei.x, bei.y); // 点自己脚下 = 原地下令
   await settle();

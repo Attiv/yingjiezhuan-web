@@ -931,8 +931,7 @@ def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, s
     选项跳转和奖励都留着，房间挂在「上一组最后一句」之后。锚点必须全幕唯一。
     """
     sections = section_lines(PACK / "dramas/original_chapters.drama")
-    forbidden = {"if_flags", "set_allegiance", "location", "battle_setup", "if_answer",
-                 "add_item", "op_3d", "op_23", "op_3b", "op_3c"}
+    # ordered 只插房间、不动 pack 步骤，选项后的奖励/入队/换景都由 pack 原样执行。
     made: list[str] = []
     for sid, info in sorted(stages.items()):
         m = re.fullmatch(r"c\d+_s\d+_story\d+", sid)
@@ -946,7 +945,7 @@ def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, s
         if not block:
             continue
         ops = {c["mnemonic"] for r in block["records"] for c in r["code"]}
-        if "choice" not in ops or ops & forbidden:
+        if "choice" not in ops:
             continue
         dlg = {d["offset"]: d["lines"] for d in scene["dialogues"]}
         groups: dict[int, list[dict]] = {}
@@ -1167,6 +1166,14 @@ def main() -> None:
     add_xuzhou_return(stages, dyn, officers)
     add_group_rooms(stages, dyn, officers)
     add_ordered_group_rooms(stages, dyn, officers)
+    # ordered 幕如果到很晚（≥25 句）才换图，说明开场沿用上一幕的房间；
+    # 保留 info.map 会把舞台清空，改为继承上一幕的地图与人物，换图动作仍照原时序执行。
+    for info in stages.values():
+        if not info.get("ordered") or not info.get("map"):
+            continue
+        maps = [a for a in info.get("ops", []) if a.get("op") == "map"]
+        if maps and maps[0].get("at", 0) >= 25:
+            info["map"] = None
     towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
     campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]
     for sid, info in stages.items():
