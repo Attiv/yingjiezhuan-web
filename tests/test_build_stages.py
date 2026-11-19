@@ -466,9 +466,15 @@ class StageGenerationTests(unittest.TestCase):
                 self.assertIn("after", room)
                 self.assertTrue(room["next"].get("who"))
         # 选项幕里能补停顿的都在这里；少一个说明锚点或推进记录退化了。
-        self.assertGreaterEqual(checked, 19)
+        self.assertGreaterEqual(checked, 18)
+        ordered = [sid for sid, info in stages.items() if info.get("ordered") and info.get("rooms")]
+        self.assertGreaterEqual(len(ordered), 41)
+        # 徐庶离队这一幕用 ordered 保住 pack 的 away，房间不能改队伍。
+        xu = game["scenes"]["c2_s2_story1"]
+        self.assertEqual([s for s in xu if s["t"] == "away"], [{"t": "away", "id": "xu_shu"}])
+        self.assertEqual([s["id"] for s in xu if s["t"] == "room"], list(stages["c2_s2_story1"]["rooms"]))
         self.assertIn("c1_s3_story5:b5g1", stages["c1_s3_story5"]["rooms"])
-        self.assertIn("c4_s0_story4:b4g1", stages["c4_s0_story4"]["rooms"])
+        self.assertIn("c4_s0_story4:b4g6", stages["c4_s0_story4"]["rooms"])
 
     def test_every_story_section_keeps_pack_text_in_order(self):
         """全部 story 幕的正文逐句对齐 pack；只允许出发问句被房间确认框替代。

@@ -786,6 +786,16 @@ GENERIC_BLOCKERS = {"if_flags", "choice", "goto_block", "chapter_title",
 DEPARTURE_OPS = {"if_answer", "battle_setup", "op_3d", "op_23"}
 
 
+def fill_room_names(names: dict[int, str], rooms: dict[str, dict]) -> None:
+    """房间里的说话人和推进人物都要能报出名字；没被本幕摆出来的人从人物表补。"""
+    people = json.loads((EX / "text/officers.json").read_text(encoding="utf-8"))
+    wanted = {int(w) for room in rooms.values() for w in room.get("talks", {})}
+    wanted |= {room["next"]["who"] for room in rooms.values() if room.get("next", {}).get("who") is not None}
+    for who in wanted:
+        if who not in names and 0 <= who < len(people) and people[who].get("name"):
+            names[who] = people[who]["name"].strip()
+
+
 def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> list[str]:
     """把「同一幕里多组互不相干的 talk record」按组编成房间。
 
@@ -913,6 +923,7 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
         info.update(timeline=steps, rooms=rooms, names=names,
                     source={"chapter": ch, "scene": sy, "block": bi,
                             "records": sorted({r["index"] for r in block["records"]})})
+        fill_room_names(names, rooms)
         if locations:
             info["locations"] = locations
         if departures:
@@ -925,10 +936,10 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
 
 
 def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> list[str]:
-    """带选项的幕：保留 pack 步骤与选项分支，只把各组交谈的停顿插进去。
+    """有副作用的幕：保留 pack 步骤与分支，只把各组交谈的停顿插进去。
 
-    timeline 会整幕替换，选项和条件副作用会丢；这里改用 ordered——pack 的步骤、
-    选项跳转和奖励都留着，房间挂在「上一组最后一句」之后。锚点必须全幕唯一。
+    timeline 会整幕替换，选项、条件奖励和阵营变化会丢；这里改用 ordered——pack 的
+    步骤、跳转和副作用都留着，房间挂在「上一组最后一句」之后。锚点必须全幕唯一。
     """
     sections = section_lines(PACK / "dramas/original_chapters.drama")
     # ordered 只插房间、不动 pack 步骤，选项后的奖励/入队/换景都由 pack 原样执行。
@@ -943,9 +954,6 @@ def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, s
         scene = dyn[ch]["scenes"][sy]
         block = next((b for b in scene["blocks"] if b["index"] == bi), None)
         if not block:
-            continue
-        ops = {c["mnemonic"] for r in block["records"] for c in r["code"]}
-        if "choice" not in ops:
             continue
         dlg = {d["offset"]: d["lines"] for d in scene["dialogues"]}
         groups: dict[int, list[dict]] = {}
@@ -972,6 +980,10 @@ def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, s
             if sum(1 for x in sections[sid] if x.strip() == text) != 1:
                 bad = True
                 break
+            # 推进记录里若带进退场/换装，动作会在这一句之前结算，房间会落在人走之后；
+            # 这种组不插房间，交给原来的自动演出。
+            if any(c["mnemonic"] in STAGE_OPS or c["mnemonic"] == "set_graphic" for c in prog["code"]):
+                continue
             who = prog["trigger"]["args"][0] | prog["trigger"]["args"][1] << 8
             rooms[f"{sid}:b{bi}g{g}"] = {
                 "after": {"who": officers.get(last["speaker"], last["speaker_name"].strip()), "text": text},
@@ -988,13 +1000,14 @@ def add_ordered_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, s
                 person = (code.get("resolved") or {}).get("person")
                 if person:
                     names[{a["name"]: a["value"] for a in code.get("args", [])}["person"]] = person.strip()
+        fill_room_names(names, rooms)
         info.update(rooms=rooms, ordered=True, names=names,
                     source={"chapter": ch, "scene": sy, "block": bi,
                             "records": sorted({r["index"] for r in block["records"]})})
         info.pop("talks", None)
         made.append(sid)
     if made:
-        print(f"选项停顿 {len(made)} 幕：" + " ".join(made))
+        print(f"有序停顿 {len(made)} 幕：" + " ".join(made))
     return made
 
 

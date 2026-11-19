@@ -1198,3 +1198,52 @@ export async function verifyChoiceRoom(page) {
   await page.waitForFunction(() => document.querySelector('#talk p')?.textContent?.startsWith('呂布確實反叛無常'));
   return '选项幕：袁绍指控与生路分支、下邳宽恕吕布';
 }
+
+// 有序停顿的另一类：徐庶离队这一幕保留 pack 的 away，房间不碰队伍。
+export async function verifyXuShuRooms(page) {
+  const first = 'c2_s2_story1:b1g1';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei', 'sun_qian', 'jian_yong', 'xu_shu'], gold: 700 });
+    st.resume = { t: 'room', id: first };
+    st.pc = -1;
+    if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
+    for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story: st, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    localStorage.setItem('yjz.script', 'hant');
+    localStorage.setItem('yjz.anim-speed', '0');
+    return st;
+  }, first);
+
+  await loadSlot(page, 5);
+  let s = await state(page);
+  assert.equal(s.story.resume.id, first);
+  assert.ok(s.story.party.includes('xu_shu'));
+
+  // 徐庶这时还没走到场上（他的进场在同一 record 里），用房间按钮推进；
+  // 后面不再插房间，away 仍由 pack 执行。
+  await page.click('[data-room="continue"]');
+  const deadline = Date.now() + 45000;
+  let seen = '', left = false;
+  while (Date.now() < deadline) {
+    const now = await page.evaluate(() => ({
+      line: document.querySelector('#talk p')?.textContent ?? '',
+      talk: !document.getElementById('talk').hidden,
+      ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+      party: window.__yjz.story.party,
+    }));
+    if (now.line.includes('請您一定要請孔明來')) seen = now.line;
+    if (!now.party.includes('xu_shu')) { left = true; break; }
+    if (now.ask) await page.click('#talk .ask button:first-child');
+    else if (now.talk) await page.click('#talk');
+    else await page.waitForTimeout(30);
+  }
+  assert.match(seen, /孔明/);
+  assert.ok(left, '告别后徐庶离队');
+  s = await state(page);
+  assert.equal(s.story.gold, fixture.gold);
+  return '徐庶离队：有序房间推进、pack 的 away 保留、军资不变';
+}

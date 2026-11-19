@@ -340,11 +340,14 @@ describe('剧情舞台：从原版剧本转出来的数据', () => {
       // 野外保留原始道路坐标，运行时由完整行军地图承载并滚屏。
       // 场上有人才谈得上「点他说话」，报得出名字的人才点得到
       if (mine) withPeople++;
-      if (info.talks) {
+      // 原版台词可能挂在整幕的 talks 上，也可能收进房间的 talks 里。
+      const talks: Record<string, unknown> = { ...(info.talks ?? {}) };
+      for (const room of Object.values(info.rooms ?? {})) Object.assign(talks, room.talks ?? {});
+      if (Object.keys(talks).length) {
         withTalks++;
-        expect(mine).toBeGreaterThan(0);
+        if (info.talks) expect(mine).toBeGreaterThan(0);
       }
-      for (const who of Object.keys(info.talks ?? {})) expect(info.names?.[who]).toBeTruthy();
+      for (const who of Object.keys(talks)) expect(info.names?.[who]).toBeTruthy();
       if (palace) expect(info.map).toMatch(/^palace\/\d{3}$/);
     }
     expect(placed).toBeGreaterThan(300);
