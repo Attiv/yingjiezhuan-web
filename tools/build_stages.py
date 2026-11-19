@@ -726,6 +726,155 @@ def add_envoy_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
     info.pop("talks", None)
 
 
+def add_xuchang_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
+    """许昌议事厅：两轮闲谈，点曹操听落难经过，再去官邸听曹操谋士议事。
+
+    R13 是 location 触发（官邸）；当前网页没有城镇行走，沿用 story6 的做法，
+    把原始六字节参数留在 location 里，用一个按钮承接。
+    """
+    sid = "c1_s2_story14"
+    scene = dyn[1]["scenes"][2]
+    block = next(b for b in scene["blocks"] if b["index"] == 14)
+    records = {r["index"]: r for r in block["records"]}
+
+    def steps(r: int) -> list[dict]:
+        return original_timeline(scene, [records[r]], officers)
+
+    assert records[13]["trigger"]["kind_name"] == "location"
+    opening = steps(0)
+    # song 5 在开场白之前；映射表没有 5，按 pack 的 @bgm peace 补在这里。
+    first_say = next(i for i, s in enumerate(opening) if s["t"] == "say")
+    opening.insert(first_say, {"t": "bgm", "key": "peace"})
+    first, second = f"{sid}:b14g1", f"{sid}:b14g2"
+
+    def talks(ids: tuple[int, ...]) -> dict[str, list[dict]]:
+        return {str(records[r]["trigger"]["args"][0] | records[r]["trigger"]["args"][1] << 8): steps(r)
+                for r in ids}
+
+    names: dict[int, str] = {}
+    for r in (0, 6, 13, 14):
+        for code in records[r]["code"]:
+            person = (code.get("resolved") or {}).get("person")
+            if person:
+                names[{a["name"]: a["value"] for a in code.get("args", [])}["person"]] = person.strip()
+
+    info = stages[sid]
+    info.update(map="palace/005", timeline=[
+        *opening,
+        {"t": "room", "id": first},
+        *steps(6),
+        {"t": "room", "id": second},
+        *steps(14),
+    ], rooms={
+        first: {"talks": talks((1, 2, 3, 4, 5)), "next": {"who": 8, "label": "與曹操交談"},
+                "source": {"block": 14, "group": 1}},
+        second: {"talks": talks((7, 8, 9, 10, 11, 12)), "next": {"label": "前往官邸"},
+                 "source": {"block": 14, "group": 2}},
+    }, location={
+        "source": {"block": 14, "record": 13, "trigger": "location"},
+        "rawArgs": records[13]["trigger"]["args"].copy(),
+        "timeline": steps(13),
+        "adapter": "room_button",
+    }, source={"chapter": 1, "scene": 2, "block": 14, "records": [0, 6, 13, 14]}, names=names)
+    info.pop("talks", None)
+
+
+# 通用房间只收这些操作码之外的多组交谈；选项、条件、战斗、地点都留给人工核对。
+GENERIC_BLOCKERS = {"if_flags", "if_answer", "battle_setup", "choice", "goto_block", "chapter_title",
+                    "add_item", "set_allegiance", "op_3d", "op_23", "op_3b", "op_3c"}
+
+
+def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> list[str]:
+    """把「同一幕里多组互不相干的 talk record」按组编成房间。
+
+    原版每到一组就用 input_control 把控制权交回玩家，组内有一句 leave_parallel
+    结束这一组。这里只在文本与 pack 逐句对得上时套用，并且要求：
+    推进记录是谈话、闲谈只有对白、没有选项/条件/战斗/地点/未知操作码。
+    任何一条不满足就跳过，保留原来的线性数据。
+    """
+    sections = section_lines(PACK / "dramas/original_chapters.drama")
+    made: list[str] = []
+    for sid, info in sorted(stages.items()):
+        m = re.fullmatch(r"c(\d+)_s(\d+)_story(\d+)", sid)
+        if not m or info.get("timeline") or info.get("rooms") or not sections.get(sid):
+            continue
+        ch, sy, bi = map(int, m.groups())
+        if ch >= len(dyn) or sy >= len(dyn[ch]["scenes"]):
+            continue
+        scene = dyn[ch]["scenes"][sy]
+        block = next((b for b in scene["blocks"] if b["index"] == bi), None)
+        if not block or any(r["trigger"]["kind_name"] == "location" for r in block["records"]):
+            continue
+        ops = {c["mnemonic"] for r in block["records"] for c in r["code"]}
+        if ops & GENERIC_BLOCKERS:
+            continue
+        groups: dict[int, list[dict]] = {}
+        for r in block["records"]:
+            groups.setdefault(r["trigger"]["group"], []).append(r)
+        talk_groups = [g for g, rs in groups.items() if any(r["trigger"]["kind_name"] == "talk" for r in rs)]
+        if len(talk_groups) < 2:
+            continue
+        progs: dict[int, dict] = {}
+        for g in talk_groups:
+            rs = groups[g]
+            if any(r["trigger"]["kind_name"] != "talk" for r in rs):
+                progs = {}
+                break
+            prog = [r for r in rs if any(c["mnemonic"] == "leave_parallel" for c in r["code"])]
+            if len(prog) != 1:
+                progs = {}
+                break
+            progs[g] = prog[0]
+        if not progs:
+            continue
+        # 闲谈只能是对白，否则点一下就会带上副作用。
+        if any(c["mnemonic"] not in ("dialogue", "end")
+               for g in talk_groups for r in groups[g] if r["index"] != progs[g]["index"]
+               for c in r["code"]):
+            continue
+
+        steps: list[dict] = []
+        rooms: dict[str, dict] = {}
+        for g in sorted(groups):
+            rs = groups[g]
+            if g not in talk_groups:
+                steps += original_timeline(scene, rs, officers)
+                continue
+            prog = progs[g]
+            who = prog["trigger"]["args"][0] | prog["trigger"]["args"][1] << 8
+            room_id = f"{sid}:b{bi}g{g}"
+            steps.append({"t": "room", "id": room_id})
+            rooms[room_id] = {
+                "talks": {str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8):
+                          original_timeline(scene, [r], officers)
+                          for r in rs if r["index"] != prog["index"]},
+                "next": {"who": who, "label": f"與{prog.get('trigger_person') or '將領'}交談"},
+                "source": {"block": bi, "group": g},
+            }
+            steps += original_timeline(scene, [prog], officers)
+
+        caps = {norm(s["op"]["text"]) for s in steps if s["t"] == "action" and s["op"]["op"] == "caption"}
+        got = [norm(s["text"]) for s in steps if s["t"] in ("say", "text") and norm(s["text"]) not in caps]
+        want = [norm(x) for x in sections[sid] if x.strip() and norm(x) not in caps]
+        if got != want:
+            continue  # 文本对不上就宁可不动，避免通用规则吃台词
+
+        names: dict[int, str] = {}
+        for r in block["records"]:
+            for code in r["code"]:
+                person = (code.get("resolved") or {}).get("person")
+                if person:
+                    names[{a["name"]: a["value"] for a in code.get("args", [])}["person"]] = person.strip()
+        info.update(timeline=steps, rooms=rooms, names=names,
+                    source={"chapter": ch, "scene": sy, "block": bi,
+                            "records": sorted({r["index"] for r in block["records"]})})
+        info.pop("talks", None)
+        made.append(sid)
+    if made:
+        print(f"通用房间 {len(made)} 幕：" + " ".join(made))
+    return made
+
+
 def add_xuzhou_return(stages: dict, dyn: list[dict], officers: dict[int, str]) -> None:
     """返回徐州的两组交谈、求和赠剑、孙乾入队，以及小沛点赵云告别。"""
     scene = dyn[1]["scenes"][1]
@@ -890,7 +1039,9 @@ def main() -> None:
     add_xiaopei_return(stages, dyn, officers)
     add_lubu_arrival(stages, dyn, officers)
     add_envoy_rooms(stages, dyn, officers)
+    add_xuchang_rooms(stages, dyn, officers)
     add_xuzhou_return(stages, dyn, officers)
+    add_group_rooms(stages, dyn, officers)
     towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
     campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]
     for sid, info in stages.items():

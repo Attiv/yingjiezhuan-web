@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
-import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms } from './story-rooms.mjs';
+import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
 // 截图默认写进 docs/screenshots/；SHOTS 指向别处时只出图不碰仓库里的参考图。
@@ -1468,6 +1468,11 @@ await step('分支房间读档保留地图、人物、镜头与奖励', async ()
 await step('吕布来投与钦差到访：三组/四组交谈、重摆议事厅与刘备头像', async () => {
   await page.goto(`${BASE}/`);
   assert.match(await verifyLubuEnvoyRooms(page), /钦差/);
+});
+
+await step('许昌议事厅：两轮闲谈、官邸按钮与谋士议事', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyXuchangRoom(page), /许昌/);
 });
 
 await step('两份独立剧情：只加数据即可运行，分支奖励与存档互不覆盖', async () => {

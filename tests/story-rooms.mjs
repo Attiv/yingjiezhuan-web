@@ -932,3 +932,83 @@ export async function verifyLubuEnvoyRooms(page) {
   assert.equal(await page.evaluate(() => window.__yjz.story.section), 'c1_s2_story10', '议论后接淮南议事厅');
   return '吕布来投三组交谈与张飞发作、钦差四组到访、重摆议事厅、舞台继承与中途读档、刘备头像';
 }
+
+// 许昌议事厅：两轮闲谈、曹操两次推进、官邸按钮与谋士议事。
+export async function verifyXuchangRoom(page) {
+  const first = 'c1_s2_story14:b14g1';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, nextStep } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei', 'sun_qian', 'jian_yong'], gold: 1400 });
+    Object.assign(st.flags, { orig_f8: 1, orig_f9: 1, orig_f10: 1 });
+    st.pc = SCRIPT.steps.findIndex(s => s.t === 'battle' && s.level === 'c1_s2_b5');
+    if (st.pc < 0) throw new Error('缺少夏丘战斗入口');
+    const api = {
+      join(s, id) { if (!s.party.includes(id)) s.party.push(id); },
+      away(s, id) { s.party = s.party.filter(x => x !== id); },
+      level(s, id, n) { const r = (s.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] }); r.level += n; },
+    };
+    for (let n = 0, step = nextStep(SCRIPT, st, 0, api); step && n < 900; n++, step = nextStep(SCRIPT, st, 0, api)) {
+      if (step.t !== 'room' || step.id !== first) continue;
+      for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      list.slots[5] = { story: st, at: Date.now() };
+      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      localStorage.setItem('yjz.script', 'hant');
+      localStorage.setItem('yjz.anim-speed', '0');
+      return st;
+    }
+    throw new Error('胜利路线未到达许昌议事厅');
+  }, first);
+  assert.ok(fixture.party.includes('sun_qian'));
+  const layout = () => page.evaluate(() => ({
+    map: document.querySelector('#screen .scene .backdrop')?.getAttribute('src'),
+    place: document.querySelector('.place')?.textContent ?? '',
+  }));
+
+  await loadSlot(page, 5);
+  let s = await state(page);
+  assert.equal(s.story.resume.id, first);
+  assert.deepEqual(s.people, [0, 8, 16, 18, 61, 68, 77]);
+  const opening = await layout();
+  assert.match(opening.map, /story\/pmap-005\.png/);
+  assert.equal(opening.place, '許昌議事廳');
+
+  await page.click('.actor[data-who="68"]');
+  await page.waitForSelector('#talk:not([hidden])');
+  assert.equal((await state(page)).line, '這次落難了．');
+  await page.click('#talk');
+  await until(page, first);
+  assert.deepEqual((await state(page)).story, fixture, '闲谈不得改变流程');
+  assert.deepEqual(await layout(), opening);
+
+  // 点曹操听落难经过与安置，再进第二轮闲谈。
+  await page.click('.actor[data-who="8"]');
+  await until(page, 'c1_s2_story14:b14g2');
+  s = await state(page);
+  assert.deepEqual(s.people, [0, 8, 16, 18, 61, 68, 77]);
+  assert.equal(s.story.gold, fixture.gold);
+  assert.deepEqual(s.story.flags, fixture.flags, '两轮闲谈之间不改标志');
+
+  // 第二轮点「前往官邸」：清场只留曹操与六名谋士，接谋士议事并进入下一幕。
+  await page.click('[data-room="continue"]');
+  await page.waitForFunction(() => document.querySelector('#talk p')?.textContent === '主公，劉備可是個有雄才大略的英雄．');
+  assert.deepEqual((await state(page)).people, [8, 16, 18, 61, 68, 77], '官邸段刘备不在场');
+  assert.match((await layout()).map, /story\/pmap-005\.png/);
+  const deadline = Date.now() + 45000;
+  while (Date.now() < deadline) {
+    const now = await page.evaluate(() => ({
+      section: window.__yjz.story.section,
+      talk: !document.getElementById('talk').hidden,
+      ask: !!document.querySelector('#talk:not([hidden]) .ask'),
+      chapter: !!document.querySelector('#screen .chapter'),
+    }));
+    if (now.section === 'c1_s3_story0' && !now.talk) break;
+    if (now.ask) await page.click('#talk .ask button:first-child');
+    else if (now.talk) await page.click('#talk');
+    else if (now.chapter) await page.click('#screen');
+    else await page.waitForTimeout(30);
+  }
+  assert.equal(await page.evaluate(() => window.__yjz.story.section), 'c1_s3_story0');
+  return '许昌两轮闲谈、曹操两次推进、官邸按钮、谋士议事与刘备退场';
+}

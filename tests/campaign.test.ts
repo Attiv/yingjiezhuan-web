@@ -382,7 +382,7 @@ describe('整部剧本的数据', () => {
     const camps = SCRIPT.steps.filter((s): s is Extract<Step, { t: 'camp' }> => s.t === 'camp');
     expect(camps).toHaveLength(69);
     const rooms = SCRIPT.steps.filter((s) => s.t === 'room');
-    expect(rooms).toHaveLength(24);
+    expect(rooms).toHaveLength(42);
     expect(rooms).toContainEqual({ t: 'room', id: 'c0_s0_story4' });
     expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story1:b1g1' });
     expect(rooms).toContainEqual({ t: 'room', id: 'c1_s2_story1:b1g2' });
@@ -391,6 +391,11 @@ describe('整部剧本的数据', () => {
     // 吕布来投三组、钦差到访四组，都按原始 talk record 停顿。
     for (const tag of ['b8g1', 'b8g2', 'b8g3']) expect(rooms).toContainEqual({ t: 'room', id: `c1_s2_story8:${tag}` });
     for (const tag of ['b9g0', 'b9g1', 'b9g2', 'b9g3']) expect(rooms).toContainEqual({ t: 'room', id: `c1_s2_story9:${tag}` });
+    // 许昌两轮闲谈 + 通用规则编出的六幕（第二、三章）各按原始 talk record 分组。
+    for (const tag of ['b14g1', 'b14g2']) expect(rooms).toContainEqual({ t: 'room', id: `c1_s2_story14:${tag}` });
+    for (const id of ['c2_s1_story5:b5g0', 'c2_s1_story11:b11g0', 'c3_s1_story1:b1g0', 'c3_s2_story1:b1g1']) {
+      expect(rooms).toContainEqual({ t: 'room', id });
+    }
     expect(new Set(rooms.map((s) => s.id)).size).toBe(rooms.length);
     for (const c of camps) {
       const lv = level(c.battle);

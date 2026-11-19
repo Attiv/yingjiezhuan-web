@@ -362,6 +362,72 @@ class StageGenerationTests(unittest.TestCase):
         # 使者是群众角色，没有武将 id，保留显示名而不是误配到别人。
         self.assertNotIn(364, officers)
 
+    def test_xuchang_rooms_keep_two_groups_and_location_adapter(self):
+        stages = json.loads((ROOT / "src/data/stages.json").read_text())
+        info = stages["c1_s2_story14"]
+        scene = build.load_scenarios()[1]["scenes"][2]
+        block = next(b for b in scene["blocks"] if b["index"] == 14)
+        records = {r["index"]: r for r in block["records"]}
+        officers = build.officer_of()
+        self.assertEqual(info["source"], {"chapter": 1, "scene": 2, "block": 14, "records": [0, 6, 13, 14]})
+        self.assertEqual(info["map"], "palace/005")
+        timeline = info["timeline"]
+        first = timeline.index({"t": "room", "id": "c1_s2_story14:b14g1"})
+        second = timeline.index({"t": "room", "id": "c1_s2_story14:b14g2"})
+        # 开场：刘备换成便装、换许昌议事厅、七人站位与曹操第一句。
+        opening = build.original_timeline(scene, [records[0]], officers)
+        first_say = next(i for i, s in enumerate(opening) if s["t"] == "say")
+        opening.insert(first_say, {"t": "bgm", "key": "peace"})
+        self.assertEqual(timeline[:first], opening)
+        self.assertEqual(timeline[first + 1:second], build.original_timeline(scene, [records[6]], officers))
+        # 六位谋士/武将闲谈，推进人物是曹操。
+        self.assertEqual(set(info["rooms"]["c1_s2_story14:b14g1"]["talks"]), {"68", "61", "77", "16", "18"})
+        self.assertEqual(info["rooms"]["c1_s2_story14:b14g1"]["next"], {"who": 8, "label": "與曹操交談"})
+        self.assertEqual(set(info["rooms"]["c1_s2_story14:b14g2"]["talks"]), {"8", "68", "61", "77", "16", "18"})
+        self.assertEqual(info["rooms"]["c1_s2_story14:b14g2"]["next"], {"label": "前往官邸"})
+        # 官邸仍是 location 触发：原始六字节保留，用房间按钮承接。
+        self.assertEqual(info["location"]["rawArgs"], [13, 0, 14, 0, 0, 0])
+        self.assertEqual(info["location"]["adapter"], "room_button")
+        self.assertEqual(timeline[second + 1:], build.original_timeline(scene, [records[14]], officers))
+
+    def test_generic_group_rooms_match_original_talk_records(self):
+        stages = json.loads((ROOT / "src/data/stages.json").read_text())
+        sections = build.section_lines(ROOT / "original/pack/dramas/original_chapters.drama")
+        sids = ["c2_s1_story11", "c2_s1_story5", "c3_s1_story1", "c3_s1_story11", "c3_s1_story7", "c3_s2_story1"]
+        for sid in sids:
+            with self.subTest(section=sid):
+                info = stages[sid]
+                ch, sy, bi = map(int, build.section_target(sid))
+                scene = build.load_scenarios()[ch]["scenes"][sy]
+                block = next(b for b in scene["blocks"] if b["index"] == bi)
+                officers = build.officer_of()
+                groups = {}
+                for r in block["records"]:
+                    groups.setdefault(r["trigger"]["group"], []).append(r)
+                talk_groups = [g for g, rs in groups.items() if any(r["trigger"]["kind_name"] == "talk" for r in rs)]
+                self.assertGreaterEqual(len(talk_groups), 2)
+                self.assertEqual(list(info["rooms"]), [f"{sid}:b{bi}g{g}" for g in sorted(talk_groups)])
+                room_ids = [s["id"] for s in info["timeline"] if s["t"] == "room"]
+                self.assertEqual(room_ids, [f"{sid}:b{bi}g{g}" for g in sorted(talk_groups)])
+                for g in talk_groups:
+                    rs = groups[g]
+                    prog = [r for r in rs if any(c["mnemonic"] == "leave_parallel" for c in r["code"])]
+                    self.assertEqual(len(prog), 1)
+                    room = info["rooms"][f"{sid}:b{bi}g{g}"]
+                    self.assertEqual(room["source"], {"block": bi, "group": g})
+                    self.assertEqual(room["next"]["who"], prog[0]["trigger"]["args"][0] | prog[0]["trigger"]["args"][1] << 8)
+                    self.assertEqual(room["talks"], {
+                        str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8): build.original_timeline(scene, [r], officers)
+                        for r in rs if r["index"] != prog[0]["index"]
+                    })
+                # 通用规则只在文本逐句对得上时生效。
+                caps = {build.norm(s["op"]["text"]) for s in info["timeline"]
+                        if s["t"] == "action" and s["op"]["op"] == "caption"}
+                got = [build.norm(s["text"]) for s in info["timeline"]
+                       if s["t"] in ("say", "text") and build.norm(s["text"]) not in caps]
+                want = [build.norm(x) for x in sections[sid] if x.strip() and build.norm(x) not in caps]
+                self.assertEqual(got, want)
+
     def test_prologue_records_and_all_coordinate_operations_survive(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())
         scene = build.load_scenarios()[0]["scenes"][0]
