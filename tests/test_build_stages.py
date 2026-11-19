@@ -1,6 +1,7 @@
 """剧情记录与原版操作码的回归验证。"""
 import importlib.util
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -438,6 +439,40 @@ class StageGenerationTests(unittest.TestCase):
                        if s["t"] in ("say", "text") and build.norm(s["text"]) not in caps]
                 want = [build.norm(x) for x in sections[sid] if x.strip() and build.norm(x) not in caps]
                 self.assertEqual(got, want)
+
+    def test_every_story_section_keeps_pack_text_in_order(self):
+        """全部 story 幕的正文逐句对齐 pack；只允许出发问句被房间确认框替代。
+
+        这些句子没有丢失：它们作为房间的 prompt 显示在确认框里。序章 story4 的
+        四句出征邀请由房间里的「準備好了嗎」确认和环境动作承担，pack 保留原文。
+        """
+        sections = build.section_lines(ROOT / "original/pack/dramas/original_chapters.drama")
+        game = json.loads((ROOT / "src/data/game.json").read_text())
+        allowed = {
+            "c0_s0_story4": ["我也參加這次作戰也許能幫上忙", "我的部隊也參加一起討伐敵軍", "準備好了嗎？", "出征！"],
+            "c1_s0_story2": ["準備好了嗎？"],
+            "c1_s0_story5": ["準備好了嗎？"],
+            "c1_s0_story8": ["準備好了嗎？"],
+            "c1_s1_story4": ["準備好了嗎？"],
+            "c1_s1_story6": ["哦兄長決定出征了嗎？", "大哥派我去向曹操軍求和嗎？"],
+            "c1_s2_story1": ["準備好了嗎？"],
+        }
+        checked = 0
+        for sid, lines in sections.items():
+            if not re.fullmatch(r"c\d+_s\d+_story\d+", sid):
+                continue
+            self.assertIn(sid, game["scenes"], sid)
+            steps = game["scenes"][sid]
+            caps = {build.norm(s["op"]["text"]) for s in steps if s["t"] == "action" and s["op"]["op"] == "caption"}
+            got = [build.norm(s["text"]) for s in steps if s["t"] in ("say", "text") and build.norm(s["text"]) not in caps]
+            want = [build.norm(x) for x in lines if x.strip() and build.norm(x) not in caps]
+            missing = allowed.get(sid, [])
+            for line in missing:
+                self.assertIn(build.norm(line), want, f"{sid} 缺少待替代的原文 {line}")
+                want.remove(build.norm(line))  # 只去掉第一处，顺序仍须一致
+            self.assertEqual(got, want, f"{sid} 正文与 pack 不一致")
+            checked += 1
+        self.assertGreaterEqual(checked, 160)
 
     def test_prologue_records_and_all_coordinate_operations_survive(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())
