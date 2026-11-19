@@ -1071,3 +1071,47 @@ export async function verifyGenericGroupRoom(page) {
   assert.equal(await page.evaluate(() => window.__yjz.story.section), 'c2_s0_story2');
   return '通用房间：闲谈、孙乾推进、糜竺离场、地点按钮换景与下一幕衔接';
 }
+
+// 出征房间：最后一组问「出兵嗎？」，确认后列队、出兵，接下一场营地。
+export async function verifyDepartureRoom(page) {
+  const first = 'c1_s3_story3:b3g4';
+  const fixture = await page.evaluate(async first => {
+    const { SCRIPT, officers } = await import('/src/data/game.ts');
+    const { startStory, restoreStoryPosition } = await import('/src/story.ts');
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'], gold: 1000 });
+    st.resume = { t: 'room', id: first };
+    st.pc = -1;
+    if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
+    for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
+    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    list.slots[5] = { story: st, at: Date.now() };
+    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    localStorage.setItem('yjz.script', 'hant');
+    localStorage.setItem('yjz.anim-speed', '0');
+    return st;
+  }, first);
+
+  await loadSlot(page, 5);
+  assert.equal((await state(page)).story.resume.id, first);
+  await page.click('.actor[data-who="1"]');
+  await page.waitForFunction(() => document.querySelector('#talk p')?.textContent === '出兵嗎？');
+
+  const deadline = Date.now() + 45000;
+  while (Date.now() < deadline) {
+    const now = await page.evaluate(() => ({
+      camp: !!document.querySelector('[data-go="camp-go"]'),
+      talk: !document.getElementById('talk').hidden,
+      chapter: !!document.querySelector('.chapter'),
+    }));
+    if (now.camp) break;
+    if (now.talk) await page.click('#talk');
+    else if (now.chapter) await page.click('#screen');
+    else await page.waitForTimeout(30);
+  }
+  assert.ok(await page.evaluate(() => !!document.querySelector('[data-go="camp-go"]')), '问句之后应进入下邳营地');
+  assert.match(await page.evaluate(() => document.querySelector('#screen .card').textContent), /下邳/);
+  const s = await state(page);
+  assert.deepEqual(s.story.resume, { t: 'camp', id: 'c1_s3_b4' });
+  assert.equal(s.story.gold, fixture.gold, '出征不能顺手发军资');
+  return '出征房间：问句、列队、出兵与下邳营地衔接';
+}

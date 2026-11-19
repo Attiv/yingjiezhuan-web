@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
-import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom } from './story-rooms.mjs';
+import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom, verifyDepartureRoom } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
 // 截图默认写进 docs/screenshots/；SHOTS 指向别处时只出图不碰仓库里的参考图。
@@ -1478,6 +1478,11 @@ await step('许昌议事厅：两轮闲谈、官邸按钮与谋士议事', async
 await step('通用房间：多组闲谈、人物推进与地点按钮换景', async () => {
   await page.goto(`${BASE}/`);
   assert.match(await verifyGenericGroupRoom(page), /地点按钮/);
+});
+
+await step('出征房间：问句、列队、出兵与下邳营地', async () => {
+  await page.goto(`${BASE}/`);
+  assert.match(await verifyDepartureRoom(page), /下邳/);
 });
 
 await step('两份独立剧情：只加数据即可运行，分支奖励与存档互不覆盖', async () => {

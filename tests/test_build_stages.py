@@ -394,9 +394,9 @@ class StageGenerationTests(unittest.TestCase):
     def test_generic_group_rooms_match_original_talk_records(self):
         stages = json.loads((ROOT / "src/data/stages.json").read_text())
         sections = build.section_lines(ROOT / "original/pack/dramas/original_chapters.drama")
-        sids = ["c1_s4_story2", "c1_s4_story3", "c2_s0_story1", "c2_s0_story3", "c2_s0_story5", "c2_s0_story6",
-                "c2_s1_story1", "c2_s1_story11", "c2_s1_story14", "c2_s1_story5", "c2_s2_story2",
-                "c3_s1_story1", "c3_s1_story11", "c3_s1_story7", "c3_s2_story1", "c3_s2_story4"]
+        sids = ["c1_s3_story3", "c1_s4_story11", "c1_s4_story2", "c1_s4_story3", "c2_s0_story1", "c2_s0_story3",
+                "c2_s0_story5", "c2_s0_story6", "c2_s1_story1", "c2_s1_story11", "c2_s1_story14", "c2_s1_story5",
+                "c2_s2_story2", "c3_s1_story1", "c3_s1_story11", "c3_s1_story7", "c3_s2_story1", "c3_s2_story4"]
         for sid in sids:
             with self.subTest(section=sid):
                 info = stages[sid]
@@ -426,6 +426,14 @@ class StageGenerationTests(unittest.TestCase):
                         str(r["trigger"]["args"][0] | r["trigger"]["args"][1] << 8): build.original_timeline(scene, [r], officers)
                         for r in rs if r["index"] != prog[0]["index"]
                     })
+                # 出征段只保留问句与台词，战斗仍由后续营地承担。
+                if sid == "c1_s3_story3":
+                    self.assertEqual(info["departures"], [{"block": 3, "record": 39, "group": 4,
+                                                            "adapter": "room_question"}])
+                    tail = [s["text"] for s in info["timeline"] if s["t"] == "say"][-3:]
+                    self.assertEqual(tail, ["出兵！", "好，時機來了，除掉呂布．",
+                                            "劉備看你的了，我們把部隊埋伏好，如果你勸降成功的話，那我們就一起攻進下邳．"])
+                    self.assertFalse(any(s["t"] == "battle" for s in info["timeline"]))
                 # 地点推进保留原始触发参数，供后续城镇行走替换按钮。
                 located = [r for g in talk_groups for r in groups[g] if r["trigger"]["kind_name"] == "location"]
                 self.assertEqual(len(info.get("locations", [])), len(located))

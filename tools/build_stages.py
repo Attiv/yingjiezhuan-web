@@ -780,8 +780,10 @@ def add_xuchang_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -
 
 
 # 通用房间只收这些操作码之外的多组交谈；选项、条件、战斗、地点都留给人工核对。
-GENERIC_BLOCKERS = {"if_flags", "if_answer", "battle_setup", "choice", "goto_block", "chapter_title",
-                    "add_item", "set_allegiance", "op_3d", "op_23", "op_3b", "op_3c"}
+GENERIC_BLOCKERS = {"if_flags", "choice", "goto_block", "chapter_title",
+                    "add_item", "set_allegiance", "op_3b", "op_3c"}
+# 出征段允许出现，但只能落在最后一组的推进记录里；问句按原文显示，战斗仍交给后面的营地。
+DEPARTURE_OPS = {"if_answer", "battle_setup", "op_3d", "op_23"}
 
 
 def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> list[str]:
@@ -836,6 +838,20 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
         located = {r["index"] for r in block["records"] if r["trigger"]["kind_name"] == "location"}
         if located - {p["index"] for p in progs.values()}:
             continue
+        # 出征指令只允许出现在最后一组的推进记录里；否则会吞掉分支。
+        last_group = max(talk_groups)
+        for g in talk_groups:
+            for r in groups[g]:
+                codes = {c["mnemonic"] for c in r["code"]}
+                if not (codes & DEPARTURE_OPS):
+                    continue
+                if g != last_group or r is not progs[g] or "battle_setup" not in codes or "if_answer" not in codes:
+                    progs = {}
+                    break
+            if not progs:
+                break
+        if not progs:
+            continue
         # 闲谈只能是对白，否则点一下就会带上副作用。
         if any(r["trigger"]["kind_name"] != "talk" or any(c["mnemonic"] not in ("dialogue", "end") for c in r["code"])
                for g in talk_groups for r in groups[g] if r["index"] != progs[g]["index"]):
@@ -844,6 +860,7 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
         steps: list[dict] = []
         rooms: dict[str, dict] = {}
         locations: list[dict] = []
+        departures: list[dict] = []
         for g in sorted(groups):
             rs = groups[g]
             if g not in talk_groups:
@@ -869,7 +886,17 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
                                   "rawArgs": prog["trigger"]["args"].copy(),
                                   "timeline": original_timeline(scene, [prog], officers),
                                   "adapter": "room_button"})
-            steps += original_timeline(scene, [prog], officers)
+            code = prog["code"]
+            setup_at = next((i for i, c in enumerate(code) if c["mnemonic"] == "battle_setup"), None)
+            if setup_at is None:
+                steps += original_timeline(scene, [prog], officers)
+            else:
+                # 问句与列队照原文演；battle_setup 后的换图/摆人不在这里重做，战斗交给下一个营地。
+                departures.append({"block": bi, "record": prog["index"], "group": g,
+                                   "adapter": "room_question"})
+                steps += original_timeline(scene, [{**prog, "code": code[:setup_at]}], officers)
+                tail = [c for c in code[setup_at + 1:] if c["mnemonic"] in ("dialogue", "narration", "end")]
+                steps += original_timeline(scene, [{**prog, "code": tail}], officers)
 
         caps = {norm(s["op"]["text"]) for s in steps if s["t"] == "action" and s["op"]["op"] == "caption"}
         got = [norm(s["text"]) for s in steps if s["t"] in ("say", "text") and norm(s["text"]) not in caps]
@@ -888,6 +915,8 @@ def add_group_rooms(stages: dict, dyn: list[dict], officers: dict[int, str]) -> 
                             "records": sorted({r["index"] for r in block["records"]})})
         if locations:
             info["locations"] = locations
+        if departures:
+            info["departures"] = departures
         info.pop("talks", None)
         made.append(sid)
     if made:
