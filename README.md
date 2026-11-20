@@ -13,7 +13,7 @@
 <table>
 <tr>
 <td width="50%"><img src="docs/screenshots/01-title.png" alt="标题画面"></td>
-<td width="50%"><img src="docs/screenshots/16-story.png" alt="剧情：陈留宫殿"></td>
+<td width="50%"><img src="docs/screenshots/story-chenliu.png" alt="剧情：陈留宫殿"></td>
 </tr>
 <tr>
 <td><img src="docs/screenshots/03-battle-start.png" alt="战场：汜水关"></td>
