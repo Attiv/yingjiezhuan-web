@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: 安装依赖
@@ -34,6 +34,8 @@ jobs:
         run: npm run build
 
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       # 站点里的资源路径是 /assets/...，只能用域名根路径访问；
       # 子路径（<user>.github.io/<repo>/）会 404，所以这里不做 base 改写。
