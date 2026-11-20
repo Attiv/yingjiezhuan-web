@@ -33,10 +33,6 @@ jobs:
       - name: 类型检查与构建
         run: npm run build
 
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
       # 站点里的资源路径是 /assets/...，只能用域名根路径访问；
       # 子路径（<user>.github.io/<repo>/）会 404，所以这里不做 base 改写。
       - uses: actions/upload-pages-artifact@v3
