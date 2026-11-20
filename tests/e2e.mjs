@@ -431,7 +431,6 @@ await step('营地：500 金（曹操在序章拨的那笔）、三人编成（�
   await page.keyboard.press('Enter');
   await page.waitForSelector('#trainer:not([hidden])');
   assert.match(await page.textContent('.trainer'), /武將（3）/);
-  await shot('28-trainer');
   await page.click('[data-tr="close"]');
   await page.click('[data-go="camp-go"]');
   await page.waitForSelector('.room-controls');
