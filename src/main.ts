@@ -20,6 +20,8 @@ import { checkScript, currentStep, nextStep, restoreStoryPosition, startStory, t
 import { initScript, scriptLabel, toggleScript } from './zh';
 import { compileStory } from './story-source';
 import { makeSaveArchive, parseSaveArchive } from './save-archive';
+import { decryptSaveText, encryptSaveText, EncryptedSaveStorage, isEncryptedSaveText } from './save-crypto';
+
 
 const SAVE_KEY = 'yjz.save.v3'; // 流程进度 + 战斗状态
 const CAMERA_FOLLOW_KEY = 'yjz.camera-follow';
@@ -1316,7 +1318,7 @@ async function endTurn(confirmed = false) {
   renderTurn();
   await present(endPhase(b));
   while (autoPhase(b)) await present(aiStep(b));
-  writeAutoSave(); // 友军、敌军及新回合事件全部结算后，保存可直接操作的回合开局。
+  await writeAutoSave(); // 结算完成后先确保自动档密文落盘，再恢复玩家操作。
   await settle();
 }
 
@@ -1386,53 +1388,94 @@ function validSave(d: SaveData | null | undefined): SaveData | null {
 }
 
 const blankList = (): SaveList => ({ slots: Array(SAVE_SLOTS).fill(null), last: null });
+const saveStorage = new EncryptedSaveStorage();
+let saveListCache = blankList();
+let autoSaveCache: SaveEntry | null = null;
 
-function writeSaveList(list: SaveList) {
-  localStorage.setItem(SAVE_LIST_KEY, JSON.stringify(list));
-  // 旧入口 / 自动化测试仍从 yjz.save.v3 找「最近一次存档」，这里保持同步。
-  const mirror = scopedKey(SAVE_KEY);
-  const cur = list.last === null ? null : list.slots[list.last];
-  if (cur) localStorage.setItem(mirror, JSON.stringify({ story: cur.story, battle: cur.battle, storyStage: cur.storyStage }));
-  else localStorage.removeItem(mirror);
-}
-
-/** 读六格表；列表还空时把旧版单槽存档（或外部预置的单槽）接到檔一。 */
-function readSaveList(): SaveList {
+function parseStoredList(text: string | null): SaveList {
   const list = blankList();
+  if (!text) return list;
   try {
-    const raw = JSON.parse(localStorage.getItem(SAVE_LIST_KEY) ?? 'null') as Partial<SaveList> | null;
+    const raw = JSON.parse(text) as Partial<SaveList> | null;
     if (raw && Array.isArray(raw.slots)) {
       for (let i = 0; i < SAVE_SLOTS; i++) {
-        const e = raw.slots[i] as SaveEntry | null | undefined;
-        const ok = e && validSave(e);
-        list.slots[i] = ok ? { story: ok.story, battle: ok.battle, storyStage: ok.storyStage, at: Number(e!.at) || Date.now() } : null;
+        const entry = raw.slots[i] as SaveEntry | null | undefined;
+        list.slots[i] = entry && typeof entry === 'object'
+          ? { ...entry, at: Number(entry.at) || Date.now() }
+          : null;
       }
-      list.last = Number.isInteger(raw.last) && list.slots[raw.last as number] ? raw.last as number : null;
-    }
-    if (!list.slots.some(Boolean)) {
-      const legacy = validSave(JSON.parse(localStorage.getItem(scopedKey(SAVE_KEY)) ?? 'null') as SaveData | null);
-      if (legacy) {
-        list.slots[0] = { ...legacy, at: Date.now() };
-        list.last = 0;
-        writeSaveList(list);
-      }
+      list.last = Number.isInteger(raw.last) && raw.last! >= 0 && raw.last! < SAVE_SLOTS && list.slots[raw.last!] ? raw.last! : null;
     }
   } catch { /* 坏表当空表，不挡着玩 */ }
   return list;
 }
 
-/** 自动档不写手动槽位或旧版最近存档镜像，手动保存也不能碰它。 */
-function readAutoSave(): SaveEntry | null {
+async function initializeSaveStorage() {
+  await encryptSaveText(''); // Fail early when Web Crypto is unavailable instead of silently saving plaintext.
+  const mirrorKey = scopedKey(SAVE_KEY);
+  await saveStorage.initialize([SAVE_LIST_KEY, mirrorKey, AUTO_SAVE_KEY]);
+  saveListCache = parseStoredList(saveStorage.getItem(SAVE_LIST_KEY));
+  if (!readSaveList().slots.some(Boolean)) {
+    try {
+      const legacy = validSave(JSON.parse(saveStorage.getItem(mirrorKey) ?? 'null') as SaveData | null);
+      if (legacy) {
+        saveListCache.slots[0] = { ...legacy, at: Date.now() };
+        saveListCache.last = 0;
+        await writeSaveList(saveListCache);
+      }
+    } catch { /* 坏的旧版单槽存档按空档处理 */ }
+  }
   try {
-    const e = JSON.parse(localStorage.getItem(AUTO_SAVE_KEY) ?? 'null') as SaveEntry | null;
-    return e?.battle && validSave(e) ? e : null;
-  } catch { return null; }
+    const entry = JSON.parse(saveStorage.getItem(AUTO_SAVE_KEY) ?? 'null') as SaveEntry | null;
+    autoSaveCache = entry?.battle && validSave(entry) ? entry : null;
+  } catch { autoSaveCache = null; }
+  await saveStorage.flush();
 }
-function writeAutoSave() {
-  if (b.stage !== 'player' || b.undo) return;
+
+async function writeSaveList(list: SaveList) {
+  const snapshot = JSON.parse(JSON.stringify(list)) as SaveList;
+  const mirrorKey = scopedKey(SAVE_KEY);
+  const before = [saveStorage.getItem(SAVE_LIST_KEY), saveStorage.getItem(mirrorKey)];
+  const current = snapshot.last === null ? null : snapshot.slots[snapshot.last];
+  saveStorage.setItem(SAVE_LIST_KEY, JSON.stringify(snapshot));
+  if (current) saveStorage.setItem(mirrorKey, JSON.stringify({ story: current.story, battle: current.battle, storyStage: current.storyStage }));
+  else saveStorage.removeItem(mirrorKey);
   try {
-    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify({ story, battle: b, at: Date.now() } satisfies SaveEntry));
-  } catch { log('自动存档失败：浏览器不允许写入本地存储，请检查存储空间。'); }
+    await saveStorage.flush();
+    saveListCache = snapshot;
+  } catch (error) {
+    before.forEach((value, i) => value === null ? saveStorage.removeItem([SAVE_LIST_KEY, mirrorKey][i]!) : saveStorage.setItem([SAVE_LIST_KEY, mirrorKey][i]!, value));
+    try { await saveStorage.flush(); } catch { /* best-effort restore */ }
+    throw error;
+  }
+}
+
+/** 读取当前页面初始化时解密并校验过的手动档缓存。 */
+function readSaveList(): SaveList {
+  const list = blankList();
+  for (let i = 0; i < SAVE_SLOTS; i++) {
+    const entry = saveListCache.slots[i];
+    const valid = entry && validSave(entry);
+    list.slots[i] = valid ? { ...valid, at: Number(entry!.at) || Date.now() } : null;
+  }
+  const last = saveListCache.last;
+  list.last = last !== null && list.slots[last] ? last : null;
+  return list;
+}
+
+/** 自动档只在初始化时解密；手动保存不会更改它。 */
+function readAutoSave(): SaveEntry | null {
+  return autoSaveCache;
+}
+
+async function writeAutoSave() {
+  if (b.stage !== 'player' || b.undo) return;
+  const entry = JSON.parse(JSON.stringify({ story, battle: b, at: Date.now() })) as SaveEntry;
+  saveStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(entry));
+  try {
+    await saveStorage.flush();
+    autoSaveCache = entry;
+  } catch { log('自动存档失败：浏览器存储不可用。'); }
 }
 const hasSaves = () => !!readAutoSave() || readSaveList().slots.some(Boolean);
 const saveSummary = (e: SaveEntry) => {
@@ -1450,29 +1493,33 @@ function archiveSaveEntry(entry: Record<string, unknown>): SaveEntry | null {
   return save ? { ...save, at } : null;
 }
 
-function exportSaves() {
+async function exportSaves() {
   try {
+    await saveStorage.flush();
     const list = readSaveList();
-    const text = makeSaveArchive(CAMPAIGN.id, { slots: list.slots, last: list.last, auto: readAutoSave() });
-    const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+    const archive = makeSaveArchive(CAMPAIGN.id, { slots: list.slots, last: list.last, auto: readAutoSave() });
+    const cipherText = await encryptSaveText(archive);
+    const blob = new Blob([cipherText], { type: 'application/octet-stream' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     const stamp = new Date().toISOString().slice(0, 10);
     const name = CAMPAIGN.id.replace(/[^a-z0-9_-]+/gi, '-') || 'campaign';
     anchor.href = url;
-    anchor.download = `yingjiezhuan-${name}-saves-${stamp}.json`;
+    anchor.download = `yingjiezhuan-${name}-saves-${stamp}.yjzsave`;
     anchor.click();
     window.setTimeout(() => URL.revokeObjectURL(url), 0);
-    showSaveNotice('存档已导出。');
-  } catch {
-    showSaveNotice('导出失败：浏览器不允许读取本地存档。');
+    showSaveNotice('加密存档已导出。');
+  } catch (error) {
+    showSaveNotice(error instanceof Error ? `导出失败：${error.message}` : '导出失败：浏览器存储不可用。');
   }
 }
 
 async function importSaves(file: File) {
   try {
     if (file.size > 10 * 1024 * 1024) throw new Error('存档文件不能超过 10 MB。');
-    const archive = parseSaveArchive<SaveEntry>(await file.text(), CAMPAIGN.id, archiveSaveEntry);
+    const fileText = await file.text();
+    const archiveText = isEncryptedSaveText(fileText) ? await decryptSaveText(fileText) : fileText;
+    const archive = parseSaveArchive<SaveEntry>(archiveText, CAMPAIGN.id, archiveSaveEntry);
     if (archive.auto && !archive.auto.battle) throw new Error('自动档缺少有效的战斗进度。');
     const wasOpen = saveListEl()?.hidden === false;
     const previousMode = saveMode;
@@ -1486,22 +1533,23 @@ async function importSaves(file: File) {
     }
 
     const keys = [SAVE_LIST_KEY, scopedKey(SAVE_KEY), AUTO_SAVE_KEY];
-    const previous = keys.map((key) => localStorage.getItem(key));
+    const previous = keys.map((key) => saveStorage.getItem(key));
+    const oldAuto = autoSaveCache;
     try {
-      writeSaveList({ slots: archive.slots, last: archive.last });
-      if (archive.auto) localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(archive.auto));
-      else localStorage.removeItem(AUTO_SAVE_KEY);
+      await writeSaveList({ slots: archive.slots, last: archive.last });
+      if (archive.auto) saveStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(archive.auto));
+      else saveStorage.removeItem(AUTO_SAVE_KEY);
+      await saveStorage.flush();
+      autoSaveCache = archive.auto;
     } catch (error) {
-      keys.forEach((key, i) => {
-        try {
-          if (previous[i] === null) localStorage.removeItem(key);
-          else localStorage.setItem(key, previous[i]!);
-        } catch { /* 存储空间不足时尽力恢复原值 */ }
-      });
+      keys.forEach((key, i) => previous[i] === null ? saveStorage.removeItem(key) : saveStorage.setItem(key, previous[i]!));
+      autoSaveCache = oldAuto;
+      try { await saveStorage.flush(); } catch { /* best-effort restore */ }
+      saveListCache = parseStoredList(previous[0]);
       throw error;
     }
     if (wasOpen) openSaveList(previousMode);
-    showSaveNotice('存档已导入。');
+    showSaveNotice('加密存档已导入。');
     log('已导入存档文件。');
   } catch (error) {
     showSaveNotice(error instanceof Error ? `导入失败：${error.message}` : '导入失败：文件内容无效。');
@@ -1519,7 +1567,7 @@ function currentSaveData(): SaveData | null {
     section: stageSection, line: stageLine, camera: { ...storyCamera }, scene: stageScript.snapshot(),
   } };
 }
-function writeSlot(i: number): boolean {
+async function writeSlot(i: number): Promise<boolean> {
   if (!Number.isInteger(i) || i < 0 || i >= SAVE_SLOTS) return false;
   const data = currentSaveData();
   if (!data) return false;
@@ -1527,11 +1575,11 @@ function writeSlot(i: number): boolean {
     const list = readSaveList();
     list.slots[i] = { ...data, at: Date.now() };
     list.last = i;
-    writeSaveList(list);
+    await writeSaveList(list);
     log(`已存入檔${SLOT_NAMES[i]}。`);
     return true;
-  } catch {
-    log('存档失败：浏览器不允许写入本地存储。');
+  } catch (error) {
+    log(error instanceof Error ? `存档失败：${error.message}` : '存档失败：浏览器本地存储不可用。');
     return false;
   }
 }
@@ -1544,24 +1592,26 @@ function showSaveNotice(text: string) {
   saveNoticeTimer = window.setTimeout(() => { el.hidden = true; }, 1800);
 }
 
-function quickSave() {
+async function quickSave() {
   if (answer || saveListEl()?.hidden === false) return;
   if (!currentSaveData()) return showSaveNotice('当前状态暂不可存档。');
-  showSaveNotice(writeSlot(0) ? '已快速存入檔一。' : '存档失败，请检查浏览器本地存储。');
+  showSaveNotice(await writeSlot(0) ? '已快速存入檔一。' : '存档失败，请检查浏览器本地存储。');
 }
 
-function deleteSlot(i: number) {
-  if (!Number.isInteger(i) || i < 0 || i >= SAVE_SLOTS) return;
+async function deleteSlot(i: number) {
+  if (!Number.isInteger(i) || i < 0 || i >= SAVE_SLOTS) return false;
   try {
     const list = readSaveList();
     list.slots[i] = null;
     if (list.last === i) { const next = list.slots.findIndex(Boolean); list.last = next < 0 ? null : next; }
-    writeSaveList(list);
+    await writeSaveList(list);
     log(`已刪除檔${SLOT_NAMES[i]}。`);
-  } catch { log('删除失败：浏览器不允许写入本地存储。'); }
+    return true;
+  } catch { log('删除失败：浏览器本地存储不可用。'); return false; }
 }
 function loadSlot(i: number | 'auto'): boolean {
-  const d = validSave(i === 'auto' ? readAutoSave() : readSaveList().slots[i]);
+  const stored = validSave(i === 'auto' ? readAutoSave() : readSaveList().slots[i]);
+  const d = stored ? JSON.parse(JSON.stringify(stored)) as SaveData : null;
   if (!d) return log('没有可用的存档。'), false;
   if (d.battle) {
     storyRun++;
@@ -1606,8 +1656,8 @@ function renderSaveList() {
         (e ? `<button class="btn del${del ? ' sure' : ''}" data-slot="${i}" data-act="delete">${del ? '確認刪除' : '刪除'}</button>` : '') +
         '</div>';
     }).join('')}</div>` +
-    '<p class="archive-note">导入会替换当前六个手动档与自动档；不同剧本的存档不能互换。</p>' +
-    '<input class="archive-file" type="file" accept=".json,application/json" aria-label="选择存档文件">' +
+    '<p class="archive-note">本地与备份文件均以 AES-GCM 加密，无需密码；密钥随游戏程序公开，主要避免直接阅读 JSON，不能防止主动解密或篡改。旧版 JSON 备份仍可导入；不同剧本的存档不能互换。</p>' +
+    '<input class="archive-file" type="file" accept=".yjzsave,.json,application/json" aria-label="选择存档文件">' +
     '<div class="row end archive-actions"><button class="btn" data-act="export"' + (hasExport ? '' : ' disabled') + '>导出存档</button>' +
     '<button class="btn" data-act="import">导入存档</button><button class="btn" data-act="close">返回</button></div></div>';
   const fileInput = el.querySelector<HTMLInputElement>('.archive-file');
@@ -1641,9 +1691,9 @@ function openSaveList(use: 'save' | 'load') {
       if (act === 'import') return btn.closest<HTMLElement>('#save-list')?.querySelector<HTMLInputElement>('.archive-file')?.click();
       if (act === 'delete') {
         if (pendingDelete !== i) { pendingDelete = i; return renderSaveList(); }
-        deleteSlot(i); pendingDelete = null; return renderSaveList();
+        void deleteSlot(i).then(() => { pendingDelete = null; renderSaveList(); }); return;
       }
-      if (act === 'write') { if (writeSlot(i)) closeSaveList(); return; }
+      if (act === 'write') { void writeSlot(i).then((ok) => { if (ok) closeSaveList(); }); return; }
       if (act === 'read') { closeSaveList(); if (!loadSlot(btn.dataset.slot === 'auto' ? 'auto' : i)) showTitle('没有可用的存档。'); return; }
     });
   }
@@ -2396,7 +2446,7 @@ game.events.once('ready', () => {
     if (import.meta.env.DEV) {
       // 仅开发模式：供调试与自动化测试读取状态
       if (params.has('fast')) (scene.speed = 0), (autoTalk = true);
-      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxDiagnostics, sfxEnabled, duel: playDuel, banner, openSaveList, get trainerOpen() { return trainerOpen; }, get gateOpen() { return gateOpen; } } });
+      Object.assign(window, { __yjz: { get b() { return b; }, get story() { return story; }, get mode() { return mode; }, get bgm() { return bgmKey; }, get bgmSrc() { return audio.src; }, bgmLog: () => [...bgmLog], banners: () => [...banners], scene, level: lvOf, sfx: sfxLog, sfxDiagnostics, sfxEnabled, duel: playDuel, banner, openSaveList, saveStorage: { getItem: (key: string) => saveStorage.getItem(key), setItem: (key: string, value: string) => { saveStorage.setItem(key, value); if (key === SAVE_LIST_KEY) saveListCache = parseStoredList(value); if (key === AUTO_SAVE_KEY) { try { const entry = JSON.parse(value) as SaveEntry; autoSaveCache = entry?.battle && validSave(entry) ? entry : null; } catch { autoSaveCache = null; } } return saveStorage.flush(); }, removeItem: (key: string) => { saveStorage.removeItem(key); if (key === SAVE_LIST_KEY) saveListCache = blankList(); if (key === AUTO_SAVE_KEY) autoSaveCache = null; return saveStorage.flush(); }, flush: () => saveStorage.flush() }, get trainerOpen() { return trainerOpen; }, get gateOpen() { return gateOpen; } } });
     }
     if (demo) {
       // 演示流程的特写演员是现画的一张图集，直接放进贴图缓存，清单里按键引用
@@ -2413,7 +2463,9 @@ game.events.once('ready', () => {
     void scene.setBattle(b);
     renderUnit(null);
     fit();
-    void document.fonts.load('12px Pixel').then(() => showTitle());
+    void Promise.all([document.fonts.load('12px Pixel'), initializeSaveStorage()])
+      .then(() => showTitle(saveStorage.invalidKeys.length ? '检测到无法解密的本地存档；可尝试导入备份。' : ''))
+      .catch((error) => showTitle(error instanceof Error ? `存档加密初始化失败：${error.message}` : '存档加密初始化失败。'));
   };
   scene.sys.settings.status >= Phaser.Scenes.RUNNING ? start() : scene.events.once('ready', start);
 });

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { open } from '../tools/browser.mjs';
 
 const { browser, page, errors } = await open(process.env.BASE ?? 'http://127.0.0.1:5273/?seed=3&fast');
-const slots = () => page.evaluate(() => localStorage.getItem('yjz.saves.v1'));
-const auto = () => page.evaluate(() => localStorage.getItem('yjz.autosave.v1'));
+const slots = () => page.evaluate(() => window.__yjz.saveStorage.getItem('yjz.saves.v1'));
+const auto = () => page.evaluate(() => window.__yjz.saveStorage.getItem('yjz.autosave.v1'));
 const notice = () => page.textContent('#save-notice');
 async function advance(stop) {
   for (let i = 0; i < 800; i++) {
@@ -41,7 +41,7 @@ try {
   await page.click('[data-go="start"]');
   await advance(() => page.$('.room-controls'));
   await page.keyboard.press('s');
-  await page.waitForFunction(() => JSON.parse(localStorage.getItem('yjz.saves.v1'))?.slots[0]);
+  await page.waitForFunction(() => JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1'))?.slots[0]);
   let list = JSON.parse(await slots());
   assert.equal(list.last, 0);
   assert.ok(list.slots[0].storyStage && !list.slots[0].battle);
@@ -83,7 +83,12 @@ try {
   console.log('✓ 剧情地图真实长按拖动不生成图片拖拽，房间交互保留');
 
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForFunction(() => {
+    const r = document.getElementById('stage').getBoundingClientRect();
+    return r.width <= innerWidth && r.height <= innerHeight;
+  });
   await page.keyboard.press('S');
+  await page.waitForFunction(() => !document.getElementById('save-notice').hidden);
   const r = await page.$eval('#save-notice', el => el.getBoundingClientRect().toJSON());
   assert.ok(r.left >= 0 && r.right <= 390 && r.top >= 0);
   await page.screenshot({ path: '/tmp/yjz-quick-save-mobile.png' });
@@ -93,9 +98,9 @@ try {
   await advance(() => page.evaluate(() => window.__yjz.mode === 'idle'));
   const autoBefore = await auto();
   await page.evaluate(() => {
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1'));
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1'));
     list.slots[1] = { ...list.slots[0], at: 1 };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
   });
   const secondSlot = JSON.parse(await slots()).slots[1];
   await page.keyboard.press('s');

@@ -62,19 +62,19 @@ for (let i = 0; i < 300; i++) {
 }
 assert.match(await text('#turn'), /第1回合/);
 assert.match(await text('#log'), /目标：一、殲滅華雄/);
-const autoStart = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')));
-assert.equal(autoStart.battle.round, 1, '生产版开战即写独立自动档');
-assert.equal(autoStart.battle.stage, 'player');
+const autoStart = await page.evaluate(() => localStorage.getItem('yjz.autosave.v1'));
+assert.ok(autoStart?.startsWith('YJZENC1:'), '生产版自动档应以 AES-GCM 密文保存');
 
 // 结束回合：先确认（还有部队没行动），敌军行动完进入第 2 回合
 await page.click('#sys button:has-text("回合结束")');
 if (await exists('#talk .ask')) await page.click('#talk .ask button:first-child');
-await page.waitForFunction(() => document.getElementById('turn').textContent.includes('第2回合') &&
-  JSON.parse(localStorage.getItem('yjz.autosave.v1'))?.battle.round === 2, null, { timeout: 90000 });
-const autoNext = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')));
-assert.equal(autoNext.battle.level, autoStart.battle.level);
-assert.equal(autoNext.battle.stage, 'player', '生产版新回合完成结算后更新自动档');
-assert.ok(autoNext.at >= autoStart.at);
+await page.waitForFunction((previous) => {
+  const current = localStorage.getItem('yjz.autosave.v1');
+  return document.getElementById('turn').textContent.includes('第2回合') && current?.startsWith('YJZENC1:') && current !== previous;
+}, autoStart, { timeout: 90000 });
+const autoNext = await page.evaluate(() => localStorage.getItem('yjz.autosave.v1'));
+assert.ok(autoNext?.startsWith('YJZENC1:'), '新回合自动档应继续以密文保存');
+assert.notEqual(autoNext, autoStart, '新回合应更新随机向量和密文');
 await page.screenshot({ path: new URL('../docs/screenshots/13-production-build.png', import.meta.url).pathname });
 
 // 生产包里 21 个音效都在（运行时不依赖开发态调试对象）

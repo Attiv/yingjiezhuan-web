@@ -207,7 +207,7 @@ await step('标题画面：原版标题图、繁体菜单，没存档时「讀�
   await page.waitForSelector('[data-go="start"]');
   assert.match(await page.textContent('#screen h1'), /三國志英傑傳/);
   assert.match(await page.textContent('#screen'), /PC DOS 繁體中文版/);
-  assert.equal(await page.evaluate(() => localStorage.getItem('yjz.save.v3')), null);
+  assert.equal(await page.evaluate(() => window.__yjz.saveStorage.getItem('yjz.save.v3')), null);
   assert.equal(await page.isDisabled('[data-go="load"]'), true, '没有存档时读档应不可点');
   await page.waitForFunction(() => !!window.__yjz, null, { timeout: 30000 });
   assert.equal(await page.evaluate(() => window.__yjz.bgm), 'title', '标题应播原版标题曲');
@@ -414,8 +414,8 @@ await step('营地：500 金（曹操在序章拨的那笔）、三人编成（�
   await page.click('#save-list [data-slot="0"][data-act="write"]');
   assert.equal(await page.evaluate(() => document.getElementById('save-list').hidden), true, '存档后列表收起');
   const saved = await page.evaluate(() => ({
-    mirror: JSON.parse(localStorage.getItem('yjz.save.v3')),
-    list: JSON.parse(localStorage.getItem('yjz.saves.v1')),
+    mirror: JSON.parse(window.__yjz.saveStorage.getItem('yjz.save.v3')),
+    list: JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1')),
   }));
   assert.equal(saved.mirror.battle, undefined, '营地存档只存流程，不存战斗');
   assert.equal(saved.mirror.story.gold, 400);
@@ -947,7 +947,7 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
 });
 
 await step('存档列表：多槽写入、概要、覆盖、删除 → 读指定档恢复完整战况', async () => {
-  const autoBefore = await page.evaluate(() => localStorage.getItem('yjz.autosave.v1'));
+  const autoBefore = await page.evaluate(() => window.__yjz.saveStorage.getItem('yjz.autosave.v1'));
   assert.equal(JSON.parse(autoBefore).battle.round, 2, '每回合应保存新回合开局');
   await sys('存档');
   assert.equal(await page.$$eval('.auto-slot [data-act="write"], .auto-slot [data-act="delete"]', (els) => els.length), 0, '自动档不可手动覆盖或删除');
@@ -955,8 +955,8 @@ await step('存档列表：多槽写入、概要、覆盖、删除 → 读指定
   // 檔一还留着营地存档；这次写到檔二，两个槽互不影响
   await page.click('#save-list [data-slot="1"][data-act="write"]');
   const saved = await state();
-  let list = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.saves.v1')));
-  assert.equal(await page.evaluate(() => localStorage.getItem('yjz.autosave.v1')), autoBefore, '手动保存不得覆盖自动档');
+  let list = await page.evaluate(() => JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1')));
+  assert.equal(await page.evaluate(() => window.__yjz.saveStorage.getItem('yjz.autosave.v1')), autoBefore, '手动保存不得覆盖自动档');
   assert.equal(list.last, 1, '最近存档指向檔二');
   assert.equal(list.slots[0].battle, undefined, '檔一仍是只含流程的营地存档');
   assert.equal(list.slots[1].battle.level, saved.level, '檔二带完整战况');
@@ -974,7 +974,7 @@ await step('存档列表：多槽写入、概要、覆盖、删除 → 读指定
   await page.click('#save-list [data-slot="2"][data-act="delete"]'); // 第一下只是变「確認刪除」
   assert.match(await page.textContent('#save-list [data-slot="2"][data-act="delete"]'), /確認刪除/);
   await page.click('#save-list [data-slot="2"][data-act="delete"]'); // 第二下才真的删
-  list = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.saves.v1')));
+  list = await page.evaluate(() => JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1')));
   assert.equal(list.slots[2], null, '確認后檔三被删掉');
   assert.equal(list.slots[1].battle.level, saved.level, '删别的槽不动檔二');
   await page.keyboard.press('Escape'); // Esc 也能收起列表
@@ -992,7 +992,7 @@ await step('存档列表：多槽写入、概要、覆盖、删除 → 读指定
   await page.click('#save-list [data-slot="1"][data-act="read"]'); // 明确选檔二，不是「最近一个」
   await settle();
   assert.deepEqual(await state(), saved, '读档应恢复完整战斗状态（含随机数、回合、行动标记、事件）');
-  const automatic = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')).battle);
+  const automatic = await page.evaluate(() => JSON.parse(window.__yjz.saveStorage.getItem('yjz.autosave.v1')).battle);
   assert.ok(automatic.round > 2, '下一回合自动更新自动档');
   await sys('读档');
   await page.click('#save-list [data-slot="auto"][data-act="read"]');
@@ -1005,7 +1005,7 @@ await step('存档列表：多槽写入、概要、覆盖、删除 → 读指定
 
 await step('从标题读战斗档：标题卡片必须收起，直接回到战场原状态', async () => {
   // 回归：begin() 以前只开战、不收起 #screen，从标题读战斗档会停在标题画面一动不动。
-  const disk = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.saves.v1')).slots[1].battle);
+  const disk = await page.evaluate(() => JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1')).slots[1].battle);
   await page.reload();
   await page.waitForSelector('[data-go="start"]');
   await page.click('[data-go="load"]');
@@ -1224,8 +1224,8 @@ await step('后期关卡实机：大地图、民众护送、军乐队都能开�
     assert.ok(pc > 0, `${lid} 应在流程里`);
     const story = { script: 'yingjiezhuan', pc, bg: '', picture: '', bgm: '', cast: [], flags: {}, roster, party, bag: [], deploy: [], gold: 10000, resume: { t: 'battle', id: lid } };
     await page.evaluate((st) => {
-      localStorage.setItem('yjz.saves.v1', JSON.stringify({ slots: [{ story: st, at: Date.now() }], last: 0 }));
-      localStorage.setItem('yjz.save.v3', JSON.stringify({ story: st }));
+      window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify({ slots: [{ story: st, at: Date.now() }], last: 0 }));
+      window.__yjz.saveStorage.setItem('yjz.save.v3', JSON.stringify({ story: st }));
     }, story);
     await page.reload();
     await page.waitForSelector('[data-go="start"]');
@@ -1384,7 +1384,7 @@ await step('简繁切换：默认简体，一键还原原版繁体，对白 / �
 
 await step('旧档迁移：信都营地保留已选分支，旧战斗档按关卡定位', async () => {
   const G = JSON.parse(readFileSync(new URL('../src/data/game.json', import.meta.url), 'utf8'));
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('yjz.autosave.v1')));
+  const saved = await page.evaluate(() => JSON.parse(window.__yjz.saveStorage.getItem('yjz.autosave.v1')));
   assert.ok(saved?.battle, '前序战斗应留下完整自动档');
   const campPc = G.steps.findIndex((s) => s.t === 'camp' && s.battle === 'c1_s0_b6');
   const oldStory = await page.evaluate(async () => {
@@ -1405,7 +1405,7 @@ await step('旧档迁移：信都营地保留已选分支，旧战斗档按关�
   oldBattle.story.pc = -1;
   delete oldBattle.story.resume;
   await page.evaluate(({ oldStory, oldBattle }) => {
-    localStorage.setItem('yjz.saves.v1', JSON.stringify({ slots: [{ story: oldStory, at: Date.now() }, oldBattle], last: 0 }));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify({ slots: [{ story: oldStory, at: Date.now() }, oldBattle], last: 0 }));
   }, { oldStory, oldBattle });
   await page.reload();
   await page.waitForSelector('[data-go="load"]');

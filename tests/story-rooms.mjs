@@ -162,9 +162,9 @@ export async function verifyImportedStories(page, base) {
   await page.evaluate(story => {
     // 独立剧本的存档键带 @剧本id；先清掉，回归才能反复跑，也才算「别的剧本看不到」。
     for (const key of Object.keys(localStorage)) if (key.includes('@')) localStorage.removeItem(key);
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hans');
   }, fixtures[originalRoom]);
   await loadSlot(page, 5);
@@ -277,10 +277,10 @@ export async function verifyRooms(page) {
   const ids = ['c1_s0_story0:b0g2', 'c1_s0_story0:b1g0', 'c1_s0_story1:b2g0', 'c1_s0_story2:b2g1', 'c1_s0_story5:b5g4', 'c1_s0_story8:b8g1'];
   for (const id of ids) assert.ok(fixtures[id], `真实路线必须到达 ${id}`);
   await page.evaluate(fixtures => {
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     const selected = ['c1_s0_story0:b0g2', 'c1_s0_story5:b5g4', 'c1_s0_story8:b8g1', 'c0_s0_story4'];
     selected.forEach((id, n) => { list.slots[n + 2] = { story: fixtures[id], at: Date.now() }; });
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
   }, fixtures);
   const results = [];
@@ -393,9 +393,9 @@ export async function verifyBeihaiRoom(page) {
       if (st.section === 'c1_s1_story4' && beforeGold === undefined) beforeGold = st.gold;
       if (step.t !== 'room' || step.id !== roomId) continue;
       for (const id of st.party) st.roster[id] ??= { level: officers[id].level, exp: 0, items: [] };
-      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
       list.slots[4] = { story: st, at: Date.now() };
-      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
       localStorage.setItem('yjz.script', 'hant');
       localStorage.setItem('yjz.anim-speed', '0');
       return { story: st, beforeGold };
@@ -465,9 +465,9 @@ export async function verifyXuzhouRooms(page) {
     for (let n = 0, step = nextStep(SCRIPT, st, 0, api); step && n < 5000; n++, step = nextStep(SCRIPT, st, 0, api)) {
       if (step.t !== 'room' || step.id !== first) continue;
       for (const id of st.party) st.roster[id] ??= { level: officers[id].level, exp: 0, items: [] };
-      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
       list.slots[4] = { story: st, at: Date.now() };
-      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
       localStorage.setItem('yjz.script', 'hant');
       localStorage.setItem('yjz.anim-speed', '0');
       return st;
@@ -561,9 +561,9 @@ export async function verifyXuzhouSecondScene(page) {
     for (let n = 0, step = nextStep(SCRIPT, st, 0, api); step && n < 10000; n++, step = nextStep(SCRIPT, st, step.t === 'choice' ? 0 : 0, api)) {
       if (step.t !== 'room' || step.id !== first) continue;
       for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
       list.slots[5] = { story: st, at: Date.now() };
-      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
       localStorage.setItem('yjz.script', 'hant');
       localStorage.setItem('yjz.anim-speed', '0');
       return st;
@@ -661,9 +661,9 @@ export async function verifyXuzhouReturnRooms(page) {
     }
     if (!step || step.t !== 'room' || step.id !== first) throw new Error('返回徐州路线未到达第一组交谈');
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
     localStorage.setItem('yjz.anim-speed', '0');
     return st;
@@ -718,9 +718,9 @@ export async function verifyXiaopeiReturnRooms(page) {
       if (step.t === 'say' || step.t === 'text') lines.push(step.text);
       if (step.t !== 'room' || step.id !== first) continue;
       for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
       list.slots[5] = { story: st, at: Date.now() };
-      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
       localStorage.setItem('yjz.script', 'hant');
       localStorage.setItem('yjz.anim-speed', '0');
       return { story: st, lines };
@@ -835,9 +835,9 @@ export async function verifyLubuEnvoyRooms(page) {
     for (let n = 0, step = nextStep(SCRIPT, st, 0, api); step && n < 600; n++, step = nextStep(SCRIPT, st, 0, api)) {
       if (step.t !== 'room' || step.id !== first) continue;
       for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
       list.slots[5] = { story: st, at: Date.now() };
-      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
       localStorage.setItem('yjz.script', 'hant');
       localStorage.setItem('yjz.anim-speed', '0');
       return st;
@@ -951,9 +951,9 @@ export async function verifyXuchangRoom(page) {
     for (let n = 0, step = nextStep(SCRIPT, st, 0, api); step && n < 900; n++, step = nextStep(SCRIPT, st, 0, api)) {
       if (step.t !== 'room' || step.id !== first) continue;
       for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
       list.slots[5] = { story: st, at: Date.now() };
-      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
       localStorage.setItem('yjz.script', 'hant');
       localStorage.setItem('yjz.anim-speed', '0');
       return st;
@@ -1024,9 +1024,9 @@ export async function verifyGenericGroupRoom(page) {
     st.pc = -1;
     if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
     localStorage.setItem('yjz.anim-speed', '0');
     return st;
@@ -1083,9 +1083,9 @@ export async function verifyDepartureRoom(page) {
     st.pc = -1;
     if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
     localStorage.setItem('yjz.anim-speed', '0');
     return st;
@@ -1127,9 +1127,9 @@ export async function verifyChoiceRoom(page) {
     st.pc = -1;
     if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
     localStorage.setItem('yjz.anim-speed', '0');
     return st;
@@ -1165,9 +1165,9 @@ export async function verifyChoiceRoom(page) {
     st.pc = -1;
     if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${trial} 无法定位`);
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     return st;
   }, trial);
   await loadSlot(page, 5);
@@ -1210,9 +1210,9 @@ export async function verifyXuShuRooms(page) {
     st.pc = -1;
     if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
     localStorage.setItem('yjz.anim-speed', '0');
     return st;
@@ -1264,9 +1264,9 @@ export async function verifyActionRoomPause(page) {
     st.pc = -1;
     if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
     localStorage.setItem('yjz.anim-speed', '0');
     return st;
@@ -1340,9 +1340,9 @@ export async function verifyMergedTailRoom(page) {
     st.pc = -1;
     if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
     localStorage.setItem('yjz.anim-speed', '0');
     return st;
@@ -1383,9 +1383,9 @@ export async function verifyLongChoiceRoom(page) {
     st.pc = -1;
     if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${first} 无法定位`);
     for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-    const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+    const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
     list.slots[5] = { story: st, at: Date.now() };
-    localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+    window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
     localStorage.setItem('yjz.script', 'hant');
     localStorage.setItem('yjz.anim-speed', '0');
     return st;
@@ -1437,9 +1437,9 @@ export async function verifyBranchOptionRooms(page) {
       st.pc = -1;
       if (!restoreStoryPosition(SCRIPT, st)) throw new Error(`锚点 ${room} 无法定位`);
       for (const id of st.party) st.roster[id] ??= { level: officers[id]?.level ?? 1, exp: 0, items: [] };
-      const list = JSON.parse(localStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
+      const list = JSON.parse(window.__yjz.saveStorage.getItem('yjz.saves.v1') ?? '{"slots":[],"last":null}');
       list.slots[5] = { story: st, at: Date.now() };
-      localStorage.setItem('yjz.saves.v1', JSON.stringify(list));
+      window.__yjz.saveStorage.setItem('yjz.saves.v1', JSON.stringify(list));
       localStorage.setItem('yjz.script', 'hant');
       localStorage.setItem('yjz.anim-speed', '0');
     }, { room });
