@@ -285,6 +285,9 @@ button { touch-action: manipulation; }
 #save-list .save-slot .btn.del { border-color: #8a4a4a; }
 #save-list .save-slot .btn.sure { background: var(--orange); color: var(--ink); }
 #save-list .row.end .btn { width: auto; padding: 3px 16px; }
+#save-list .archive-note { margin: 8px 0 0; color: var(--dim); }
+#save-list .archive-file { display: none; }
+#save-list .archive-actions { justify-content: flex-end; flex-wrap: wrap; }
 
 /* 战斗结果：军资一行 + 我军成绩表（经验 / 等级 / 兵力） */
 .card.result { width: 520px; }

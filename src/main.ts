@@ -19,6 +19,7 @@ import { BattleScene, CELL, RES, VIEW_H, VIEW_W, sideOf } from './scene';
 import { checkScript, currentStep, nextStep, restoreStoryPosition, startStory, testFlag, type Shown, type Story, type StoryApi, type Step } from './story';
 import { initScript, scriptLabel, toggleScript } from './zh';
 import { compileStory } from './story-source';
+import { makeSaveArchive, parseSaveArchive } from './save-archive';
 
 const SAVE_KEY = 'yjz.save.v3'; // 流程进度 + 战斗状态
 const CAMERA_FOLLOW_KEY = 'yjz.camera-follow';
@@ -1440,6 +1441,73 @@ const saveSummary = (e: SaveEntry) => {
   return `${where}<br><span>${e.story.gold} 金 · ${e.story.party.length} 名武將　${esc(when)}</span>`;
 };
 
+function archiveSaveEntry(entry: Record<string, unknown>): SaveEntry | null {
+  const at = entry.at;
+  if (typeof at !== 'number' || !Number.isSafeInteger(at) || at <= 0) return null;
+  const data = { ...entry };
+  delete data.at;
+  const save = validSave(data as unknown as SaveData);
+  return save ? { ...save, at } : null;
+}
+
+function exportSaves() {
+  try {
+    const list = readSaveList();
+    const text = makeSaveArchive(CAMPAIGN.id, { slots: list.slots, last: list.last, auto: readAutoSave() });
+    const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0, 10);
+    const name = CAMPAIGN.id.replace(/[^a-z0-9_-]+/gi, '-') || 'campaign';
+    anchor.href = url;
+    anchor.download = `yingjiezhuan-${name}-saves-${stamp}.json`;
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    showSaveNotice('存档已导出。');
+  } catch {
+    showSaveNotice('导出失败：浏览器不允许读取本地存档。');
+  }
+}
+
+async function importSaves(file: File) {
+  try {
+    if (file.size > 10 * 1024 * 1024) throw new Error('存档文件不能超过 10 MB。');
+    const archive = parseSaveArchive<SaveEntry>(await file.text(), CAMPAIGN.id, archiveSaveEntry);
+    if (archive.auto && !archive.auto.battle) throw new Error('自动档缺少有效的战斗进度。');
+    const wasOpen = saveListEl()?.hidden === false;
+    const previousMode = saveMode;
+    if (hasSaves()) {
+      closeSaveList();
+      const replace = await confirmBox('导入存档会覆盖当前手动档和自动档，继续吗？');
+      if (!replace) {
+        if (wasOpen) openSaveList(previousMode);
+        return;
+      }
+    }
+
+    const keys = [SAVE_LIST_KEY, scopedKey(SAVE_KEY), AUTO_SAVE_KEY];
+    const previous = keys.map((key) => localStorage.getItem(key));
+    try {
+      writeSaveList({ slots: archive.slots, last: archive.last });
+      if (archive.auto) localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(archive.auto));
+      else localStorage.removeItem(AUTO_SAVE_KEY);
+    } catch (error) {
+      keys.forEach((key, i) => {
+        try {
+          if (previous[i] === null) localStorage.removeItem(key);
+          else localStorage.setItem(key, previous[i]!);
+        } catch { /* 存储空间不足时尽力恢复原值 */ }
+      });
+      throw error;
+    }
+    if (wasOpen) openSaveList(previousMode);
+    showSaveNotice('存档已导入。');
+    log('已导入存档文件。');
+  } catch (error) {
+    showSaveNotice(error instanceof Error ? `导入失败：${error.message}` : '导入失败：文件内容无效。');
+  }
+}
+
 /** 战斗档保存战况，营地和房间档同时保存流程与舞台。 */
 function currentSaveData(): SaveData | null {
   if (mode === 'over') return null;
@@ -1522,6 +1590,7 @@ function renderSaveList() {
   const list = readSaveList();
   const canSave = !!currentSaveData();
   const auto = readAutoSave();
+  const hasExport = !!auto || list.slots.some(Boolean);
   const autoRow = `<div class="save-slot auto-slot${auto ? '' : ' empty'}"><span class="slot-no">自动</span>` +
     `<span class="slot-info">${auto ? saveSummary(auto) : '— 尚无自动存档 —'}<br><span>每回合开始自动更新 · 不可手动覆盖或删除</span></span>` +
     `<button class="btn" data-slot="auto" data-act="read"${auto ? '' : ' disabled'}>读取</button></div>`;
@@ -1537,7 +1606,16 @@ function renderSaveList() {
         (e ? `<button class="btn del${del ? ' sure' : ''}" data-slot="${i}" data-act="delete">${del ? '確認刪除' : '刪除'}</button>` : '') +
         '</div>';
     }).join('')}</div>` +
-    '<div class="row end"><button class="btn" data-act="close">返回</button></div></div>';
+    '<p class="archive-note">导入会替换当前六个手动档与自动档；不同剧本的存档不能互换。</p>' +
+    '<input class="archive-file" type="file" accept=".json,application/json" aria-label="选择存档文件">' +
+    '<div class="row end archive-actions"><button class="btn" data-act="export"' + (hasExport ? '' : ' disabled') + '>导出存档</button>' +
+    '<button class="btn" data-act="import">导入存档</button><button class="btn" data-act="close">返回</button></div></div>';
+  const fileInput = el.querySelector<HTMLInputElement>('.archive-file');
+  fileInput?.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = '';
+    if (file) void importSaves(file);
+  });
 }
 function closeSaveList() { const el = saveListEl(); if (el) el.hidden = true; }
 function openSaveList(use: 'save' | 'load') {
@@ -1559,6 +1637,8 @@ function openSaveList(use: 'save' | 'load') {
       const act = btn.dataset.act;
       const i = Number(btn.dataset.slot);
       if (act === 'close') return closeSaveList();
+      if (act === 'export') return exportSaves();
+      if (act === 'import') return btn.closest<HTMLElement>('#save-list')?.querySelector<HTMLInputElement>('.archive-file')?.click();
       if (act === 'delete') {
         if (pendingDelete !== i) { pendingDelete = i; return renderSaveList(); }
         deleteSlot(i); pendingDelete = null; return renderSaveList();
@@ -1864,6 +1944,7 @@ $('screen').addEventListener('click', (e) => {
   }
   if (go === 'next') afterBattle();
   if (go === 'load') openSaveList('load');
+  if (go === 'import') openSaveList('load');
   if (go === 'script') toggleScriptMode();
   if (go === 'title') showTitle();
 });
@@ -1877,6 +1958,7 @@ function showTitle(note = '') {
     `<p class="sub">${selectedStory ? `獨立劇情：${esc(CAMPAIGN.title)}` : 'PC DOS 繁體中文版 全流程復刻'}</p>` +
     '<p class="credit">畫面、劇本、地圖、兵種、頭像與音樂均取自原版《三國志英傑傳》DOS 版，逐像素還原。詳見 docs/assets.md。</p>' +
     `<div class="row"><button class="btn" data-go="start">開始新遊戲</button><button class="btn" data-go="load"${hasSaves() ? '' : ' disabled'}>讀取存檔</button>` +
+    '<button class="btn" data-go="import">导入存档</button>' +
     `<button class="btn" data-go="script" data-script-label>${scriptLabel()}</button></div>` +
     (note ? `<p class="sub" style="margin:10px 0 0">${esc(note)}</p>` : ''));
 }
