@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { ITEM_SPEC } from '../src/data/items';
-import { level, officers } from '../src/data/game';
-import { harvest, newBattle } from '../src/rules/turn';
+import { defaultDeploy, level, officers } from '../src/data/game';
+import { doWait, harvest, newBattle } from '../src/rules/turn';
+import { startStory } from '../src/story';
+import { SCRIPT } from '../src/data/game';
 import type { Roster } from '../src/rules/types';
 import {
   BEST_OF, BEST_TREASURE, EQUIP_SLOTS, TRAINER_PASSWORD, bestInBag, clampExp, clampGold, clampLevel,
-  equipBest, equipScore, giveItem, maxStats, slotOf, syncUnit,
+  equipBest, equipScore, giveItem, maxStats, recruitOfficer, slotOf, syncUnit,
 } from '../src/trainer';
 
 /**
@@ -20,6 +22,56 @@ const roster = (): Roster => {
 };
 
 describe('修改器', () => {
+  it('复制敌将到我方并独立保存成长、装备，原敌将和关卡条件保持不变', () => {
+    const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'] });
+    const lv = level('c0_s0_b5')!;
+    const b = newBattle(lv, 1, st.roster, { deploy: defaultDeploy(lv.id, st.party) }).b;
+    const enemy = b.units.find((u) => u.key === 'hua_xiong')!;
+    const before = structuredClone(enemy);
+    const copy = recruitOfficer(st, 'hua_xiong', b)!;
+    expect(st.party).toContain('hua_xiong');
+    expect(copy).toMatchObject({ key: 'hua_xiong', name: enemy.name, cls: enemy.cls, level: enemy.level, mode: 7, on: true, trainerCopy: true });
+    expect(copy.slot).toBeLessThan(15);
+    expect(copy.items).not.toBe(enemy.items);
+    expect(copy.items).not.toBe(st.roster.hua_xiong.items);
+    expect(b.units.filter((u) => u.on && u.x === copy.x && u.y === copy.y)).toHaveLength(1);
+    expect(enemy).toEqual(before);
+    copy.level++;
+    copy.items.push(30);
+    Object.assign(st.roster, harvest(b));
+    const saved = JSON.parse(JSON.stringify(st));
+    const next = newBattle({ ...lv, id: 'trainer-recruit-events', victory: [{ kind: 'unit', target: 'hua_xiong' }],
+      triggers: [{ flag: 'copy-must-not-trigger', who: enemy.name, at: lv.deploy!.slots[1], effects: [{ op: 'gold', n: 1 }] }],
+    }, 2, saved.roster, { deploy: ['liu_bei', 'hua_xiong'] }).b;
+    expect(next.units.find((u) => u.slot < 15 && u.key === 'hua_xiong')).toMatchObject({ level: copy.level, items: copy.items, trainerCopy: true });
+    expect(next.units.find((u) => u.slot >= 15 && u.key === 'hua_xiong')).toMatchObject({ level: before.level, items: before.items });
+    const friend = next.units.find((u) => u.slot < 15 && u.key === 'hua_xiong')!;
+    doWait(next, friend.slot);
+    expect(next.flags).not.toContain('copy-must-not-trigger');
+    const events = next.flags.filter((flag) => flag.startsWith('event:'));
+    friend.on = false; friend.hp = 0;
+    doWait(next, 0);
+    expect(next.stage).toBe('player');
+    expect(next.flags.filter((flag) => flag.startsWith('event:'))).toEqual(events);
+    expect(() => recruitOfficer(st, 'hua_xiong', b)).toThrow(/已在/);
+    expect(() => recruitOfficer(st, 'missing')).toThrow(/不存在/);
+  });
+
+  it('营地可复制未入队武将，战场没有空槽或可通行空格时仍留队供后续编成', () => {
+    const st = startStory(SCRIPT, { party: ['liu_bei'] });
+    expect(recruitOfficer(st, 'lu_bu')).toBeUndefined();
+    expect(st.roster.lu_bu).toMatchObject({ cls: officers.lu_bu.cls, level: officers.lu_bu.level, trainerCopy: true });
+    const lv = level('c0_s0_b5')!;
+    const b = newBattle(lv, 1, st.roster, { deploy: ['liu_bei'] }).b;
+    for (let slot = 1; slot < 15; slot++) if (!b.units.some((u) => u.slot === slot)) b.units.push({ ...b.units[0], slot, on: false });
+    expect(recruitOfficer(st, 'cao_cao', b)).toBeUndefined();
+    expect(st.party).toContain('cao_cao');
+    const full = newBattle(lv, 1, {}, { deploy: ['liu_bei'] }).b;
+    full.terrain.fill(9);
+    expect(recruitOfficer(st, 'zhao_yun', full)).toBeUndefined();
+    expect(st.party).toContain('zhao_yun');
+  });
+
   it('密码是 1122，数值都有上下限', () => {
     expect(TRAINER_PASSWORD).toBe('1122');
     expect([clampLevel(0), clampLevel(3.6), clampLevel(999)]).toEqual([1, 4, 99]);

@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
 import { verifyCamera } from './camera.mjs';
+import { verifyTrainerRecruit } from './trainer-recruit.mjs';
 import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom, verifyDepartureRoom, verifyChoiceRoom, verifyXuShuRooms, verifyActionRoomPause, verifyMergedTailRoom, verifyLongChoiceRoom, verifyBranchOptionRooms } from './story-rooms.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:5273';
@@ -914,11 +915,17 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
     window.__seen = [];
     window.__impactSounds = [];
     window.__hitFacings = [];
+    window.__clashAtFloat = [];
     const sc = window.__yjz.scene;
     const originalPlay = sc.play.bind(sc);
-    window.__restorePlay = () => { sc.play = originalPlay; };
-    sc.play = (ev, onImpact) => {
-      if (ev.t !== 'hit') return originalPlay(ev, onImpact);
+    const originalFloat = sc.float.bind(sc);
+    sc.float = (...args) => {
+      window.__clashAtFloat.push(document.getElementById('clash').hidden);
+      return originalFloat(...args);
+    };
+    window.__restorePlay = () => { sc.play = originalPlay; sc.float = originalFloat; };
+    sc.play = (ev, onImpact, onActionEnd) => {
+      if (ev.t !== 'hit') return originalPlay(ev, onImpact, onActionEnd);
       const hitSounds = () => window.__yjz.sfx().filter((k) => ['hit', 'hit_heavy', 'arrow'].includes(k)).length;
       const before = hitSounds();
       return originalPlay(ev, () => {
@@ -926,7 +933,7 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
         const a = sc.b.units.find((u) => u.slot === ev.a), d = sc.b.units.find((u) => u.slot === ev.d);
         if (a.x !== d.x) window.__hitFacings.push({ left: sc.tokens.get(ev.a).flipX, expected: d.x < a.x });
         onImpact?.();
-      });
+      }, onActionEnd);
     };
     window.__rec = setInterval(() => {
       const box = window.__yjz.scene.children.list.find((o) => o.type === 'Container' && o.depth === 20);
@@ -950,6 +957,8 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
   const impactSounds = await page.evaluate(() => window.__impactSounds);
   const facings = await page.evaluate(() => window.__hitFacings);
   assert.ok(facings.length > 0 && facings.every((f) => f.left === f.expected), '特写命中时，战场棋子也要面向实际攻击目标');
+  const clashAtFloat = await page.evaluate(() => window.__clashAtFloat);
+  assert.ok(clashAtFloat.length > 0 && clashAtFloat.every(Boolean), '战斗动画结束后头像栏立即收起，不等待伤害飘字');
   assert.ok(impactSounds.length > 0 && impactSounds.every((n) => n === 1), `每次命中必须同步启动一个攻击音效，实际 ${impactSounds}`);
   assert.ok(seenFrames.length > 60, `特写应持续一会儿，只采到 ${seenFrames.length} 帧`);
   const att = seenFrames.map((f) => f[0]);
@@ -1554,5 +1563,9 @@ await step('两份独立剧情：只加数据即可运行，分支奖励与存�
 });
 
 assert.deepEqual(errors, [], '浏览器控制台不应有报错');
+await step('修改器复制武将：营地编成、战场登场、独立成长与存读档', async () => {
+  assert.match(await verifyTrainerRecruit(page, BASE), /保持不变/);
+});
+assert.deepEqual(errors, [], '复制武将后浏览器控制台不应有报错');
 console.log(`\n全部 ${steps.length} 项通过，截图在 ${SHOTS}`);
 await browser.close();

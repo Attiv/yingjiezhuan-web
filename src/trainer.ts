@@ -3,8 +3,10 @@
  * 界面在 main.ts，这一层不碰 DOM，单测直接调。
  */
 import { specOf } from './data/items';
-import { maxHp, maxMp } from './rules/core';
-import type { Roster, Unit } from './rules/types';
+import { officers } from './data/game';
+import { maxHp, maxMp, moveCost, unitAt } from './rules/core';
+import type { Battle, Roster, Unit } from './rules/types';
+import type { Story } from './story';
 
 /** 左上角连点三下后要输入的密码。 */
 export const TRAINER_PASSWORD = '1122';
@@ -49,6 +51,42 @@ export function maxStats(r: Roster[string]): void {
   r.lead = 100;
   r.str = 100;
   r.int = 100;
+}
+
+/** 原武将保留；复制成长入队，战场有空位时在我军附近独立登场。 */
+export function recruitOfficer(story: Pick<Story, 'party' | 'roster'>, id: string, battle?: Battle): Unit | undefined {
+  const template = officers[id];
+  if (!Object.hasOwn(officers, id)) throw new Error('武將不存在。');
+  if (story.party.includes(id)) throw new Error('武將已在我方隊伍中。');
+  const source = battle?.units.find((u) => u.on && u.key === id);
+  const stats = source ?? story.roster[id] ?? template;
+  const r: Roster[string] = {
+    level: stats.level, exp: 'exp' in stats ? stats.exp : 0, cls: stats.cls ?? template.cls,
+    lead: stats.lead ?? template.lead, str: stats.str ?? template.str, int: stats.int ?? template.int,
+    items: [...(stats.items ?? [])], trainerCopy: true,
+  };
+  story.roster[id] = r;
+  story.party.push(id);
+  if (!battle) return;
+  const slot = Array.from({ length: 15 }, (_, i) => i).find((i) => !battle.units.some((u) => u.slot === i));
+  const anchor = battle.units.find((u) => u.on && u.slot < 15 && u.mode === 7);
+  if (slot === undefined || !anchor) return;
+  let at: [number, number] | undefined, distance = Infinity;
+  for (let y = 0; y < battle.h; y++) for (let x = 0; x < battle.w; x++) {
+    if (unitAt(battle, x, y) || moveCost(r.cls!, battle.terrain[y * battle.w + x]) === 255) continue;
+    const d = Math.abs(x - anchor.x) + Math.abs(y - anchor.y);
+    if (d < distance) { at = [x, y]; distance = d; }
+  }
+  if (!at) return;
+  const unit: Unit = {
+    ...template, ...r, slot, key: id, cls: r.cls!, exp: r.exp, items: [...r.items],
+    x: at[0], y: at[1], mode: 7, on: true, moved: false, acted: false,
+    hp: source?.hp ?? maxHp(r.cls!, r.level), mp: 0, morale: source?.morale ?? 100,
+    confused: false, confusedTurns: 0, target: null, goal: null, commander: false,
+  };
+  unit.mp = source?.mp ?? maxMp(unit);
+  battle.units.push(unit);
+  return unit;
 }
 
 /** 包袱里该部位最好的一件；没有返回 -1。 */

@@ -23,6 +23,7 @@ export interface Unit {
   /** 策略造成的混乱还剩几个自己的阶段；0 / 缺省 = 没有时限，只按每回合判定恢复（士气跌落的混乱）。 */
   confusedTurns?: number;
   facingLeft?: boolean; // 最后一次移动或出手的朝向；缺省时开局面向敌军
+  trainerCopy?: boolean; // 修改器复制出的我军，不顶替原武将触发剧情
   moved: boolean;
   acted: boolean;
   mode: number; // 7 = 玩家手动；0 向目标移动，1 攻击最近敌人，2 原地不动，3 待机，4 只移动不攻击
@@ -34,7 +35,7 @@ export interface Unit {
 }
 
 /** 跨战斗保留的成长：按武将 id 记等级、经验和道具（转职还记兵种）。 */
-export type Roster = Record<string, { level: number; exp: number; items: number[]; cls?: number; lead?: number; str?: number; int?: number }>;
+export type Roster = Record<string, { level: number; exp: number; items: number[]; cls?: number; lead?: number; str?: number; int?: number; trainerCopy?: boolean }>;
 
 export type Stage = 'player' | 'ally' | 'enemy' | 'won' | 'lost';
 

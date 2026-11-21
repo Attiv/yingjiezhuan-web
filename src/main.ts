@@ -10,7 +10,7 @@ import { strategyName, strategySpec } from './data/strategies';
 import { DUEL_BGM, TITLE_BGM, battleBgm, isFighting, resultBgm } from './music';
 import { tally } from './result';
 import { StageScript, isSceneMap, mapPoint, fieldPoint, moveDirection, mapSrc, stageOf, registerStoryStage, actorFrame, type StageOp, type Crowd, type StageSnapshot } from './stage';
-import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, maxStats, syncUnit } from './trainer';
+import { TRAINER_PASSWORD, clampExp, clampGold, clampLevel, equipBest, giveItem, maxStats, recruitOfficer, syncUnit } from './trainer';
 import { TB, atk, attackTargets, bySlot, def, friendly, itemName, knownStrategies, maxHp, maxMp, moveBudget, rangeCells, terrainAt, terrainDef, unitAt, weatherName } from './rules/core';
 import { canStop, reachField } from './rules/move';
 import { aiStep, autoPhase, canCommand, castTargets, doAttack, doCast, doCastAll, doDrop, doGive, doItem, doItemAll, doMove, doWait, endPhase, giveTargets, harvest, itemTargets, levelById, levelOf, newBattle, registerLevel, undoMove } from './rules/turn';
@@ -327,13 +327,14 @@ async function clash(ev: Extract<Ev, { t: 'hit' }>) {
       `<img class="fighter r" src="/assets/${art}/unit-${idx(d)}.png" alt="">`;
   }
   duel.hidden = !art || scene.hasCutin(a, d);
-  await scene.play(ev, () => {
-    const after = before - ev.dmg;
-    (el.querySelector('.r .bar i') as HTMLElement).style.width = `${Math.round((100 * after) / maxHp(d.cls, d.level))}%`;
-    el.querySelector('.r .n')!.textContent = String(after);
-  });
-  duel.hidden = true;
-  el.hidden = true;
+  const hide = () => { duel.hidden = true; el.hidden = true; };
+  try {
+    await scene.play(ev, () => {
+      const after = before - ev.dmg;
+      (el.querySelector('.r .bar i') as HTMLElement).style.width = `${Math.round((100 * after) / maxHp(d.cls, d.level))}%`;
+      el.querySelector('.r .n')!.textContent = String(after);
+    }, hide);
+  } finally { hide(); }
 }
 
 // ---------------------------------------------------------------- 对话与询问 ----
@@ -1018,7 +1019,7 @@ const SEED = () => Number(params.get('seed')) || Date.now();
 function camp(step: Extract<Shown, { t: 'camp' }>, returnToRoom = false, shopOnly = false) {
   const lv = lvOf(step.battle);
   if (!lv && !shopOnly) throw new Error(`营地指向的关卡 ${step.battle} 没有数据`);
-  const party = story.party.filter((id) => officers[id]);
+  let party = story.party.filter((id) => officers[id]);
   if (!shopOnly && !story.deploy.length) story.deploy = defaultDeploy(step.battle, party);
   const required = lv?.deploy?.required ?? [];
   const forbidden = lv?.deploy?.forbidden ?? [];
@@ -1066,8 +1067,8 @@ function camp(step: Extract<Shown, { t: 'camp' }>, returnToRoom = false, shopOnl
     const cls = clsOf(pick);
     const equips = r.items.filter(isEquipment).map(itemName);
     const strs = knownStrategies({ cls, level: r.level });
-    return `<h2>情報・${esc(o.name)}</h2><div class="info"><div><span>武力</span>${o.str}</div>` +
-      `<div><span>統御</span>${o.lead}</div><div><span>智力</span>${o.int}</div>` +
+    return `<h2>情報・${esc(o.name)}</h2><div class="info"><div><span>武力</span>${r.str ?? o.str}</div>` +
+      `<div><span>統御</span>${r.lead ?? o.lead}</div><div><span>智力</span>${r.int ?? o.int}</div>` +
       `<div><span>等級</span>${r.level}</div><div><span>兵種</span>${esc(TB.classNames[cls])}</div>` +
       `<div><span>經驗</span>${r.exp}/100</div><div><span>兵力</span>${maxHp(cls, r.level)}</div>` +
       `<div><span>策略</span><i title="${esc(strs.map(strategyName).join('、'))}">${strs.length} 條</i></div>` +
@@ -1076,6 +1077,7 @@ function camp(step: Extract<Shown, { t: 'camp' }>, returnToRoom = false, shopOnl
   const shop = step.shop.map((id) => `<div class="buy"><span>${esc(itemName(id))}<em>${esc(itemEffect(id))}</em></span>` +
     `<button class="btn" data-buy="${id}"${story.gold < (priceOf(id) ?? 100) ? ' disabled' : ''}>${priceOf(id) ?? 100} 金</button></div>`).join('');
   const render = () => {
+    party = story.party.filter((id) => officers[id]);
     // 重画时留住滚动位置：营地比一屏高，买完东西跳回顶部会让人找不着刚才那一行
     const top = el.scrollTop;
     el.className = '';
@@ -1820,13 +1822,13 @@ function trainerItems(): [string, number[]][] {
 function syncBattleUnit(id: string) {
   const r = story.roster[id];
   if (!r || !b?.units) return;
-  for (const u of b.units) if (u.key === id && friendly(u.slot)) syncUnit(u, r);
+  for (const u of b.units) if (u.key === id && friendly(u.slot) && (!r.trainerCopy || u.trainerCopy)) syncUnit(u, r);
 }
 
 function syncBattleStats(id: string) {
   const r = story.roster[id];
   if (!r || !b?.units) return;
-  for (const u of b.units) if (u.key === id && friendly(u.slot)) {
+  for (const u of b.units) if (u.key === id && friendly(u.slot) && (!r.trainerCopy || u.trainerCopy)) {
     u.lead = r.lead ?? u.lead;
     u.str = r.str ?? u.str;
     u.int = r.int ?? u.int;
@@ -1843,7 +1845,7 @@ function syncAfterTrainer() {
   }
 }
 
-function renderTrainer() {
+function renderTrainer(notice = '') {
   if (!trainerOpen) return;
   const el = $('trainer');
   // 重画时留住滚动位置：武将多的时候列表很长，点一次「一鍵裝備」不该跳回顶部
@@ -1869,11 +1871,17 @@ function renderTrainer() {
   const bag = counts.size ? [...counts].map(([id, n]) => `${esc(itemName(id))}×${n}`).join('　') : '（空）';
   // 「我軍補滿」只在真的站在战场上时给：营地、剧情、结算画面背后也挂着一场背景战，不能算
   const fighting = !!b?.units?.length && isFighting(b.stage) && $('screen').hidden;
+  const canRecruit = story.pc >= 0 && (!fighting || mode === 'idle' && b.stage === 'player');
+  const recruits = Object.entries(officers).filter(([id]) => !story.party.includes(id));
   el.innerHTML = '<div class="card trainer"><div class="tr-head"><h1>修改器</h1>' +
     '<button class="btn tr-x" data-tr="close" aria-label="關閉">✕</button></div>' +
     `<h2>軍資</h2><div class="tr-gold"><input id="tr-gold" type="number" min="0" max="9999999" value="${story.gold}"> 金` +
     '<button class="btn" data-gold="1000">＋1000</button><button class="btn" data-gold="10000">＋10000</button>' +
     '<button class="btn" data-gold="0">歸零</button></div>' +
+    '<h2>加入武將</h2><div class="tr-give"><select id="tr-recruit" aria-label="選擇加入我方的武將">' +
+    recruits.map(([id, o]) => `<option value="${id}">${esc(o.name)}</option>`).join('') +
+    `</select><button class="btn" data-tr="recruit"${canRecruit && recruits.length ? '' : ' disabled'}>複製到我方</button></div>` +
+    `<p class="note" role="status">${esc(notice || (!recruits.length ? '所有武將均已在我方隊伍中。' : canRecruit ? '保留原武將；有空位時立即登場，並可存檔、編成出陣。' : fighting ? '請在我軍待命時加入武將。' : '開始遊戲或讀取存檔後可加入武將。'))}</p>` +
     `<h2>武將（${party.length}）</h2><div class="tr-officers">${rows}</div>` +
     '<div class="tr-acts"><button class="btn" data-tr="equip-all" title="每人兵器 / 防具 / 馬取最強，並各補一件玉璽">全隊一鍵裝備</button>' +
     '<button class="btn" data-tr="stats-all" title="武力、智力、統率全部設為 100">全隊三項能力 100</button>' +
@@ -1909,7 +1917,7 @@ function renderTrainer() {
       syncAfterTrainer();
     }
   };
-  el.onclick = (ev) => {
+  el.onclick = async (ev) => {
     const t = ev.target as HTMLElement;
     const tr = t.closest<HTMLElement>('[data-tr]')?.dataset.tr;
     const equip = t.closest<HTMLElement>('[data-equip]')?.dataset.equip;
@@ -1931,6 +1939,23 @@ function renderTrainer() {
     }
     if (!tr) return;
     if (tr === 'close') return closeTrainer();
+    if (tr === 'recruit') {
+      const id = (el.querySelector('#tr-recruit') as HTMLSelectElement).value;
+      if (!canRecruit || !id) return;
+      const button = t.closest('button')!;
+      button.disabled = true;
+      try {
+        const copy = recruitOfficer(story, id, fighting ? b : undefined);
+        if (copy) { await scene.setBattle(b); await scene.focus(copy.x, copy.y, true); shown = copy; }
+        syncAfterTrainer();
+        const message = `${officers[id].name} 已加入我方。${copy ? '已在我軍附近登場。' : fighting ? '本關暫無法部署，可在下次出陣時編成。' : '可在編成中選擇出陣。'}`;
+        log(message);
+        renderTrainer(message);
+      } catch (error) {
+        renderTrainer(error instanceof Error ? error.message : '武將加入失敗。');
+      }
+      return;
+    }
     if (tr === 'stats-all') {
       for (const id of story.party) {
         const r = (story.roster[id] ??= blank(id));

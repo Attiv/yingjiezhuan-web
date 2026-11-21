@@ -181,7 +181,7 @@ export interface BattleOpts {
 }
 
 /** 按名字或武将 id 找在场部队。 */
-const findUnit = (b: Battle, key: string) => b.units.find((u) => u.on && (u.key === key || u.name === key));
+const findUnit = (b: Battle, key: string) => b.units.find((u) => u.on && !u.trainerCopy && (u.key === key || u.name === key));
 
 /** 增援登场时就近找一个空格。 */
 function freeCell(b: Battle, u: Unit): [number, number] | undefined {
@@ -203,8 +203,9 @@ function freeCell(b: Battle, u: Unit): [number, number] | undefined {
 /** 开战：双方满兵力、满策略值、士气 100。roster 里有记录的部队带着上一战的等级、经验和道具出场。 */
 export function newBattle(level: Level, seed: number, roster: Roster = {}, opts: BattleOpts = {}): { b: Battle; evs: Ev[] } {
   registerLevel(level);
-  const mk = (i: UnitInit): Unit => {
-    const kept = roster[i.key ?? ''] ?? roster[i.name];
+  const mk = (i: UnitInit, deployed = false): Unit => {
+    const saved = roster[i.key ?? ''] ?? roster[i.name];
+    const kept = saved?.trainerCopy && !deployed ? undefined : saved;
     const lv = kept?.level ?? i.level;
     const cls = kept?.cls ?? i.cls;
     const u: Unit = {
@@ -213,18 +214,19 @@ export function newBattle(level: Level, seed: number, roster: Roster = {}, opts:
       x: i.x, y: i.y, on: !i.off, confused: false, confusedTurns: 0, moved: false, acted: false,
       mode: i.mode, target: i.target ?? null, goal: i.goal ?? null, items: [...(kept?.items ?? i.items ?? [])],
       commander: !!i.commander, group: i.group,
+      ...(kept?.trainerCopy && { trainerCopy: true }),
     };
     u.mp = maxMp(u);
     return u;
   };
-  const units = level.units.filter((u) => !u.requiresFlag || !!opts.flags?.[u.requiresFlag]).map(mk);
+  const units = level.units.filter((u) => !u.requiresFlag || !!opts.flags?.[u.requiresFlag]).map((u) => mk(u));
   // 出征名单：把我军按顺序摆进出征位，槽位从 0 起
   const picked = (opts.deploy ?? []).slice(0, level.deploy?.max ?? 0);
   picked.forEach((key, i) => {
     const t = level.candidates?.[key];
     const at = opts.slots?.[key] ?? level.deploy?.slots[i];
     if (!t || !at) return;
-    units.push(mk({ ...t, slot: i, key, x: at[0], y: at[1], mode: 7 }));
+    units.push(mk({ ...t, slot: i, key, x: at[0], y: at[1], mode: 7 }, true));
   });
   units.sort((a, c) => a.slot - c.slot);
   const b: Battle = {
@@ -376,7 +378,7 @@ function match(b: Battle, t: EventTrigger, kind: 'turn_start' | 'act' | 'unit_de
   }
   const u = ctx.u;
   if (!u) return false;
-  if (t.type === 'unit_defeated') return u.key === t.target || u.name === t.target;
+  if (t.type === 'unit_defeated') return !u.trainerCopy && (u.key === t.target || u.name === t.target);
   if (!u.on) return false;
   if (t.type === 'adjacent') {
     const a = t.a ? findUnit(b, t.a) : u;
@@ -384,7 +386,7 @@ function match(b: Battle, t: EventTrigger, kind: 'turn_start' | 'act' | 'unit_de
     if (!a || !o || (a !== u && o !== u)) return false;
     return TB.cardinal.some(([dx, dy]) => a.x + dx === o.x && a.y + dy === o.y);
   }
-  if (t.who ? !(u.key === t.who || u.name === t.who) : u.mode !== 7) return false;
+  if (t.who ? u.trainerCopy || !(u.key === t.who || u.name === t.who) : u.mode !== 7) return false;
   const [tx, ty] = t.pos ?? [-1, -1];
   return Math.max(Math.abs(u.x - tx), Math.abs(u.y - ty)) <= (t.radius ?? 0);
 }
@@ -427,12 +429,12 @@ function hooks(b: Battle, u: Unit, evs: Ev[]): void {
       else script.retreat(b, e.slot, evs);
     }
   };
-  const mine = (t: Trigger) => (t.who === null ? friendly(u.slot) : t.who === u.name);
+  const mine = (t: Trigger) => (t.who === null ? friendly(u.slot) : !u.trainerCopy && t.who === u.name);
   if (u.on) {
     for (const t of lv.triggers) if (t.at && mine(t) && t.at[0] === u.x && t.at[1] === u.y) fire(t);
     for (const [dx, dy] of TB.cardinal) {
       const n = u.on ? unitAt(b, u.x + dx, u.y + dy) : undefined;
-      if (n) for (const t of lv.triggers) if (t.next === n.name && mine(t)) fire(t);
+      if (n && !n.trainerCopy) for (const t of lv.triggers) if (t.next === n.name && mine(t)) fire(t);
     }
     // 地图上的宝物：踩上去就归这支部队（原版只有我方会捡）
     if (friendly(u.slot)) {
@@ -456,7 +458,7 @@ function settle(b: Battle, evs: Ev[]): void {
   // 失败：主将撤退、名单上的人撤退、回合数用尽
   for (const d of lv.defeat ?? []) {
     if (d.kind === 'unit') {
-      const u = findUnit(b, d.target) ?? b.units.find((x) => x.key === d.target || x.name === d.target);
+      const u = findUnit(b, d.target) ?? b.units.find((x) => !x.trainerCopy && (x.key === d.target || x.name === d.target));
       if (u && !u.on) return finish(b, false, `${u.name}撤退`, evs);
     }
   }
@@ -470,7 +472,7 @@ function settle(b: Battle, evs: Ev[]): void {
   if (wins.some((v) => v.kind === 'unit')) {
     for (const v of wins) {
       if (v.kind !== 'unit') continue;
-      const u = b.units.find((x) => x.key === v.target || x.name === v.target);
+      const u = b.units.find((x) => !x.trainerCopy && (x.key === v.target || x.name === v.target));
       if (u && !u.on) return finish(b, true, `击破${u.name}`, evs);
     }
   }
@@ -788,4 +790,5 @@ export const script = {
 export const harvest = (b: Battle): Roster =>
   Object.fromEntries(b.units.filter((u) => u.mode === 7 && friendly(u.slot)).map((u) => [u.key ?? u.name, {
     level: u.level, exp: u.exp, items: [...u.items], cls: u.cls, lead: u.lead, str: u.str, int: u.int,
+    ...(u.trainerCopy && { trainerCopy: true }),
   }]));

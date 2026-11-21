@@ -716,8 +716,8 @@ export class BattleScene extends Phaser.Scene {
     sa.setDepth(2 + a.y / 100);
   }
 
-  /** 播放一个规则事件。onImpact 在命中的那一刻回调（界面层用它同步对阵条上的兵力）。 */
-  async play(ev: Ev, onImpact?: () => void): Promise<void> {
+  /** onImpact 同步命中兵力；onActionEnd 在攻击动画结束、伤害飘字前收起对阵条。 */
+  async play(ev: Ev, onImpact?: () => void, onActionEnd?: () => void): Promise<void> {
     const b = this.b;
     const unit = (slot: number) => bySlot(b, slot)!;
     switch (ev.t) {
@@ -775,6 +775,7 @@ export class BattleScene extends Phaser.Scene {
         if (!this.speed) impact();
         else if (this.hasCutin(a, d)) await this.cutin(a, d, impact);
         else await this.strike(a, d, impact);
+        onActionEnd?.();
         await this.float(d, `-${ev.dmg}`, '#ffcf55');
         break;
       }
