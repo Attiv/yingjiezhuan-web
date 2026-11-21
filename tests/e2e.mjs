@@ -15,6 +15,13 @@ mkdirSync(SHOTS, { recursive: true });
 
 let page;
 const shot = (name) => page.screenshot({ path: `${SHOTS}${name}.png` });
+const clickBackdrop = async () => {
+  const p = await page.evaluate(() => {
+    const r = document.getElementById('stage').getBoundingClientRect();
+    return { x: r.left + r.width * 0.12, y: r.top + r.height * 0.2 };
+  });
+  await page.mouse.click(p.x, p.y);
+};
 /** 在舞台左上角的修改器热区连点三下。 */
 async function tapCorner() {
   const { x, y } = await page.evaluate(() => {
@@ -243,10 +250,14 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   await shot('15-chapter');
   await page.keyboard.press('Enter'); // 键盘也能翻页
   await page.waitForSelector('#talk:not([hidden])');
-  /** 往前演一步：有对白就点对话框（有选项就选第一项），没有就按回车（章节横幅、地名条都认回车）。 */
+  const firstPc = (await storyNow()).pc;
+  await clickBackdrop();
+  await page.waitForFunction(pc => window.__yjz.story.pc !== pc, firstPc);
+  assert.equal((await storyNow()).pc, firstPc + 1, '点对话框外只推进一句旁白');
+  /** 往前演一步：有对白就点背景（有选项就选第一项），没有就按回车（章节横幅、地名条都认回车）。 */
   const next = async () => {
     if (await page.evaluate(() => !!document.querySelector('#talk:not([hidden]) .ask'))) await page.click('#talk .ask button:first-child');
-    else if (await page.evaluate(() => !document.getElementById('talk').hidden)) await page.click('#talk');
+    else if (await page.evaluate(() => !document.getElementById('talk').hidden)) await clickBackdrop();
     else await page.keyboard.press('Enter');
     await page.waitForTimeout(40);
   };
@@ -291,10 +302,10 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   for (const n of stage.actors) assert.ok(n, '每个人都要报得出名字（不是无名占位）');
   if (stage.speaker) assert.ok(stage.lit.includes(stage.speaker), `说话的人要亮着，实际 ${stage.lit}`);
   for (const art of stage.art) assert.match(art, /\/assets\/story\/people\.png/, '剧情人物必须用 SSCCHR2，不能回退到战斗棋子');
-  // 四帧都要用得上：每个人有站立/迈步两个位置，朝左右的人镜像，相位按人物号错开
+  // 四帧都要用得上：每个人有站立/迈步两个位置，dir 0/1 镜像，相位按人物号错开
   assert.equal(stage.pose.length, stage.actors.length);
-  assert.ok(stage.pose.some((p) => p.flip), '朝左 / 朝右的人应按原版做水平镜像');
-  assert.ok(stage.pose.some((p) => !p.flip), '朝上 / 朝下的人保持原帧');
+  assert.ok(stage.pose.some((p) => p.flip), 'dir 0/1 的人物应按原版做水平镜像');
+  assert.ok(stage.pose.some((p) => !p.flip), 'dir 2/3 的人物保持原帧');
   assert.ok(new Set(stage.pose.map((p) => p.delay)).size > 1, '同一外观的几个人要错开呼吸相位');
   for (const p of stage.pose) {
     assert.match(p.p0, /^-?\d+px -?\d+px$/, `站立帧位置 ${p.p0}`);
@@ -364,10 +375,14 @@ await step('開新遊戲：原版行军图 + 章节横幅 → 原版插画与对
   }));
   assert.equal(heard.who, '袁紹', '点谁就报谁的名');
   assert.match(heard.line, /華雄乃勇猛之人/, `说的是原版剧本里袁紹这一句，实际「${heard.line}」`);
-  await page.click('#talk');
+  await clickBackdrop();
   await page.waitForSelector('.room-controls');
   await page.click('.actor[data-who="1"]');
   await page.waitForSelector('#talk .ask');
+  const choice = await page.textContent('#talk');
+  await clickBackdrop();
+  assert.equal(await page.textContent('#talk'), choice, '点背景不能代选出征选项');
+  assert.ok(await page.$('#talk:not([hidden]) .ask'), '点击背景后仍等待玩家明确选择');
   await page.click('#talk .ask button:last-child');
   await page.waitForSelector('.room-controls');
   assert.equal((await storyNow()).section, 'c0_s0_story4', '拒绝出征留在房间');

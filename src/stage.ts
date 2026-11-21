@@ -19,7 +19,7 @@ export interface StageOp {
   who?: number;
   x?: number;
   y?: number;
-  /** 朝向：0 上、1 右、2 下、3 左。 */
+  /** 朝向：0 上、1 右、2 下、3 左；宫殿投影为右上、右下、左下、左上。 */
   dir?: number;
   /** BAKDATA 的城镇人物外观号，对应 SSCCHR2，和战场兵种无关。 */
   sprite?: number;
@@ -112,6 +112,11 @@ export const mapSrc = (key?: string | null, world = 0) =>
 /** 原始道路格为32px；与宫殿保持1.25倍舞台缩放，显示为40px。 */
 export const fieldPoint = (x: number, y: number) => ({ left: (x + 0.5) * 40, top: (y + 0.5) * 40 });
 export const moveDirection = (from: { x: number; y: number }, to: { x: number; y: number }, field = false) => {
+  if (!field && to.x !== from.x) {
+    // 宫殿方向沿四条斜边编号，水平相邻点也须按起点列的奇偶区分上下。
+    const up = to.y < from.y + (from.x % 2 === 0 ? 1 : 0);
+    return to.x > from.x ? (up ? 0 : 1) : (up ? 3 : 2);
+  }
   const a = field ? fieldPoint(from.x, from.y) : mapPoint(from.x, from.y);
   const b = field ? fieldPoint(to.x, to.y) : mapPoint(to.x, to.y);
   return Math.abs(b.left - a.left) > Math.abs(b.top - a.top) ? (b.left > a.left ? 1 : 3) : (b.top > a.top ? 2 : 0);
@@ -283,12 +288,13 @@ export const mapPoint = (x: number, y: number) => ({
 /**
  * SSCCHR2 每个外观有 4 帧：行 0/1 是正面站立 / 迈步，行 2/3 是背面站立 / 迈步。
  * 原版只存「朝向观察者」和「背对观察者」两向，左右靠运行时水平镜像（见 sprites.json 的 note）。
- * place_person 的 dir：0 上、1 右、2 下、3 左；上 / 右取背面，下 / 左取正面，右 / 左再镜像。
+ * MAIN.EXE 文件 0x39CE4 将脚本 dir 0/1/2/3 转成内部方向 3/2/0/1；0x25AB7 选择帧与镜像。
+ * 宫殿投影依次朝右上、右下、左下、左上：上 / 左取背面，上 / 右再镜像。
  * step=1 取同朝向的迈步帧，走动时与站立帧交替。
  */
 export const actorFrame = (sprite: number, dir: number, step = 0) => {
-  const back = dir === 0 || dir === 1;
-  return { col: sprite, row: (back ? 2 : 0) + (step ? 1 : 0), flip: dir === 1 || dir === 3 };
+  const back = dir === 0 || dir === 3;
+  return { col: sprite, row: (back ? 2 : 0) + (step ? 1 : 0), flip: dir === 0 || dir === 1 };
 };
 export const ACTOR_COLS = 29;
 export const ACTOR_ROWS = 4;

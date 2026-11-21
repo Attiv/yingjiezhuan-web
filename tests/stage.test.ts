@@ -49,12 +49,12 @@ describe('剧情舞台：地图', () => {
 
   it('人物用 SSCCHR2 外观号、正背面两向与左右镜像，和兵种无关', () => {
     expect(actorFrame(0, 2)).toEqual({ col: 0, row: 0, flip: false }); // 下：正面
-    expect(actorFrame(16, 0)).toEqual({ col: 16, row: 2, flip: false }); // 上：背面
-    expect(actorFrame(8, 1)).toEqual({ col: 8, row: 2, flip: true }); // 右：背面 + 镜像
-    expect(actorFrame(28, 3)).toEqual({ col: 28, row: 0, flip: true }); // 左：正面 + 镜像
+    expect(actorFrame(16, 0)).toEqual({ col: 16, row: 2, flip: true }); // 右上：背面 + 镜像
+    expect(actorFrame(8, 1)).toEqual({ col: 8, row: 0, flip: true }); // 右下：正面 + 镜像
+    expect(actorFrame(28, 3)).toEqual({ col: 28, row: 2, flip: false }); // 左上：背面
     // step=1 是同朝向的迈步帧，四帧都要用得上，不能只定格在两帧上
     expect(actorFrame(0, 2, 1)).toEqual({ col: 0, row: 1, flip: false });
-    expect(actorFrame(16, 0, 1)).toEqual({ col: 16, row: 3, flip: false });
+    expect(actorFrame(16, 0, 1)).toEqual({ col: 16, row: 3, flip: true });
     expect(ACTOR_COLS).toBe(29);
     expect(ACTOR_ROWS).toBe(4);
     const sc = new StageScript(stageOf('c0_s0_story1'));
@@ -62,6 +62,32 @@ describe('剧情舞台：地图', () => {
     expect(sc.people.get(382)?.sprite).toBe(16); // 獻帝
     expect(sc.people.get(3)?.sprite).toBe(8); // 董卓
     expect(sc.people.get(6)?.sprite).toBe(12); // 李儒
+  });
+
+  it('29种外观的四向两步与 MAIN 原始方向转换表一致', () => {
+    // MAIN.EXE 文件 0x39CE4 的表为 3/2/0/1；0x25AB7 按低位选正背面、>=2 时镜像。
+    const facings = [
+      { row: 2, flip: true },
+      { row: 0, flip: true },
+      { row: 0, flip: false },
+      { row: 2, flip: false },
+    ];
+    for (let sprite = 0; sprite < ACTOR_COLS; sprite++) for (let dir = 0; dir < 4; dir++) {
+      for (const step of [0, 1]) expect(actorFrame(sprite, dir, step)).toEqual({
+        col: sprite, row: facings[dir].row + step, flip: facings[dir].flip,
+      });
+    }
+  });
+
+  it('宫殿行走沿四条斜边转向，奇偶列都与最终摆放使用同一方向编号', () => {
+    for (const x of [20, 21]) {
+      const from = { x, y: 8 }, upY = from.y - x % 2;
+      const neighbors = [
+        { x: x + 1, y: upY }, { x: x + 1, y: upY + 1 },
+        { x: x - 1, y: upY + 1 }, { x: x - 1, y: upY },
+      ];
+      neighbors.forEach((to, dir) => expect(moveDirection(from, to), `${x}列方向${dir}`).toBe(dir));
+    }
   });
 });
 

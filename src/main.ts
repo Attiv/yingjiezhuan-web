@@ -357,6 +357,14 @@ $('talk').addEventListener('click', (e) => {
   if (!btn) playSfx('cursor', 0.55); // 翻到下一句
   answer?.(Number(btn?.dataset.i ?? 0));
 });
+// 整屏点击转给当前对白，捕获阶段拦住后面的场景人物和按钮。
+document.addEventListener('click', (e) => {
+  const el = $('talk');
+  if (!e.isTrusted || el.hidden || el.contains(e.target as Node) || gateOpen || trainerOpen || guideOpen || saveListEl()?.hidden === false) return;
+  e.preventDefault();
+  e.stopPropagation();
+  el.click();
+}, true);
 const say = (who: string, text: string) => {
   speaking = nameOf(who);
   spotSpeaker();
