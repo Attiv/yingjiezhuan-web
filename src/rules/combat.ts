@@ -1,6 +1,7 @@
 import { TB, atk, bySlot, def, foes, friendly, idiv, isRain, knownStrategies, maxHp, rand, rangeCells, terrainAt, terrainDef, unitAt } from './core';
 import type { ItemSpec } from '../data/items';
 import { strategySpec } from '../data/strategies';
+import { facesLeft } from '../facing';
 import type { Battle, Ev, Unit } from './types';
 
 /** 兵种相克：兵种 ID÷3 的前三组（步兵 0、弓兵 1、骑兵 2）循环相克，0 克 1、1 克 2、2 克 0。 */
@@ -79,6 +80,7 @@ function retire(b: Battle, u: Unit, evs: Ev[]): void {
  * 弓兵系演出用随机数 → 伤害 → 反击掷骰 → 写兵力 → 写士气 → 攻方经验 → 反击（递归）→ 撤退判定。
  */
 function strike(b: Battle, a: Unit, d: Unit, counter: boolean, evs: Ev[]): void {
+  a.facingLeft = facesLeft(b, a, d);
   const sub = counter ? 7 : TB.subtype[a.cls];
   if (!counter && a.cls >= 3 && a.cls <= 5) for (let i = 0; i < 8; i++) rand(b, 16);
   const { dmg, morale } = physical(b, a, d, counter);
@@ -179,7 +181,10 @@ function attackOne(b: Battle, a: Unit, d: Unit, id: number, evs: Ev[]): void {
 export function castAttack(b: Battle, a: Unit, d: Unit, id: number): Ev[] {
   const evs: Ev[] = [];
   const targets = strategyArea(b, a, id, d);
-  if (targets.length) evs.push({ t: 'castbegin', slot: a.slot, id });
+  if (targets.length) {
+    a.facingLeft = facesLeft(b, a, d);
+    evs.push({ t: 'castbegin', slot: a.slot, id });
+  }
   for (const t of targets) attackOne(b, a, t, id, evs);
   return evs;
 }
@@ -208,7 +213,10 @@ export function castSupport(b: Battle, a: Unit, d: Unit | undefined, id: number)
   const evs: Ev[] = [];
   if (!spec) return evs;
   const targets = strategyArea(b, a, id, d);
-  if (targets.length) evs.push({ t: 'castbegin', slot: a.slot, id });
+  if (targets.length) {
+    if (d) a.facingLeft = facesLeft(b, a, d);
+    evs.push({ t: 'castbegin', slot: a.slot, id });
+  }
   for (const t of targets) {
     const enemy = foes(a, t);
     const needsRoll = enemy && spec.effects.some((e) => e.type === 'status' || (e.type === 'morale' && (e.amount ?? 0) < 0));

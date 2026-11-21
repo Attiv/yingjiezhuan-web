@@ -830,29 +830,33 @@ await step('战场全部角色映射：47列原图，刘备三兵种、吕布、
   }
 });
 
-await step('移动逐格转向并逐步发声：先竖走后转弯，也不能倒退', async () => {
+await step('移动连续插值、逐格转向并逐步发声：不在半格和格点停帧', async () => {
   const r = await page.evaluate(async () => {
     const sc = window.__yjz.scene;
     const u = sc.b.units.find((u) => u.on && u.mode === 7);
     const s = sc.tokens.get(u.slot);
     const speed = sc.speed;
-    const tween = sc.tween.bind(sc);
-    const directions = [];
-    sc.tween = (cfg) => {
-      if (cfg.targets === s && typeof cfg.x === 'number' && Math.abs(cfg.x - s.x) > 1)
-        directions.push({ dx: cfg.x - s.x, left: s.flipX });
-      return tween(cfg);
-    };
+    const samples = [];
+    const sample = () => samples.push({ x: s.x, y: s.y, left: s.flipX, scale: s.scaleX });
+    sc.events.on('postupdate', sample);
     sc.speed = 0.8;
     const before = window.__yjz.sfx().filter((k) => k === 'step').length;
     try {
       await sc.play({ t: 'move', slot: u.slot, path: [[u.x, u.y], [u.x, u.y - 1], [u.x - 1, u.y - 1], [u.x - 1, u.y], [u.x, u.y]] });
-      return { directions, sounds: window.__yjz.sfx().filter((k) => k === 'step').length - before };
-    } finally { sc.tween = tween; sc.speed = speed; sc.sync(); }
+      const changes = samples.slice(1).map((p, i) => ({ dx: p.x - samples[i].x, dy: p.y - samples[i].y, left: p.left }));
+      const moved = (p) => Math.hypot(p.dx, p.dy) > 0.01;
+      const moving = changes.slice(changes.findIndex(moved), changes.findLastIndex(moved) + 1);
+      return { directions: changes.filter((p) => Math.abs(p.dx) > 0.01), frames: moving.length,
+        pauses: moving.filter((p) => !moved(p)).length, scales: [...new Set(samples.map((p) => p.scale))],
+        sounds: window.__yjz.sfx().filter((k) => k === 'step').length - before };
+    } finally { sc.events.off('postupdate', sample); sc.speed = speed; sc.sync(); }
   });
   assert.equal(r.sounds, 4, '移动四格启动四次脚步声');
   assert.ok(r.directions.some((d) => d.dx < 0) && r.directions.some((d) => d.dx > 0));
   assert.ok(r.directions.every((d) => d.left === (d.dx < 0)), '每个水平位移必须与图像朝向一致');
+  assert.ok(r.frames > 10, '必须采集到真实的中间移动帧');
+  assert.equal(r.pauses, 0, '路线中途不能因为切换半格动画而空等一帧');
+  assert.deepEqual(r.scales, [1], '移动保留棋子原始比例');
 });
 
 await step('鼠标同格响应：只刷新一次，镜头卷动后按新格更新', async () => {
@@ -909,6 +913,7 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
   await page.evaluate(() => {
     window.__seen = [];
     window.__impactSounds = [];
+    window.__hitFacings = [];
     const sc = window.__yjz.scene;
     const originalPlay = sc.play.bind(sc);
     window.__restorePlay = () => { sc.play = originalPlay; };
@@ -918,6 +923,8 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
       const before = hitSounds();
       return originalPlay(ev, () => {
         window.__impactSounds.push(hitSounds() - before);
+        const a = sc.b.units.find((u) => u.slot === ev.a), d = sc.b.units.find((u) => u.slot === ev.d);
+        if (a.x !== d.x) window.__hitFacings.push({ left: sc.tokens.get(ev.a).flipX, expected: d.x < a.x });
         onImpact?.();
       });
     };
@@ -941,6 +948,8 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
   await settle();
   const seenFrames = await page.evaluate(() => (clearInterval(window.__rec), window.__restorePlay(), window.__seen));
   const impactSounds = await page.evaluate(() => window.__impactSounds);
+  const facings = await page.evaluate(() => window.__hitFacings);
+  assert.ok(facings.length > 0 && facings.every((f) => f.left === f.expected), '特写命中时，战场棋子也要面向实际攻击目标');
   assert.ok(impactSounds.length > 0 && impactSounds.every((n) => n === 1), `每次命中必须同步启动一个攻击音效，实际 ${impactSounds}`);
   assert.ok(seenFrames.length > 60, `特写应持续一会儿，只采到 ${seenFrames.length} 帧`);
   const att = seenFrames.map((f) => f[0]);

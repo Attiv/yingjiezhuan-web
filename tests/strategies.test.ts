@@ -28,6 +28,23 @@ const hurt = (b: Battle, slot: number, hp: number, morale = 100) => {
 };
 
 describe('策略表（对照原版 strategies.toml）', () => {
+  it('施策朝向所选目标，群体施策保留朝向', () => {
+    for (const dx of [-1, 1]) {
+      const b = start([unit(0, 15, 20, 3, 2, { int: 100 }), unit(15, 0, 20, 3 + dx, 2)]);
+      bySlot(b, 0)!.facingLeft = dx > 0;
+      doCast(b, 0, 0, 15);
+      expect(bySlot(b, 0)!.facingLeft).toBe(dx < 0);
+    }
+    const b = start([unit(0, 18, 30, 3, 2), unit(1, 6, 30, 2, 2), unit(15, 0, 1, 6, 5)]);
+    hurt(b, 1, 100);
+    bySlot(b, 0)!.facingLeft = false;
+    doCast(b, 0, 24, 1);
+    expect(bySlot(b, 0)!.facingLeft).toBe(true);
+    bySlot(b, 0)!.acted = false;
+    bySlot(b, 0)!.facingLeft = false;
+    doCastAll(b, 0, 33);
+    expect(bySlot(b, 0)!.facingLeft).toBe(false);
+  });
   it('36 条可学策略 + 爆彈，编号与 DOS 一致', () => {
     expect(Object.keys(STRATEGIES)).toHaveLength(37);
     for (let id = 0; id <= 36; id++) {

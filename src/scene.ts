@@ -79,6 +79,7 @@ export class BattleScene extends Phaser.Scene {
   private tokenColumns = TOKEN_COLUMNS; // 从实际贴图读取列数，兼容旧版39列资源
   private hp = new Map<number, number>(); // 画面上显示的兵力：事件一条条播，数字跟着一步步变
   private breath = new Map<number, number>(); // 每个棋子上一次的待机帧，错开相位
+  private moving = new Set<number>();
   private marks!: Phaser.GameObjects.Graphics;
   private cursor!: Phaser.GameObjects.Graphics;
   private keys!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -274,7 +275,7 @@ export class BattleScene extends Phaser.Scene {
     const frame = Math.floor(this.time.now / 420);
     this.tokens.forEach((s, slot) => {
       const u = this.b?.units.find((v) => v.slot === slot);
-      if (!s.visible || this.tweens.isTweening(s)) {
+      if (!s.visible || this.moving.has(slot) || this.tweens.isTweening(s)) {
         this.breath.set(slot, -1);
         s.setScale(1);
         if (u) s.setAngle(u.confused ? -16 : 0);
@@ -302,6 +303,7 @@ export class BattleScene extends Phaser.Scene {
     this.pointerOnCanvas = false;
     this.b = b;
     this.tweens.killAll();
+    this.moving.clear();
     const [mapKey, tokKey] = [`map:${b.level}`, `tokens:${b.level}`];
     const art = this.manifest.levels?.[b.level];
     const lv = levelOf(b);
@@ -728,8 +730,8 @@ export class BattleScene extends Phaser.Scene {
           this.cameras.main.startFollow(s, false, 0.2, 0.2);
         }
         s.setDepth(7); // 走子时提起来，压在别的棋子上面
-        if (!this.speed) {
-          playSfx('step', 0.85);
+        if (!this.speed || ev.path.length < 2) {
+          if (ev.path.length > 1) playSfx('step', 0.85);
           const [x, y] = ev.path[ev.path.length - 1];
           s.setPosition(mid(x), mid(y)).setDepth(2 + y / 100).setFlipX(this.mirror && facesLeft(b, u));
           await this.focus(x, y, true);
@@ -737,31 +739,35 @@ export class BattleScene extends Phaser.Scene {
           this.autoFollowing = false;
           break;
         }
-        await this.tween({ targets: s, scale: 1.1, duration: 70 });
-        // 原版棋盘上走一格是两帧交替：前半格迈步（略微抬起），后半格落脚回站立帧
-        for (let i = 1; i < ev.path.length; i++) {
-          const [x, y] = ev.path[i];
-          if (!this.cameraFollow) await this.focus(x, y, true);
-          const dx = x - ev.path[i - 1][0];
-          if (dx && this.mirror) s.setFlipX(dx < 0);
-          playSfx('step', 0.85);
-          const [tx, ty] = [mid(x), mid(y)];
-          const [x0, y0] = [s.x, s.y];
-          s.setFrame(this.frameOf(u, false, true));
-          await this.tween({ targets: s, x: (x0 + tx) / 2, y: (y0 + ty) / 2 - 2 * RES, duration: 52, ease: 'Linear' });
-          s.setFrame(this.frameOf(u, false, false));
-          await this.tween({ targets: s, x: tx, y: ty, duration: 53, ease: 'Linear' });
+        const progress = { step: 0 }, steps = ev.path.length - 1;
+        let sounded = -1;
+        this.moving.add(ev.slot);
+        try {
+          // 整条路线共用时钟，避免每半格重新创建 tween 时空等一帧。
+          await this.tween({ targets: progress, step: steps, duration: steps * 105, ease: 'Linear', onUpdate: () => {
+            const i = Math.min(steps - 1, Math.floor(progress.step)), k = progress.step - i;
+            const [x0, y0] = ev.path[i], [x, y] = ev.path[i + 1];
+            if (i > sounded) {
+              for (; sounded < i; sounded++) playSfx('step', 0.85);
+              if (!this.cameraFollow) void this.focus(x, y, true);
+            }
+            if (x !== x0 && this.mirror) s.setFlipX(x < x0);
+            s.setPosition(mid(x0 + (x - x0) * k), mid(y0 + (y - y0) * k));
+            s.setFrame(this.frameOf(u, false, k < 0.5));
+          } });
+        } finally {
+          this.moving.delete(ev.slot);
+          this.cameras.main.stopFollow();
+          this.autoFollowing = false;
         }
         s.setFrame(this.frameOf(u, false, false));
-        await this.tween({ targets: s, scale: 1, duration: 90, ease: 'Bounce.easeOut' });
         s.setFlipX(this.mirror && facesLeft(b, u)); // 站定后保留规则层记录的最后移动朝向
         s.setDepth(2 + ev.path[ev.path.length - 1][1] / 100);
-        this.cameras.main.stopFollow();
-        this.autoFollowing = false;
         break;
       }
       case 'hit': {
         const [a, d] = [unit(ev.a), unit(ev.d)];
+        this.tk(a.slot).setFlipX(this.mirror && facesLeft(b, a, d));
         this.hp.set(d.slot, this.hpOf(d.slot) - ev.dmg);
         // 有特写时横幅盖住战场，镜头不必再慢慢卷过去（那 300ms 全成了出手前的空等）。
         await this.focus(a.x, a.y, this.speed > 0 && this.hasCutin(a, d), d);
@@ -774,6 +780,7 @@ export class BattleScene extends Phaser.Scene {
       }
       case 'castbegin': {
         const a = unit(ev.slot);
+        this.tk(a.slot).setFlipX(this.mirror && facesLeft(b, a));
         await this.focus(a.x, a.y);
         await this.castBegin(a, ev.id);
         break;

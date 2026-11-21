@@ -53,6 +53,29 @@ describe('数值（对照：轩辕春秋 tid=1092 实测表）', () => {
 describe('物理攻击', () => {
   const duel = (aCls: number, dCls: number, terrain = P) =>
     start(level([unit(0, aCls, 1, 0, 0), unit(15, dCls, 1, 1, 0)], { rows: [[P, terrain, P]] }));
+  it('攻击实际目标时覆盖移动朝向，战后和存档都保留出手方向', () => {
+    for (const dx of [-1, 1]) {
+      const b = start(level([unit(0, 0, 20, 3, 3), unit(15, 0, 20, 3 + dx, 3)]));
+      bySlot(b, 0)!.facingLeft = dx > 0;
+      doAttack(b, 0, 15);
+      expect(bySlot(b, 0)!.facingLeft).toBe(dx < 0);
+      const saved: Battle = JSON.parse(JSON.stringify(b));
+      expect(bySlot(saved, 0)!.facingLeft).toBe(dx < 0);
+    }
+  });
+  it('反击者也面向实际目标，同列出手保持已有朝向', () => {
+    const b = start(level([unit(0, 9, 20, 3, 3), unit(15, 9, 20, 4, 3, { str: 100 })]));
+    bySlot(b, 15)!.facingLeft = false;
+    const evs = doAttack(b, 0, 15);
+    expect(evs.some((e) => e.t === 'hit' && e.counter)).toBe(true);
+    expect(bySlot(b, 15)!.facingLeft).toBe(true);
+    for (const left of [false, true]) {
+      const vertical = start(level([unit(0, 0, 20, 3, 3), unit(15, 0, 20, 3, 4)]));
+      bySlot(vertical, 0)!.facingLeft = left;
+      doAttack(vertical, 0, 15);
+      expect(bySlot(vertical, 0)!.facingLeft).toBe(left);
+    }
+  });
   it('关羽 → 华雄（平原，同为骑兵）伤害 210', () => {
     const b = start(level([unit(0, 6, 1, 0, 0, { str: 98, items: [12] }), unit(15, 6, 5, 1, 0, { lead: 88 })], { w: 3, h: 1 }));
     expect(physical(b, bySlot(b, 0)!, bySlot(b, 15)!).dmg).toBe(210);
