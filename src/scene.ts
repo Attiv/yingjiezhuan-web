@@ -42,7 +42,7 @@ const MOOD_TINT: Record<CastMood, number> = { fire: CINNABAR, water: WATER, rock
 export interface Manifest {
   /** static：这一关的静态特写图目录（scene.png + unit-N.png），配好帧动画演员时不会显示。 */
   levels?: Record<string, { map?: string; tokens?: string; static?: string }>;
-  /** 战斗特写：攻击时盖在战场上的一条横幅，左攻右守，各一个按帧表播放的演员。不写就没有特写。 */
+  /** 战斗特写：攻击时盖在战场上的一条横幅，左攻右守，按兵力摆放同兵种演员。不写就没有特写。 */
   cutin?: { background?: string; actors: Record<string, Actor> }; // 演员按部队名字、`cls兵种号`、`*` 的顺序找
 }
 /** 特写里的一个演员：一张等宽等高的帧图集（图本身朝右），加三个动作各自的帧序列。 */
@@ -435,27 +435,35 @@ export class BattleScene extends Phaser.Scene {
   hasCutin = (a: Unit, d: Unit) => [a, d].every((u) => this.ready.has(this.actorOf(u)!));
 
   /** 战斗特写：横幅盖在战场上，左攻右守。攻方播 attack，到命中帧时回调并让守方播 hurt，然后各自回到 idle。 */
-  private async cutin(a: Unit, d: Unit, onImpact?: () => void) {
+  private async cutin(a: Unit, d: Unit, defenderHp: number, onImpact?: () => void) {
     const [top, h] = [88 * RES, 160 * RES];
     const box = this.add.container(0, top + 14 * RES).setDepth(20).setAlpha(0);
     box.add(this.textures.exists('cutin:bg') ? this.add.image(0, 0, 'cutin:bg').setOrigin(0).setDisplaySize(VW, h) : this.add.rectangle(0, 0, VW, h, 0x10141c, 0.94).setOrigin(0));
-    const actor = (u: Unit, left: boolean) => {
+    const actor = (u: Unit, left: boolean, hp: number) => {
       const ac = this.actorOf(u)!;
       const key = this.ready.get(ac)!;
       const home = VW * (left ? 0.28 : 0.72);
-      // 从画面外各滑进来一点，出场不硬切；scale / 朝向仍按清单里的原版设置。
-      const s = this.add.sprite(home + (left ? -1 : 1) * 42 * RES, h - 4 * RES, key)
-        .setOrigin(0.5, 1).setScale(ac.scale ?? Math.max(2, Math.round((h * 1.05) / ac.frameHeight))).setFlipX(!left);
-      s.anims.timeScale = 1 / Math.max(this.speed, 0.25);
-      s.play(`${key}:idle`);
+      const s = this.add.container(home + (left ? -1 : 1) * 42 * RES, h - 4 * RES);
+      // 繁体 DOS MAIN.EXE 0x31f34..0x31f50：交手前兵力每600多一人，最多5人，本次演出中不减员。
+      const count = Math.min(5, Math.floor(hp / 600) + 1);
+      const slots = [[0, 0], [-20, -24], [-40, -48], [-40, 0], [-60, -24]];
+      const sprites = slots.slice(0, count).map(([x, y]) => {
+        const soldier = this.add.sprite((left ? x : -x) * RES, y * RES, key)
+          .setOrigin(0.5, 1).setScale(Math.min(ac.scale ?? RES, RES)).setFlipX(!left);
+        soldier.anims.timeScale = 1 / Math.max(this.speed, 0.25);
+        soldier.play(`${key}:idle`);
+        s.add(soldier);
+        return soldier;
+      });
+      s.sort('y');
       box.add(s);
       // 帧图的呼吸只有 0/-1/-2 三档，放大后会一跳一跳；叠一层平滑位移把档位之间补上。
       const baseY = s.y;
       const breath = this.tweens.add({ targets: s, y: baseY - 2 * RES, duration: 620 * Math.max(this.speed, 0.3),
         yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-      return { s, key, ac, home, breath, baseY };
+      return { s, sprites, key, ac, home, breath, baseY };
     };
-    const [att, def] = [actor(a, true), actor(d, false)];
+    const [att, def] = [actor(a, true, this.hpOf(a.slot)), actor(d, false, defenderHp)];
     box.setScrollFactor(0, 0, true); // 钉在画面上，不跟地图卷动
     await Promise.all([
       this.tween({ targets: box, y: top, alpha: 1, duration: 150, ease: 'Cubic.easeOut' }),
@@ -476,14 +484,14 @@ export class BattleScene extends Phaser.Scene {
         onImpact?.();
         // 命中这一下给一点原版式的反馈：轻晃、闪白、守方被震退，再接后仰帧。
         this.cameras.main.shake(90 * Math.max(this.speed, 0.35), 0.0025);
-        def.s.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
-        this.time.delayedCall(70, () => def.s.clearTint().setTintMode(Phaser.TintModes.MULTIPLY));
+        def.sprites.forEach((s) => s.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL));
+        this.time.delayedCall(70, () => def.sprites.forEach((s) => s.clearTint().setTintMode(Phaser.TintModes.MULTIPLY)));
         void this.tween({ targets: def.s, x: def.home + 9 * RES, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
-        def.s.play(`${def.key}:hurt`).chain(`${def.key}:idle`);
+        def.sprites.forEach((s) => s.play(`${def.key}:hurt`).chain(`${def.key}:idle`));
       };
-      att.s.on('animationupdate', (_an: unknown, frame: Phaser.Animations.AnimationFrame) => frame.index - 1 >= at && impact());
-      att.s.once('animationcomplete', () => (impact(), att.s.play(`${att.key}:idle`), done()));
-      att.s.play(`${att.key}:attack`);
+      att.sprites[0].on('animationupdate', (_an: unknown, frame: Phaser.Animations.AnimationFrame) => frame.index - 1 >= at && impact());
+      att.sprites[0].once('animationcomplete', () => (impact(), att.sprites.forEach((s) => s.play(`${att.key}:idle`)), done()));
+      att.sprites.forEach((s) => s.play(`${att.key}:attack`));
       if (at <= 0) impact();
     });
     // 收招后回到待机，继续呼吸一会儿再连横幅一起淡出收起
@@ -724,7 +732,7 @@ export class BattleScene extends Phaser.Scene {
       case 'move': {
         const s = this.tk(ev.slot);
         const u = unit(ev.slot);
-        await this.focus(ev.path[0][0], ev.path[0][1]);
+        await this.focus(ev.path[0][0], ev.path[0][1], true);
         if (this.cameraFollow && this.speed) {
           this.autoFollowing = true;
           this.cameras.main.startFollow(s, false, 0.2, 0.2);
@@ -768,12 +776,13 @@ export class BattleScene extends Phaser.Scene {
       case 'hit': {
         const [a, d] = [unit(ev.a), unit(ev.d)];
         this.tk(a.slot).setFlipX(this.mirror && facesLeft(b, a, d));
-        this.hp.set(d.slot, this.hpOf(d.slot) - ev.dmg);
+        const defenderHp = this.hpOf(d.slot);
+        this.hp.set(d.slot, defenderHp - ev.dmg);
         // 有特写时横幅盖住战场，镜头不必再慢慢卷过去（那 300ms 全成了出手前的空等）。
         await this.focus(a.x, a.y, this.speed > 0 && this.hasCutin(a, d), d);
         const impact = () => { const fx = sfxOf(ev, b); if (fx) playSfx(fx); onImpact?.(); };
         if (!this.speed) impact();
-        else if (this.hasCutin(a, d)) await this.cutin(a, d, impact);
+        else if (this.hasCutin(a, d)) await this.cutin(a, d, defenderHp, impact);
         else await this.strike(a, d, impact);
         onActionEnd?.();
         await this.float(d, `-${ev.dmg}`, '#ffcf55');

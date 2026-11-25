@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { open } from '../tools/browser.mjs';
 import { verifyCamera } from './camera.mjs';
+import { verifyCombatAnimation } from './combat-animation.mjs';
 import { verifyTrainerRecruit } from './trainer-recruit.mjs';
 import { verifyBeihaiRoom, verifyRooms, verifyXuzhouRooms, verifyXuzhouSecondScene, verifyXuzhouReturnRooms, verifyXiaopeiReturnRooms, verifyBranchStageSave, verifyImportedStories, verifyLubuEnvoyRooms, verifyXuchangRoom, verifyGenericGroupRoom, verifyDepartureRoom, verifyChoiceRoom, verifyXuShuRooms, verifyActionRoomPause, verifyMergedTailRoom, verifyLongChoiceRoom, verifyBranchOptionRooms } from './story-rooms.mjs';
 
@@ -594,6 +595,10 @@ await step('自动行动镜头：友军与敌军逐格跟随、瞬时终点、�
   await verifyCamera(page);
 });
 
+await step('战斗特写人数：按交手前兵力每600一档、最多5人，命中与击破不在本次减员', async () => {
+  await verifyCombatAnimation(page);
+});
+
 await step('手机触屏：横屏布局、单指拖镜头、小地图定位、取消和系统菜单、竖屏旋转提示', async () => {
   const session = await page.context().newCDPSession(page);
   const desktop = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, dpr: devicePixelRatio }));
@@ -910,7 +915,7 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
     assert.deepEqual(a.span.attack, [60, 119, 60], `${a.sheet} 出手帧号`);
     assert.deepEqual(a.span.hurt, [120, 149, 30], `${a.sheet} 受击帧号`);
   }
-  // 动态：每 16 毫秒记一次特写横幅里左右两个演员正在显示的帧号
+  // 动态：每 16 毫秒记一次左右队形各一名演员正在显示的帧号
   await page.evaluate(() => {
     window.__seen = [];
     window.__impactSounds = [];
@@ -938,7 +943,8 @@ await step('战斗特写：待机 60 帧呼吸、出手 60 帧、受击 30 帧�
     window.__rec = setInterval(() => {
       const box = window.__yjz.scene.children.list.find((o) => o.type === 'Container' && o.depth === 20);
       if (!box) return;
-      const sp = box.list.filter((o) => o.type === 'Sprite');
+      const sp = box.list.filter((o) => o.type === 'Container')
+        .map((group) => group.list.find((o) => o.type === 'Sprite')).filter(Boolean);
       if (sp.length === 2) window.__seen.push([...sp.map((s) => Number(s.frame.name)), performance.now()]);
     }, 16);
   });

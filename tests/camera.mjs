@@ -23,6 +23,23 @@ export async function verifyCamera(page) {
       scene.canPan = () => false; // 与实际自动回合一样，演出期间锁定手动卷屏。
       await scene.setBattle(b);
       scene.setCameraFollow(true);
+      for (const follow of [true, false]) {
+        scene.setCameraFollow(follow);
+        scene.setAnimSpeed(1);
+        for (const [x, y, dx, dy] of [[12, 5, -1, 0], [0, 5, 1, 0], [6, 0, 0, 1], [6, 11, 0, -1]]) {
+          const u = b.units[0];
+          position(u, x, y);
+          cam.setScroll(0, 0);
+          const animation = scene.play({ t: 'move', slot: u.slot, path: [[x, y], [x + dx, y + dy]] });
+          await Promise.resolve();
+          const started = scene.moving.has(u.slot);
+          await animation;
+          check(started, `镜头跟随${follow ? '开启' : '关闭'}时，边缘部队(${x},${y})应直接起步，不等待镜头`);
+          check(!cam._follow && !scene.autoFollowing, '边缘移动结束必须释放镜头跟随');
+        }
+        checks.push(`镜头跟随${follow ? '开启' : '关闭'}时四边部队均立即起步`);
+      }
+      scene.setCameraFollow(true);
       for (const u of b.units.slice(1)) {
         const side = u.slot >= 15 ? '敌军' : '友军';
         scene.setAnimSpeed(0);
