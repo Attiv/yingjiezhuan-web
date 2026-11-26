@@ -12,6 +12,18 @@ spec.loader.exec_module(build)
 
 
 class StageGenerationTests(unittest.TestCase):
+    def test_location_opening_is_kept_with_later_run_records(self):
+        scene = build.load_scenarios()[1]["scenes"][3]
+        block = next(b for b in scene["blocks"] if b["index"] == 5)
+        lines = build.section_lines(build.PACK / "dramas/original_chapters.drama")["c1_s3_story5"]
+        matches = [r for r in build.candidates(block, build.dialogue_map(scene), build.officer_of())
+                   if build.align(lines, r) is not None]
+        chosen = max(matches, key=lambda r: sum(len(c) for i, c in enumerate(r.chunks) if not r.optional[i]))
+        ops = build.build_ops(chosen, build.align(lines, chosen), lines)
+        self.assertEqual(chosen.map, "palace/002")
+        self.assertEqual([o["who"] for o in ops if o["at"] == 0 and o["op"] == "place"],
+                         [0, 1, 2, 8, 68, 61, 4])
+
     def test_complete_dialogue_chunk_must_match(self):
         rec = type("Record", (), {"chunks": [["第一句", "第二句"]], "optional": [False]})()
         self.assertIsNone(build.align(["第一句", "错误的下一句"], rec))

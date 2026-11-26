@@ -436,7 +436,7 @@ export class BattleScene extends Phaser.Scene {
 
   /** 战斗特写：横幅盖在战场上，左攻右守。攻方播 attack，到命中帧时回调并让守方播 hurt，然后各自回到 idle。 */
   private async cutin(a: Unit, d: Unit, defenderHp: number, onImpact?: () => void) {
-    const [top, h] = [88 * RES, 160 * RES];
+    const h = 160 * RES, top = (VH - h) / 2;
     const box = this.add.container(0, top + 14 * RES).setDepth(20).setAlpha(0);
     box.add(this.textures.exists('cutin:bg') ? this.add.image(0, 0, 'cutin:bg').setOrigin(0).setDisplaySize(VW, h) : this.add.rectangle(0, 0, VW, h, 0x10141c, 0.94).setOrigin(0));
     const actor = (u: Unit, left: boolean, hp: number) => {

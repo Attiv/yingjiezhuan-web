@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "三國志英傑傳",
+  "short_name": "英傑傳",
+  "description": "在浏览器中游玩的三国战棋复刻。支持安装与离线游玩。",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0c1430",
+  "theme_color": "#0c1430",
+  "categories": ["games"],
+  "icons": [
+    { "src": "/icons/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/pwa-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

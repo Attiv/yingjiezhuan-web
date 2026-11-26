@@ -115,8 +115,8 @@ button { touch-action: manipulation; }
   100% { opacity: 0; transform: scaleY(1.05); }
 }
 
-/* 对阵条：贴在战场顶部，左攻右守 */
-#clash { position: absolute; left: 8px; top: 8px; width: 400px; padding: 6px 8px; display: flex; align-items: center; gap: 8px; z-index: 6; }
+/* 对阵条：位于居中的交战特写上方，左攻右守 */
+#clash { position: absolute; left: 8px; top: 32px; width: 400px; padding: 6px 8px; display: flex; align-items: center; gap: 8px; z-index: 6; }
 #clash .l, #clash .r { flex: 1; display: flex; gap: 8px; align-items: center; min-width: 0; }
 #clash .r { flex-direction: row-reverse; text-align: right; }
 #clash .face { width: 48px; height: 60px; }
@@ -130,7 +130,7 @@ button { touch-action: manipulation; }
 .side-enemy { color: var(--orange); }
 
 /* 攻击时盖在战场上的原版战斗特写：天空/地面条带 + 双方 64×64 兵种大图 */
-#duel { position: absolute; left: 0; top: 88px; width: 416px; height: 160px; z-index: 4; overflow: hidden;
+#duel { position: absolute; left: 0; top: 112px; width: 416px; height: 160px; z-index: 4; overflow: hidden;
   background: #000; border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); pointer-events: none; }
 #duel .scene { position: absolute; inset: 0; width: 416px; height: 160px; }
 #duel .fighter { position: absolute; bottom: 2px; width: 128px; height: 128px; object-fit: contain; }

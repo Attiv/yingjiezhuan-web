@@ -24,15 +24,20 @@ export async function verifyCombatAnimation(page) {
         b.units[0].hp = attackerHp;
         b.units[1].hp = defenderHp;
         scene.sync();
-        let impactCounts;
+        let impactCounts, impactCenter;
         const counts = () => {
           const box = scene.children.list.find(child => child.type === 'Container' && child.depth === 20);
           return box?.list.filter(child => child.type === 'Container').map(group => group.list.length) ?? [];
         };
-        const animation = scene.play({ t: 'hit', a: 0, d: 15, dmg: damage, morale: 0, counter: false }, () => { impactCounts = counts(); });
+        const animation = scene.play({ t: 'hit', a: 0, d: 15, dmg: damage, morale: 0, counter: false }, () => {
+          impactCounts = counts();
+          const box = scene.children.list.find(child => child.type === 'Container' && child.depth === 20);
+          impactCenter = box.y + box.list[0].displayHeight / 2;
+        });
         await Promise.resolve();
         const initialCounts = counts();
         await animation;
+        if (impactCenter !== cam.height / 2) throw new Error('交战特写应在战场画面垂直居中');
         const check = (actual, moment) => {
           if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(
             `${attackerHp}/${defenderHp}兵${moment}应显示${expected}人，实际${JSON.stringify(actual)}`);

@@ -43,6 +43,31 @@ function seeded(seed: number) {
 }
 
 describe('整部剧本的数据', () => {
+  it('下邳胜利后加载议事厅和交谈人物，两种处置吕布的选择都能继续', () => {
+    for (const answer of [0, 1]) {
+      const st = startStory(SCRIPT, { party: ['liu_bei', 'guan_yu', 'zhang_fei'] });
+      st.pc = SCRIPT.steps.findIndex(s => s.t === 'battle' && s.level === 'c1_s3_b4');
+      let stage = new StageScript(), section = '';
+      const rooms: string[] = [];
+      let step: Shown | null = null;
+      for (let n = 0; n < 150; n++) {
+        step = nextStep(SCRIPT, st, n === 0 ? 0 : answer);
+        if (!step || step.t === 'title') break;
+        if (section !== st.section) { section = st.section; stage = new StageScript(stageOf(section), stage); }
+        if (step.t === 'action') stage.run(step.op);
+        if (step.t === 'room') {
+          rooms.push(step.id);
+          expect(stage.map).toBe('palace/002');
+          expect([...stage.people.keys()].sort((a, b) => a - b)).toEqual([0, 1, 2, 4, 8, 61, 68]);
+          const room = stageOf(section)!.rooms![step.id];
+          expect(stage.people.has(room.next!.who!)).toBe(true);
+        }
+      }
+      expect(rooms).toEqual(['c1_s3_story5:b5g1', 'c1_s3_story5:b5g2']);
+      expect(step?.t).toBe('title');
+    }
+  });
+
   it('装载检查通过：每个跳转目标都有标签，70 场战斗都有关卡数据', () => {
     expect(() => checkScript(SCRIPT, hasLevel)).not.toThrow();
     const battles = SCRIPT.steps.filter((s): s is Extract<Step, { t: 'battle' }> => s.t === 'battle');

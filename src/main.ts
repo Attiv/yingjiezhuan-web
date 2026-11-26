@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import './style.css';
+import './pwa';
 import { playSfx, preloadSfx, sfxDiagnostics, sfxEnabled, sfxLog, toggleSfx, unlockSfx } from './audio';
 import { sfxOf } from './sfx-map';
 import { DEMO, DEMO_ACTOR, DEMO_LEVELS, drawDemoActor } from './data/demo';

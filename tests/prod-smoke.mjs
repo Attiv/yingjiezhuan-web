@@ -8,6 +8,31 @@ const exists = selector => page.evaluate(s => !!document.querySelector(s), selec
 const text = selector => page.evaluate(s => document.querySelector(s)?.textContent ?? '', selector);
 await page.goto(`${base}/?seed=3`);
 await page.waitForSelector('[data-go="start"]');
+const pwa = await page.evaluate(async () => {
+  const manifest = await (await fetch('/manifest.webmanifest')).json();
+  await navigator.serviceWorker.ready;
+  return { display: manifest.display, icons: manifest.icons.map(icon => icon.sizes), hasWorker: !!navigator.serviceWorker.controller };
+});
+assert.equal(pwa.display, 'standalone', '应用 manifest 应声明独立窗口模式');
+assert.ok(pwa.icons.includes('192x192') && pwa.icons.includes('512x512'), '应提供安装所需图标尺寸');
+await page.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 60000 });
+await page.reload();
+await page.waitForSelector('[data-go="start"]');
+const cachedAssets = await page.evaluate(async () => {
+  const keys = await caches.keys();
+  const cache = await caches.open(keys.find(key => key.startsWith('yingjiezhuan-')));
+  return {
+    shell: !!await cache.match('/index.html'),
+    title: !!await cache.match('/assets/title.png'),
+    music: !!await cache.match('/assets/bgm/title.mp3'),
+  };
+});
+assert.deepEqual(cachedAssets, { shell: true, title: true, music: true }, '离线缓存应包含应用壳、游戏图像和音乐');
+await page.context().setOffline(true);
+await page.reload();
+await page.waitForSelector('[data-go="start"]');
+assert.match(await text('#screen h1'), /三国志英杰传/);
+await page.context().setOffline(false);
 // 主流程按原版繁体断言；默认简体与切换另由 e2e 覆盖。
 await page.evaluate(() => localStorage.setItem('yjz.script', 'hant'));
 await page.reload();

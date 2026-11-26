@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/style.css"
+        ],
+        "createdAt": "2026-11-26T12:13:38.680Z",
+        "reason": "Assistant review: src/style.css .scene .place is a location plaque, not a card; its gold edge matches the game's intentional pixel-art scene framing."
+      }
+    ]
+  }
+}

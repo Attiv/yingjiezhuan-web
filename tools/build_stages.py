@@ -219,12 +219,14 @@ class Merged:
 
 
 def candidates(block: dict, dlg: dict[int, list[str]], officers: dict[int, str]) -> list:
-    """一条一条 record，外加把 run 都接起来的那一条。"""
+    """单条 record、合并的 run，以及带地点开场的 run；仍须完整对齐台词。"""
     recs = [Rec(block, r, dlg, officers) for r in block["records"]]
     out: list = list(recs)
     runs = [r for r in recs if r.trigger == "run"]
     if len(runs) > 1:
         out.append(Merged(runs))
+        # 下邳议事厅等地点开场负责换图摆人，不能只保留后续 run 的动作。
+        out.extend(Merged([r, *runs]) for r in recs if r.trigger == "location")
     return out
 
 
