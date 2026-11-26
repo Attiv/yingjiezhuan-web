@@ -691,11 +691,11 @@ def split_branch_lines(scenes: dict[str, list[dict]], stages: dict) -> None:
     def tag_of(options: list[tuple[int, str, int, int]], n: int) -> str:
         return ["a", "b"][n]
 
-    # 衣带诏：整幕只有 stage + 六句对白，关羽版三句、张飞版三句。
+    # 衣带诏：关羽版三句、张飞版三句，出门换图保留在分支汇合后。
     sid = "c1_s4_story6"
     steps = scenes.get(sid) or []
     says = [s for s in steps if s["t"] == "say"]
-    if len(says) == 6 and len(steps) == 6:
+    if len(says) == 6 and steps[:6] == says:
         room = f"{sid}:b6g0"
         scenes[sid] = branch(sid, room, steps, 0, 6,
                              [(1, "與關羽交談", 0, 3), (2, "與張飛交談", 3, 6)])
@@ -745,11 +745,9 @@ def main() -> None:
             "portrait": portrait,
         }
 
-    scenes = parse_drama()
     # 序章直接消费原始record编译的时间线；先生成舞台数据，避免依赖陈旧JSON。
-    from build_stages import main as build_stages
-    build_stages()
-    stages = json.loads((OUT / "stages.json").read_text(encoding="utf-8"))
+    from build_stages import main as build_stages, attach_stage_maps
+    stages, scenes, restored = build_stages()
     for sid, info in stages.items():
         if "timeline" in info:
             scenes[sid] = info["timeline"] + ([{"t": "room", "id": sid}] if info.get("room") else [])
@@ -758,7 +756,7 @@ def main() -> None:
             # 暂停插在上一句之后、下一段动作之前：玩家点人时人还站在原处，
             # 点完才播下一组的进场、走位或离场。
             out, line, op_index = [], 0, 0
-            ops = info["ops"]
+            ops = [] if sid in restored else info["ops"]
             rooms = info.get("rooms", {})
             inserted = set()
             for step in scenes[sid]:
@@ -791,6 +789,7 @@ def main() -> None:
             out.extend({"t": "action", "op": op} for op in ops[op_index:])
             scenes[sid] = out
     split_branch_lines(scenes, stages)
+    attach_stage_maps(stages)
     # 这两幕的房间由本脚本补，写回 stages.json（build_stages 是另一个写者，这里保持同样的序列化格式）。
     (OUT / "stages.json").write_text(
         json.dumps(stages, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")

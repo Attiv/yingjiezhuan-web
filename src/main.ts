@@ -649,7 +649,7 @@ async function storyFrame(run: number) {
 async function talkTo(who: number): Promise<void> {
   const info = stageScript.info;
   const name = info?.names?.[who] ?? '';
-  if (info?.timeline || info?.ordered) {
+  if (info?.timeline || (info?.ordered && info.rooms)) {
     if (roomDone && !roomBusy) await roomTalk(who);
     return;
   }

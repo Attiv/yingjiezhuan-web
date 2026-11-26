@@ -12,6 +12,45 @@ spec.loader.exec_module(build)
 
 
 class StageGenerationTests(unittest.TestCase):
+    def test_restored_story_actions_keep_all_location_changes_and_walk_grids(self):
+        stages = json.loads((ROOT / "src/data/stages.json").read_text())
+        expected = {
+            "c1_s4_story14": ["palace/002", "palace/001", "palace/002", "field"],
+            "c1_s4_story6": ["palace/008"],
+            "c2_s1_story3": ["palace/006"],
+            "c2_s1_story4": ["palace/002"],
+            "c3_s0_story4": ["palace/000", "palace/005", "palace/007"],
+            "c3_s1_story8": ["palace/008", "palace/007", "palace/005"],
+            "c3_s1_story9": ["palace/008", "palace/007", "palace/005"],
+            "c3_s1_story10": ["palace/008", "palace/007", "palace/005"],
+        }
+        for sid, maps in expected.items():
+            with self.subTest(section=sid):
+                self.assertEqual([op["map"] for op in stages[sid]["ops"] if op["op"] == "map"], maps)
+        for sid, info in stages.items():
+            for op in info["ops"]:
+                if op["op"] != "map":
+                    continue
+                if op["map"].startswith("palace/"):
+                    self.assertIn(op["map"], info.get("walk", {}), sid)
+                elif op["map"] == "field":
+                    self.assertTrue(info.get("routes"), sid)
+
+    def test_action_compiler_preserves_pack_branches_rewards_and_text(self):
+        campaign_spec = importlib.util.spec_from_file_location("build_campaign", ROOT / "tools/build_campaign.py")
+        campaign = importlib.util.module_from_spec(campaign_spec)
+        campaign_spec.loader.exec_module(campaign)
+        scenarios = build.load_scenarios()
+        officers = build.officer_of()
+        for sid, steps in campaign.parse_drama().items():
+            match = re.fullmatch(r"c(\d+)_s(\d+)_story(\d+)", sid)
+            if not match:
+                continue
+            chapter, scene, block = map(int, match.groups())
+            original = scenarios[chapter]["scenes"][scene]
+            compiled, _ = build.compile_stage_actions(original, original["blocks"][block], steps, officers)
+            self.assertEqual([step for step in compiled if step["t"] != "action"], steps, sid)
+
     def test_location_opening_is_kept_with_later_run_records(self):
         scene = build.load_scenarios()[1]["scenes"][3]
         block = next(b for b in scene["blocks"] if b["index"] == 5)

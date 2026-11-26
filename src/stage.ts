@@ -179,9 +179,10 @@ export class StageScript {
   /** prev：上一幕。同一处场景的后续段（不再 load_map）要接着用上一幕的场面和人。 */
   constructor(info?: StageInfo, prev?: StageScript) {
     this.info = info;
-    const map = info?.map ?? (prev && !info?.map ? prev.map : '');
+    const inherit = !info?.map || !!info.timeline || !!info.ordered;
+    const map = inherit ? prev?.map ?? '' : info?.map ?? '';
     if (isSceneMap(map)) this.map = map;
-    if (prev && !info?.map) {
+    if (prev && inherit) {
       this.people = new Map([...prev.people].map(([who, p]) => [who, { ...p }]));
       this.graphics = new Map(prev.graphics);
       this.place = prev.place;

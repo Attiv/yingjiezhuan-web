@@ -20,8 +20,8 @@ from __future__ import annotations
 
 import json
 import re
-import sys
 import tomllib
+from difflib import SequenceMatcher
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -294,6 +294,138 @@ def build_ops(rec, at: list[int], lines: list[str]) -> list[dict]:
         for op in group:
             ops.append({"at": pos, **op})
     return ops
+
+
+def compile_stage_actions(scene: dict, block: dict, steps: list[dict], officers: dict[int, str]) -> tuple[list[dict], list[int]]:
+    """将完整原始记录的动作挂在 pack 的指令边界上，保留其条件、选项与副作用。"""
+    dialogues = {d["offset"]: d["lines"] for d in scene.get("dialogues", [])}
+
+    def condition(flag: int, clear: bool = False) -> tuple:
+        return "if", f"orig_f{flag}", 0, "ne" if clear else "eq"
+
+    labels: dict[str, list[tuple]] = {}
+    for step in steps:
+        if step["t"] == "if":
+            labels.setdefault(step["goto"], []).append(
+                ("if", step["flag"], step.get("is", 0), step.get("cmp", "eq")))
+
+    def key(step: dict) -> tuple | None:
+        kind = step["t"]
+        if kind in ("say", "text"):
+            return kind, norm(step["text"])
+        if kind == "if":
+            return kind, step["flag"], step.get("is", 0), step.get("cmp", "eq")
+        if kind == "label" and step["name"] in labels:
+            return kind, tuple(sorted(labels[step["name"]]))
+        if kind == "choice":
+            return kind, tuple(norm(o["label"]) for o in step["options"])
+        if kind == "bgm":
+            return kind, step["key"]
+        if kind == "picture" and step["key"]:
+            return kind, step["key"]
+        if kind == "set":
+            return kind, step["flag"], step["value"]
+        if kind == "end":
+            return (kind,)
+        return None
+
+    target = [(i, key(step)) for i, step in enumerate(steps) if key(step) is not None]
+    texts = [norm(step["text"]) for step in steps if step["t"] in ("say", "text")]
+    events: list[tuple[tuple | None, dict | None]] = []
+    starts: set[int] = set()
+    seen: set[int] = set()
+    stage_codes: list[dict] = []
+    records: list[int] = []
+    stage_kinds = set(STAGE_OPS) | {"load_map", "caption", "set_graphic"}
+    songs = {2: "sad", 3: "peace", 11: "tension", 12: "camp"}
+    for record in block["records"]:
+        code = record["code"]
+        if record["trigger"]["kind_name"] == "talk":
+            lines = [norm(line["text"]) for c in code if c["mnemonic"] == "dialogue"
+                     for line in dialogues.get(next(a["value"] for a in c["args"] if a["name"] == "text"), [])]
+            pos = 0
+            mainline = bool(lines)
+            for line in lines:
+                try:
+                    pos = texts.index(line, pos) + 1
+                except ValueError:
+                    mainline = False
+                    break
+            if not mainline:
+                continue  # 闲谈动作只属于房间，不能混进主线。
+        if all(c["offset"] in seen for c in code):
+            continue
+        records.append(record["index"])
+        starts.add(len(events))
+        ends: dict[int, list[tuple]] = {}
+        for index, c in enumerate(code):
+            if c["mnemonic"] == "if_flags":
+                conditions = [condition(f) for f in c.get("all_set", [])]
+                conditions += [condition(f, True) for f in c.get("all_clear", [])]
+                if conditions:
+                    ends.setdefault(index + 1 + c["skip"], []).append(("label", tuple(sorted(conditions))))
+        for index, c in enumerate(code):
+            if c["offset"] in seen:
+                continue  # choice 记录和首个 run 分支可能共享同一段字节码。
+            seen.add(c["offset"])
+            events.extend((end, None) for end in ends.get(index, []))
+            mnemonic = c["mnemonic"]
+            args = {a["name"]: a["value"] for a in c.get("args", [])}
+            resolved = c.get("resolved") or {}
+            if mnemonic in stage_kinds:
+                stage_codes.append(c)
+                events.append((None, c))
+            if mnemonic == "dialogue":
+                events.extend((("say", norm(line["text"])), None) for line in dialogues.get(args["text"], []))
+            elif mnemonic in ("narration", "caption"):
+                events.append((("text", norm(resolved.get("text", ""))), None))
+            elif mnemonic == "if_flags":
+                events.extend((condition(f), None) for f in c.get("all_set", []))
+                events.extend((condition(f, True), None) for f in c.get("all_clear", []))
+            elif mnemonic == "choice":
+                options = tuple(norm(s) for s in resolved.get("options", "").splitlines() if s.strip())
+                events.append((("choice", options), None))
+            elif mnemonic == "play_music" and args["song"] in songs:
+                events.append((("bgm", songs[args["song"]]), None))
+            elif mnemonic == "show_picture":
+                events.append((("picture", f"orig_{args['picture']:02d}"), None))
+            elif mnemonic == "set_flag":
+                events.append((("set", f"orig_f{args['flag']}", 0 if args["clear"] else 1), None))
+            elif mnemonic == "goto_block":
+                events.append((("end",), None))
+        events.extend((end, None) for end in ends.get(len(code), []))
+
+    source = [(i, anchor) for i, (anchor, _) in enumerate(events) if anchor is not None]
+    matcher = SequenceMatcher(None, [anchor for _, anchor in source], [anchor for _, anchor in target], autojunk=False)
+    matched = {source[a + n][0]: target[b + n][0]
+               for a, b, size in matcher.get_matching_blocks() for n in range(size)}
+    if not matched and stage_codes:
+        raise ValueError(f"block {block['index']} 的舞台动作没有正文锚点")
+    actions = iter(step["op"] for step in original_timeline(scene, [{"code": stage_codes}], officers)
+                   if step["t"] == "action")
+    insertions: dict[int, list[dict]] = {}
+    following = [len(steps)] * (len(events) + 1)
+    for index in range(len(events) - 1, -1, -1):
+        following[index] = matched.get(index, following[index + 1])
+    previous = None
+    for index, (_, command) in enumerate(events):
+        if index in starts:
+            previous = None
+        if index in matched:
+            previous = matched[index]
+        if command is not None:
+            # 挂在上一条已匹配指令之后；不能拖到下一句所在的条件分支里面。
+            position = previous + 1 if previous is not None else following[index]
+            insertions.setdefault(position, []).append(next(actions))
+    out: list[dict] = []
+    line = 0
+    for index in range(len(steps) + 1):
+        for op in insertions.get(index, []):
+            out.append({"t": "action", "op": {**op, "at": line}})
+        if index < len(steps):
+            out.append(steps[index])
+            line += steps[index]["t"] in ("say", "text")
+    return out, records
 
 
 def original_timeline(scene: dict, records: list[dict], officers: dict[int, str]) -> list[dict]:
@@ -1149,7 +1281,30 @@ def add_original_opening(stages: dict, dyn: list[dict], officers: dict[int, str]
         info["room"] = {"battle": "c0_s0_b5", "shop": shop, "talks": talks}
 
 
-def main() -> None:
+def attach_stage_maps(stages: dict) -> None:
+    towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
+    campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]
+    for sid, info in stages.items():
+        chapter = (section_target(sid) or (0, 0, 0))[0]
+        info["world"] = min(max(0, chapter - 1), len(campaign) - 1)
+        maps = dict(info.get("walk", {}))
+        if sid in ("c1_s0_story1", "c1_s0_story2"):
+            maps.update(stages["c1_s0_story0"].get("walk", {}))
+        map_ops = info["ops"] + [s["op"] for s in info.get("timeline", []) if s["t"] == "action"]
+        for op in map_ops:
+            key = op.get("map", "")
+            if key.startswith("palace/"):
+                i = int(key.split("/")[1])
+                m = next((m for m in towns if m["source"] == "PMAP.R3" and m["index"] == i), None)
+                if m:
+                    maps[key] = m["walk"]
+        if maps:
+            info["walk"] = maps
+        if info.get("map") == "field" or any(o.get("map") == "field" for o in map_ops):
+            info["routes"] = campaign[info["world"]]["routes"]
+
+
+def main() -> tuple[dict, dict, set[str]]:
     dyn = load_scenarios()
     officers = officer_of()
     stages: dict[str, dict] = {}
@@ -1228,34 +1383,27 @@ def main() -> None:
     add_xuzhou_return(stages, dyn, officers)
     add_group_rooms(stages, dyn, officers)
     add_ordered_group_rooms(stages, dyn, officers)
-    # ordered 幕若开头不换图（首个 map 动作在第 6 句之后），说明仍沿用上一幕的房间：
-    # 保留 info.map 会把舞台和人一并清空，改成继承上一幕；换图动作照原时序执行。
-    for info in stages.values():
-        if not info.get("ordered") or not info.get("map"):
-            continue
-        maps = [a for a in info.get("ops", []) if a.get("op") == "map"]
-        if maps and maps[0].get("at", 0) >= 6:
-            info["map"] = None
-    towns = json.loads((EX / "maps/town.json").read_text(encoding="utf-8"))["maps"]
-    campaign = json.loads((EX / "maps/campaign.json").read_text(encoding="utf-8"))["maps"]
+    from build_campaign import parse_drama
+    scenes = parse_drama()
+    restored: set[str] = set()
     for sid, info in stages.items():
-        chapter = (section_target(sid) or (0, 0, 0))[0]
-        info["world"] = min(max(0, chapter - 1), len(campaign) - 1)
-        maps = {}
-        if sid in ("c1_s0_story1", "c1_s0_story2"):
-            maps.update(stages["c1_s0_story0"].get("walk", {}))
-        map_ops = info["ops"] + [s["op"] for s in info.get("timeline", []) if s["t"] == "action"]
-        for op in map_ops:
-            key = op.get("map", "")
-            if key.startswith("palace/"):
-                i = int(key.split("/")[1])
-                m = next((m for m in towns if m["source"] == "PMAP.R3" and m["index"] == i), None)
-                if m:
-                    maps[key] = m["walk"]
-        if maps:
-            info["walk"] = maps
-        if info.get("map") == "field" or any(o.get("map") == "field" for o in map_ops):
-            info["routes"] = campaign[info["world"]]["routes"]
+        match = re.fullmatch(r"c(\d+)_s(\d+)_story(\d+)", sid)
+        if not match or "timeline" in info:
+            continue
+        ch, sy, bi = map(int, match.groups())
+        original = dyn[ch]["scenes"][sy]
+        block = next(b for b in original["blocks"] if b["index"] == bi)
+        scenes[sid], records = compile_stage_actions(original, block, scenes[sid], officers)
+        info["ops"] = [step["op"] for step in scenes[sid] if step["t"] == "action"]
+        info["ordered"] = True
+        info["source"] = {"chapter": ch, "scene": sy, "block": bi, "records": records}
+        restored.add(sid)
+        names = info.setdefault("names", {})
+        for record in block["records"]:
+            for code in record["code"]:
+                if name := (code.get("resolved") or {}).get("person"):
+                    names[str(next(a["value"] for a in code["args"] if a["name"] == "person"))] = name.strip()
+    attach_stage_maps(stages)
     OUT.write_text(json.dumps(stages, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     maps = sum(1 for s in stages.values() if s["map"] is not None)
     places = sum(1 for s in stages.values() for o in s["ops"] if o["op"] == "place")
@@ -1263,7 +1411,8 @@ def main() -> None:
     print(f"场景 {len(stages)} 节（有地图 {maps} 节、摆人 {places} 次、能点人说话 {talks} 节），未对齐 {len(failed)} 节")
     if failed:
         print("  未对齐：", " ".join(failed[:10]), "…" if len(failed) > 10 else "")
+    return stages, scenes, restored
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
