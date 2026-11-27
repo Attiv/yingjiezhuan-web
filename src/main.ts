@@ -1080,7 +1080,10 @@ function camp(step: Extract<Shown, { t: 'camp' }>, returnToRoom = false, shopOnl
   const render = () => {
     party = story.party.filter((id) => officers[id]);
     // 重画时留住滚动位置：营地比一屏高，买完东西跳回顶部会让人找不着刚才那一行
-    const top = el.scrollTop;
+    const old = document.querySelector<HTMLElement>('.card.camp');
+    const y = old?.scrollTop ?? 0;          // 1. 渲染前记录
+
+    // const top = el.scrollTop;
     el.className = '';
     el.innerHTML = `<div class="card camp"><h1 style="font-size:24px;line-height:30px">${esc(step.title)}</h1>` +
       `<p class="sub">軍資 ${story.gold} 金${shopOnly ? '' : `　出征 ${story.deploy.length}/${max} 名`}</p>` +
@@ -1090,7 +1093,10 @@ function camp(step: Extract<Shown, { t: 'camp' }>, returnToRoom = false, shopOnl
       `<div class="row end"><button class="btn" data-go="camp-save">存檔</button>` +
       `<button class="btn" data-go="camp-go"${story.deploy.length || returnToRoom ? '' : ' disabled'}>${returnToRoom ? '返回' : '出陣'}</button></div>`;
     el.hidden = false;
-    el.scrollTop = top;
+    
+    const cur = document.querySelector<HTMLElement>('.card.camp');
+    if (cur) cur.scrollTop = y;
+    // el.scrollTop = top;
     // 焦点给出陣，但不让它把卡片滚到底
     (el.querySelector('[data-go="camp-go"]') as HTMLElement | null)?.focus({ preventScroll: true });
   };
